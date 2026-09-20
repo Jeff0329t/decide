@@ -45,11 +45,11 @@ h2 { font-size: 1.5rem; line-height: 1.35; letter-spacing: -.025em; }
 .draw-choice.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
 .draw-choice.primary span { color: #c8ccd5; }
 .mode-art { position: relative; height: 78px; margin-bottom: 10px; display: block; }
-.mode-art i { position: absolute; top: 4px; left: 50%; width: 42px; height: 67px; border: 1px solid #98a5d0; border-radius: 6px; background: repeating-linear-gradient(45deg,#5f77c9 0 4px,#25304c 4px 8px); box-shadow: 0 7px 16px rgba(0,0,0,.18); }
+.mode-art i { position: absolute; top: 4px; left: 50%; width: 42px; height: 67px; border: 1px solid rgba(255,255,255,.35); border-radius: 6px; box-shadow: 0 7px 16px rgba(0,0,0,.18); }
 .one-art i { transform: translateX(-50%) rotate(-4deg); }
 .two-art i:first-child { transform: translateX(-78%) rotate(-9deg); }
 .two-art i:last-child { transform: translateX(-22%) rotate(8deg); }
-.draw-choice:not(.primary) .mode-art i { border-color: #c1c8dc; background: repeating-linear-gradient(45deg,#f0f2f8 0 4px,#8999cf 4px 8px); }
+.draw-choice:not(.primary) .mode-art i { border-color: rgba(30,36,48,.18); }
 .micro-note { display: flex; gap: 10px; align-items: flex-start; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: .86rem; line-height: 1.55; }
 .micro-note b { color: var(--ink); }
 .bottom-nav { position: fixed; z-index: 12; left: 50%; bottom: 0; transform: translateX(-50%); width: min(760px, 100%); display: grid; grid-template-columns: 1fr 1fr; padding: 10px max(20px, env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); background: rgba(255,255,255,.96); border-top: 1px solid var(--line); backdrop-filter: blur(16px); }
@@ -335,7 +335,7 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .flip-card:not(:disabled):not(.flipped):hover .flip-inner { transform: translateY(-8px) rotate(-1deg); }
 .pair-card { cursor: default; }
 .dual-draw .pair-card:not(.flipped):hover .flip-inner { transform: none; }
-.flip-inner { position: relative; display: block; width: 100%; aspect-ratio: 5 / 8; transform-style: preserve-3d; transition: transform .85s cubic-bezier(.2,.76,.25,1), filter .2s ease; }
+.flip-inner { position: relative; display: block; width: 100%; aspect-ratio: 5 / 8; transform-style: preserve-3d; transition: transform .5s cubic-bezier(.2,.76,.25,1), filter .2s ease; }
 .flip-card.flipped .flip-inner { transform: rotateY(180deg) translateY(-6px); }
 .flip-face { position: absolute; inset: 0; display: grid; place-items: center; backface-visibility: hidden; border-radius: 11px; box-shadow: 0 15px 32px rgba(30,36,48,.2); overflow: hidden; }
 .flip-back i { color: rgba(255,255,255,.82); font-size: .54rem; font-style: normal; font-weight: 800; letter-spacing: .17em; }
@@ -389,11 +389,18 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .card-detail-sheet { max-width: 620px; }
 .card-detail-body { display: grid; grid-template-columns: minmax(120px,210px) minmax(0,1fr); gap: 22px; margin-top: 20px; }
 .card-detail-body > img { width: 100%; aspect-ratio: 7/12; object-fit: cover; border-radius: 11px; box-shadow: 0 14px 30px rgba(30,36,48,.18); }
-.card-detail-body > div { align-self: center; }
+.card-detail-body > div { align-self: start; }
 .card-detail-body span { color: var(--muted); font-size: .75rem; font-weight: 700; }
 .card-detail-body strong { display: block; margin: 7px 0 12px; color: var(--accent); font-size: 1.25rem; }
 .card-detail-body p { color: #444d5d; line-height: 1.75; }
 .card-detail-body small { display: block; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: .75rem; line-height: 1.65; }
+.keyword-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; }
+.keyword-chips i { padding: 6px 9px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); font-size: .68rem; font-style: normal; font-weight: 800; }
+.card-detail-copy section { margin-top: 16px; padding-top: 15px; border-top: 1px solid var(--line); }
+.card-detail-copy section h3 { margin: 0 0 6px; font-size: .82rem; }
+.card-detail-copy section p { margin: 0; font-size: .84rem; }
+.position-meanings p { display: grid; grid-template-columns: 48px 1fr; gap: 8px; margin-top: 7px !important; }
+.position-meanings p b { color: var(--muted); font-size: .72rem; }
 .shared-screen { padding-bottom: 60px; }
 .shared-screen > h1 { max-width: 18ch; font-size: clamp(2rem,8vw,3.2rem); }
 .shared-outcome { margin: 24px 0; padding: 20px; display: grid; gap: 6px; border-radius: 18px; background: var(--ink); color: white; }
@@ -413,7 +420,7 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .shared-note { background: var(--soft); }
 
 @media (max-width: 460px) {
-  .card-detail-body { grid-template-columns: 112px minmax(0,1fr); gap: 15px; }
-  .card-detail-body strong { font-size: 1rem; }
-  .card-detail-body p { font-size: .82rem; }
+  .card-detail-body { grid-template-columns: 1fr; gap: 18px; }
+  .card-detail-body > img { width: 150px; justify-self: center; }
+  .card-detail-body strong { font-size: 1.08rem; }
 }
