@@ -242,7 +242,7 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .back-choice > b { position: absolute; right: 9px; color: var(--accent); font-size: .8rem; }
 .back-choice .card-back { width: 30px; height: 46px; flex: 0 0 auto; border-radius: 4px; }
 .card-back { display: block; overflow: hidden; border: 2px solid rgba(255,255,255,.72); background-color: #1e2735; box-shadow: inset 0 0 0 1px rgba(255,255,255,.28); }
-.back-lines { background-image: linear-gradient(rgba(28,35,46,.08),rgba(28,35,46,.08)), url('./assets/card-back-lines.png'); background-size: cover; background-position: center; }
+.back-lines { background-image: linear-gradient(rgba(28,35,46,.08),rgba(28,35,46,.08)), url('./assets/card-back-lines.jpg'); background-size: cover; background-position: center; }
 .back-classic { background-color: #284a8b; background-image: radial-gradient(circle at 50% 50%,transparent 0 13%,rgba(255,255,255,.85) 14% 16%,transparent 17% 29%,rgba(255,255,255,.65) 30% 32%,transparent 33%), repeating-linear-gradient(45deg,transparent 0 8px,rgba(255,255,255,.12) 8px 10px); }
 .back-plain { background: #222b38; background-image: linear-gradient(135deg,transparent 48%,#698cf0 49% 51%,transparent 52%), linear-gradient(45deg,transparent 48%,rgba(255,255,255,.65) 49% 51%,transparent 52%); background-size: 28px 28px; }
 .back-ivory { background-color: #eee8db; border-color: rgba(38,46,60,.28); background-image: linear-gradient(90deg,transparent 49%,#506078 49% 51%,transparent 51%), radial-gradient(circle at 50% 50%,transparent 0 20%,#506078 21% 22%,transparent 23% 32%,#8da2c9 33% 35%,transparent 36%); }
