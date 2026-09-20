@@ -541,7 +541,8 @@ function readSharedPayload() {
 }
 function sharedResultUrl(log,type) {
   const nodes=(log.nodes||[]).slice(0,2);
-  const payload={t:log.title,d:log.decision,c:nodes.map(node=>[node.card.id,node.card.orientation==='reversed'?1:0]),s:type==='story'?(log.story||'').slice(0,700):''};
+  const payload={d:log.decision,c:nodes.map(node=>[node.card.id,node.card.orientation==='reversed'?1:0])};
+  if(type==='story'){ payload.t=log.title; payload.s=(log.story||'').slice(0,700); }
   return `${location.origin}${location.pathname}#share=${encodeSharedPayload(payload)}`;
 }
 function normalizeSharedPayload(payload) {
@@ -589,14 +590,14 @@ function shareData(type='app', log=null) {
   const url=`${location.origin}${location.pathname}`;
   if (type === 'result' && log) {
     const cardNodes=(log.nodes || []).slice(0,2); const cards=cardNodes.map(node=>`${node.card.name}（${orientationLabel(node.card)}）`).join('・');
-    return {title:`${log.title} — DECIDE`,logTitle:log.title,decision:log.decision,heading:'結果をシェア',lead:'相手がリンクを開くと、カード画像・意味・あなたの結論が表示されます。',text:`「${log.title}」\n結論：${log.decision}${cards ? `\nカード：${cards}` : ''}\n#DECIDE`,url:sharedResultUrl(log,type),cards:cardNodes.map(node=>({...node.card,image:cardImage(node.card),meaning:meaning(node.card)}))};
+    return {title:'DECIDE — 決定結果',logTitle:'決定の記録',decision:log.decision,heading:'結果をシェア',lead:'相手がリンクを開くと、カード画像・意味・あなたの結論が表示されます。題名とメモは共有されません。',text:`結論：${log.decision}${cards ? `\nカード：${cards}` : ''}\n#DECIDE`,url:sharedResultUrl(log,type),cards:cardNodes.map(node=>({...node.card,image:cardImage(node.card),meaning:meaning(node.card)}))};
   }
   if (type === 'story' && log) {
     const story=(log.story || '').slice(0,420);
     const cardNodes=(log.nodes || []).slice(0,2);
     return {title:`${log.title}のその後 — DECIDE`,logTitle:log.title,decision:log.decision,heading:'その後をシェア',lead:'相手がリンクを開くと、カード画像・結論・その後のストーリーが表示されます。',text:`「${log.title}」\n結論：${log.decision}\nその後：${story}${log.story?.length > 420 ? '…' : ''}\n#DECIDE`,url:sharedResultUrl(log,type),cards:cardNodes.map(node=>({...node.card,image:cardImage(node.card),meaning:meaning(node.card)}))};
   }
-  return {title:'DECIDE — タロット思考ツール',heading:'DECIDEを共有',lead:'友だちにも、心から納得できる決断の時間を。共有されるのはアプリのURLだけで、あなたの履歴は含まれません。',text:'心から納得いく決断を。\n#DECIDE',url};
+  return {title:'DECIDE — 決める前に、別の角度を。',heading:'DECIDEを共有',lead:'友だちにも、心から納得できる決断の時間を。共有されるのはアプリのURLだけで、あなたの履歴は含まれません。',text:'DECIDE — 決める前に、別の角度を。',url};
 }
 function openShare(type='app', id=null) {
   const log=id ? logs.find(item=>item.id===id) : null;
