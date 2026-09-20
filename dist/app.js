@@ -211,8 +211,8 @@ function renderHome() {
   app.innerHTML = `
     <section class="screen home-screen">
       <p class="eyebrow">Decision tool</p>
-      <h1>心から納得いく決断を。</h1>
-      <p class="lead">カードをきっかけに、考えを整理するためのツールです。</p>
+      <h1>心から納得いく<wbr>決断を。</h1>
+      <p class="lead">カードをきっかけに、<wbr>考えを整理するための<wbr>ツールです。</p>
       <div class="choice-grid">
         <button class="draw-choice primary" data-action="start" data-mode="one"><span class="mode-art one-art" aria-hidden="true"><i class="card-back back-${settings.back}"></i></span><strong>1枚引き</strong><span>設定中の${deckCount}枚から選ぶ</span></button>
         <button class="draw-choice" data-action="start" data-mode="two"><span class="mode-art two-art" aria-hidden="true"><i class="card-back back-${settings.back}"></i><i class="card-back back-${settings.back}"></i></span><strong>2枚引き</strong><span>同じ${deckCount}枚から2枚を開く</span></button>
@@ -263,8 +263,8 @@ function renderDraw() {
   app.innerHTML = `<section class="screen draw-screen">
     <button class="text-back" data-action="home">← 最初に戻る</button>
     <p class="eyebrow">Take a moment</p>
-    <h1>${two ? '2つの選択肢を、思い浮かべる。' : '問いを、心の中で決める。'}</h1>
-    <p class="lead">${two ? '左を選択肢1、右を選択肢2として思い浮かべてください。カードは答えを決めるものではなく、それぞれを考える視点を映します。' : `問いは言葉にしなくて大丈夫です。伏せた${activeSession.drawOptions.length}枚を左右に動かし、気になる1枚を選んでください。`}</p>
+    <h1>${two ? '2つの選択肢を、<wbr>思い浮かべる。' : '問いを、心の中で<wbr>決める。'}</h1>
+    <p class="lead">${two ? '左を選択肢1、右を選択肢2として<wbr>思い浮かべてください。<wbr>カードは答えを決めるものではなく、<wbr>それぞれを考える視点を映します。' : `問いは言葉にしなくて<wbr>大丈夫です。<wbr>伏せた${activeSession.drawOptions.length}枚を左右に動かし、<wbr>気になる1枚を選んでください。`}</p>
     ${two ? '' : `<div class="deck-count"><b>${activeSession.drawOptions.length}枚</b><span>すべてのカードから選べます</span></div>`}
     <div class="${two ? 'dual-draw' : 'fan-deck'}">
       ${activeSession.drawOptions.map((card,i) => drawCardButton(card,i,two ? `選択肢 ${i + 1}` : '')).join('')}
@@ -371,7 +371,7 @@ function renderSession() {
   app.innerHTML = `
     <section class="screen map-screen">
       <button class="text-back" data-action="home">← 最初に戻る</button>
-      <div class="map-heading"><p class="eyebrow">Thought map</p><h2>${activeSession.mode === 'two' ? '2つの選択肢を比べる' : 'カードが示す、ひとつの視点'}</h2><p>${activeSession.mode === 'two' ? 'カードの向きと意味から、どちらが今進めやすいかを比べます。' : 'カードに未来を決めてもらうのではなく、解説を自分の状況に照らして読んでみてください。'}</p></div>
+      <div class="map-heading"><p class="eyebrow">Thought map</p><h2>${activeSession.mode === 'two' ? '2つの選択肢を<wbr>比べる' : 'カードが示す、<wbr>ひとつの視点'}</h2><p>${activeSession.mode === 'two' ? 'カードの向きと意味から、<wbr>どちらが今進めやすいかを<wbr>比べます。' : 'カードに未来を決めてもらうのではなく、<wbr>解説を自分の状況に照らして<wbr>読んでみてください。'}</p></div>
       ${activeSession.mode === 'two' ? `<section class="verdict-card"><span>比較の目安</span><h3>${esc(verdict.label)}</h3><p>${esc(verdict.detail)}</p></section><div class="choice-comparison">${activeSession.nodes.slice(0,2).map((node,index) => `<article class="compare-node"><span>${esc(node.label.replace(' ',''))}</span><button class="compare-card card-detail-button" data-action="card-detail" data-index="${index}" aria-label="${esc(node.card.name)}の詳しい意味を見る"><img class="${node.card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(node.card)}" alt="${esc(node.card.name)}"><b>${esc(node.card.name)}</b><small>${orientationLabel(node.card)}</small></button><p><strong>${esc(meaning(node.card))}</strong>${esc(interpretation(node.card))}</p></article>`).join('')}</div><div class="thought-map deep-map">${activeSession.nodes.slice(2).map((node,index) => renderCard(node,index + 2)).join('')}</div>` : `<div class="thought-map">${activeSession.nodes.map(renderCard).join('')}</div>`}
       <section class="deep-panel">
         ${caution ? `<div class="decision-nudge"><b>そろそろ、材料は十分かもしれません。</b><p>新しい視点を増やすより、今ある材料から決めてみませんか。</p></div>` : `<p class="panel-title">もう少し考えるなら</p>`}
@@ -395,8 +395,8 @@ function renderDecision() {
   app.innerHTML = `
     <section class="screen decide-screen">
       <button class="text-back" data-action="session">← マップに戻る</button>
-      <p class="eyebrow">Decide</p><h1>今回は、どうする？</h1>
-      <p class="lead">カードではなく、あなたが決めます。いちばん納得できるものを選んでください。</p>
+      <p class="eyebrow">Decide</p><h1>今回は、<wbr>どうする？</h1>
+      <p class="lead">カードではなく、<wbr>あなたが決めます。<wbr>いちばん納得できるものを<wbr>選んでください。</p>
       <div class="decision-options">${options.map(o => `<button class="decision-option ${selectedDecision === o ? 'selected' : ''}" data-action="select-decision" data-value="${o}"><span>${o}</span><i>${selectedDecision === o ? '✓' : ''}</i></button>`).join('')}</div>
       <form id="save-form" class="save-form">
         <label>題名 <span>任意</span><input name="title" maxlength="60" placeholder="例：新しい仕事を引き受けるか"></label>
