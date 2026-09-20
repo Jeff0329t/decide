@@ -76,6 +76,12 @@ const RANK_READINGS = [
   {upright:'自分と周囲の状態を丁寧に受け取り、無理のない方を選べます。',reversed:'気遣いが自己犠牲になっていないか、自分の余白を確認してください。'},
   {upright:'長期の方針を定め、責任を持って進める判断が求められています。',reversed:'支配したい気持ちを緩め、他者の意見や変化を受け入れてください。'}
 ];
+const MINOR_KEYWORDS = {
+  'ワンド': [['始動','空回り'],['展望','迷走'],['展開','停滞'],['安定','内輪の乱れ'],['競争','衝突疲れ'],['勝利','自信過剰'],['防衛','消耗'],['急展開','行き違い'],['粘り強さ','疲弊'],['責任','抱えすぎ'],['好奇心','見切り発車'],['突破力','暴走'],['情熱と包容力','嫉妬'],['統率力','独断']],
+  'カップ': [['心の始まり','感情の停滞'],['信頼関係','すれ違い'],['喜びの共有','馴れ合い'],['見直す時間','無関心'],['喪失からの気づき','後悔'],['懐かしさ','過去への執着'],['豊かな想像力','幻想'],['次へ進む','未練'],['満足','満たされない思い'],['幸福なつながり','関係の不調和'],['素直な感性','感情の未熟さ'],['理想を追う','気分の暴走'],['思いやり','自己犠牲'],['感情の成熟','感情の抑圧']],
+  'ソード': [['明確な決断','判断の曇り'],['保留と均衡','決められない状態'],['痛みの直視','痛みの長期化'],['休息','休めない焦り'],['勝敗への固執','対立の回避'],['環境の移行','過去への停滞'],['戦略','不誠実'],['思考の束縛','思い込み'],['不安','不安からの回復'],['終止符','終わりへの抵抗'],['新しい発想','浅い判断'],['迅速な行動','性急さ'],['冷静な知性','批判的すぎる'],['合理的な判断','支配的な論理']],
+  'ペンタクル': [['現実的な機会','機会損失'],['柔軟な両立','負担の偏り'],['技術と協力','連携不足'],['安定の確保','執着'],['不足からの学び','孤立'],['公平な分配','不公平'],['成果を待つ','見切りの早さ'],['技能の習得','単調さ'],['自立','依存'],['豊かさの継承','土台の不安定'],['実直な学び','準備不足'],['着実な前進','停滞'],['現実的な支え','抱え込み'],['安定した統率','物質への固執']]
+};
 
 const savedSettings = load(SETTINGS_KEY, {});
 let settings = { back:'lines', feedback: savedSettings.feedback !== false, deckMode: savedSettings.deckMode || (savedSettings.reversed === false ? 'all-upright' : 'all-reversed'), ...savedSettings };
@@ -89,6 +95,8 @@ let calendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
 let selectedCalendarDate = '';
 let historyQuery = '';
 let activeShareData = null;
+let sharedPayload = readSharedPayload();
+if(sharedPayload)currentView='shared';
 
 function roman(num) {
   const map = [[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
@@ -112,7 +120,12 @@ function shuffledDeck() {
   const useReversed=settings.deckMode.endsWith('reversed');
   return source.map(card=>({...card,orientation:useReversed && Math.random()<.28 ? 'reversed' : 'upright'})).sort(()=>Math.random()-.5);
 }
-function meaning(card) { return card[card.orientation]; }
+function meaning(card) {
+  if(card.id?.startsWith('M'))return card[card.orientation];
+  const suit=SUITS.find(item=>card.name?.startsWith(item.name));
+  const rank=Number(card.id?.match(/^m\d-(\d+)$/)?.[1]);
+  return MINOR_KEYWORDS[suit?.name]?.[rank]?.[card.orientation==='upright'?0:1] || card[card.orientation];
+}
 function orientationLabel(card) { return card.orientation === 'upright' ? '正位置' : '逆位置'; }
 function cardImage(card) {
   if (card.image) return card.image;
@@ -154,6 +167,7 @@ function navigate(view, id=null) {
   render(); requestAnimationFrame(() => app.focus({preventScroll:true}));
 }
 function render() {
+  if (currentView === 'shared') return renderSharedResult();
   if (currentView === 'home') return renderHome();
   if (currentView === 'draw') return renderDraw();
   if (currentView === 'session') return renderSession();
@@ -166,12 +180,12 @@ function renderHome() {
   const last = logs[0];
   app.innerHTML = `
     <section class="screen home-screen">
-      <p class="eyebrow">Quick decision</p>
-      <h1>迷いを、決める材料に。</h1>
-      <p class="lead">答えを預けるのではなく、見方を変えるためのカードです。今の迷いに合う引き方を選んでください。</p>
+      <p class="eyebrow">Decision tool</p>
+      <h1>決める前に、別の角度を。</h1>
+      <p class="lead">カードをきっかけに、考えを整理するためのツールです。</p>
       <div class="choice-grid">
-        <button class="draw-choice primary" data-action="start" data-mode="one"><strong>1枚引き</strong><span>今の状況に、新しい視点をひとつ。</span></button>
-        <button class="draw-choice" data-action="start" data-mode="two"><strong>2枚引き</strong><span>選択肢1と2、ふたつの可能性を比べる。</span></button>
+        <button class="draw-choice primary" data-action="start" data-mode="one"><span class="mode-art one-art" aria-hidden="true"><i></i></span><strong>1枚引き</strong><span>ひとつの迷いを考える</span></button>
+        <button class="draw-choice" data-action="start" data-mode="two"><span class="mode-art two-art" aria-hidden="true"><i></i><i></i></span><strong>2枚引き</strong><span>2つの選択肢を比べる</span></button>
       </div>
       <p class="micro-note"><b>入力は不要です。</b><span>カードを見てから、必要なときだけ深掘りできます。</span></p>
       ${last ? `<button class="last-log" data-action="detail" data-id="${last.id}"><span>最近の決定</span><strong>${esc(last.title)}</strong><small>${esc(last.decision)} · ${formatDate(last.createdAt)}</small></button>` : ''}
@@ -282,10 +296,10 @@ function renderCard(node, index) {
   const c = node.card;
   return `<article class="thought-node ${c.orientation === 'reversed' ? 'is-reversed' : ''}">
     <div class="node-label"><span>${esc(node.label)}</span><b>${esc(node.question)}</b></div>
-    <div class="compact-card">
+    <button class="compact-card card-detail-button" data-action="card-detail" data-index="${index}" aria-label="${esc(c.name)}の詳しい意味を見る">
       <img class="reading-image ${c.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(c)}" alt="${esc(c.name)}">
       <div><span class="tarot-index">${esc(c.number)} · ${orientationLabel(c)}</span><strong>${esc(c.name)}</strong></div>
-    </div>
+    </button>
     <div class="reading"><b>${esc(meaning(c))}</b><p>${esc(interpretation(c))}</p></div>
     ${index < activeSession.nodes.length - 1 ? '<span class="connector" aria-hidden="true"></span>' : ''}
   </article>`;
@@ -305,9 +319,9 @@ function cardSignal(card) {
 }
 function comparisonVerdict(nodes) {
   const [first,second]=nodes; const difference=cardSignal(first.card)-cardSignal(second.card);
-  if(Math.abs(difference)<.55)return {label:'カード上では、ほぼ互角です',detail:`「${meaning(first.card)}」と「${meaning(second.card)}」の両方に検討する価値があります。解説を読んで、より納得感のある方を優先してください。`};
-  const winner=difference>0 ? first : second; const other=difference>0 ? second : first;
-  return {label:`今の流れでは、${winner.label.replace(' ','')}がやや優勢です`,detail:`${winner.card.name}の「${meaning(winner.card)}」が、${other.label.replace(' ','')}より進みやすい材料を示しています。これは正解の断定ではなく、比較の目安です。`};
+  const winner=difference>=0 ? first : second; const other=difference>=0 ? second : first;
+  const closeness=Math.abs(difference)<.55 ? 'わずかに' : 'やや';
+  return {label:`${winner.label.replace(' ','')}が${closeness}優勢です`,detail:`${winner.card.name}の「${meaning(winner.card)}」が、${other.label.replace(' ','')}より前へ進む材料を示しています。迷ったままにせず、現時点では${winner.label.replace(' ','')}を軸に考えるという結論です。`};
 }
 
 function deepPrompts() {
@@ -329,7 +343,7 @@ function renderSession() {
     <section class="screen map-screen">
       <button class="text-back" data-action="home">← 最初に戻る</button>
       <div class="map-heading"><p class="eyebrow">Thought map</p><h2>${activeSession.mode === 'two' ? '2つの選択肢を比べる' : 'カードが示す、ひとつの視点'}</h2><p>${activeSession.mode === 'two' ? 'カードの向きと意味から、どちらが今進めやすいかを比べます。' : 'カードに未来を決めてもらうのではなく、解説を自分の状況に照らして読んでみてください。'}</p></div>
-      ${activeSession.mode === 'two' ? `<section class="verdict-card"><span>比較の目安</span><h3>${esc(verdict.label)}</h3><p>${esc(verdict.detail)}</p></section><div class="choice-comparison">${activeSession.nodes.slice(0,2).map((node,index) => `<article class="compare-node"><span>${esc(node.label.replace(' ',''))}</span><div class="compare-card"><img class="${node.card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(node.card)}" alt="${esc(node.card.name)}"><b>${esc(node.card.name)}</b><small>${orientationLabel(node.card)}</small></div><p><strong>${esc(meaning(node.card))}</strong>${esc(interpretation(node.card))}</p></article>`).join('')}</div><div class="thought-map deep-map">${activeSession.nodes.slice(2).map((node,index) => renderCard(node,index + 2)).join('')}</div>` : `<div class="thought-map">${activeSession.nodes.map(renderCard).join('')}</div>`}
+      ${activeSession.mode === 'two' ? `<section class="verdict-card"><span>比較の目安</span><h3>${esc(verdict.label)}</h3><p>${esc(verdict.detail)}</p></section><div class="choice-comparison">${activeSession.nodes.slice(0,2).map((node,index) => `<article class="compare-node"><span>${esc(node.label.replace(' ',''))}</span><button class="compare-card card-detail-button" data-action="card-detail" data-index="${index}" aria-label="${esc(node.card.name)}の詳しい意味を見る"><img class="${node.card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(node.card)}" alt="${esc(node.card.name)}"><b>${esc(node.card.name)}</b><small>${orientationLabel(node.card)}</small></button><p><strong>${esc(meaning(node.card))}</strong>${esc(interpretation(node.card))}</p></article>`).join('')}</div><div class="thought-map deep-map">${activeSession.nodes.slice(2).map((node,index) => renderCard(node,index + 2)).join('')}</div>` : `<div class="thought-map">${activeSession.nodes.map(renderCard).join('')}</div>`}
       <section class="deep-panel">
         ${caution ? `<div class="decision-nudge"><b>そろそろ、材料は十分かもしれません。</b><p>新しい視点を増やすより、今ある材料から決めてみませんか。</p></div>` : `<p class="panel-title">もう少し考えるなら</p>`}
         ${canDraw ? `<p class="deep-help">気になるテーマを選ぶと、もう1枚のカードから詳しい視点を得られます。</p><div class="prompt-list">${deepPrompts().map(p => `<button class="prompt-button" data-action="deepen" data-prompt="${esc(p)}"><b>${esc(p)}</b><span>このテーマを深掘り →</span></button>`).join('')}</div>` : `<p class="limit-note">カードはここまで。いま見えている材料を使って決めましょう。</p>`}
@@ -382,7 +396,7 @@ function renderHistory() {
     <div class="history-head"><div><p class="eyebrow">Decision log</p><h1>決めたこと。</h1></div>
       <div class="view-switch" aria-label="履歴の表示形式"><button class="${historyMode === 'list' ? 'selected' : ''}" data-action="history-mode" data-value="list">リスト</button><button class="${historyMode === 'calendar' ? 'selected' : ''}" data-action="history-mode" data-value="calendar">カレンダー</button></div>
     </div>
-    ${logs.length ? `<label class="history-search"><span aria-hidden="true">⌕</span><input id="history-search" type="search" value="${esc(historyQuery)}" placeholder="題名、カード、意味、ストーリーを検索" aria-label="履歴を検索"><small>${historyQuery ? `${results.length}件` : ''}</small></label><div data-history-results>${renderHistoryResults(results)}</div>` : `<div class="empty-state"><span>□</span><h2>まだ記録はありません</h2><p>最初のカードを引いて、ひとつ決めてみましょう。</p><button class="button" data-action="home">カードを引く</button></div>`}
+    ${logs.length ? `<label class="history-search"><span aria-hidden="true">⌕</span><input id="history-search" type="search" value="${esc(historyQuery)}" placeholder="題名、カード、意味、ストーリーを検索" aria-label="履歴を検索"><small>${historyQuery ? `${results.length}件` : ''}</small></label><p class="swipe-hint">履歴を左へスワイプすると削除できます</p><div data-history-results>${renderHistoryResults(results)}</div>` : `<div class="empty-state"><h2>まだ履歴はありません</h2><p>最初のカードを引いて、ひとつ決めてみましょう。</p><button class="button" data-action="home">カードを引く</button></div>`}
   </section>`;
 }
 
@@ -402,11 +416,11 @@ function renderHistoryResults(results=filteredLogs()) {
 function historyItem(log) {
   const cards=(log.nodes || []).slice(0,3);
   const first=cards[0]?.card;
-  return `<button class="history-item" data-action="detail" data-id="${log.id}">
+  return `<div class="history-swipe" data-swipe-id="${log.id}"><button class="swipe-delete" data-action="delete-log" data-id="${log.id}">削除</button><button class="history-item" data-action="detail" data-id="${log.id}">
     <span class="history-thumbs">${cards.map((node,index)=>`<img style="--stack:${index}" class="${node.card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(node.card)}" alt="">`).join('')}</span>
     <span class="history-copy"><time>${formatDate(log.createdAt)}</time><strong>${esc(log.title)}</strong><span>${esc(log.decision)}</span>${first ? `<small>${esc(first.name)} · ${orientationLabel(first)} — ${esc(meaning(first))}</small>` : ''}</span>
     ${log.review ? `<em>${reviewIcon(log.review)} ${esc(log.review)}</em>` : '<em class="pending">未評価</em>'}<i class="history-arrow" aria-hidden="true">→</i>
-  </button>`;
+  </button></div>`;
 }
 
 function localDateKey(value) {
@@ -444,7 +458,7 @@ function renderDetail() {
     <h1>${esc(log.title)}</h1><div class="outcome"><span>今回の結論</span><strong>${esc(log.decision)}</strong><button data-action="share-log" data-id="${log.id}">この結果をシェア ↗</button></div>
     <div class="saved-cards"><p class="panel-title">引いたカードと意味</p>${log.nodes.map((node,index) => `<article class="saved-card">
       <img class="${node.card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(node.card)}" alt="${esc(node.card.name)}">
-      <div><span>${esc(node.label || `CARD ${index+1}`)} · ${esc(node.question || '')}</span><h3>${esc(node.card.name)} <small>${orientationLabel(node.card)}</small></h3><b>${esc(meaning(node.card))}</b><p>${esc(interpretation(node.card))}</p></div>
+      <div><span>${esc(node.label || `CARD ${index+1}`)} · ${esc(node.question || '')}</span><h3>${esc(node.card.name)} <small>${orientationLabel(node.card)}</small></h3><b>${esc(meaning(node.card))}</b><p>${esc(interpretation(node.card))}</p><button class="card-more" data-action="saved-card-detail" data-id="${log.id}" data-index="${index}">カードの詳しい意味を見る</button></div>
     </article>`).join('')}</div>
     ${log.memo ? `<div class="saved-memo"><span>メモ</span><p>${esc(log.memo)}</p></div>` : ''}
     <section class="story-panel"><div class="story-head"><div><p class="panel-title">その後のストーリー</p><span>時間が経って分かったことや、選択の続きを残せます。</span></div>${log.storyUpdatedAt ? `<time>更新 ${formatDate(log.storyUpdatedAt)}</time>` : ''}</div>
@@ -483,6 +497,41 @@ function deleteLog(id) {
   logs=logs.filter(item=>item.id!==id); persist(); closeDelete(); detailId=null; currentView='history'; render(); toast('履歴を削除しました');
 }
 
+function openCardDetail(card) {
+  if(!card)return;
+  const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='card-modal';
+  wrap.innerHTML=`<button class="modal-shade" data-action="close-card-detail" aria-label="カード詳細を閉じる"></button><section class="settings-sheet card-detail-sheet" role="dialog" aria-modal="true" aria-labelledby="card-detail-title"><div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">Card meaning</p><h2 id="card-detail-title">${esc(card.name)}</h2></div><button data-action="close-card-detail" aria-label="閉じる">×</button></div><div class="card-detail-body"><img class="${card.orientation==='reversed'?'reversed-image':''}" src="${cardImage(card)}" alt="${esc(card.name)}"><div><span>${orientationLabel(card)}</span><strong>${esc(meaning(card))}</strong><p>${esc(interpretation(card))}</p><small>カードは未来を断定するものではありません。この言葉が自分の状況のどこに当てはまるかを考えるために使います。</small></div></div></section>`;
+  document.body.appendChild(wrap); requestAnimationFrame(()=>wrap.classList.add('open')); wrap.querySelector('.sheet-head button').focus();
+}
+function closeCardDetail() { const m=document.querySelector('#card-modal'); if(!m)return; m.classList.remove('open'); setTimeout(()=>m.remove(),180); }
+
+function encodeSharedPayload(payload) { return btoa(unescape(encodeURIComponent(JSON.stringify(payload)))); }
+function readSharedPayload() {
+  try { const raw=location.hash.startsWith('#share=')?location.hash.slice(7):''; return raw?JSON.parse(decodeURIComponent(escape(atob(raw)))):null; } catch { return null; }
+}
+function sharedResultUrl(log,type) {
+  const nodes=(log.nodes||[]).slice(0,2);
+  const payload={title:log.title,decision:log.decision,date:log.createdAt,cards:nodes.map(node=>({name:node.card.name,orientation:node.card.orientation,number:node.card.number,image:cardImage(node.card),upright:node.card.upright,reversed:node.card.reversed,id:node.card.id,meaning:meaning(node.card),interpretation:interpretation(node.card)})),story:type==='story'?log.story||'':'',verdict:log.mode==='two'&&nodes.length===2?comparisonVerdict(nodes).label:''};
+  return `${location.origin}${location.pathname}#share=${encodeSharedPayload(payload)}`;
+}
+function renderSharedResult() {
+  if(!sharedPayload){ currentView='home'; return renderHome(); }
+  app.innerHTML=`<section class="screen shared-screen"><p class="eyebrow">Shared from DECIDE</p><h1>${esc(sharedPayload.title||'決定の記録')}</h1><div class="shared-outcome"><span>選んだ答え</span><strong>${esc(sharedPayload.decision||'')}</strong>${sharedPayload.verdict?`<p>${esc(sharedPayload.verdict)}</p>`:''}</div><div class="shared-card-grid">${(sharedPayload.cards||[]).map(card=>`<article><img class="${card.orientation==='reversed'?'reversed-image':''}" src="${esc(card.image)}" alt="${esc(card.name)}"><div><span>${card.orientation==='reversed'?'逆位置':'正位置'}</span><h2>${esc(card.name)}</h2><b>${esc(card.meaning)}</b><p>${esc(card.interpretation)}</p></div></article>`).join('')}</div>${sharedPayload.story?`<section class="shared-story"><span>その後のストーリー</span><p>${esc(sharedPayload.story)}</p></section>`:''}<div class="shared-note"><b>DECIDEとは？</b><p>タロットカードをきっかけに、迷いを別の角度から整理する思考ツールです。</p></div><button class="button" data-action="open-app">自分もカードを引いてみる</button></section>`;
+}
+
+async function createShareImageBlob(data) {
+  const canvas=document.createElement('canvas'); canvas.width=1080; canvas.height=1350; const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#f4f5f7'; ctx.fillRect(0,0,1080,1350); ctx.fillStyle='#1e2430'; ctx.font='700 34px sans-serif'; ctx.fillText('DECIDE',72,82);
+  ctx.font='700 54px sans-serif'; wrapCanvasText(ctx,data.logTitle||data.title,72,165,936,68,2); ctx.fillStyle='#4869d7'; ctx.font='700 42px sans-serif'; ctx.fillText(data.decision||'',72,315);
+  const cards=data.cards||[]; const cardWidth=cards.length>1?330:390; const gap=44; const total=cardWidth*cards.length+gap*Math.max(0,cards.length-1); let x=(1080-total)/2;
+  for(const card of cards){ try{ const image=await loadShareImage(card.image); ctx.save(); if(card.orientation==='reversed'){ctx.translate(x+cardWidth,390+cardWidth*1.7);ctx.rotate(Math.PI);ctx.drawImage(image,0,0,cardWidth,cardWidth*1.7);}else ctx.drawImage(image,x,390,cardWidth,cardWidth*1.7);ctx.restore(); }catch{} ctx.fillStyle='#1e2430';ctx.font='700 28px sans-serif';ctx.fillText(card.name,x,1000);ctx.fillStyle='#4869d7';ctx.font='700 25px sans-serif';wrapCanvasText(ctx,card.meaning,x,1040,cardWidth,34,2);x+=cardWidth+gap; }
+  ctx.fillStyle='#6f7580';ctx.font='24px sans-serif';ctx.fillText('カードをきっかけに、考えを整理する。',72,1270);
+  return await new Promise(resolve=>canvas.toBlob(resolve,'image/png',.94));
+}
+function wrapCanvasText(ctx,text,x,y,maxWidth,lineHeight,maxLines=3){ let line='';let count=0;for(const char of String(text||'')){const next=line+char;if(ctx.measureText(next).width>maxWidth&&line){ctx.fillText(line,x,y+count*lineHeight);line=char;count++;if(count>=maxLines)return;}else line=next;}if(count<maxLines)ctx.fillText(line,x,y+count*lineHeight); }
+function loadShareImage(src){return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=reject;image.src=src;});}
+async function downloadShareImage(){ if(!activeShareData?.cards?.length)return; const blob=await createShareImageBlob(activeShareData); if(!blob)return; const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download='decide-result.png';link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000);toast('共有画像を保存しました'); }
+
 function openSettings() {
   const wrap = document.createElement('div'); wrap.className='modal-wrap'; wrap.id='settings-modal';
   wrap.innerHTML = `<button class="modal-shade" data-action="close-settings" aria-label="設定を閉じる"></button><section class="settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title">
@@ -503,14 +552,15 @@ function closeSettings() { const m=document.querySelector('#settings-modal'); if
 function shareData(type='app', log=null) {
   const url=`${location.origin}${location.pathname}`;
   if (type === 'result' && log) {
-    const cards=(log.nodes || []).slice(0,2).map(node=>`${node.card.name}（${orientationLabel(node.card)}）`).join('・');
-    return {title:`${log.title} — DECIDE`,heading:'決定を共有',lead:'題名・結論・引いたカードを共有します。メモや履歴全体は含まれません。',text:`「${log.title}」\n結論：${log.decision}${cards ? `\nカード：${cards}` : ''}\n#DECIDE`,url};
+    const cardNodes=(log.nodes || []).slice(0,2); const cards=cardNodes.map(node=>`${node.card.name}（${orientationLabel(node.card)}）`).join('・');
+    return {title:`${log.title} — DECIDE`,logTitle:log.title,decision:log.decision,heading:'結果をシェア',lead:'相手がリンクを開くと、カード画像・意味・あなたの結論が表示されます。',text:`「${log.title}」\n結論：${log.decision}${cards ? `\nカード：${cards}` : ''}\n#DECIDE`,url:sharedResultUrl(log,type),cards:cardNodes.map(node=>({...node.card,image:cardImage(node.card),meaning:meaning(node.card)}))};
   }
   if (type === 'story' && log) {
     const story=(log.story || '').slice(0,420);
-    return {title:`${log.title}のその後 — DECIDE`,heading:'その後のストーリーを共有',lead:'保存したストーリーと結論を共有します。内容を確認してから共有先を選んでください。',text:`「${log.title}」\n結論：${log.decision}\nその後：${story}${log.story?.length > 420 ? '…' : ''}\n#DECIDE`,url};
+    const cardNodes=(log.nodes || []).slice(0,2);
+    return {title:`${log.title}のその後 — DECIDE`,logTitle:log.title,decision:log.decision,heading:'その後をシェア',lead:'相手がリンクを開くと、カード画像・結論・その後のストーリーが表示されます。',text:`「${log.title}」\n結論：${log.decision}\nその後：${story}${log.story?.length > 420 ? '…' : ''}\n#DECIDE`,url:sharedResultUrl(log,type),cards:cardNodes.map(node=>({...node.card,image:cardImage(node.card),meaning:meaning(node.card)}))};
   }
-  return {title:'DECIDE — タロット思考ツール',heading:'DECIDEを共有',lead:'友だちにも、決めるための時間を。共有されるのはアプリのURLだけで、あなたの履歴は含まれません。',text:'迷いを、決める材料に。\n#DECIDE',url};
+  return {title:'DECIDE — タロット思考ツール',heading:'DECIDEを共有',lead:'友だちにも、決める前に別の角度から考える時間を。共有されるのはアプリのURLだけで、あなたの履歴は含まれません。',text:'決める前に、別の角度を。\n#DECIDE',url};
 }
 function openShare(type='app', id=null) {
   const log=id ? logs.find(item=>item.id===id) : null;
@@ -520,19 +570,20 @@ function openShare(type='app', id=null) {
   wrap.innerHTML=`<button class="modal-shade" data-action="close-share" aria-label="共有画面を閉じる"></button><section class="settings-sheet share-sheet" role="dialog" aria-modal="true" aria-labelledby="share-title">
     <div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">Share</p><h2 id="share-title">${esc(heading)}</h2></div><button data-action="close-share" aria-label="閉じる">×</button></div>
     <p class="share-lead">${esc(lead)}</p>
-    ${type !== 'app' ? `<div class="share-preview">${esc(shareText).replace(/\n/g,'<br>')}</div>` : ''}
+    ${type !== 'app' ? `<div class="share-card-preview"><div class="share-preview-images">${activeShareData.cards.map(card=>`<img class="${card.orientation==='reversed'?'reversed-image':''}" src="${card.image}" alt="${esc(card.name)}">`).join('')}</div><div class="share-preview">${esc(shareText).replace(/\n/g,'<br>')}</div></div>` : ''}
     <div class="share-grid">
       <a class="share-option line" href="https://line.me/R/msg/text/?${encodeURIComponent(`${shareText}\n${url}`)}" target="_blank" rel="noopener"><b>LINE</b><span>LINEで送る</span></a>
       <a class="share-option x-share" href="https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>𝕏</b><span>Xで共有</span></a>
       <a class="share-option facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>f</b><span>Facebook</span></a>
       <button class="share-option" data-action="native-share"><b>↗</b><span>その他</span></button>
     </div>
+    ${type !== 'app' ? `<button class="copy-link image-save" data-action="save-share-image"><span>カード画像と結論を1枚にまとめます</span><b>画像を保存</b></button>` : ''}
     <button class="copy-link" data-action="copy-link"><span>${esc(type === 'app' ? url : title)}</span><b>${type === 'app' ? 'リンクをコピー' : '文章をコピー'}</b></button>
   </section>`;
   document.body.appendChild(wrap); requestAnimationFrame(()=>wrap.classList.add('open')); wrap.querySelector('.sheet-head button').focus();
 }
 function closeShare() { const m=document.querySelector('#share-modal'); if(!m)return; m.classList.remove('open'); setTimeout(()=>m.remove(),180); }
-async function shareNative() { const data=activeShareData || shareData(); if(navigator.share){ try{ await navigator.share({title:data.title,text:data.text,url:data.url}); }catch{} } else { await copyShareLink(); } }
+async function shareNative() { const data=activeShareData || shareData(); if(navigator.share){ try{ const blob=data.cards?.length?await createShareImageBlob(data):null; const file=blob?new File([blob],'decide-result.png',{type:'image/png'}):null; const payload={title:data.title,text:data.text,url:data.url}; if(file&&navigator.canShare?.({files:[file]}))payload.files=[file]; await navigator.share(payload); }catch{} } else { await copyShareLink(); } }
 async function copyShareLink() { const data=activeShareData || shareData(); try{ await navigator.clipboard.writeText(`${data.text}\n${data.url}`); sensoryFeedback('tap'); toast(data.heading === 'DECIDEを共有' ? '共有リンクをコピーしました' : '共有する文章をコピーしました'); }catch{ toast('コピーできませんでした'); } }
 function toast(message) { const t=document.querySelector('#toast'); t.textContent=message; t.classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>t.classList.remove('show'),1800); }
 function updateDeckSettingUI() {
@@ -570,19 +621,29 @@ document.addEventListener('click', event => {
   else if (action === 'save-story') saveStory(el.dataset.id);
   else if (action === 'share-log') openShare('result',el.dataset.id);
   else if (action === 'share-story') openShare('story',el.dataset.id);
+  else if (action === 'card-detail') openCardDetail(activeSession?.nodes[Number(el.dataset.index)]?.card);
+  else if (action === 'saved-card-detail') { const log=logs.find(item=>item.id===el.dataset.id); openCardDetail(log?.nodes[Number(el.dataset.index)]?.card); }
+  else if (action === 'close-card-detail') closeCardDetail();
   else if (action === 'delete-log') openDeleteConfirm(el.dataset.id);
   else if (action === 'confirm-delete') deleteLog(el.dataset.id);
   else if (action === 'close-delete') closeDelete();
   else if (action === 'close-share') closeShare();
   else if (action === 'native-share') shareNative();
+  else if (action === 'save-share-image') downloadShareImage();
   else if (action === 'copy-link') copyShareLink();
   else if (action === 'close-settings') closeSettings();
+  else if (action === 'open-app') { history.replaceState(null,'',location.pathname); sharedPayload=null; activeSession=null; navigate('home'); }
 });
 document.addEventListener('submit', event => { if(event.target.id === 'save-form'){ event.preventDefault(); saveDecision(event.target); } });
 document.addEventListener('input', event => { if(event.target.id === 'history-search'){ historyQuery=event.target.value; const results=document.querySelector('[data-history-results]'); if(results)results.innerHTML=renderHistoryResults(); const count=event.target.closest('.history-search')?.querySelector('small'); if(count)count.textContent=historyQuery?`${filteredLogs().length}件`:''; } });
 document.querySelector('#settings-button').addEventListener('click', openSettings);
 document.querySelector('#share-button').addEventListener('click', () => openShare());
-document.addEventListener('keydown', event => { if(event.key === 'Escape'){ closeSettings(); closeShare(); closeDelete(); } });
+document.addEventListener('keydown', event => { if(event.key === 'Escape'){ closeSettings(); closeShare(); closeDelete(); closeCardDetail(); } });
+
+let swipeState=null;
+document.addEventListener('touchstart',event=>{ const row=event.target.closest('.history-swipe'); if(!row)return; swipeState={row,startX:event.touches[0].clientX,startY:event.touches[0].clientY,moved:false}; },{passive:true});
+document.addEventListener('touchmove',event=>{ if(!swipeState)return; const dx=event.touches[0].clientX-swipeState.startX; const dy=event.touches[0].clientY-swipeState.startY; if(Math.abs(dy)>Math.abs(dx)){swipeState=null;return;} if(dx<0){swipeState.moved=true;swipeState.row.style.setProperty('--swipe',`${Math.max(dx,-82)}px`);} },{passive:true});
+document.addEventListener('touchend',()=>{ if(!swipeState)return; document.querySelectorAll('.history-swipe.swiped').forEach(row=>{if(row!==swipeState.row)row.classList.remove('swiped');}); const open=parseFloat(swipeState.row.style.getPropertyValue('--swipe')) < -42; swipeState.row.classList.toggle('swiped',open); swipeState.row.style.removeProperty('--swipe'); swipeState=null; },{passive:true});
 
 function registerWebMcp() {
   const context = document.modelContext; if (!context?.registerTool) return;
