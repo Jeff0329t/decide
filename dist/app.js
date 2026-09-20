@@ -96,7 +96,7 @@ function renderHome() {
       <p class="lead">答えを預けるのではなく、見方を変えるためのカードです。考えたい形だけ選んでください。</p>
       <div class="choice-grid">
         <button class="draw-choice primary" data-action="start" data-mode="one"><strong>1枚引き</strong><span>今の状況に、新しい視点をひとつ。</span></button>
-        <button class="draw-choice" data-action="start" data-mode="two"><strong>2枚引き</strong><span>AとB、ふたつの選択肢を比べる。</span></button>
+        <button class="draw-choice" data-action="start" data-mode="two"><strong>2枚引き</strong><span>選択肢1と2、ふたつの可能性を比べる。</span></button>
       </div>
       <p class="micro-note"><b>入力は不要です。</b><span>カードを見てから、必要なときだけ深掘りできます。</span></p>
       ${last ? `<button class="last-log" data-action="detail" data-id="${last.id}"><span>最近の決定</span><strong>${esc(last.title)}</strong><small>${esc(last.decision)} · ${formatDate(last.createdAt)}</small></button>` : ''}
@@ -125,13 +125,15 @@ function backPicker() {
 function drawCardButton(card, slot, label='') {
   const revealed = activeSession.revealed.includes(slot);
   const locked = activeSession.revealed.length && activeSession.mode === 'one' && !revealed;
-  return `<button class="flip-card ${revealed ? 'flipped chosen' : ''}" data-action="flip-card" data-slot="${slot}" ${locked ? 'disabled' : ''} aria-label="${revealed ? `${card.name}を選びました` : `${label || slot + 1}枚目の伏せたカードを選ぶ`}">
+  const tag = activeSession.mode === 'two' ? 'div' : 'button';
+  const action = activeSession.mode === 'two' ? '' : ' data-action="flip-card"';
+  return `<${tag} class="flip-card ${activeSession.mode === 'two' ? 'pair-card' : ''} ${revealed ? 'flipped chosen' : ''}"${action} data-slot="${slot}" ${locked ? 'disabled' : ''} aria-label="${revealed ? `${card.name}を選びました` : `${label || slot + 1}枚目の伏せたカード`}">
     ${label ? `<b class="draw-label">${label}</b>` : ''}
     <span class="flip-inner">
       <span class="flip-face flip-back card-back back-${settings.back}"><i>DECIDE</i></span>
       <span class="flip-face flip-front" aria-hidden="${revealed ? 'false' : 'true'}"><img class="${card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(card)}" alt="${revealed ? esc(card.name) : ''}"><em>${esc(card.name)}</em></span>
     </span>
-  </button>`;
+  </${tag}>`;
 }
 
 function renderDraw() {
@@ -140,17 +142,18 @@ function renderDraw() {
   app.innerHTML = `<section class="screen draw-screen">
     <button class="text-back" data-action="home">← 最初に戻る</button>
     <p class="eyebrow">Take a moment</p>
-    <h1>${two ? 'AとBを、心に置く。' : '問いを、心の中で決める。'}</h1>
-    <p class="lead">${two ? '左をA、右をBとして思い浮かべてください。決まったら、それぞれのカードをめくります。' : '言葉にしなくて大丈夫です。気持ちが決まったら、惹かれるカードを1枚選んでください。'}</p>
+    <h1>${two ? '2つの選択肢を、思い浮かべる。' : '問いを、心の中で決める。'}</h1>
+    <p class="lead">${two ? '左を選択肢1、右を選択肢2として思い浮かべてください。準備ができたら、2枚を同時に引きます。' : '言葉にしなくて大丈夫です。気持ちが決まったら、惹かれるカードを1枚選んでください。'}</p>
     <div class="${two ? 'dual-draw' : 'draw-row'}">
-      ${activeSession.drawOptions.map((card,i) => drawCardButton(card,i,two ? (i === 0 ? 'A' : 'B') : '')).join('')}
+      ${activeSession.drawOptions.map((card,i) => drawCardButton(card,i,two ? `選択肢 ${i + 1}` : '')).join('')}
     </div>
-    <p class="draw-instruction">${two ? (activeSession.revealed.length === 0 ? 'AかB、どちらからでも引けます' : activeSession.revealed.length === 1 ? 'もう一方のカードも引いてください' : '2つの視点を開いています…') : (activeSession.revealed.length ? 'カードを開いています…' : '決まったら、タップして引く')}</p>
+    ${two ? `<button class="button reveal-both" data-action="flip-both" ${activeSession.revealed.length ? 'disabled' : ''}>2枚を同時に引く</button>` : ''}
+    <p class="draw-instruction">${two ? (activeSession.revealed.length ? '2つの視点を開いています…' : '心の中で決まったら、ボタンを押してください') : (activeSession.revealed.length ? 'カードを開いています…' : '決まったら、タップして引く')}</p>
   </section>`;
 }
 
 function flipCard(slot) {
-  if (!activeSession || activeSession.revealed.includes(slot)) return;
+  if (!activeSession || activeSession.mode === 'two' || activeSession.revealed.includes(slot)) return;
   activeSession.revealed.push(slot);
   const card = activeSession.drawOptions[slot];
   const button = document.querySelector(`.flip-card[data-slot="${slot}"]`);
@@ -166,15 +169,31 @@ function flipCard(slot) {
   if (activeSession.mode === 'one') {
     document.querySelectorAll('.flip-card').forEach((item,index) => { if(index !== slot) item.disabled = true; });
     if (instruction) instruction.textContent = 'カードを開いています…';
-  } else if (instruction) {
-    instruction.textContent = activeSession.revealed.length === 1 ? 'もう一方のカードも引いてください' : '2つの視点を開いています…';
   }
-  const complete = activeSession.mode === 'one' || activeSession.revealed.length === 2;
-  if (!complete) return;
-  const picked = activeSession.mode === 'one' ? [activeSession.drawOptions[slot]] : activeSession.drawOptions;
-  activeSession.nodes = activeSession.mode === 'two'
-    ? [{question:'Aを選んだとき',label:'A',card:picked[0]},{question:'Bを選んだとき',label:'B',card:picked[1]}]
-    : [{question:'いま必要な視点',label:'NOW',card:picked[0]}];
+  activeSession.nodes = [{question:'いま必要な視点',label:'NOW',card}];
+  setTimeout(() => { if (activeSession) navigate('session'); }, 1050);
+}
+
+function flipBoth() {
+  if (!activeSession || activeSession.mode !== 'two' || activeSession.revealed.length) return;
+  activeSession.revealed = [0, 1];
+  document.querySelectorAll('.flip-card').forEach((item, slot) => {
+    const card = activeSession.drawOptions[slot];
+    item.classList.add('flipped','chosen');
+    item.setAttribute('aria-label',`${card.name}を開きました`);
+    const front = item.querySelector('.flip-front');
+    const image = front?.querySelector('img');
+    front?.setAttribute('aria-hidden','false');
+    if (image) image.alt = card.name;
+  });
+  const reveal = document.querySelector('[data-action="flip-both"]');
+  if (reveal) reveal.disabled = true;
+  const instruction = document.querySelector('.draw-instruction');
+  if (instruction) instruction.textContent = '2つの視点を開いています…';
+  activeSession.nodes = [
+    {question:'選択肢1を選んだとき',label:'選択肢 1',card:activeSession.drawOptions[0]},
+    {question:'選択肢2を選んだとき',label:'選択肢 2',card:activeSession.drawOptions[1]}
+  ];
   setTimeout(() => { if (activeSession) navigate('session'); }, 1050);
 }
 
@@ -194,7 +213,7 @@ function renderCard(node, index) {
 function deepPrompts() {
   const used = activeSession.nodes.map(n => n.question);
   const pool = activeSession.mode === 'two'
-    ? ['決め手になる違い','Aを選ぶときの注意点','Bを選ぶときの注意点','本当はどちらを望んでいる？','選んだ後の最初の一歩','見落としている前提']
+    ? ['決め手になる違い','選択肢1を選ぶときの注意点','選択肢2を選ぶときの注意点','本当はどちらを望んでいる？','選んだ後の最初の一歩','見落としている前提']
     : ['見落としていること','進むときの注意点','本当はどうしたい？','手放してよいこと','次の小さな一歩','いま守るべきもの'];
   return pool.filter(p => !used.includes(p)).slice(0,3);
 }
@@ -208,7 +227,7 @@ function renderSession() {
   app.innerHTML = `
     <section class="screen map-screen">
       <button class="text-back" data-action="home">← 最初に戻る</button>
-      <div class="map-heading"><p class="eyebrow">Thought map</p><h2>${activeSession.mode === 'two' ? 'AとBを、並べて考える' : 'ひとつずつ、視点を深める'}</h2></div>
+      <div class="map-heading"><p class="eyebrow">Thought map</p><h2>${activeSession.mode === 'two' ? '選択肢1と2を、並べて考える' : 'ひとつずつ、視点を深める'}</h2></div>
       ${activeSession.mode === 'two' ? `<div class="choice-comparison">${activeSession.nodes.slice(0,2).map((node,index) => `<article class="compare-node"><span>${node.label}</span><div class="compare-card"><img class="${node.card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(node.card)}" alt="${esc(node.card.name)}"><b>${esc(node.card.name)}</b><small>${orientationLabel(node.card)}</small></div><p><strong>${esc(meaning(node.card))}</strong>${esc(interpretation(node.card))}</p></article>`).join('')}</div><div class="thought-map deep-map">${activeSession.nodes.slice(2).map((node,index) => renderCard(node,index + 2)).join('')}</div>` : `<div class="thought-map">${activeSession.nodes.map(renderCard).join('')}</div>`}
       <section class="deep-panel">
         ${caution ? `<div class="decision-nudge"><b>そろそろ、材料は十分かもしれません。</b><p>新しい視点を増やすより、今ある材料から決めてみませんか。</p></div>` : `<p class="panel-title">もう少し考えるなら</p>`}
@@ -227,7 +246,7 @@ function addDeep(prompt) {
 
 function renderDecision() {
   if (!activeSession) return navigate('home');
-  const options = activeSession.mode === 'two' ? ['Aを選ぶ','Bを選ぶ','保留する'] : ['進む','見送る','保留する'];
+  const options = activeSession.mode === 'two' ? ['選択肢1を選ぶ','選択肢2を選ぶ','保留する'] : ['進む','見送る','保留する'];
   app.innerHTML = `
     <section class="screen decide-screen">
       <button class="text-back" data-action="session">← マップに戻る</button>
@@ -326,7 +345,7 @@ function renderDetail() {
     </article>`).join('')}</div>
     ${log.memo ? `<div class="saved-memo"><span>メモ</span><p>${esc(log.memo)}</p></div>` : ''}
     <section class="story-panel"><div class="story-head"><div><p class="panel-title">その後のストーリー</p><span>時間が経って分かったことや、選択の続きを残せます。</span></div>${log.storyUpdatedAt ? `<time>更新 ${formatDate(log.storyUpdatedAt)}</time>` : ''}</div>
-      <textarea id="story-text" rows="6" maxlength="2000" placeholder="例：実際にAを選んでみたら、最初に心配していたことよりも…">${esc(log.story || '')}</textarea>
+      <textarea id="story-text" rows="6" maxlength="2000" placeholder="例：実際に選択肢1を選んでみたら、最初に心配していたことよりも…">${esc(log.story || '')}</textarea>
       <button class="button secondary" data-action="save-story" data-id="${log.id}">${log.story ? 'ストーリーを更新する' : 'ストーリーを保存する'}</button>
     </section>
     <section class="review-panel"><p class="panel-title">この選択、その後どうでした？</p>
@@ -400,6 +419,7 @@ document.addEventListener('click', event => {
   else if (action === 'history') navigate('history');
   else if (action === 'session') navigate('session');
   else if (action === 'flip-card') flipCard(Number(el.dataset.slot));
+  else if (action === 'flip-both') flipBoth();
   else if (action === 'select-back') { settings.back=el.dataset.value; persist(); const modal=document.querySelector('#settings-modal'); if(modal){ modal.querySelectorAll('.back-choice').forEach(item=>{ const chosen=item.dataset.value===settings.back; item.classList.toggle('selected',chosen); item.querySelector('b').textContent=chosen?'✓':''; }); } toast('カードの裏面を変更しました'); }
   else if (action === 'deepen') addDeep(el.dataset.prompt);
   else if (action === 'decide') navigate('decide');

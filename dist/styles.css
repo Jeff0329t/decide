@@ -278,6 +278,8 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .dual-draw .flip-card { width: 100%; max-width: 190px; justify-self: center; }
 .flip-card:disabled { cursor: default; opacity: .38; }
 .flip-card:not(:disabled):not(.flipped):hover .flip-inner { transform: translateY(-8px) rotate(-1deg); }
+.pair-card { cursor: default; }
+.pair-card:not(.flipped):hover .flip-inner { transform: none; }
 .flip-inner { position: relative; display: block; width: 100%; aspect-ratio: 5 / 8; transform-style: preserve-3d; transition: transform .85s cubic-bezier(.2,.76,.25,1), filter .2s ease; }
 .flip-card.flipped .flip-inner { transform: rotateY(180deg) translateY(-6px); }
 .flip-face { position: absolute; inset: 0; display: grid; place-items: center; backface-visibility: hidden; border-radius: 11px; box-shadow: 0 15px 32px rgba(30,36,48,.2); overflow: hidden; }
@@ -287,6 +289,7 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .flip-front em { position: absolute; inset: auto 4px 4px; padding: 4px 3px; border-radius: 5px; background: rgba(255,255,255,.9); color: var(--ink); font-style: normal; font-size: .58rem; font-weight: 800; line-height: 1.2; }
 .draw-label { display: block; margin-bottom: 9px; color: var(--accent); font-size: 1rem; }
 .draw-instruction { margin: 0; text-align: center; color: var(--muted); font-size: .86rem; font-weight: 700; animation: pulse-text 1.8s ease-in-out infinite; }
+.reveal-both { display: block; width: min(100%, 500px); margin: 0 auto 14px; }
 @keyframes pulse-text { 50% { opacity: .58; } }
 .choice-comparison { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; max-width: 640px; margin: 0 auto 42px; }
 .compare-node { min-width: 0; }
