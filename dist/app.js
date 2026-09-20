@@ -263,11 +263,14 @@ function drawCardButton(card, slot, label='') {
   const action = activeSession.mode === 'two' ? '' : ' data-action="flip-card"';
   const center=(activeSession.drawOptions.length-1)/2;
   const fanStyle=activeSession.mode === 'one' ? ` style="--tilt:${(((slot-center)/Math.max(center,1))*9).toFixed(2)}deg;--drop:${(Math.abs(slot-center)/Math.max(center,1)*18).toFixed(1)}px"` : '';
-  return `<${tag} class="flip-card ${activeSession.mode === 'two' ? 'pair-card' : ''} ${revealed ? 'flipped chosen' : ''}"${action} data-slot="${slot}"${fanStyle} ${locked ? 'disabled' : ''} aria-label="${revealed ? `${card.name}を選びました` : `伏せたカードを選ぶ`}">
+  const hiddenLabel=activeSession.mode === 'two' ? `選択肢${slot + 1}のカード（伏せてある）` : `伏せたカード ${slot + 1}枚目`;
+  const tabIndex=activeSession.mode === 'one' ? ` tabindex="${slot === Math.floor(center) ? '0' : '-1'}"` : '';
+  const front=revealed ? `<span class="flip-face flip-front" aria-hidden="false"><img class="${card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(card)}" alt="${esc(card.name)}"><em>${esc(card.name)}</em></span>` : '';
+  return `<${tag} class="flip-card ${activeSession.mode === 'two' ? 'pair-card' : ''} ${revealed ? 'flipped chosen' : ''}"${action} data-slot="${slot}"${fanStyle}${tabIndex} ${locked ? 'disabled' : ''} aria-label="${revealed ? `${card.name}を選びました` : hiddenLabel}">
     ${label ? `<b class="draw-label">${label}</b>` : ''}
     <span class="flip-inner">
       <span class="flip-face flip-back card-back back-${settings.back}"><i>DECIDE</i></span>
-      <span class="flip-face flip-front" aria-hidden="${revealed ? 'false' : 'true'}"><img class="${card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(card)}" alt="${revealed ? esc(card.name) : ''}"><em>${esc(card.name)}</em></span>
+      ${front}
     </span>
   </${tag}>`;
 }
@@ -298,6 +301,7 @@ function flipCard(slot) {
   preloadCardImages([card]);
   const button = document.querySelector(`.flip-card[data-slot="${slot}"]`);
   if (button) {
+    button.querySelector('.flip-inner')?.insertAdjacentHTML('beforeend',`<span class="flip-face flip-front" aria-hidden="false"><img class="${card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(card)}" alt="${esc(card.name)}"><em>${esc(card.name)}</em></span>`);
     button.classList.add('flipped','chosen');
     button.setAttribute('aria-label',`${card.name}を選びました`);
     const front = button.querySelector('.flip-front');
@@ -321,6 +325,7 @@ function flipBoth() {
   preloadCardImages(activeSession.drawOptions.slice(0,2));
   document.querySelectorAll('.flip-card').forEach((item, slot) => {
     const card = activeSession.drawOptions[slot];
+    item.querySelector('.flip-inner')?.insertAdjacentHTML('beforeend',`<span class="flip-face flip-front" aria-hidden="false"><img class="${card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(card)}" alt="${esc(card.name)}"><em>${esc(card.name)}</em></span>`);
     item.classList.add('flipped','chosen');
     item.setAttribute('aria-label',`${card.name}を開きました`);
     const front = item.querySelector('.flip-front');
@@ -463,11 +468,11 @@ function renderHistoryResults(results=filteredLogs()) {
 function historyItem(log) {
   const cards=(log.nodes || []).slice(0,3);
   const first=cards[0]?.card;
-  return `<div class="history-swipe" data-swipe-id="${log.id}"><button class="swipe-delete" data-action="delete-log" data-id="${log.id}">削除</button><button class="history-item" data-action="detail" data-id="${log.id}">
+  return `<div class="history-swipe" data-swipe-id="${log.id}"><button class="swipe-delete" data-action="delete-log" data-id="${log.id}">削除</button><div class="history-row"><button class="history-item" data-action="detail" data-id="${log.id}">
     <span class="history-thumbs">${cards.map((node,index)=>`<img style="--stack:${index}" class="${node.card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(node.card)}" alt="">`).join('')}</span>
     <span class="history-copy"><time>${formatDate(log.createdAt)}</time><strong>${esc(log.title)}</strong><span>${esc(log.decision)}</span>${first ? `<small>${esc(first.name)} · ${orientationLabel(first)} — ${esc(meaning(first))}</small>` : ''}</span>
     ${log.review ? `<em>${reviewIcon(log.review)} ${esc(log.review)}</em>` : '<em class="pending">未評価</em>'}<i class="history-arrow" aria-hidden="true">→</i>
-  </button></div>`;
+  </button><button class="history-delete-action" data-action="delete-log" data-id="${log.id}" aria-label="「${esc(log.title)}」を削除">削除</button></div></div>`;
 }
 
 function localDateKey(value) {
@@ -536,9 +541,23 @@ function openDeleteConfirm(id) {
   const log=logs.find(item=>item.id===id); if(!log)return;
   const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='delete-modal';
   wrap.innerHTML=`<button class="modal-shade" data-action="close-delete" aria-label="削除確認を閉じる"></button><section class="settings-sheet confirm-sheet" role="dialog" aria-modal="true" aria-labelledby="delete-title"><div class="sheet-handle"></div><p class="eyebrow">Delete log</p><h2 id="delete-title">この履歴を削除しますか？</h2><p>「${esc(log.title)}」のカード、メモ、振り返り、ストーリーが削除されます。この操作は元に戻せません。</p><div class="confirm-actions"><button class="button secondary" data-action="close-delete">キャンセル</button><button class="button danger" data-action="confirm-delete" data-id="${log.id}">削除する</button></div></section>`;
-  document.body.appendChild(wrap); requestAnimationFrame(()=>wrap.classList.add('open')); wrap.querySelector('[data-action="close-delete"]').focus();
+  mountModal(wrap,'.settings-sheet [data-action="close-delete"]');
 }
-function closeModal(selector) { const m=document.querySelector(selector); if(!m || m.classList.contains('closing'))return; m.classList.add('closing'); m.classList.remove('open'); setTimeout(()=>m.remove(),180); }
+const modalBackground=()=>document.querySelectorAll('.topbar, #app, .bottom-nav');
+function setBackgroundInert(value) { modalBackground().forEach(element=>{ element.inert=value; if(value)element.setAttribute('aria-hidden','true'); else element.removeAttribute('aria-hidden'); }); }
+function focusableElements(modal) { return [...modal.querySelectorAll('.settings-sheet a[href], .settings-sheet button:not([disabled]), .settings-sheet input:not([disabled]), .settings-sheet textarea:not([disabled]), .settings-sheet select:not([disabled]), .settings-sheet [tabindex]:not([tabindex="-1"])')].filter(element=>!element.hidden && element.getClientRects().length); }
+function mountModal(wrap, initialSelector) {
+  wrap.returnFocus=document.activeElement;
+  document.body.appendChild(wrap);
+  setBackgroundInert(true);
+  requestAnimationFrame(()=>{ wrap.classList.add('open'); const initial=wrap.querySelector(initialSelector) || focusableElements(wrap)[0] || wrap.querySelector('[role="dialog"]'); initial?.focus(); });
+}
+function closeModal(selector) {
+  const modal=document.querySelector(selector); if(!modal || modal.classList.contains('closing'))return;
+  const returnFocus=modal.returnFocus;
+  modal.classList.add('closing'); modal.classList.remove('open');
+  setTimeout(()=>{ modal.remove(); if(!document.querySelector('.modal-wrap:not(.closing)'))setBackgroundInert(false); if(returnFocus?.isConnected)returnFocus.focus(); else app.focus(); },180);
+}
 function closeDelete() { closeModal('#delete-modal'); }
 function deleteLog(id) {
   const log=logs.find(item=>item.id===id); if(!log)return;
@@ -550,7 +569,7 @@ function openCardDetail(card) {
   const keywords=cardKeywords(card); const uprightMeaning=meaning({...card,orientation:'upright'}); const reversedMeaning=meaning({...card,orientation:'reversed'});
   const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='card-modal';
   wrap.innerHTML=`<button class="modal-shade" data-action="close-card-detail" aria-label="カード詳細を閉じる"></button><section class="settings-sheet card-detail-sheet" role="dialog" aria-modal="true" aria-labelledby="card-detail-title"><div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">Card meaning</p><h2 id="card-detail-title">${esc(card.name)}</h2></div><button data-action="close-card-detail" aria-label="閉じる">×</button></div><div class="card-detail-body"><span class="card-image-frame card-detail-image-frame"><img data-card-image width="480" height="830" class="${card.orientation==='reversed'?'reversed-image':''}" src="${cardImage(card)}" alt="${esc(card.name)}"></span><div class="card-detail-copy"><span>${orientationLabel(card)}</span><strong>${esc(meaning(card))}</strong><div class="keyword-chips">${keywords.map(keyword=>`<i>${esc(keyword)}</i>`).join('')}</div><section><h3>絵柄のストーリー</h3><p>${esc(cardStory(card))}</p></section><section><h3>今回の読み方</h3><p>${esc(interpretation(card))}</p></section><section class="position-meanings"><h3>正位置と逆位置</h3><p><b>正位置</b>${esc(uprightMeaning)}</p><p><b>逆位置</b>${esc(reversedMeaning)}</p></section><small>解説はA.E.ウェイト『The Pictorial Key to the Tarot』とライダー＝ウェイト＝スミス版の図像をもとに、現代の意思決定向けに再構成しています。カードは未来の断定ではなく、自分の状況を考える視点として使います。</small></div></div></section>`;
-  document.body.appendChild(wrap); requestAnimationFrame(()=>wrap.classList.add('open')); wrap.querySelector('.sheet-head button').focus();
+  mountModal(wrap,'.sheet-head button');
 }
 function closeCardDetail() { closeModal('#card-modal'); }
 
@@ -601,8 +620,7 @@ function openSettings() {
     <div class="feedback-setting"><div><b>操作音・振動</b><p>カードを開く時や決定を保存する時に、控えめな反応を返します。</p></div><button class="toggle-button ${settings.feedback ? 'on' : ''}" data-action="toggle-feedback" aria-pressed="${settings.feedback}"><span></span><b>${settings.feedback ? 'ON' : 'OFF'}</b></button></div>
     <div class="setting-note"><b>カードと深掘り提案</b><p>逆位置ありでは、引いたカードの約3割が逆位置になります。表面はパメラ・コールマン・スミスによる1909年のライダー＝ウェイト＝スミス版（パブリックドメイン）です。決定ログはこのブラウザ内だけに保存されます。</p></div>
   </section>`;
-  document.body.appendChild(wrap); requestAnimationFrame(() => wrap.classList.add('open'));
-  wrap.querySelector('.settings-sheet button').focus();
+  mountModal(wrap,'.sheet-head button');
 }
 function closeSettings() { closeModal('#settings-modal'); }
 function shareData(type='app', log=null) {
@@ -636,7 +654,7 @@ function openShare(type='app', id=null) {
     ${type !== 'app' ? `<button class="copy-link image-save" data-action="save-share-image"><span>カード画像と結論を1枚にまとめます</span><b>画像を保存</b></button>` : ''}
     <button class="copy-link" data-action="copy-link"><span>${esc(type === 'app' ? url : title)}</span><b>${type === 'app' ? 'リンクをコピー' : '文章をコピー'}</b></button>
   </section>`;
-  document.body.appendChild(wrap); requestAnimationFrame(()=>wrap.classList.add('open')); wrap.querySelector('.sheet-head button').focus();
+  mountModal(wrap,'.sheet-head button');
 }
 function closeShare() { closeModal('#share-modal'); }
 async function shareNative() { const data=activeShareData || shareData(); if(navigator.share){ try{ const blob=data.cards?.length?await createShareImageBlob(data):null; const file=blob?new File([blob],'decide-result.png',{type:'image/png'}):null; const payload={title:data.title,text:data.text,url:data.url}; if(file&&navigator.canShare?.({files:[file]}))payload.files=[file]; await navigator.share(payload); }catch{} } else { await copyShareLink(); } }
@@ -694,7 +712,28 @@ document.addEventListener('submit', event => { if(event.target.id === 'save-form
 document.addEventListener('input', event => { if(event.target.id === 'history-search'){ historyQuery=event.target.value; const results=document.querySelector('[data-history-results]'); if(results)results.innerHTML=renderHistoryResults(); const count=event.target.closest('.history-search')?.querySelector('small'); if(count)count.textContent=historyQuery?`${filteredLogs().length}件`:''; } });
 document.querySelector('#settings-button').addEventListener('click', openSettings);
 document.querySelector('#share-button').addEventListener('click', () => openShare());
-document.addEventListener('keydown', event => { if(event.key === 'Escape'){ closeSettings(); closeShare(); closeDelete(); closeCardDetail(); } });
+document.addEventListener('keydown', event => {
+  const modal=document.querySelector('.modal-wrap.open');
+  if(modal) {
+    if(event.key === 'Escape') { event.preventDefault(); closeModal(`#${modal.id}`); return; }
+    if(event.key === 'Tab') {
+      const focusable=focusableElements(modal); if(!focusable.length)return;
+      const first=focusable[0], last=focusable.at(-1);
+      if(!modal.contains(document.activeElement)) { event.preventDefault(); first.focus(); }
+      else if(event.shiftKey && document.activeElement===first) { event.preventDefault(); last.focus(); }
+      else if(!event.shiftKey && document.activeElement===last) { event.preventDefault(); first.focus(); }
+    }
+    return;
+  }
+  const card=event.target.closest?.('.fan-deck .flip-card');
+  if(!card || !['ArrowLeft','ArrowRight','Enter'].includes(event.key))return;
+  event.preventDefault();
+  if(event.key==='Enter') { card.click(); return; }
+  const cards=[...card.closest('.fan-deck').querySelectorAll('.flip-card:not(:disabled)')];
+  const next=Math.max(0,Math.min(cards.length-1,cards.indexOf(card)+(event.key==='ArrowRight'?1:-1)));
+  cards.forEach((item,index)=>item.tabIndex=index===next?0:-1);
+  cards[next]?.focus({preventScroll:true}); cards[next]?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+});
 
 let swipeState=null;
 document.addEventListener('touchstart',event=>{ const row=event.target.closest('.history-swipe'); if(!row)return; swipeState={row,startX:event.touches[0].clientX,startY:event.touches[0].clientY,moved:false}; },{passive:true});
