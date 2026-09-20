@@ -343,6 +343,25 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .feedback-setting > div { min-width: 0; }
 .feedback-setting > div > b { font-size: .9rem; }
 .feedback-setting p { margin: 5px 0 0; color: var(--muted); font-size: .76rem; line-height: 1.55; }
+.data-setting { margin-top: 22px; padding: 18px 0; border-top: 1px solid var(--line); }
+.data-setting > div:first-child { display: grid; gap: 4px; }
+.data-setting > div:first-child > b { font-size: .9rem; }
+.data-setting > div:first-child > p { margin: 0; color: var(--muted); font-size: .78rem; }
+.data-setting > div:first-child > small { color: var(--muted); font-size: .72rem; }
+.data-actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; margin-top: 14px; }
+.data-actions .button { min-height: 48px; padding: 10px 8px; font-size: .78rem; }
+.backup-status { min-height: 1.2em; margin: 11px 0 0; color: var(--muted); font-size: .75rem; line-height: 1.5; }
+.backup-status.is-error { color: var(--danger); }
+.backup-output { display: grid; gap: 9px; margin-top: 12px; padding: 12px; border: 1px solid var(--accent-border); border-radius: 13px; background: var(--accent-soft); }
+.backup-output[hidden] { display: none; }
+.backup-output label { display: grid; gap: 7px; color: var(--muted); font-size: .74rem; font-weight: 800; }
+.backup-output textarea { min-height: 130px; resize: vertical; padding: 10px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .7rem; line-height: 1.5; }
+.backup-output .button { min-height: 44px; font-size: .78rem; }
+.import-summary { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin: 18px 0 0; }
+.import-summary div { padding: 12px; border-radius: 12px; background: var(--soft); }
+.import-summary dt { color: var(--muted); font-size: .7rem; font-weight: 700; }
+.import-summary dd { margin: 4px 0 0; color: var(--accent); font-size: 1.1rem; font-weight: 900; }
+.import-note { margin: 13px 0 0; color: var(--muted); font-size: .75rem; line-height: 1.6; }
 .toggle-button { flex: 0 0 auto; min-width: 74px; padding: 4px 8px 4px 4px; display: flex; align-items: center; gap: 6px; border: 0; border-radius: 99px; background: var(--switch-bg); color: var(--switch-ink); cursor: pointer; transition: background .18s ease, color .18s ease; }
 .toggle-button span { width: 25px; height: 25px; border-radius: 50%; background: var(--switch-knob); box-shadow: 0 2px 6px rgba(0,0,0,.18); transition: transform .18s ease; }
 .toggle-button b { min-width: 25px; font-size: .65rem; }
