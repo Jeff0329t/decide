@@ -29,8 +29,56 @@ const MINOR = SUITS.flatMap((s, si) => RANKS.map((r, ri) => ({
 })));
 const DECK = [...MAJOR, ...MINOR];
 
+const MAJOR_READINGS = {
+  '愚者': {upright:'まだ道筋が見えなくても、好奇心が動く方向には試す価値があります。失敗しても戻れる小さな一歩にして、まず経験から判断材料を増やしましょう。',reversed:'自由に動きたい気持ちが、準備不足や現実逃避に傾いていないか確認したい場面です。勢いで決めず、最低限守る条件を一つ決めてから動きましょう。'},
+  '魔術師': {upright:'必要な道具や経験は、すでに手元に揃い始めています。完璧な準備を待つより、自分から働きかけられる最初の一手を選ぶと流れが生まれます。',reversed:'力が足りないというより、使えるものを整理できていない可能性があります。見栄や過信を脇に置き、今できることと足りないことを分けてください。'},
+  '女教皇': {upright:'表面的な条件だけではなく、静かな違和感や納得感を大切にしてください。すぐ答えを出すより、一度情報を閉じて自分の反応を確かめると本音が見えます。',reversed:'考えを内側に抱え込みすぎて、直感と不安の区別が曖昧になっています。信頼できる人に事実だけを話し、思い込みを外から点検してみましょう。'},
+  '女帝': {upright:'育てる余地がある選択です。効率だけで切らず、安心・喜び・人とのつながりが長く続く方を選ぶと実りにつながります。',reversed:'大切にすることと、抱え込みすぎることが混ざっているかもしれません。誰かの期待ではなく、自分の時間と余力を守れる条件を置いてください。'},
+  '皇帝': {upright:'判断基準と責任の範囲をはっきりさせるほど、迷いは小さくなります。自分が主導できる方、長期的に土台を作れる方を見極めましょう。',reversed:'正しさや計画に固執すると、現実の変化を見落とします。譲れない条件を一つに絞り、それ以外には柔軟さを残してください。'},
+  '教皇': {upright:'実績のある方法や信頼できる助言が支えになります。独自性を急ぐより、まず基本に沿って進められる選択かを確かめましょう。',reversed:'常識や周囲の正解が、あなたの目的に本当に合うとは限りません。ルールを破るためではなく、なぜ従うのかを問い直してください。'},
+  '恋人': {upright:'条件の優劣だけでなく、その選択を自分が好きでいられるかが決め手です。選んだ後に誰と、どんな気持ちで進みたいかを想像してください。',reversed:'迷いの背景に、誰かをがっかりさせたくない気持ちが隠れていそうです。全員に好かれる答えではなく、自分が引き受けられる答えを選びましょう。'},
+  '戦車': {upright:'方向を決めて動くほど状況が開けます。すべての不安を消すより、期限と最初の行動を決めて前進してください。',reversed:'意欲はあっても、力の向きがばらばらになっています。急ぐ前に目的を一文で言い直し、今やらないことを決める必要があります。'},
+  '力': {upright:'押し切る強さではなく、焦りや恐れを扱う落ち着きが役立ちます。相手や自分を責めず、続けられる強度で選択を実行しましょう。',reversed:'自信の揺れが、必要以上に選択肢を小さく見せています。大きな決断にせず、成功しやすい単位へ分けると力を取り戻せます。'},
+  '隠者': {upright:'外の評価から少し離れ、自分が本当に知りたい答えを絞る時です。一人で考える時間を取り、長期的に納得できる基準を見つけてください。',reversed:'内省が長引き、行動を避ける理由になっているかもしれません。考える期限を決め、その時点の最善で一度選びましょう。'},
+  '運命の輪': {upright:'状況が動く節目にいます。完全にコントロールしようとせず、今だけ開いている機会に反応できる選択を考えてください。',reversed:'思い通りにならない流れを、無理に押し戻そうとしていないでしょうか。変えられない条件を受け入れ、次に備える選択も前進です。'},
+  '正義': {upright:'感情と事実を分け、同じ基準で比べると答えが見えます。短期的な得より、後から説明できる公平な選択を優先してください。',reversed:'都合のよい情報だけを拾っている可能性があります。反対の立場から見た時にも納得できるか、判断材料をもう一度点検しましょう。'},
+  '吊るされた男': {upright:'今すぐ動かないことで見えるものがあります。損に見える時間にも意味があるため、視点を反転させて何を得ているか考えてください。',reversed:'我慢や保留が目的化しています。待つなら期限を決め、状況が変わらない場合に選ぶ次の一手まで用意しましょう。'},
+  '死神': {upright:'何かを終えることで、新しい余白が生まれます。失うものだけでなく、手放した後に取り戻せる時間や力を数えてください。',reversed:'終わりを認めたくない気持ちが、判断を止めています。完全に切るのが難しければ、まず関わり方を縮小する選択から始めましょう。'},
+  '節制': {upright:'二者択一に見えても、配分や順序を変える第三の道があります。無理なく続く中間点を探し、小さく調整しながら進めてください。',reversed:'いくつもの事情を混ぜすぎて、判断軸がぼやけています。今もっとも整えたいものを一つ決め、他は後から調整しましょう。'},
+  '悪魔': {upright:'損得や執着が選択を縛っていないか、正直に見る時です。「失うのが怖いから」以外の理由があるかを確かめてください。',reversed:'縛りの正体に気づき、離れる準備が始まっています。急にすべてを変えず、依存を一段弱める具体的な行動を選びましょう。'},
+  '塔': {upright:'前提が崩れる可能性を恐れず、事実を優先してください。古い計画を守るより、壊れた後にも残る大事なものを基準に選びましょう。',reversed:'変化の兆しを感じながら、先延ばしにしているようです。大きな混乱になる前に、危うい部分だけでも自分から見直してください。'},
+  '星': {upright:'希望を持って先を描ける選択です。理想を夢のままにせず、今日できる小さな行動へ変えると方向が定まります。',reversed:'期待と現実の差に疲れているかもしれません。目標を捨てるのではなく、回復できる距離まで一度近づけてください。'},
+  '月': {upright:'情報が足りず、不安が想像を膨らませています。今は白黒を急がず、確認できる事実と感じている恐れを別々に書き出しましょう。',reversed:'曖昧だったことが少しずつ見え始めています。まだ残る違和感をごまかさず、確認すべき一点を明らかにしてください。'},
+  '太陽': {upright:'状況を素直に受け取り、自信を持って進める兆しです。複雑に考えすぎず、喜びや成長を周囲と分かち合える方を選びましょう。',reversed:'悪くはありませんが、楽観だけで細部を飛ばしていないか注意が必要です。期待値を少し現実的に整えれば、前向きに進めます。'},
+  '審判': {upright:'過去の経験を材料に、今度は違う選択ができます。以前うまくいかなかった理由を一つ言葉にし、それを越える答えを選んでください。',reversed:'過去の後悔や自己評価が、新しい判断まで縛っています。当時の自分と今の自分の違いを確認し、再挑戦の条件を整えましょう。'},
+  '世界': {upright:'一つの区切りにふさわしい選択です。足りない部分を探し続けず、ここまで積み上げたものを認めて次へ進みましょう。',reversed:'完成目前で、細部へのこだわりが終わりを遠ざけています。合格点を決め、残りは次の段階で改善すると割り切ってください。'}
+};
+
+const SUIT_READINGS = {
+  'ワンド': {upright:'行動への熱が本物か、続けたいと思える方を見てください。',reversed:'勢いの空回りや、やる気の消耗が判断を急がせていないか確認してください。'},
+  'カップ': {upright:'気持ちの満足と人との関係に、どんな変化が生まれるかを見てください。',reversed:'期待や感情に飲まれず、本音と一時的な気分を分けて考えてください。'},
+  'ソード': {upright:'事実と言葉を整理すると、判断の輪郭がはっきりします。',reversed:'考えすぎや決めつけを一度止め、確認できる事実へ戻ってください。'},
+  'ペンタクル': {upright:'時間・お金・体力など、現実に続けられる条件を確かめてください。',reversed:'目先の損得だけでなく、負担の偏りや維持コストを見直してください。'}
+};
+const RANK_READINGS = [
+  {upright:'始めるなら、最初の一歩を具体的に決めると機会を活かせます。',reversed:'機会を逃す不安だけで選ばず、始めるための最低条件を整えましょう。'},
+  {upright:'両方を抱えるより、優先順位と期限を決めることが次の一手です。',reversed:'迷いを長引かせる情報を減らし、判断基準を一つに絞りましょう。'},
+  {upright:'一人で完結させず、協力者やフィードバックを取り入れると展開します。',reversed:'役割や期待のずれを先に揃えてから進める方が安全です。'},
+  {upright:'守りたい土台を明確にすると、安心して選べます。',reversed:'安定を守ることが停滞になっていないか、手放せる条件を探してください。'},
+  {upright:'摩擦は失敗ではなく、優先したい価値を知る材料です。',reversed:'争いを避けるための妥協が、後の不満にならないか確かめましょう。'},
+  {upright:'過去の成功や支えを、今の判断に活かせます。',reversed:'慣れた方を選ぶだけでなく、現在の自分に合うかを見直してください。'},
+  {upright:'すぐ結論を出さず、価値が育つ余地を見極める段階です。',reversed:'疑い続けるより、小さく試して反応を見る方が答えに近づきます。'},
+  {upright:'集中する対象を決めれば、物事は速く進みます。',reversed:'速度を落とし、見落としや連絡不足を一度点検してください。'},
+  {upright:'ここまでの経験を信じつつ、最後の備えを整えてください。',reversed:'一人で耐え続けず、助けを求めることも選択肢に入れましょう。'},
+  {upright:'到達後に背負う責任まで含めて、引き受けられる方を選んでください。',reversed:'負担を減らす、断る、分担するという決断も必要です。'},
+  {upright:'好奇心を小さな実験に変え、結果から学ぶのが合っています。',reversed:'情報だけで満足せず、確認してから言葉や行動に移しましょう。'},
+  {upright:'勢いを活かしつつ、止まる条件も先に決めておきましょう。',reversed:'極端な決断を避け、一晩置いてから実行するくらいが適切です。'},
+  {upright:'自分と周囲の状態を丁寧に受け取り、無理のない方を選べます。',reversed:'気遣いが自己犠牲になっていないか、自分の余白を確認してください。'},
+  {upright:'長期の方針を定め、責任を持って進める判断が求められています。',reversed:'支配したい気持ちを緩め、他者の意見や変化を受け入れてください。'}
+];
+
 const savedSettings = load(SETTINGS_KEY, {});
-let settings = { back:'lines', deckMode: savedSettings.deckMode || (savedSettings.reversed === false ? 'all-upright' : 'all-reversed'), ...savedSettings };
+let settings = { back:'lines', feedback: savedSettings.feedback !== false, deckMode: savedSettings.deckMode || (savedSettings.reversed === false ? 'all-upright' : 'all-reversed'), ...savedSettings };
 let logs = load(STORAGE_KEY, []);
 let activeSession = null;
 let currentView = 'home';
@@ -40,6 +88,7 @@ let historyMode = 'list';
 let calendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 let selectedCalendarDate = '';
 let historyQuery = '';
+let activeShareData = null;
 
 function roman(num) {
   const map = [[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
@@ -67,10 +116,31 @@ function cardImage(card) {
   const codes=['wa','cu','sw','pe']; return `./assets/rider-waite/${codes[Number(match[1])]}${String(Number(match[2])+1).padStart(2,'0')}.jpg`;
 }
 function interpretation(card) {
-  const m = meaning(card);
-  return card.orientation === 'upright'
-    ? `「${m}」が焦点です。いま持っている材料の中で、この視点を行動に変えられる場所を探してみてください。`
-    : `「${m}」に注意が向いています。結論を急ぐ前に、無理や思い込みが混ざっていないか確かめてみてください。`;
+  const major = MAJOR_READINGS[card.name]?.[card.orientation];
+  if (major) return major;
+  const suit = SUITS.find(item => card.name?.startsWith(item.name));
+  const rank = Number(card.id?.match(/^m\d-(\d+)$/)?.[1]);
+  const suitText = SUIT_READINGS[suit?.name]?.[card.orientation] || '';
+  const rankText = RANK_READINGS[rank]?.[card.orientation] || '';
+  return `${suitText} ${rankText}`.trim();
+}
+
+function sensoryFeedback(kind='tap') {
+  if (!settings.feedback) return;
+  try { navigator.vibrate?.(kind === 'reveal' ? [10, 32, 14] : kind === 'save' ? [18, 24, 24] : 8); } catch {}
+  try {
+    const Audio = window.AudioContext || window.webkitAudioContext;
+    if (!Audio) return;
+    const context = sensoryFeedback.context ||= new Audio();
+    const now = context.currentTime;
+    const tones = kind === 'reveal' ? [[392,0],[523.25,.07]] : kind === 'save' ? [[440,0],[659.25,.09]] : [[520,0]];
+    tones.forEach(([frequency,delay]) => {
+      const oscillator=context.createOscillator(); const gain=context.createGain();
+      oscillator.type='sine'; oscillator.frequency.setValueAtTime(frequency,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay); gain.gain.exponentialRampToValueAtTime(.045,now+delay+.015); gain.gain.exponentialRampToValueAtTime(.0001,now+delay+.16);
+      oscillator.connect(gain).connect(context.destination); oscillator.start(now+delay); oscillator.stop(now+delay+.18);
+    });
+  } catch {}
 }
 
 function navigate(view, id=null) {
@@ -93,7 +163,7 @@ function renderHome() {
     <section class="screen home-screen">
       <p class="eyebrow">Quick decision</p>
       <h1>迷いを、決める材料に。</h1>
-      <p class="lead">答えを預けるのではなく、見方を変えるためのカードです。考えたい形だけ選んでください。</p>
+      <p class="lead">答えを預けるのではなく、見方を変えるためのカードです。今の迷いに合う引き方を選んでください。</p>
       <div class="choice-grid">
         <button class="draw-choice primary" data-action="start" data-mode="one"><strong>1枚引き</strong><span>今の状況に、新しい視点をひとつ。</span></button>
         <button class="draw-choice" data-action="start" data-mode="two"><strong>2枚引き</strong><span>選択肢1と2、ふたつの可能性を比べる。</span></button>
@@ -154,6 +224,7 @@ function renderDraw() {
 
 function flipCard(slot) {
   if (!activeSession || activeSession.mode === 'two' || activeSession.revealed.includes(slot)) return;
+  sensoryFeedback('reveal');
   activeSession.revealed.push(slot);
   const card = activeSession.drawOptions[slot];
   const button = document.querySelector(`.flip-card[data-slot="${slot}"]`);
@@ -176,6 +247,7 @@ function flipCard(slot) {
 
 function flipBoth() {
   if (!activeSession || activeSession.mode !== 'two' || activeSession.revealed.length) return;
+  sensoryFeedback('reveal');
   activeSession.revealed = [0, 1];
   document.querySelectorAll('.flip-card').forEach((item, slot) => {
     const card = activeSession.drawOptions[slot];
@@ -264,6 +336,7 @@ function renderDecision() {
 
 function saveDecision(form) {
   if (!selectedDecision || !activeSession) return;
+  sensoryFeedback('save');
   const fd = new FormData(form);
   const createdAt = new Date().toISOString();
   const fallback = activeSession.mode === 'two' ? `${selectedDecision}と決めた記録` : '今日の決定';
@@ -338,7 +411,7 @@ function renderDetail() {
   if (!log) return navigate('history');
   app.innerHTML = `<section class="screen detail-screen">
     <button class="text-back" data-action="history">← 履歴へ</button><p class="eyebrow">${formatDate(log.createdAt, true)}</p>
-    <h1>${esc(log.title)}</h1><div class="outcome"><span>今回の結論</span><strong>${esc(log.decision)}</strong></div>
+    <h1>${esc(log.title)}</h1><div class="outcome"><span>今回の結論</span><strong>${esc(log.decision)}</strong><button data-action="share-log" data-id="${log.id}">この決定を共有 ↗</button></div>
     <div class="saved-cards"><p class="panel-title">引いたカードと意味</p>${log.nodes.map((node,index) => `<article class="saved-card">
       <img class="${node.card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(node.card)}" alt="${esc(node.card.name)}">
       <div><span>${esc(node.label || `CARD ${index+1}`)} · ${esc(node.question || '')}</span><h3>${esc(node.card.name)} <small>${orientationLabel(node.card)}</small></h3><b>${esc(meaning(node.card))}</b><p>${esc(interpretation(node.card))}</p></div>
@@ -346,7 +419,7 @@ function renderDetail() {
     ${log.memo ? `<div class="saved-memo"><span>メモ</span><p>${esc(log.memo)}</p></div>` : ''}
     <section class="story-panel"><div class="story-head"><div><p class="panel-title">その後のストーリー</p><span>時間が経って分かったことや、選択の続きを残せます。</span></div>${log.storyUpdatedAt ? `<time>更新 ${formatDate(log.storyUpdatedAt)}</time>` : ''}</div>
       <textarea id="story-text" rows="6" maxlength="2000" placeholder="例：実際に選択肢1を選んでみたら、最初に心配していたことよりも…">${esc(log.story || '')}</textarea>
-      <button class="button secondary" data-action="save-story" data-id="${log.id}">${log.story ? 'ストーリーを更新する' : 'ストーリーを保存する'}</button>
+      <div class="story-actions"><button class="button secondary" data-action="save-story" data-id="${log.id}">${log.story ? 'ストーリーを更新する' : 'ストーリーを保存する'}</button>${log.story ? `<button class="button ghost" data-action="share-story" data-id="${log.id}">ストーリーを共有 ↗</button>` : ''}</div>
     </section>
     <section class="review-panel"><p class="panel-title">この選択、その後どうでした？</p>
       <div class="review-grid">${['良かった','まあ良かった','どちらとも言えない','違った'].map(r => `<button class="review-button ${log.review === r ? 'selected' : ''}" data-action="review" data-value="${r}"><b>${reviewIcon(r)}</b><span>${r}</span></button>`).join('')}</div>
@@ -357,11 +430,13 @@ function renderDetail() {
 
 function setReview(value) {
   const log = logs.find(l => l.id === detailId); if (!log) return;
+  sensoryFeedback('tap');
   log.review = value; log.reviewedAt = new Date().toISOString(); persist(); renderDetail(); toast('振り返りを保存しました');
 }
 
 function saveStory(id) {
   const log=logs.find(item=>item.id===id); const field=document.querySelector('#story-text'); if(!log || !field)return;
+  sensoryFeedback('save');
   log.story=field.value.trim(); log.storyUpdatedAt=new Date().toISOString(); persist(); renderDetail(); toast('その後のストーリーを保存しました');
 }
 
@@ -375,31 +450,47 @@ function openSettings() {
       <div class="deck-summary"><span>現在</span><strong data-deck-summary>${settings.deckMode.startsWith('major') ? '大アルカナ22枚' : '全78枚'}・${settings.deckMode.endsWith('reversed') ? '正位置／逆位置' : '正位置のみ'}</strong></div>
     </div>
     <div class="setting-backs"><b>カードの裏面</b>${backPicker()}</div>
+    <div class="feedback-setting"><div><b>操作音・振動</b><p>カードを開く時や決定を保存する時に、控えめな反応を返します。</p></div><button class="toggle-button ${settings.feedback ? 'on' : ''}" data-action="toggle-feedback" aria-pressed="${settings.feedback}"><span></span><b>${settings.feedback ? 'ON' : 'OFF'}</b></button></div>
     <div class="setting-note"><b>カードと深掘り提案</b><p>逆位置ありでは、引いたカードの約3割が逆位置になります。表面はパメラ・コールマン・スミスによる1909年のライダー＝ウェイト＝スミス版（パブリックドメイン）です。決定ログはこのブラウザ内だけに保存されます。</p></div>
   </section>`;
   document.body.appendChild(wrap); requestAnimationFrame(() => wrap.classList.add('open'));
   wrap.querySelector('.settings-sheet button').focus();
 }
 function closeSettings() { const m=document.querySelector('#settings-modal'); if(!m)return; m.classList.remove('open'); setTimeout(()=>m.remove(),180); }
-function openShare() {
-  const url=`${location.origin}${location.pathname}`; const title='DECIDE — タロット思考ツール';
+function shareData(type='app', log=null) {
+  const url=`${location.origin}${location.pathname}`;
+  if (type === 'result' && log) {
+    const cards=(log.nodes || []).slice(0,2).map(node=>`${node.card.name}（${orientationLabel(node.card)}）`).join('・');
+    return {title:`${log.title} — DECIDE`,heading:'決定を共有',lead:'題名・結論・引いたカードを共有します。メモや履歴全体は含まれません。',text:`「${log.title}」\n結論：${log.decision}${cards ? `\nカード：${cards}` : ''}\n#DECIDE`,url};
+  }
+  if (type === 'story' && log) {
+    const story=(log.story || '').slice(0,420);
+    return {title:`${log.title}のその後 — DECIDE`,heading:'その後のストーリーを共有',lead:'保存したストーリーと結論を共有します。内容を確認してから共有先を選んでください。',text:`「${log.title}」\n結論：${log.decision}\nその後：${story}${log.story?.length > 420 ? '…' : ''}\n#DECIDE`,url};
+  }
+  return {title:'DECIDE — タロット思考ツール',heading:'DECIDEを共有',lead:'友だちにも、決めるための時間を。共有されるのはアプリのURLだけで、あなたの履歴は含まれません。',text:'迷いを、決める材料に。\n#DECIDE',url};
+}
+function openShare(type='app', id=null) {
+  const log=id ? logs.find(item=>item.id===id) : null;
+  activeShareData=shareData(type,log);
+  const {url,title,heading,lead,text:shareText}=activeShareData;
   const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='share-modal';
   wrap.innerHTML=`<button class="modal-shade" data-action="close-share" aria-label="共有画面を閉じる"></button><section class="settings-sheet share-sheet" role="dialog" aria-modal="true" aria-labelledby="share-title">
-    <div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">Share</p><h2 id="share-title">DECIDEを共有</h2></div><button data-action="close-share" aria-label="閉じる">×</button></div>
-    <p class="share-lead">友だちにも、決めるための時間を。共有されるのはアプリのURLだけで、あなたの履歴は含まれません。</p>
+    <div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">Share</p><h2 id="share-title">${esc(heading)}</h2></div><button data-action="close-share" aria-label="閉じる">×</button></div>
+    <p class="share-lead">${esc(lead)}</p>
+    ${type !== 'app' ? `<div class="share-preview">${esc(shareText).replace(/\n/g,'<br>')}</div>` : ''}
     <div class="share-grid">
-      <a class="share-option line" href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>LINE</b><span>LINEで送る</span></a>
-      <a class="share-option x-share" href="https://x.com/intent/post?text=${encodeURIComponent('迷いを、決める材料に。DECIDE')}&url=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>𝕏</b><span>Xで共有</span></a>
+      <a class="share-option line" href="https://line.me/R/msg/text/?${encodeURIComponent(`${shareText}\n${url}`)}" target="_blank" rel="noopener"><b>LINE</b><span>LINEで送る</span></a>
+      <a class="share-option x-share" href="https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>𝕏</b><span>Xで共有</span></a>
       <a class="share-option facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>f</b><span>Facebook</span></a>
       <button class="share-option" data-action="native-share"><b>↗</b><span>その他</span></button>
     </div>
-    <button class="copy-link" data-action="copy-link"><span>${esc(url)}</span><b>リンクをコピー</b></button>
+    <button class="copy-link" data-action="copy-link"><span>${esc(type === 'app' ? url : title)}</span><b>${type === 'app' ? 'リンクをコピー' : '文章をコピー'}</b></button>
   </section>`;
   document.body.appendChild(wrap); requestAnimationFrame(()=>wrap.classList.add('open')); wrap.querySelector('.sheet-head button').focus();
 }
 function closeShare() { const m=document.querySelector('#share-modal'); if(!m)return; m.classList.remove('open'); setTimeout(()=>m.remove(),180); }
-async function shareNative() { const data={title:'DECIDE — タロット思考ツール',text:'迷いを、決める材料に。',url:`${location.origin}${location.pathname}`}; if(navigator.share){ try{ await navigator.share(data); }catch{} } else { await copyShareLink(); } }
-async function copyShareLink() { try{ await navigator.clipboard.writeText(`${location.origin}${location.pathname}`); toast('共有リンクをコピーしました'); }catch{ toast('リンクをコピーできませんでした'); } }
+async function shareNative() { const data=activeShareData || shareData(); if(navigator.share){ try{ await navigator.share({title:data.title,text:data.text,url:data.url}); }catch{} } else { await copyShareLink(); } }
+async function copyShareLink() { const data=activeShareData || shareData(); try{ await navigator.clipboard.writeText(`${data.text}\n${data.url}`); sensoryFeedback('tap'); toast(data.heading === 'DECIDEを共有' ? '共有リンクをコピーしました' : '共有する文章をコピーしました'); }catch{ toast('コピーできませんでした'); } }
 function toast(message) { const t=document.querySelector('#toast'); t.textContent=message; t.classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>t.classList.remove('show'),1800); }
 function updateDeckSettingUI() {
   const modal=document.querySelector('#settings-modal'); if(!modal)return;
@@ -423,16 +514,19 @@ document.addEventListener('click', event => {
   else if (action === 'select-back') { settings.back=el.dataset.value; persist(); const modal=document.querySelector('#settings-modal'); if(modal){ modal.querySelectorAll('.back-choice').forEach(item=>{ const chosen=item.dataset.value===settings.back; item.classList.toggle('selected',chosen); item.querySelector('b').textContent=chosen?'✓':''; }); } toast('カードの裏面を変更しました'); }
   else if (action === 'deepen') addDeep(el.dataset.prompt);
   else if (action === 'decide') navigate('decide');
-  else if (action === 'select-decision') { selectedDecision=el.dataset.value; renderDecision(); }
+  else if (action === 'select-decision') { sensoryFeedback('tap'); selectedDecision=el.dataset.value; renderDecision(); }
   else if (action === 'detail') navigate('detail', el.dataset.id);
   else if (action === 'review') setReview(el.dataset.value);
   else if (action === 'deck-scope') { const orientation=settings.deckMode.endsWith('reversed')?'reversed':'upright'; settings.deckMode=`${el.dataset.value}-${orientation}`; persist(); updateDeckSettingUI(); toast('使うカードを変更しました'); }
   else if (action === 'deck-orientation') { const scope=settings.deckMode.startsWith('major')?'major':'all'; settings.deckMode=`${scope}-${el.dataset.value}`; persist(); updateDeckSettingUI(); toast('カードの向きを変更しました'); }
+  else if (action === 'toggle-feedback') { settings.feedback=!settings.feedback; persist(); el.classList.toggle('on',settings.feedback); el.setAttribute('aria-pressed',String(settings.feedback)); el.querySelector('b').textContent=settings.feedback?'ON':'OFF'; if(settings.feedback)sensoryFeedback('tap'); toast(settings.feedback?'操作音・振動をONにしました':'操作音・振動をOFFにしました'); }
   else if (action === 'history-mode') { historyMode=el.dataset.value; selectedCalendarDate=''; renderHistory(); }
   else if (action === 'calendar-prev') { calendarMonth=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()-1,1); selectedCalendarDate=''; renderHistory(); }
   else if (action === 'calendar-next') { calendarMonth=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()+1,1); selectedCalendarDate=''; renderHistory(); }
   else if (action === 'calendar-day') { selectedCalendarDate=el.dataset.value; renderHistory(); }
   else if (action === 'save-story') saveStory(el.dataset.id);
+  else if (action === 'share-log') openShare('result',el.dataset.id);
+  else if (action === 'share-story') openShare('story',el.dataset.id);
   else if (action === 'close-share') closeShare();
   else if (action === 'native-share') shareNative();
   else if (action === 'copy-link') copyShareLink();
@@ -441,7 +535,7 @@ document.addEventListener('click', event => {
 document.addEventListener('submit', event => { if(event.target.id === 'save-form'){ event.preventDefault(); saveDecision(event.target); } });
 document.addEventListener('input', event => { if(event.target.id === 'history-search'){ historyQuery=event.target.value; const results=document.querySelector('[data-history-results]'); if(results)results.innerHTML=renderHistoryResults(); const count=event.target.closest('.history-search')?.querySelector('small'); if(count)count.textContent=historyQuery?`${filteredLogs().length}件`:''; } });
 document.querySelector('#settings-button').addEventListener('click', openSettings);
-document.querySelector('#share-button').addEventListener('click', openShare);
+document.querySelector('#share-button').addEventListener('click', () => openShare());
 document.addEventListener('keydown', event => { if(event.key === 'Escape'){ closeSettings(); closeShare(); } });
 
 function registerWebMcp() {

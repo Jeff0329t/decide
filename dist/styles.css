@@ -55,8 +55,10 @@ h2 { font-size: 1.5rem; line-height: 1.35; letter-spacing: -.025em; }
 .tarot-index { color: var(--muted); font-size: .8rem; letter-spacing: .12em; }
 .tarot-symbol { align-self: center; font-size: 3.5rem; font-weight: 300; color: var(--accent); }
 .tarot-card strong { font-size: 1.25rem; }
-.button { width: 100%; min-height: 52px; border-radius: 15px; padding: 13px 18px; border: 1px solid var(--ink); background: var(--ink); color: #fff; font-weight: 800; cursor: pointer; }
+.button { width: 100%; min-height: 52px; border-radius: 15px; padding: 13px 18px; border: 1px solid var(--ink); background: var(--ink); color: #fff; font-weight: 800; cursor: pointer; transition: transform .14s ease, opacity .14s ease, box-shadow .14s ease; }
+.button:not(:disabled):active, .decision-option:active, .prompt-button:active, .review-button:active { transform: scale(.982); }
 .button.secondary { color: var(--ink); background: var(--paper); border-color: var(--line); }
+.button.ghost { color: var(--accent); background: transparent; border-color: #bfcbed; }
 .toast { position: fixed; left: 50%; bottom: 92px; z-index: 30; transform: translate(-50%, 16px); opacity: 0; pointer-events: none; background: var(--ink); color: white; border-radius: 999px; padding: 10px 16px; font-size: .85rem; transition: .25s ease; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
@@ -167,6 +169,7 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .outcome { margin: 26px 0 16px; padding: 22px; display: grid; gap: 8px; border-radius: 18px; background: var(--ink); color: white; }
 .outcome span { color: #c9ced8; }
 .outcome strong { font-size: 1.5rem; }
+.outcome button { width: fit-content; margin-top: 6px; padding: 8px 0; border: 0; background: transparent; color: #aebeff; cursor: pointer; font-size: .78rem; font-weight: 800; }
 .card-trail { display: flex; gap: 8px; align-items: center; overflow-x: auto; padding: 8px 2px 20px; color: var(--muted); font-size: .82rem; scrollbar-width: none; }
 .card-trail span { flex: 0 0 auto; padding: 7px 10px; border: 1px solid var(--line); border-radius: 999px; }
 .card-trail b { font-weight: 400; }
@@ -188,6 +191,8 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .story-head time { flex: 0 0 auto; color: var(--muted); font-size: .68rem; }
 .story-panel textarea { margin: 16px 0 10px; border-color: #c9d2ed; background: rgba(255,255,255,.86); line-height: 1.65; }
 .story-panel .button { background: var(--paper); }
+.story-actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+.story-actions .button:only-child { grid-column: 1 / -1; }
 .review-panel { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--line); }
 .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
 .review-button { min-height: 82px; padding: 10px; display: grid; place-items: center; gap: 4px; border: 1px solid var(--line); border-radius: 14px; background: var(--paper); cursor: pointer; }
@@ -220,6 +225,7 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .share-sheet .sheet-head .eyebrow { margin-bottom: 4px; }
 .share-sheet .sheet-head h2 { font-size: 1.45rem; }
 .share-lead { margin: 18px 0; color: var(--muted); font-size: .88rem; line-height: 1.7; }
+.share-preview { max-height: 150px; overflow-y: auto; margin: -2px 0 16px; padding: 14px; border: 1px solid #ccd5ee; border-radius: 13px; background: var(--accent-soft); color: #39445e; font-size: .8rem; line-height: 1.65; }
 .share-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 9px; }
 .share-option { min-width: 0; min-height: 88px; padding: 11px 6px; display: grid; place-items: center; align-content: center; gap: 7px; border: 1px solid var(--line); border-radius: 14px; background: var(--paper); color: var(--ink); text-decoration: none; cursor: pointer; }
 .share-option b { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--soft); font-size: .9rem; }
@@ -251,6 +257,16 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .deck-summary { margin-top: 12px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-radius: 11px; background: var(--accent-soft); }
 .deck-summary span { color: var(--muted); font-size: .7rem; font-weight: 800; }
 .deck-summary strong { color: var(--accent); font-size: .78rem; text-align: right; }
+.feedback-setting { margin-top: 22px; padding: 18px 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.feedback-setting > div { min-width: 0; }
+.feedback-setting > div > b { font-size: .9rem; }
+.feedback-setting p { margin: 5px 0 0; color: var(--muted); font-size: .76rem; line-height: 1.55; }
+.toggle-button { flex: 0 0 auto; min-width: 74px; padding: 4px 8px 4px 4px; display: flex; align-items: center; gap: 6px; border: 0; border-radius: 99px; background: #d8dbe2; color: #626976; cursor: pointer; transition: background .18s ease, color .18s ease; }
+.toggle-button span { width: 25px; height: 25px; border-radius: 50%; background: white; box-shadow: 0 2px 6px rgba(0,0,0,.18); transition: transform .18s ease; }
+.toggle-button b { min-width: 25px; font-size: .65rem; }
+.toggle-button.on { background: var(--accent); color: white; }
+.toggle-button.on span { transform: translateX(33px); }
+.toggle-button.on b { transform: translateX(-28px); }
 
 .draw-screen h1 { max-width: 17ch; }
 .back-picker { display: flex; gap: 9px; align-items: center; overflow-x: auto; padding: 22px 0 18px; scrollbar-width: none; }
