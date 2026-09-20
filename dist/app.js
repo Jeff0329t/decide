@@ -362,6 +362,25 @@ function openSettings() {
   wrap.querySelector('.settings-sheet button').focus();
 }
 function closeSettings() { const m=document.querySelector('#settings-modal'); if(!m)return; m.classList.remove('open'); setTimeout(()=>m.remove(),180); }
+function openShare() {
+  const url=`${location.origin}${location.pathname}`; const title='DECIDE — タロット思考ツール';
+  const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='share-modal';
+  wrap.innerHTML=`<button class="modal-shade" data-action="close-share" aria-label="共有画面を閉じる"></button><section class="settings-sheet share-sheet" role="dialog" aria-modal="true" aria-labelledby="share-title">
+    <div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">Share</p><h2 id="share-title">DECIDEを共有</h2></div><button data-action="close-share" aria-label="閉じる">×</button></div>
+    <p class="share-lead">友だちにも、決めるための時間を。共有されるのはアプリのURLだけで、あなたの履歴は含まれません。</p>
+    <div class="share-grid">
+      <a class="share-option line" href="https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>LINE</b><span>LINEで送る</span></a>
+      <a class="share-option x-share" href="https://x.com/intent/post?text=${encodeURIComponent('迷いを、決める材料に。DECIDE')}&url=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>𝕏</b><span>Xで共有</span></a>
+      <a class="share-option facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>f</b><span>Facebook</span></a>
+      <button class="share-option" data-action="native-share"><b>↗</b><span>その他</span></button>
+    </div>
+    <button class="copy-link" data-action="copy-link"><span>${esc(url)}</span><b>リンクをコピー</b></button>
+  </section>`;
+  document.body.appendChild(wrap); requestAnimationFrame(()=>wrap.classList.add('open')); wrap.querySelector('.sheet-head button').focus();
+}
+function closeShare() { const m=document.querySelector('#share-modal'); if(!m)return; m.classList.remove('open'); setTimeout(()=>m.remove(),180); }
+async function shareNative() { const data={title:'DECIDE — タロット思考ツール',text:'迷いを、決める材料に。',url:`${location.origin}${location.pathname}`}; if(navigator.share){ try{ await navigator.share(data); }catch{} } else { await copyShareLink(); } }
+async function copyShareLink() { try{ await navigator.clipboard.writeText(`${location.origin}${location.pathname}`); toast('共有リンクをコピーしました'); }catch{ toast('リンクをコピーできませんでした'); } }
 function toast(message) { const t=document.querySelector('#toast'); t.textContent=message; t.classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>t.classList.remove('show'),1800); }
 function updateDeckSettingUI() {
   const modal=document.querySelector('#settings-modal'); if(!modal)return;
@@ -394,12 +413,16 @@ document.addEventListener('click', event => {
   else if (action === 'calendar-next') { calendarMonth=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()+1,1); selectedCalendarDate=''; renderHistory(); }
   else if (action === 'calendar-day') { selectedCalendarDate=el.dataset.value; renderHistory(); }
   else if (action === 'save-story') saveStory(el.dataset.id);
+  else if (action === 'close-share') closeShare();
+  else if (action === 'native-share') shareNative();
+  else if (action === 'copy-link') copyShareLink();
   else if (action === 'close-settings') closeSettings();
 });
 document.addEventListener('submit', event => { if(event.target.id === 'save-form'){ event.preventDefault(); saveDecision(event.target); } });
 document.addEventListener('input', event => { if(event.target.id === 'history-search'){ historyQuery=event.target.value; const results=document.querySelector('[data-history-results]'); if(results)results.innerHTML=renderHistoryResults(); const count=event.target.closest('.history-search')?.querySelector('small'); if(count)count.textContent=historyQuery?`${filteredLogs().length}件`:''; } });
 document.querySelector('#settings-button').addEventListener('click', openSettings);
-document.addEventListener('keydown', event => { if(event.key === 'Escape') closeSettings(); });
+document.querySelector('#share-button').addEventListener('click', openShare);
+document.addEventListener('keydown', event => { if(event.key === 'Escape'){ closeSettings(); closeShare(); } });
 
 function registerWebMcp() {
   const context = document.modelContext; if (!context?.registerTool) return;

@@ -13,14 +13,17 @@
   <div class="app-shell">
     <header class="topbar">
       <button class="brand" data-nav="home" aria-label="ホームへ">DECIDE<span class="brand-dot">.</span></button>
-      <button class="icon-button" id="settings-button" aria-label="設定を開く">調整</button>
+      <div class="header-actions">
+        <button class="icon-button icon-only" id="share-button" aria-label="アプリを共有"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0L7.5 7.5M12 3l4.5 4.5M5 11v8h14v-8"/></svg></button>
+        <button class="icon-button icon-only gear-button" id="settings-button" aria-label="設定を開く">⚙</button>
+      </div>
     </header>
 
     <main id="app" tabindex="-1"></main>
 
     <nav class="bottom-nav" aria-label="メインナビゲーション">
-      <button class="nav-item active" data-nav="home"><span>引く</span></button>
-      <button class="nav-item" data-nav="history"><span>履歴</span></button>
+      <button class="nav-item active" data-nav="home"><span>DECIDE</span></button>
+      <button class="nav-item" data-nav="history"><span>DECISION LOG</span></button>
     </nav>
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>

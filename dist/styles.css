@@ -23,6 +23,10 @@ button { color: inherit; }
 .brand { border: 0; background: none; padding: 8px 0; font-weight: 800; font-size: 1rem; letter-spacing: .13em; cursor: pointer; }
 .brand-dot { color: var(--accent); }
 .icon-button { border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 8px 13px; font-size: .82rem; cursor: pointer; }
+.header-actions { display: flex; align-items: center; gap: 8px; }
+.icon-button.icon-only { width: 40px; height: 40px; padding: 9px; display: grid; place-items: center; }
+.icon-button.icon-only svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.gear-button { font-size: 1.05rem; line-height: 1; }
 main { min-height: calc(100dvh - 158px); }
 .screen { padding: 30px 22px 44px; animation: rise .32s ease both; }
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
@@ -45,6 +49,7 @@ h2 { font-size: 1.5rem; line-height: 1.35; letter-spacing: -.025em; }
 .bottom-nav { position: fixed; z-index: 12; left: 50%; bottom: 0; transform: translateX(-50%); width: min(760px, 100%); display: grid; grid-template-columns: 1fr 1fr; padding: 10px max(20px, env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); background: rgba(255,255,255,.96); border-top: 1px solid var(--line); backdrop-filter: blur(16px); }
 .nav-item { border: 0; background: transparent; min-height: 44px; border-radius: 13px; color: var(--muted); cursor: pointer; font-weight: 700; }
 .nav-item.active { color: var(--ink); background: var(--soft); }
+.nav-item span { font-size: .74rem; letter-spacing: .07em; }
 .card-stage { display: grid; place-items: center; padding: 26px 0 30px; }
 .tarot-card { width: min(250px, 72vw); aspect-ratio: 5 / 8; border: 1px solid #cbd0da; border-radius: 18px; background: linear-gradient(145deg, #fff, #f2f4f8); box-shadow: 0 24px 55px rgba(30,36,48,.14); display: flex; flex-direction: column; justify-content: space-between; padding: 24px; text-align: left; }
 .tarot-index { color: var(--muted); font-size: .8rem; letter-spacing: .12em; }
@@ -211,6 +216,20 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .setting-note { margin-top: 20px; padding: 17px; border-radius: 14px; background: var(--soft); }
 .setting-note b { font-size: .9rem; }
 .setting-note p { margin: 6px 0 0; color: var(--muted); font-size: .82rem; line-height: 1.65; }
+.share-sheet { max-width: 560px; }
+.share-sheet .sheet-head .eyebrow { margin-bottom: 4px; }
+.share-sheet .sheet-head h2 { font-size: 1.45rem; }
+.share-lead { margin: 18px 0; color: var(--muted); font-size: .88rem; line-height: 1.7; }
+.share-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 9px; }
+.share-option { min-width: 0; min-height: 88px; padding: 11px 6px; display: grid; place-items: center; align-content: center; gap: 7px; border: 1px solid var(--line); border-radius: 14px; background: var(--paper); color: var(--ink); text-decoration: none; cursor: pointer; }
+.share-option b { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--soft); font-size: .9rem; }
+.share-option span { overflow: hidden; max-width: 100%; text-overflow: ellipsis; white-space: nowrap; font-size: .68rem; font-weight: 700; }
+.share-option.line b { background: #06c755; color: white; font-size: .65rem; }
+.share-option.x-share b { background: #111; color: white; }
+.share-option.facebook b { background: #1877f2; color: white; font-family: Arial,sans-serif; font-size: 1.1rem; }
+.copy-link { width: 100%; min-height: 50px; margin-top: 14px; padding: 9px 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid var(--line); border-radius: 13px; background: var(--soft); cursor: pointer; }
+.copy-link span { min-width: 0; overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; font-size: .72rem; text-align: left; }
+.copy-link b { flex: 0 0 auto; color: var(--accent); font-size: .74rem; }
 .deck-setting { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
 .deck-setting > b { font-size: .9rem; }
 .deck-setting > p { margin: 4px 0 12px; color: var(--muted); font-size: .76rem; }
