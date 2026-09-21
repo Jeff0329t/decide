@@ -3,6 +3,7 @@ const STORAGE_KEY = 'decide.tarot.logs.v1';
 const SETTINGS_KEY = 'decide.tarot.settings.v1';
 const BACKUP_SCHEMA = 1;
 const IMPORT_LIMIT_BYTES = 5 * 1024 * 1024;
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 const MAJOR = [
   ['愚者','自由','無計画'],['魔術師','始める力','準備不足'],['女教皇','直感','閉じこもる'],['女帝','育てる','過保護'],
@@ -66,6 +67,10 @@ let selectedCalendarDate = '';
 let historyQuery = '';
 let activeShareData = null;
 let pendingImport = null;
+let pendingSave = null;
+let storageSaveFailed = false;
+let a2hsBannerLogId = null;
+let a2hsShownLogId = null;
 let cardContentById = new Map();
 let cardThemeLabels = {
   blind:'見落としていること', caution:'進むときの注意点', want:'本音（本当はどうしたい？）',
@@ -86,24 +91,42 @@ function roman(num) {
   let out=''; for (const [v,s] of map) while(num >= v){ out += s; num -= v; } return out;
 }
 function load(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } }
-function persist() { localStorage.setItem(STORAGE_KEY, JSON.stringify(logs)); localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
+function safeSetItem(key, value) { try { localStorage.setItem(key, value); return true; } catch { return false; } }
+function persist() {
+  const logsSaved=safeSetItem(STORAGE_KEY,JSON.stringify(logs));
+  const settingsSaved=safeSetItem(SETTINGS_KEY,JSON.stringify(settings));
+  storageSaveFailed=!(logsSaved && settingsSaved);
+  return !storageSaveFailed;
+}
+function isStandalone() { return navigator.standalone===true || matchMedia('(display-mode: standalone)').matches; }
+function isIOS() { return /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1); }
+function inAppBrowser() { return /Line\/|FBAN|FBAV|Instagram|Twitter/i.test(navigator.userAgent); }
+function shouldShowA2HS() { return isIOS() && !isStandalone() && Number(settings.a2hsDismissedUntil || 0)<=Date.now(); }
+function shouldShowBackupReminder() {
+  if(logs.length<3 || Number(settings.backupReminderDismissedUntil || 0)>Date.now())return false;
+  const last=Date.parse(settings.lastBackupAt || '');
+  return !Number.isFinite(last) || Date.now()-last>14*DAY_MS;
+}
+function storageEvent(action) { window.dispatchEvent(new CustomEvent('decide:storage',{detail:{action}})); }
+function requestPersistentStorage() { try { Promise.resolve(navigator.storage?.persist?.()).catch(()=>{}); } catch {} }
 function backupDateLabel(value) { return value ? `${formatDate(value, true)} に書き出しました` : 'まだバックアップしていません'; }
 function backupFileName(date=new Date()) { const local=value=>String(value).padStart(2,'0'); return `decide-log-${date.getFullYear()}${local(date.getMonth()+1)}${local(date.getDate())}.json`; }
 function backupPayload() { return { app:'DECIDE', schema:BACKUP_SCHEMA, exportedAt:new Date().toISOString(), logs }; }
+function backupPayloadFor(records=logs) { const payload=backupPayload(); return records===logs ? payload : {...payload,logs:records}; }
 function setBackupStatus(message, isError=false) { const status=document.querySelector('[data-backup-status]'); if(!status)return; status.textContent=message; status.classList.toggle('is-error',isError); }
-function markBackupComplete(exportedAt) { settings.lastBackupAt=exportedAt; persist(); const date=document.querySelector('[data-backup-date]'); if(date)date.textContent=backupDateLabel(exportedAt); }
+function markBackupComplete(exportedAt) { settings.lastBackupAt=exportedAt; settings.backupReminderDismissedUntil=Date.now()+14*DAY_MS; persist(); const date=document.querySelector('[data-backup-date]'); if(date)date.textContent=backupDateLabel(exportedAt); document.querySelector('[data-backup-reminder]')?.remove(); }
 function showBackupText(json) { const output=document.querySelector('[data-backup-output]'); const field=output?.querySelector('textarea'); if(!output || !field)return; field.value=json; output.hidden=false; setBackupStatus('ファイルとして保存できなかったため、内容をコピーできます。'); }
 async function copyBackupText() { const field=document.querySelector('[data-backup-output] textarea'); if(!field)return; try { await navigator.clipboard.writeText(field.value); toast('バックアップ内容をコピーしました'); } catch { field.select(); document.execCommand('copy'); toast('バックアップ内容をコピーしました'); } }
-async function exportLogs() {
-  const payload=backupPayload(); const json=JSON.stringify(payload,null,2); const exportedAt=payload.exportedAt; const filename=backupFileName(new Date(exportedAt));
+async function exportLogs(records=logs, markComplete=true) {
+  const payload=backupPayloadFor(records); const json=JSON.stringify(payload,null,2); const exportedAt=payload.exportedAt; const filename=backupFileName(new Date(exportedAt));
   const blob=new Blob([json],{type:'application/json'}); const file=typeof File==='function' ? new File([blob],filename,{type:'application/json'}) : null;
   if(file && navigator.canShare?.({files:[file]}) && navigator.share) {
-    try { await navigator.share({files:[file],title:'DECIDEの履歴バックアップ'}); markBackupComplete(exportedAt); toast('履歴を書き出しました'); return; }
+    try { await navigator.share({files:[file],title:'DECIDEの履歴バックアップ'}); if(markComplete)markBackupComplete(exportedAt); toast('履歴を書き出しました'); return; }
     catch(error) { if(error?.name==='AbortError')return; }
   }
   const link=document.createElement('a');
-  if('download' in link && URL?.createObjectURL) { const url=URL.createObjectURL(blob); link.href=url; link.download=filename; link.style.display='none'; document.body.appendChild(link); link.click(); link.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); markBackupComplete(exportedAt); toast('履歴を書き出しました'); return; }
-  showBackupText(json); markBackupComplete(exportedAt);
+  if('download' in link && URL?.createObjectURL) { const url=URL.createObjectURL(blob); link.href=url; link.download=filename; link.style.display='none'; document.body.appendChild(link); link.click(); link.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); if(markComplete)markBackupComplete(exportedAt); toast('履歴を書き出しました'); return; }
+  showBackupText(json); if(markComplete)markBackupComplete(exportedAt);
 }
 function isImportLog(value) { return value && typeof value==='object' && typeof value.id==='string' && value.id && Array.isArray(value.nodes); }
 function reviewedAtTime(log) { const value=Date.parse(log?.reviewedAt || ''); return Number.isNaN(value) ? 0 : value; }
@@ -625,9 +648,38 @@ function saveDecision(form) {
   const title=manualTitle||DECIDE_DECISION.autoTitle({genre,options,nodes:activeSession.nodes,createdAt,mode:activeSession.mode});
   const log = { id:activeSession.id, mode:activeSession.mode, createdAt, title,
     memo:String(fd.get('memo') || '').trim(), decision:selectedDecision, nodes:activeSession.nodes, review:null, genre, options };
-  logs.unshift(log); persist(); activeSession = null; selectedDecision = ''; detailId = log.id;
+  const retry=pendingSave?.log.id===log.id;
+  const firstRecord=retry ? pendingSave.firstRecord : logs.length===0;
+  const requestPersistence=retry ? pendingSave.requestPersistence : firstRecord && !settings.storagePersistRequested;
+  const existing=logs.findIndex(item=>item.id===log.id);
+  if(existing>=0)logs[existing]=log; else logs.unshift(log);
+  if(requestPersistence)settings.storagePersistRequested=true;
+  if(!persist()) { pendingSave={log,firstRecord,requestPersistence}; openSaveFailure(log); return; }
+  if(requestPersistence)requestPersistentStorage();
+  pendingSave=null;
+  if(firstRecord && shouldShowA2HS())a2hsBannerLogId=log.id;
+  activeSession = null; selectedDecision = ''; detailId = log.id;
   decisionDraft = {genre:'',option1:'',option2:'',title:'',memo:''};
   currentView = 'detail'; render(); toast('決定を記録しました');
+}
+
+function openSaveFailure(log) {
+  storageEvent('saveFailed');
+  document.querySelector('#save-failed-modal')?.remove();
+  const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='save-failed-modal'; wrap.failedLog=log;
+  wrap.innerHTML=`<button class="modal-shade" data-action="close-save-failed" aria-label="保存エラーを閉じる"></button><section class="settings-sheet confirm-sheet" role="dialog" aria-modal="true" aria-labelledby="save-failed-title"><div class="sheet-handle"></div><div class="sheet-head"><h2 id="save-failed-title">保存できませんでした</h2><button data-action="close-save-failed" aria-label="閉じる">×</button></div><p>この端末では、記録を保存できない状態です（保存領域がいっぱい、またはブラウザの設定で制限されています）。いま入力した内容は、書き出してお手元に残せます。</p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップJSON"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div><div class="confirm-actions"><button class="button" data-action="export-failed-log">この記録を書き出す</button><button class="button secondary" data-action="close-save-failed">閉じる</button></div></section>`;
+  mountModal(wrap,'[data-action="export-failed-log"]');
+}
+
+function openA2HSHelp() {
+  storageEvent('a2hsHelp');
+  const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='a2hs-help-modal';
+  wrap.innerHTML=`<button class="modal-shade" data-action="close-a2hs-help" aria-label="追加手順を閉じる"></button><section class="settings-sheet confirm-sheet" role="dialog" aria-modal="true" aria-labelledby="a2hs-help-title"><div class="sheet-handle"></div><div class="sheet-head"><h2 id="a2hs-help-title">ホーム画面に追加する方法</h2><button data-action="close-a2hs-help" aria-label="閉じる">×</button></div><ol class="a2hs-steps"><li>画面下の共有ボタン（□に↑）を押す</li><li>「ホーム画面に追加」を選ぶ</li><li>右上の「追加」を押す</li></ol><div class="confirm-actions"><button class="button" data-action="close-a2hs-help">閉じる</button></div></section>`;
+  mountModal(wrap,'.sheet-head button');
+}
+
+function dismissA2HS() {
+  settings.a2hsDismissedUntil=Date.now()+7*DAY_MS; a2hsBannerLogId=null; persist(); storageEvent('a2hsDismiss'); document.querySelector('[data-a2hs-banner]')?.remove();
 }
 
 function renderHistory() {
@@ -636,6 +688,7 @@ function renderHistory() {
     <div class="history-head"><div><p class="eyebrow">Decision log</p><h1>決めたこと。</h1></div>
       <div class="view-switch" aria-label="履歴の表示形式"><button class="${historyMode === 'list' ? 'selected' : ''}" data-action="history-mode" data-value="list">リスト</button><button class="${historyMode === 'calendar' ? 'selected' : ''}" data-action="history-mode" data-value="calendar">カレンダー</button></div>
     </div>
+    ${shouldShowBackupReminder() ? '<aside class="storage-banner backup-reminder" data-backup-reminder><button class="banner-close" data-action="dismiss-backup-reminder" aria-label="バックアップ案内を閉じる">×</button><b>バックアップしておきませんか</b><p>記録を書き出して、端末の外にも残しておけます。</p><button class="button secondary" data-action="export-logs">履歴を書き出す</button></aside>' : ''}
     ${logs.length ? `<label class="history-search"><span aria-hidden="true">⌕</span><input id="history-search" type="search" value="${esc(historyQuery)}" placeholder="題名、カード、意味、ストーリーを検索" aria-label="履歴を検索"><small>${historyQuery ? `${results.length}件` : ''}</small></label>${historyMode === 'list' ? '<p class="swipe-hint">履歴を左へスワイプすると削除できます</p>' : ''}<div data-history-results>${renderHistoryResults(results)}</div>` : `<div class="empty-state"><h2>まだ履歴はありません</h2><p>最初のカードを引いて、ひとつ決めてみましょう。</p><button class="button" data-action="home">カードを引く</button></div>`}
   </section>`;
 }
@@ -700,13 +753,17 @@ function renderSavedCard(log,node,index) {
 function renderDetail() {
   const log = logs.find(l => l.id === detailId);
   if (!log) return navigate('history');
+  const showA2HS=log.id===a2hsBannerLogId && shouldShowA2HS();
+  const appBrowser=showA2HS && inAppBrowser();
   app.innerHTML = `<section class="screen detail-screen">
-    <button class="text-back" data-action="history">← 履歴へ</button><p class="eyebrow">${formatDate(log.createdAt, true)}</p>
-    <h1>${esc(log.title)}</h1><div class="outcome"><span>今回の結論</span><strong>${esc(DECIDE_DECISION.decisionText(log))}</strong><button data-action="share-log" data-id="${log.id}">この結果をシェア ↗</button></div>
+    <button class="text-back" data-action="history">← 履歴へ</button>
+    ${showA2HS ? `<aside class="storage-banner a2hs-banner" data-a2hs-banner><button class="banner-close" data-action="dismiss-a2hs" aria-label="案内を閉じる">×</button><p>${appBrowser ? 'この画面では、ホーム画面に追加できません。メニューから『ブラウザで開く』（Safariで開く）を選んでから、追加してください。' : '記録を消さないために、ホーム画面に追加しておきませんか？　Safariでは、しばらく開かないと記録が消えることがあります。'}</p><div class="banner-actions">${appBrowser ? '' : '<button class="button secondary" data-action="a2hs-help">追加のしかた</button>'}<button class="button ghost" data-action="dismiss-a2hs">あとで</button></div></aside>` : ''}
+    <p class="eyebrow">${formatDate(log.createdAt, true)}</p>
+    <h1 data-detail-title></h1><div class="outcome"><span>今回の結論</span><strong>${esc(DECIDE_DECISION.decisionText(log))}</strong><button data-action="share-log" data-id="${log.id}">この結果をシェア ↗</button></div>
     <div class="saved-cards"><p class="panel-title">引いたカードと意味</p>${log.nodes.map((node,index) => renderSavedCard(log,node,index)).join('')}</div>
-    ${log.memo ? `<div class="saved-memo"><span>メモ</span><p>${esc(log.memo)}</p></div>` : ''}
+    ${log.memo ? '<div class="saved-memo"><span>メモ</span><p data-detail-memo></p></div>' : ''}
     <section class="story-panel"><div class="story-head"><div><p class="panel-title">その後のストーリー</p><span>時間が経って分かったことや、選択の続きを残せます。</span></div>${log.storyUpdatedAt ? `<time>更新 ${formatDate(log.storyUpdatedAt)}</time>` : ''}</div>
-      <textarea id="story-text" rows="6" maxlength="2000" placeholder="例：実際に選択肢1を選んでみたら、最初に心配していたことよりも…">${esc(log.story || '')}</textarea>
+      <textarea id="story-text" rows="6" maxlength="2000" placeholder="例：実際に選択肢1を選んでみたら、最初に心配していたことよりも…"></textarea>
       <div class="story-actions"><button class="button secondary" data-action="save-story" data-id="${log.id}">${log.story ? 'ストーリーを更新する' : 'ストーリーを保存する'}</button>${log.story ? `<button class="button ghost" data-action="share-story" data-id="${log.id}">その後をシェア ↗</button>` : ''}</div>
     </section>
     <section class="review-panel"><p class="panel-title">この選択、その後どうでした？</p>
@@ -715,6 +772,10 @@ function renderDetail() {
     </section>
     <div class="danger-zone"><button data-action="delete-log" data-id="${log.id}">この履歴を削除</button></div>
   </section>`;
+  app.querySelector('[data-detail-title]').textContent=log.title;
+  const memo=app.querySelector('[data-detail-memo]'); if(memo)memo.textContent=log.memo;
+  app.querySelector('#story-text').value=log.story || '';
+  if(showA2HS && a2hsShownLogId!==log.id) { a2hsShownLogId=log.id; storageEvent('a2hsShown'); }
 }
 
 function setReview(value) {
@@ -882,7 +943,7 @@ function openSettings() {
     </div>
     <div class="setting-backs"><b>カードの裏面</b>${backPicker()}</div>
     <div class="feedback-setting"><div><b>操作音・振動</b><p>カードを開く時や決定を保存する時に、控えめな反応を返します。</p></div><button class="toggle-button ${settings.feedback ? 'on' : ''}" data-action="toggle-feedback" aria-pressed="${settings.feedback}"><span></span><b>${settings.feedback ? 'ON' : 'OFF'}</b></button></div>
-    <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">データ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div><div class="data-actions"><button class="button secondary" data-action="export-logs">履歴を書き出す</button><button class="button secondary" data-action="import-logs">履歴を読み込む</button></div><input id="import-file" type="file" accept="application/json,.json" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップJSON"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
+    <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">データ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}${isIOS() && !isStandalone() ? '<p class="safari-storage-note">Safariでは、記録は端末内に保存されます。しばらく開かないと消えることがあるため、ホーム画面への追加と、書き出しをおすすめします。</p>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-logs">履歴を書き出す</button><button class="button secondary" data-action="import-logs">履歴を読み込む</button></div><input id="import-file" type="file" accept="application/json,.json" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップJSON"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
     <div class="setting-note"><b>カードと深掘り提案</b><p>逆位置ありでは、引いたカードの約3割が逆位置になります。表面はパメラ・コールマン・スミスによる1909年のライダー＝ウェイト＝スミス版（パブリックドメイン）です。決定ログはこのブラウザ内だけに保存されます。</p></div>
   </section>`;
   mountModal(wrap,'.sheet-head button');
@@ -961,6 +1022,12 @@ document.addEventListener('click', event => {
   else if (action === 'deck-orientation') { const scope=settings.deckMode.startsWith('major')?'major':'all'; settings.deckMode=`${scope}-${el.dataset.value}`; persist(); updateDeckSettingUI(); if(currentView==='home')renderHome(); toast('カードの向きを変更しました'); }
   else if (action === 'toggle-feedback') { settings.feedback=!settings.feedback; persist(); el.classList.toggle('on',settings.feedback); el.setAttribute('aria-pressed',String(settings.feedback)); el.querySelector('b').textContent=settings.feedback?'ON':'OFF'; if(settings.feedback)sensoryFeedback('tap'); toast(settings.feedback?'操作音・振動をONにしました':'操作音・振動をOFFにしました'); }
   else if (action === 'export-logs') exportLogs();
+  else if (action === 'export-failed-log') { const failed=el.closest('#save-failed-modal')?.failedLog; if(failed){ storageEvent('exportFromError'); exportLogs([failed],false); } }
+  else if (action === 'close-save-failed') closeModal('#save-failed-modal');
+  else if (action === 'a2hs-help') openA2HSHelp();
+  else if (action === 'close-a2hs-help') closeModal('#a2hs-help-modal');
+  else if (action === 'dismiss-a2hs') dismissA2HS();
+  else if (action === 'dismiss-backup-reminder') { settings.backupReminderDismissedUntil=Date.now()+14*DAY_MS; persist(); document.querySelector('[data-backup-reminder]')?.remove(); }
   else if (action === 'import-logs') openImportPicker();
   else if (action === 'copy-backup-text') copyBackupText();
   else if (action === 'close-import') closeImport();
