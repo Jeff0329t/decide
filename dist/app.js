@@ -31,53 +31,6 @@ const MINOR = SUITS.flatMap((s, si) => RANKS.map((r, ri) => ({
 })));
 const DECK = [...MAJOR, ...MINOR];
 
-const MAJOR_READINGS = {
-  '愚者': {upright:'まだ道筋が見えなくても、好奇心が動く方向には試す価値があります。失敗しても戻れる小さな一歩にして、まず経験から判断材料を増やしましょう。',reversed:'自由に動きたい気持ちが、準備不足や現実逃避に傾いていないか確認したい場面です。勢いで決めず、最低限守る条件を一つ決めてから動きましょう。'},
-  '魔術師': {upright:'必要な道具や経験は、すでに手元に揃い始めています。完璧な準備を待つより、自分から働きかけられる最初の一手を選ぶと流れが生まれます。',reversed:'力が足りないというより、使えるものを整理できていない可能性があります。見栄や過信を脇に置き、今できることと足りないことを分けてください。'},
-  '女教皇': {upright:'表面的な条件だけではなく、静かな違和感や納得感を大切にしてください。すぐ答えを出すより、一度情報を閉じて自分の反応を確かめると本音が見えます。',reversed:'考えを内側に抱え込みすぎて、直感と不安の区別が曖昧になっています。信頼できる人に事実だけを話し、思い込みを外から点検してみましょう。'},
-  '女帝': {upright:'育てる余地がある選択です。効率だけで切らず、安心・喜び・人とのつながりが長く続く方を選ぶと実りにつながります。',reversed:'大切にすることと、抱え込みすぎることが混ざっているかもしれません。誰かの期待ではなく、自分の時間と余力を守れる条件を置いてください。'},
-  '皇帝': {upright:'判断基準と責任の範囲をはっきりさせるほど、迷いは小さくなります。自分が主導できる方、長期的に土台を作れる方を見極めましょう。',reversed:'正しさや計画に固執すると、現実の変化を見落とします。譲れない条件を一つに絞り、それ以外には柔軟さを残してください。'},
-  '教皇': {upright:'実績のある方法や信頼できる助言が支えになります。独自性を急ぐより、まず基本に沿って進められる選択かを確かめましょう。',reversed:'常識や周囲の正解が、あなたの目的に本当に合うとは限りません。ルールを破るためではなく、なぜ従うのかを問い直してください。'},
-  '恋人': {upright:'条件の優劣だけでなく、その選択を自分が好きでいられるかが決め手です。選んだ後に誰と、どんな気持ちで進みたいかを想像してください。',reversed:'迷いの背景に、誰かをがっかりさせたくない気持ちが隠れていそうです。全員に好かれる答えではなく、自分が引き受けられる答えを選びましょう。'},
-  '戦車': {upright:'方向を決めて動くほど状況が開けます。すべての不安を消すより、期限と最初の行動を決めて前進してください。',reversed:'意欲はあっても、力の向きがばらばらになっています。急ぐ前に目的を一文で言い直し、今やらないことを決める必要があります。'},
-  '力': {upright:'押し切る強さではなく、焦りや恐れを扱う落ち着きが役立ちます。相手や自分を責めず、続けられる強度で選択を実行しましょう。',reversed:'自信の揺れが、必要以上に選択肢を小さく見せています。大きな決断にせず、成功しやすい単位へ分けると力を取り戻せます。'},
-  '隠者': {upright:'外の評価から少し離れ、自分が本当に知りたい答えを絞る時です。一人で考える時間を取り、長期的に納得できる基準を見つけてください。',reversed:'内省が長引き、行動を避ける理由になっているかもしれません。考える期限を決め、その時点の最善で一度選びましょう。'},
-  '運命の輪': {upright:'状況が動く節目にいます。完全にコントロールしようとせず、今だけ開いている機会に反応できる選択を考えてください。',reversed:'思い通りにならない流れを、無理に押し戻そうとしていないでしょうか。変えられない条件を受け入れ、次に備える選択も前進です。'},
-  '正義': {upright:'感情と事実を分け、同じ基準で比べると答えが見えます。短期的な得より、後から説明できる公平な選択を優先してください。',reversed:'都合のよい情報だけを拾っている可能性があります。反対の立場から見た時にも納得できるか、判断材料をもう一度点検しましょう。'},
-  '吊るされた男': {upright:'今すぐ動かないことで見えるものがあります。損に見える時間にも意味があるため、視点を反転させて何を得ているか考えてください。',reversed:'我慢や保留が目的化しています。待つなら期限を決め、状況が変わらない場合に選ぶ次の一手まで用意しましょう。'},
-  '死神': {upright:'何かを終えることで、新しい余白が生まれます。失うものだけでなく、手放した後に取り戻せる時間や力を数えてください。',reversed:'終わりを認めたくない気持ちが、判断を止めています。完全に切るのが難しければ、まず関わり方を縮小する選択から始めましょう。'},
-  '節制': {upright:'二者択一に見えても、配分や順序を変える第三の道があります。無理なく続く中間点を探し、小さく調整しながら進めてください。',reversed:'いくつもの事情を混ぜすぎて、判断軸がぼやけています。今もっとも整えたいものを一つ決め、他は後から調整しましょう。'},
-  '悪魔': {upright:'損得や執着が選択を縛っていないか、正直に見る時です。「失うのが怖いから」以外の理由があるかを確かめてください。',reversed:'縛りの正体に気づき、離れる準備が始まっています。急にすべてを変えず、依存を一段弱める具体的な行動を選びましょう。'},
-  '塔': {upright:'前提が崩れる可能性を恐れず、事実を優先してください。古い計画を守るより、壊れた後にも残る大事なものを基準に選びましょう。',reversed:'変化の兆しを感じながら、先延ばしにしているようです。大きな混乱になる前に、危うい部分だけでも自分から見直してください。'},
-  '星': {upright:'希望を持って先を描ける選択です。理想を夢のままにせず、今日できる小さな行動へ変えると方向が定まります。',reversed:'期待と現実の差に疲れているかもしれません。目標を捨てるのではなく、回復できる距離まで一度近づけてください。'},
-  '月': {upright:'情報が足りず、不安が想像を膨らませています。今は白黒を急がず、確認できる事実と感じている恐れを別々に書き出しましょう。',reversed:'曖昧だったことが少しずつ見え始めています。まだ残る違和感をごまかさず、確認すべき一点を明らかにしてください。'},
-  '太陽': {upright:'状況を素直に受け取り、自信を持って進める兆しです。複雑に考えすぎず、喜びや成長を周囲と分かち合える方を選びましょう。',reversed:'悪くはありませんが、楽観だけで細部を飛ばしていないか注意が必要です。期待値を少し現実的に整えれば、前向きに進めます。'},
-  '審判': {upright:'過去の経験を材料に、今度は違う選択ができます。以前うまくいかなかった理由を一つ言葉にし、それを越える答えを選んでください。',reversed:'過去の後悔や自己評価が、新しい判断まで縛っています。当時の自分と今の自分の違いを確認し、再挑戦の条件を整えましょう。'},
-  '世界': {upright:'一つの区切りにふさわしい選択です。足りない部分を探し続けず、ここまで積み上げたものを認めて次へ進みましょう。',reversed:'完成目前で、細部へのこだわりが終わりを遠ざけています。合格点を決め、残りは次の段階で改善すると割り切ってください。'}
-};
-
-const SUIT_READINGS = {
-  'ワンド': {upright:'行動への熱が本物か、続けたいと思える方を見てください。',reversed:'勢いの空回りや、やる気の消耗が判断を急がせていないか確認してください。'},
-  'カップ': {upright:'気持ちの満足と人との関係に、どんな変化が生まれるかを見てください。',reversed:'期待や感情に飲まれず、本音と一時的な気分を分けて考えてください。'},
-  'ソード': {upright:'事実と言葉を整理すると、判断の輪郭がはっきりします。',reversed:'考えすぎや決めつけを一度止め、確認できる事実へ戻ってください。'},
-  'ペンタクル': {upright:'時間・お金・体力など、現実に続けられる条件を確かめてください。',reversed:'目先の損得だけでなく、負担の偏りや維持コストを見直してください。'}
-};
-const RANK_READINGS = [
-  {upright:'始めるなら、最初の一歩を具体的に決めると機会を活かせます。',reversed:'機会を逃す不安だけで選ばず、始めるための最低条件を整えましょう。'},
-  {upright:'両方を抱えるより、優先順位と期限を決めることが次の一手です。',reversed:'迷いを長引かせる情報を減らし、判断基準を一つに絞りましょう。'},
-  {upright:'一人で完結させず、協力者やフィードバックを取り入れると展開します。',reversed:'役割や期待のずれを先に揃えてから進める方が安全です。'},
-  {upright:'守りたい土台を明確にすると、安心して選べます。',reversed:'安定を守ることが停滞になっていないか、手放せる条件を探してください。'},
-  {upright:'摩擦は失敗ではなく、優先したい価値を知る材料です。',reversed:'争いを避けるための妥協が、後の不満にならないか確かめましょう。'},
-  {upright:'過去の成功や支えを、今の判断に活かせます。',reversed:'慣れた方を選ぶだけでなく、現在の自分に合うかを見直してください。'},
-  {upright:'すぐ結論を出さず、価値が育つ余地を見極める段階です。',reversed:'疑い続けるより、小さく試して反応を見る方が答えに近づきます。'},
-  {upright:'集中する対象を決めれば、物事は速く進みます。',reversed:'速度を落とし、見落としや連絡不足を一度点検してください。'},
-  {upright:'ここまでの経験を信じつつ、最後の備えを整えてください。',reversed:'一人で耐え続けず、助けを求めることも選択肢に入れましょう。'},
-  {upright:'到達後に背負う責任まで含めて、引き受けられる方を選んでください。',reversed:'負担を減らす、断る、分担するという決断も必要です。'},
-  {upright:'好奇心を小さな実験に変え、結果から学ぶのが合っています。',reversed:'情報だけで満足せず、確認してから言葉や行動に移しましょう。'},
-  {upright:'勢いを活かしつつ、止まる条件も先に決めておきましょう。',reversed:'極端な決断を避け、一晩置いてから実行するくらいが適切です。'},
-  {upright:'自分と周囲の状態を丁寧に受け取り、無理のない方を選べます。',reversed:'気遣いが自己犠牲になっていないか、自分の余白を確認してください。'},
-  {upright:'長期の方針を定め、責任を持って進める判断が求められています。',reversed:'支配したい気持ちを緩め、他者の意見や変化を受け入れてください。'}
-];
 const MINOR_KEYWORDS = {
   'ワンド': [['始動','空回り'],['展望','迷走'],['展開','停滞'],['安定','内輪の乱れ'],['競争','衝突疲れ'],['勝利','自信過剰'],['防衛','消耗'],['急展開','行き違い'],['粘り強さ','疲弊'],['責任','抱えすぎ'],['好奇心','見切り発車'],['突破力','暴走'],['情熱と包容力','嫉妬'],['統率力','独断']],
   'カップ': [['心の始まり','感情の停滞'],['信頼関係','すれ違い'],['喜びの共有','馴れ合い'],['見直す時間','無関心'],['喪失からの気づき','後悔'],['懐かしさ','過去への執着'],['豊かな想像力','幻想'],['次へ進む','未練'],['満足','満たされない思い'],['幸福なつながり','関係の不調和'],['素直な感性','感情の未熟さ'],['理想を追う','気分の暴走'],['思いやり','自己犠牲'],['感情の成熟','感情の抑圧']],
@@ -242,26 +195,14 @@ function shuffledDeck() {
   return source.map(card=>({...card,orientation:useReversed && Math.random()<.28 ? 'reversed' : 'upright'})).sort(()=>Math.random()-.5);
 }
 function meaning(card) {
-  const copy=orientationContent(card);
-  if(copy?.meaning)return copy.meaning;
-  if(card.id?.startsWith('M'))return card[card.orientation];
-  const suit=SUITS.find(item=>card.name?.startsWith(item.name));
-  const rank=Number(card.id?.match(/^m\d-(\d+)$/)?.[1]);
-  return MINOR_KEYWORDS[suit?.name]?.[rank]?.[card.orientation==='upright'?0:1] || card[card.orientation];
+  return orientationContent(card)?.meaning || '';
 }
 function cardStory(card) {
-  const content=cardContent(card);
-  if(content?.story)return content.story;
-  if(card.id?.startsWith('M'))return MAJOR_STORIES[card.name]||'';
-  const suit=SUITS.find(item=>card.name?.startsWith(item.name)); const rank=Number(card.id?.match(/^m\d-(\d+)$/)?.[1]);
-  return MINOR_STORIES[suit?.name]?.[rank]||'';
+  return cardContent(card)?.story || '';
 }
 function cardKeywords(card) {
-  const copy=orientationContent(card);
-  if(copy?.keywords?.length)return copy.keywords;
-  if(card.id?.startsWith('M'))return [meaning(card),...(MAJOR_EXTRA_KEYWORDS[card.name]||[])].filter((item,index,list)=>list.indexOf(item)===index).slice(0,4);
-  const suit=SUITS.find(item=>card.name?.startsWith(item.name)); const rank=Number(card.id?.match(/^m\d-(\d+)$/)?.[1]);
-  return [meaning(card),...(SUIT_KEYWORDS[suit?.name]||[]),RANK_KEYWORDS[rank]].filter(Boolean).slice(0,4);
+  const keywords=orientationContent(card)?.keywords;
+  return Array.isArray(keywords) ? keywords : [];
 }
 function orientationLabel(card) { return card.orientation === 'upright' ? '正位置' : '逆位置'; }
 function cardImage(card) {
@@ -300,19 +241,9 @@ const cardImageObserver=new MutationObserver(records=>records.forEach(record=>re
   node.querySelectorAll?.('[data-card-image]').forEach(prepareCardImage);
 })));
 cardImageObserver.observe(document.body,{childList:true,subtree:true});
-function interpretation(card) {
-  const major = MAJOR_READINGS[card.name]?.[card.orientation];
-  if (major) return major;
-  const suit = SUITS.find(item => card.name?.startsWith(item.name));
-  const rank = Number(card.id?.match(/^m\d-(\d+)$/)?.[1]);
-  const suitText = SUIT_READINGS[suit?.name]?.[card.orientation] || '';
-  const rankText = RANK_READINGS[rank]?.[card.orientation] || '';
-  return `${suitText} ${rankText}`.trim();
-}
-
 function nodeReading(node, mode='one', index=0) {
   const copy=orientationContent(node?.card);
-  if(!copy)return {heading:meaning(node?.card || {}),body:interpretation(node?.card || {})};
+  if(!copy)return {heading:orientationLabel(node?.card || {}),body:''};
   const initialCount=mode==='two' ? 2 : 1;
   if(index>=initialCount) {
     const themed=copy.themes?.[themeKey(node.question)];
@@ -345,19 +276,41 @@ function setupFanFeedback(deck) {
   deck.addEventListener('scroll',()=>{ if(ticking)return; ticking=true; requestAnimationFrame(()=>{ const next=Math.round(deck.scrollLeft/38); if(next!==last){last=next;sensoryFeedback('tick');} ticking=false; }); },{passive:true});
 }
 
+function updateNavigationState(view=currentView) {
+  const selected=view==='history' || view==='detail' ? 'history' : 'home';
+  document.querySelectorAll('.nav-item').forEach(item=>{
+    const active=item.dataset.nav===selected;
+    item.classList.toggle('active',active);
+    if(active)item.setAttribute('aria-current','page');
+    else item.removeAttribute('aria-current');
+  });
+}
 function navigate(view, id=null) {
   currentView = view; detailId = id;
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.nav === (view === 'history' || view === 'detail' ? 'history' : 'home')));
   render(); requestAnimationFrame(() => app.focus({preventScroll:true}));
 }
 function render() {
-  if (currentView === 'shared') return renderSharedResult();
-  if (currentView === 'home') return renderHome();
-  if (currentView === 'draw') return renderDraw();
-  if (currentView === 'session') return renderSession();
-  if (currentView === 'decide') return renderDecision();
-  if (currentView === 'history') return renderHistory();
-  if (currentView === 'detail') return renderDetail();
+  updateNavigationState();
+  try {
+    if (currentView === 'shared') return renderSharedResult();
+    if (currentView === 'draw') return renderDraw();
+    if (currentView === 'session') return renderSession();
+    if (currentView === 'decide') return renderDecision();
+    if (currentView === 'history') return renderHistory();
+    if (currentView === 'detail') return renderDetail();
+    return renderHome();
+  } catch(error) {
+    console.error('DECIDE render error',error);
+    currentView='home'; detailId=null; activeSession=null; updateNavigationState('home');
+    try { return renderHome(); }
+    catch {
+      app.replaceChildren();
+      const section=document.createElement('section'); section.className='screen empty-state';
+      const heading=document.createElement('h1'); heading.textContent='DECIDE';
+      const message=document.createElement('p'); message.textContent='画面を読み直してください。';
+      section.append(heading,message); app.append(section);
+    }
+  }
 }
 
 function renderHome() {
@@ -721,15 +674,6 @@ function deleteLog(id) {
   logs=logs.filter(item=>item.id!==id); persist(); closeDelete(); detailId=null; currentView='history'; render(); toast('履歴を削除しました');
 }
 
-function fallbackCardContent(card) {
-  const directionContent=orientation=>{
-    const directional={...card,orientation};
-    const text=interpretation(directional) || meaning(directional);
-    return {keywords:cardKeywords(directional),meaning:meaning(directional),themes:{blind:text,caution:text,want:text,letgo:text,diff:text}};
-  };
-  const suit=SUITS.find(item=>card.name?.startsWith(item.name));
-  return {id:contentCardId(card),name:card.name,en:'',arcana:card.id?.startsWith('M')?'大アルカナ':suit?.name || 'タロットカード',symbol:'',story:cardStory(card),background:cardStory(card),upright:directionContent('upright'),reversed:directionContent('reversed')};
-}
 function switchCardTheme(key) {
   if(!activeCardDetail || !cardThemeLabels[key])return;
   const modal=document.querySelector('#card-modal'); const copy=activeCardDetail.content[activeCardDetail.direction];
@@ -740,8 +684,13 @@ function switchCardTheme(key) {
 }
 function openCardDetail(card, originQuestion='') {
   if(!card)return;
-  const content=cardContent(card) || fallbackCardContent(card);
   const direction=card.orientation==='reversed'?'reversed':'upright';
+  const content=cardContent(card);
+  if(!content) {
+    const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='card-modal';
+    wrap.innerHTML=`<button class="modal-shade" data-action="close-card-detail" aria-label="カード詳細を閉じる"></button><section class="settings-sheet card-detail-sheet" role="dialog" aria-modal="true" aria-labelledby="card-detail-title"><div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">Card meaning</p><h2 id="card-detail-title">カードの詳しい意味</h2></div><button data-action="close-card-detail" aria-label="閉じる">×</button></div><header class="card-detail-header"><span class="card-image-frame card-detail-image-frame"><img data-card-image width="480" height="830" class="${direction==='reversed'?'reversed-image':''}" src="${esc(cardImage(card))}" alt="${esc(card.name)}"></span><div><span class="orientation-badge">${orientationLabel(card)}</span><h3>${esc(card.name)}</h3></div></header></section>`;
+    mountModal(wrap,'.sheet-head button'); return;
+  }
   const opposite=direction==='upright'?'reversed':'upright';
   const current=content[direction]; const other=content[opposite];
   const originKey=originQuestion ? themeKey(originQuestion) : 'blind';
@@ -760,7 +709,10 @@ function closeCardDetail() { activeCardDetail=null; closeModal('#card-modal'); }
 
 function encodeSharedPayload(payload) { return btoa(unescape(encodeURIComponent(JSON.stringify(payload)))); }
 function readSharedPayload() {
-  try { const raw=location.hash.startsWith('#share=')?location.hash.slice(7):''; return raw?JSON.parse(decodeURIComponent(escape(atob(raw)))):null; } catch { return null; }
+  try {
+    const result=DECIDE_SHARED.readSharedHash(location.hash,new Set(DECK.map(card=>card.id)));
+    return result.found ? (result.payload || {invalid:true}) : null;
+  } catch { return location.hash.startsWith('#share=') ? {invalid:true} : null; }
 }
 function sharedResultUrl(log,type) {
   const nodes=(log.nodes||[]).slice(0,2);
@@ -769,14 +721,17 @@ function sharedResultUrl(log,type) {
   return `${location.origin}${location.pathname}#share=${encodeSharedPayload(payload)}`;
 }
 function normalizeSharedPayload(payload) {
-  if(payload.title)return payload;
-  const cards=(payload.c||[]).map(([id,reversed])=>{const base=DECK.find(card=>card.id===id);if(!base)return null;const card={...base,orientation:reversed?'reversed':'upright'};return {...card,image:cardImage(card),meaning:meaning(card),interpretation:interpretation(card)};}).filter(Boolean);
-  return {title:payload.t||'決定の記録',decision:payload.d||'',cards,story:payload.s||'',verdict:cards.length===2?comparisonVerdict(cards.map((card,index)=>({card,label:`選択肢 ${index+1}`}))).label:''};
+  try { return DECIDE_SHARED.normalizeSharedPayload(payload,{deck:DECK,contentById:cardContentById,contentCardId,cardImage,compare:comparisonVerdict}); }
+  catch { return null; }
+}
+function renderInvalidSharedResult() {
+  app.innerHTML=`<section class="screen shared-screen empty-state"><p class="eyebrow">Shared from DECIDE</p><h1>このリンクは読み込めませんでした</h1><p>リンクが途中で切れているか、古い形式かもしれません。</p><button class="button" data-action="open-app">DECIDEを使ってみる</button></section>`;
 }
 function renderSharedResult() {
   if(!sharedPayload){ currentView='home'; return renderHome(); }
   const payload=normalizeSharedPayload(sharedPayload);
-  app.innerHTML=`<section class="screen shared-screen"><p class="eyebrow">Shared from DECIDE</p><h1>${esc(payload.title||'決定の記録')}</h1><div class="shared-outcome"><span>選んだ答え</span><strong>${esc(payload.decision||'')}</strong>${payload.verdict?`<p>${esc(payload.verdict)}</p>`:''}</div><div class="shared-card-grid">${(payload.cards||[]).map(card=>`<article><img class="${card.orientation==='reversed'?'reversed-image':''}" src="${esc(card.image)}" alt="${esc(card.name)}"><div><span>${card.orientation==='reversed'?'逆位置':'正位置'}</span><h2>${esc(card.name)}</h2><b>${esc(card.meaning)}</b><p>${esc(card.interpretation)}</p></div></article>`).join('')}</div>${payload.story?`<section class="shared-story"><span>その後のストーリー</span><p>${esc(payload.story)}</p></section>`:''}<div class="shared-note"><b>DECIDEとは？</b><p>タロットカードをきっかけに、心から納得できる決断を助ける思考ツールです。</p></div><button class="button" data-action="open-app">自分もカードを引いてみる</button></section>`;
+  if(!payload)return renderInvalidSharedResult();
+  app.innerHTML=`<section class="screen shared-screen"><p class="eyebrow">Shared from DECIDE</p><h1>${esc(payload.title||'決定の記録')}</h1><div class="shared-outcome"><span>選んだ答え</span><strong>${esc(payload.decision||'')}</strong>${payload.verdict?`<p>${esc(payload.verdict)}</p>`:''}</div><div class="shared-card-grid">${payload.cards.map(card=>DECIDE_SHARED.renderSharedCard(card,esc)).join('')}</div>${payload.story?`<section class="shared-story"><span>その後のストーリー</span><p>${esc(payload.story)}</p></section>`:''}<div class="shared-note"><b>DECIDEとは？</b><p>タロットカードをきっかけに、心から納得できる決断を助ける思考ツールです。</p></div><button class="button" data-action="open-app">自分もカードを引いてみる</button></section>`;
 }
 
 async function createShareImageBlob(data) {

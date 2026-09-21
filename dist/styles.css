@@ -493,7 +493,7 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .card-detail-copy section p { margin: 0; font-size: .86rem; }
 .direction-meaning { color: var(--ink) !important; font-size: .92rem !important; }
 .theme-tabs { display: flex; gap: 7px; overflow-x: auto; margin: 11px -2px 0; padding: 2px 2px 9px; scrollbar-width: thin; }
-.theme-tabs button { flex: 0 0 auto; min-height: 40px; padding: 8px 11px; border: 1px solid var(--line); border-radius: 99px; background: var(--paper); color: var(--muted); font-size: .72rem; font-weight: 800; cursor: pointer; }
+.theme-tabs button { flex: 0 0 auto; min-height: 44px; padding: 8px 11px; border: 1px solid var(--line); border-radius: 99px; background: var(--paper); color: var(--muted); font-size: .72rem; font-weight: 800; cursor: pointer; }
 .theme-tabs button span { margin-right: 5px; color: var(--accent); font-size: .55rem; }
 .theme-tabs button.selected { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
 .theme-panel { margin-top: 7px; padding: 14px; border-radius: 13px; background: var(--soft); }
@@ -518,6 +518,10 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .shared-card-grid h2 { margin: 3px 0 7px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .95rem; }
 .shared-card-grid b { color: var(--accent); font-size: .8rem; }
 .shared-card-grid p { margin: 7px 0 0; color: var(--muted); font-size: .76rem; line-height: 1.6; }
+.card-detail-sheet .sheet-head button { width: 44px; height: 44px; }
+.shared-keywords { margin: 7px 0 9px; }
+.shared-background { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
+.shared-background h3 { margin: 0; color: var(--ink); font-size: .76rem; }
 .shared-story, .shared-note { margin: 24px 0; padding: 18px; border-radius: 16px; background: var(--accent-soft); }
 .shared-story span, .shared-note b { color: var(--accent); font-size: .75rem; font-weight: 900; }
 .shared-story p, .shared-note p { margin: 7px 0 0; white-space: pre-wrap; line-height: 1.7; }
