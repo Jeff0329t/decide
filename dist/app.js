@@ -59,6 +59,7 @@ let activeSession = null;
 let currentView = 'home';
 let detailId = null;
 let selectedDecision = '';
+let decisionDraft = {genre:'',option1:'',option2:'',title:'',memo:''};
 let historyMode = 'list';
 let calendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 let selectedCalendarDate = '';
@@ -338,6 +339,7 @@ function startSession(mode) {
   activeSession = { id: crypto.randomUUID?.() || String(Date.now()), mode, startedAt:new Date().toISOString(), nodes:[], drawOptions, revealed:[] };
   if(mode==='two')activeSession.imageReady=preloadCardImages(drawOptions);
   selectedDecision = '';
+  decisionDraft = {genre:'',option1:'',option2:'',title:'',memo:''};
   navigate('draw');
 }
 
@@ -541,12 +543,75 @@ function renderDecision() {
       <p class="lead">カードではなく、<wbr>あなたが決めます。<wbr>いちばん納得できるものを<wbr>選んでください。</p>
       <div class="decision-options">${options.map(o => `<button class="decision-option ${selectedDecision === o ? 'selected' : ''}" data-action="select-decision" data-value="${o}"><span>${o}</span><i>${selectedDecision === o ? '✓' : ''}</i></button>`).join('')}</div>
       <form id="save-form" class="save-form">
-        <label>題名 <span>任意</span><input name="title" maxlength="60" placeholder="例：新しい仕事を引き受けるか"></label>
-        <label>ひとことメモ <span>任意</span><textarea name="memo" maxlength="240" rows="3" placeholder="決め手や、今の気持ち"></textarea></label>
+        ${selectedDecision ? `<section class="decision-meta" aria-label="決定の補足">
+          <div class="form-section"><div class="form-section-head"><b>ジャンル</b><span>任意・1つだけ</span></div><div class="genre-chips">${DECIDE_DECISION.GENRES.map(genre=>`<button type="button" class="meta-chip" data-action="select-genre" data-value="${genre}" aria-pressed="false">${genre}</button>`).join('')}</div></div>
+          ${activeSession.mode==='two'?`<div class="form-section"><div class="form-section-head"><b>選択肢の内容</b><span>任意</span></div><div class="pair-candidates" data-pair-candidates></div><div class="option-editor"><label>選択肢1<input id="option-1" name="option1" maxlength="30" autocomplete="off" enterkeyhint="done" lang="ja" placeholder="例：今の仕事を続ける"></label><button type="button" class="swap-options" data-action="swap-options" aria-label="選択肢1と2を入れ替える">⇄</button><label>選択肢2<input id="option-2" name="option2" maxlength="30" autocomplete="off" enterkeyhint="done" lang="ja" placeholder="例：新しい仕事に挑戦する"></label></div><div class="recent-options" data-recent-options></div></div>`:''}
+        </section>`:''}
+        <label>題名 <span>任意</span><input name="title" maxlength="60" autocomplete="off" enterkeyhint="done" lang="ja" placeholder="空欄なら内容から自動で作成"></label>
+        <label>ひとことメモ <span>任意</span><textarea name="memo" maxlength="240" rows="3" lang="ja" placeholder="決め手や、今の気持ち"></textarea></label>
         <button class="button" type="submit" ${selectedDecision ? '' : 'disabled'}>決定を記録する</button>
         <p class="timestamp">${formatDate(new Date().toISOString(), true)} の記録として保存</p>
       </form>
     </section>`;
+  restoreDecisionDraft();
+}
+
+function captureDecisionDraft() {
+  const form=document.querySelector('#save-form'); if(!form)return;
+  decisionDraft.title=String(form.elements.title?.value||'').slice(0,60);
+  decisionDraft.memo=String(form.elements.memo?.value||'').slice(0,240);
+  decisionDraft.option1=DECIDE_DECISION.optionValue(form.elements.option1?.value||decisionDraft.option1);
+  decisionDraft.option2=DECIDE_DECISION.optionValue(form.elements.option2?.value||decisionDraft.option2);
+}
+
+function renderPairCandidates() {
+  const wrap=document.querySelector('[data-pair-candidates]'); if(!wrap)return;
+  wrap.replaceChildren();
+  const pairs=DECIDE_DECISION.PAIRS[decisionDraft.genre]||[];
+  if(!pairs.length){ const hint=document.createElement('p'); hint.className='pair-hint'; hint.textContent='ジャンルを選ぶと候補が表示されます。'; wrap.append(hint); return; }
+  pairs.forEach((pair,index)=>{ const button=document.createElement('button'); button.type='button'; button.className='pair-chip'; button.dataset.action='select-pair'; button.dataset.pairIndex=String(index); button.textContent=`${pair[0]}／${pair[1]}`; wrap.append(button); });
+}
+
+function renderRecentChoices() {
+  const wrap=document.querySelector('[data-recent-options]'); if(!wrap)return;
+  wrap.replaceChildren();
+  const recent=DECIDE_DECISION.recentChoices(logs);
+  if(!recent.length)return;
+  const label=document.createElement('span'); label.textContent='最近使った選択肢'; wrap.append(label);
+  const chips=document.createElement('div'); chips.className='recent-chips';
+  recent.forEach((value,index)=>{ const button=document.createElement('button'); button.type='button'; button.className='meta-chip'; button.dataset.action='recent-option'; button.dataset.recentIndex=String(index); button.textContent=value; chips.append(button); });
+  wrap.append(chips);
+}
+
+function restoreDecisionDraft() {
+  const form=document.querySelector('#save-form'); if(!form)return;
+  if(form.elements.title)form.elements.title.value=decisionDraft.title;
+  if(form.elements.memo)form.elements.memo.value=decisionDraft.memo;
+  if(form.elements.option1)form.elements.option1.value=decisionDraft.option1;
+  if(form.elements.option2)form.elements.option2.value=decisionDraft.option2;
+  document.querySelectorAll('[data-action="select-genre"]').forEach(button=>{ const selected=button.dataset.value===decisionDraft.genre; button.classList.toggle('selected',selected); button.setAttribute('aria-pressed',String(selected)); });
+  renderPairCandidates(); renderRecentChoices();
+}
+
+function selectGenre(value) {
+  captureDecisionDraft();
+  decisionDraft.genre=decisionDraft.genre===value?'':DECIDE_DECISION.validGenre(value);
+  restoreDecisionDraft(); sensoryFeedback('tick');
+}
+
+function selectPair(index) {
+  const pair=(DECIDE_DECISION.PAIRS[decisionDraft.genre]||[])[index]; if(!pair)return;
+  decisionDraft.option1=pair[0]; decisionDraft.option2=pair[1]; restoreDecisionDraft(); sensoryFeedback('tick');
+}
+
+function swapOptions() {
+  captureDecisionDraft(); [decisionDraft.option1,decisionDraft.option2]=[decisionDraft.option2,decisionDraft.option1]; restoreDecisionDraft(); sensoryFeedback('tick');
+}
+
+function useRecentChoice(index) {
+  captureDecisionDraft(); const value=DECIDE_DECISION.recentChoices(logs)[index]; if(!value)return;
+  if(!decisionDraft.option1)decisionDraft.option1=value; else if(!decisionDraft.option2)decisionDraft.option2=value; else return;
+  restoreDecisionDraft(); sensoryFeedback('tick');
 }
 
 function saveDecision(form) {
@@ -554,10 +619,14 @@ function saveDecision(form) {
   sensoryFeedback('save');
   const fd = new FormData(form);
   const createdAt = new Date().toISOString();
-  const fallback = activeSession.mode === 'two' ? `${selectedDecision}と決めた記録` : '今日の決定';
-  const log = { id:activeSession.id, mode:activeSession.mode, createdAt, title:String(fd.get('title') || '').trim() || fallback,
-    memo:String(fd.get('memo') || '').trim(), decision:selectedDecision, nodes:activeSession.nodes, review:null };
+  const genre=DECIDE_DECISION.validGenre(decisionDraft.genre)||null;
+  const options=activeSession.mode==='two'?DECIDE_DECISION.savedOptions(fd.get('option1'),fd.get('option2')):null;
+  const manualTitle=String(fd.get('title')||'').trim().slice(0,60);
+  const title=manualTitle||DECIDE_DECISION.autoTitle({genre,options,nodes:activeSession.nodes,createdAt,mode:activeSession.mode});
+  const log = { id:activeSession.id, mode:activeSession.mode, createdAt, title,
+    memo:String(fd.get('memo') || '').trim(), decision:selectedDecision, nodes:activeSession.nodes, review:null, genre, options };
   logs.unshift(log); persist(); activeSession = null; selectedDecision = ''; detailId = log.id;
+  decisionDraft = {genre:'',option1:'',option2:'',title:'',memo:''};
   currentView = 'detail'; render(); toast('決定を記録しました');
 }
 
@@ -575,7 +644,7 @@ function filteredLogs() {
   const query=historyQuery.trim().toLocaleLowerCase('ja'); if(!query)return logs;
   return logs.filter(log => {
     const cards=(log.nodes || []).flatMap(node=>[node.question,node.card?.name,meaning(node.card || {})]);
-    return [log.title,log.decision,log.memo,log.story,...cards].filter(Boolean).join(' ').toLocaleLowerCase('ja').includes(query);
+    return [log.title,log.decision,log.memo,log.story,log.genre,log.options?.['1'],log.options?.['2'],...cards].filter(Boolean).join(' ').toLocaleLowerCase('ja').includes(query);
   });
 }
 
@@ -589,7 +658,7 @@ function historyItem(log) {
   const first=cards[0]?.card;
   return `<div class="history-swipe" data-swipe-id="${log.id}"><button class="swipe-delete" data-action="delete-log" data-id="${log.id}">削除</button><div class="history-row"><button class="history-item" data-action="detail" data-id="${log.id}">
     <span class="history-thumbs">${cards.map((node,index)=>`<img style="--stack:${index}" class="${node.card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(node.card)}" alt="">`).join('')}</span>
-    <span class="history-copy"><time>${formatDate(log.createdAt)}</time><strong>${esc(log.title)}</strong><span>${esc(log.decision)}</span>${first ? `<small>${esc(first.name)} · ${orientationLabel(first)} — ${esc(meaning(first))}</small>` : ''}</span>
+    <span class="history-copy"><time>${formatDate(log.createdAt)}</time><strong>${esc(log.title)}</strong>${log.genre?`<small class="history-genre">${esc(log.genre)}</small>`:''}<span>${esc(DECIDE_DECISION.decisionText(log))}</span>${first ? `<small>${esc(first.name)} · ${orientationLabel(first)} — ${esc(meaning(first))}</small>` : ''}</span>
     ${log.review ? `<em>${reviewIcon(log.review)} ${esc(log.review)}</em>` : '<em class="pending">未評価</em>'}<i class="history-arrow" aria-hidden="true">→</i>
   </button><button class="history-delete-action" data-action="delete-log" data-id="${log.id}" aria-label="「${esc(log.title)}」を削除">削除</button></div></div>`;
 }
@@ -625,7 +694,7 @@ function renderSavedCard(log,node,index) {
   const reading=nodeReading(node,log.mode,index);
   return `<article class="saved-card">
     <button class="saved-card-image-button" data-action="saved-card-detail" data-id="${log.id}" data-index="${index}" aria-label="${esc(node.card.name)}の詳しい意味を見る"><span class="card-image-frame saved-card-image-frame"><img data-card-image width="480" height="830" class="${node.card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(node.card)}" alt="${esc(node.card.name)}"></span></button>
-    <div><span>${esc(node.label || `CARD ${index+1}`)} · ${esc(node.question || '')}</span><h3>${esc(node.card.name)} <small>${orientationLabel(node.card)}</small></h3><b>${esc(reading.heading)}</b><p>${esc(reading.body)}</p><button class="card-more" data-action="saved-card-detail" data-id="${log.id}" data-index="${index}">カードの詳しい意味を見る</button></div>
+    <div><span>${esc(DECIDE_DECISION.nodeLabel(log,node,index))} · ${esc(node.question || '')}</span><h3>${esc(node.card.name)} <small>${orientationLabel(node.card)}</small></h3><b>${esc(reading.heading)}</b><p>${esc(reading.body)}</p><button class="card-more" data-action="saved-card-detail" data-id="${log.id}" data-index="${index}">カードの詳しい意味を見る</button></div>
   </article>`;
 }
 function renderDetail() {
@@ -633,7 +702,7 @@ function renderDetail() {
   if (!log) return navigate('history');
   app.innerHTML = `<section class="screen detail-screen">
     <button class="text-back" data-action="history">← 履歴へ</button><p class="eyebrow">${formatDate(log.createdAt, true)}</p>
-    <h1>${esc(log.title)}</h1><div class="outcome"><span>今回の結論</span><strong>${esc(log.decision)}</strong><button data-action="share-log" data-id="${log.id}">この結果をシェア ↗</button></div>
+    <h1>${esc(log.title)}</h1><div class="outcome"><span>今回の結論</span><strong>${esc(DECIDE_DECISION.decisionText(log))}</strong><button data-action="share-log" data-id="${log.id}">この結果をシェア ↗</button></div>
     <div class="saved-cards"><p class="panel-title">引いたカードと意味</p>${log.nodes.map((node,index) => renderSavedCard(log,node,index)).join('')}</div>
     ${log.memo ? `<div class="saved-memo"><span>メモ</span><p>${esc(log.memo)}</p></div>` : ''}
     <section class="story-panel"><div class="story-head"><div><p class="panel-title">その後のストーリー</p><span>時間が経って分かったことや、選択の続きを残せます。</span></div>${log.storyUpdatedAt ? `<time>更新 ${formatDate(log.storyUpdatedAt)}</time>` : ''}</div>
@@ -837,7 +906,11 @@ document.addEventListener('click', event => {
   else if (action === 'toggle-reflection') toggleReflection(el);
   else if (action === 'deepen') addDeep(el.dataset.prompt);
   else if (action === 'decide') navigate('decide');
-  else if (action === 'select-decision') { sensoryFeedback('tap'); selectedDecision=el.dataset.value; renderDecision(); }
+  else if (action === 'select-decision') { captureDecisionDraft(); sensoryFeedback('tap'); selectedDecision=el.dataset.value; renderDecision(); }
+  else if (action === 'select-genre') selectGenre(el.dataset.value);
+  else if (action === 'select-pair') selectPair(Number(el.dataset.pairIndex));
+  else if (action === 'swap-options') swapOptions();
+  else if (action === 'recent-option') useRecentChoice(Number(el.dataset.recentIndex));
   else if (action === 'detail') navigate('detail', el.dataset.id);
   else if (action === 'review') setReview(el.dataset.value);
   else if (action === 'deck-scope') { const orientation=settings.deckMode.endsWith('reversed')?'reversed':'upright'; settings.deckMode=`${el.dataset.value}-${orientation}`; persist(); updateDeckSettingUI(); if(currentView==='home')renderHome(); toast('使うカードを変更しました'); }
