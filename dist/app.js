@@ -441,9 +441,10 @@ async function flipBoth() {
   setTimeout(() => { if (activeSession?.id===sessionId) navigate('session'); }, 520);
 }
 
-function renderCard(node, index) {
+function renderCard(node, index, showReflection=false) {
   const c = node.card;
   const reading=nodeReading(node,activeSession?.mode || 'one',index);
+  const answered=showReflection && index < activeSession.nodes.length-1;
   return `<article class="thought-node ${c.orientation === 'reversed' ? 'is-reversed' : ''}">
     <div class="node-label"><span>${esc(node.label)}</span><b>${esc(node.question)}</b></div>
     <button class="compact-card card-detail-button" data-action="card-detail" data-index="${index}" aria-label="${esc(c.name)}の詳しい意味を見る">
@@ -451,6 +452,7 @@ function renderCard(node, index) {
       <div><span class="tarot-index">${esc(c.number)} · ${orientationLabel(c)}</span><strong>${esc(c.name)}</strong></div>
     </button>
     <div class="reading"><b>${esc(reading.heading)}</b><p>${esc(reading.body)}</p></div>
+    ${showReflection ? renderReflection(`card-${index}`,answered) : ''}
     ${index < activeSession.nodes.length - 1 ? '<span class="connector" aria-hidden="true"></span>' : ''}
   </article>`;
 }
@@ -477,19 +479,26 @@ function renderScoreRow(label,score) {
 
 function deepPrompts() {
   const used = activeSession.nodes.map(n => n.question);
-  const pool = activeSession.mode === 'two'
-    ? ['決め手になる違い','選択肢1を選ぶときの注意点','選択肢2を選ぶときの注意点','本当はどちらを望んでいる？','見落としていること']
-    : ['見落としていること','進むときの注意点','本当はどうしたい？','手放してよいこと'];
-  return pool.filter(p => !used.includes(p)).slice(0,3);
+  return DECIDE_INTERVIEW.availablePrompts(activeSession.mode,used);
+}
+function renderReflection(stepKey,answered=false,verdict=null) {
+  const two=activeSession.mode==='two';
+  const question=two?'この結果、しっくりきましたか？':'このカード、しっくりきましたか？';
+  if(answered)return `<section class="reflection-card answered"><h3>${question}</h3><span class="reflection-done">回答済み</span></section>`;
+  const prompts=deepPrompts();
+  const panelId=`reflection-options-${stepKey}`;
+  const promptHeading=two?'何が気になりますか？':'どこが引っかかりますか？';
+  const options=prompts.map(item=>{
+    const recommended=Boolean(verdict?.tie && item.prompt==='決め手になる違い');
+    return `<button class="prompt-button ${recommended?'recommended-prompt':''}" data-action="deepen" data-prompt="${esc(item.prompt)}">${recommended?'<em>今のおすすめ</em>':''}<b>${esc(item.label)}</b><span>${esc(item.prompt)} →</span></button>`;
+  }).join('');
+  return `<section class="reflection-card"><h3>${question}</h3><div class="reflection-actions"><button class="button" data-action="decide">しっくりきた → 決める</button>${prompts.length?`<button class="button secondary" data-action="toggle-reflection" aria-expanded="false" aria-controls="${panelId}">まだ引っかかる</button>`:''}</div>${prompts.length?`<div class="reflection-options" id="${panelId}" hidden><p>${promptHeading}</p><div class="prompt-list">${options}</div></div>`:''}</section>`;
 }
 
 function renderSession() {
   if (!activeSession) return navigate('home');
   const initial = activeSession.mode === 'two' ? 2 : 1;
   const deepCount = activeSession.nodes.length - initial;
-  const caution = deepCount >= 3;
-  const prompts=deepPrompts();
-  const canDraw = prompts.length > 0;
   const verdict=activeSession.mode === 'two' ? comparisonVerdict(activeSession.nodes.slice(0,2)) : null;
   const comparison=activeSession.mode === 'two' ? activeSession.nodes.slice(0,2).map((node,index) => {
     const reading=nodeReading(node,'two',index);
@@ -500,13 +509,17 @@ function renderSession() {
     <section class="screen map-screen">
       <button class="text-back" data-action="home">← 最初に戻る</button>
       <div class="map-heading"><p class="eyebrow">Thought map</p><h2>${activeSession.mode === 'two' ? '2つの選択肢を<wbr>比べる' : 'カードが示す、<wbr>ひとつの視点'}</h2><p>${activeSession.mode === 'two' ? 'カードの向きと意味から、<wbr>どちらが今進めやすいかを<wbr>比べます。' : 'カードに未来を決めてもらうのではなく、<wbr>解説を自分の状況に照らして<wbr>読んでみてください。'}</p></div>
-      ${activeSession.mode === 'two' ? `<section class="verdict-card"><span class="verdict-kicker">カードの視点</span><h3>${esc(verdict.label)}</h3><div class="score-lines">${renderScoreRow('選択肢1',verdict.scores[0])}${renderScoreRow('選択肢2',verdict.scores[1])}</div><details class="score-help"><summary>進めやすさとは？</summary><p>その選択肢を「いま進める」ときの追い風の強さです。運勢の良し悪しではありません。</p></details><p class="verdict-reason">${esc(verdict.reason)}</p>${verdict.note?`<p class="verdict-note">${esc(verdict.note)}</p>`:''}<p class="verdict-closing">${esc(verdict.closing)}</p></section><div class="choice-comparison">${comparison}</div><div class="thought-map deep-map">${activeSession.nodes.slice(2).map((node,index) => renderCard(node,index + 2)).join('')}</div>` : `<div class="thought-map">${activeSession.nodes.map(renderCard).join('')}</div>`}
-      <section class="deep-panel">
-        ${caution ? `<div class="decision-nudge"><b>そろそろ、材料は十分かもしれません。</b><p>新しい視点を増やすより、今ある材料から決めてみませんか。</p></div>` : `<p class="panel-title">もう少し考えるなら</p>`}
-        ${canDraw ? `<p class="deep-help">気になるテーマを選ぶと、もう1枚のカードから詳しい視点を得られます。</p><div class="prompt-list">${prompts.map(p => `<button class="prompt-button ${verdict?.tie && p==='決め手になる違い'?'recommended-prompt':''}" data-action="deepen" data-prompt="${esc(p)}">${verdict?.tie && p==='決め手になる違い'?'<em>今のおすすめ</em>':''}<b>${esc(p)}</b><span>このテーマを深掘り →</span></button>`).join('')}</div>` : `<p class="limit-note">カードはここまで。いま見えている材料を使って決めましょう。</p>`}
-      </section>
-      <div class="decision-dock"><button class="button" data-action="decide">これで決めた <span>→</span></button></div>
+      ${activeSession.mode === 'two' ? `<section class="verdict-card"><span class="verdict-kicker">カードの視点</span><h3>${esc(verdict.label)}</h3><div class="score-lines">${renderScoreRow('選択肢1',verdict.scores[0])}${renderScoreRow('選択肢2',verdict.scores[1])}</div><details class="score-help"><summary>進めやすさとは？</summary><p>その選択肢を「いま進める」ときの追い風の強さです。運勢の良し悪しではありません。</p></details><p class="verdict-reason">${esc(verdict.reason)}</p>${verdict.note?`<p class="verdict-note">${esc(verdict.note)}</p>`:''}<p class="verdict-closing">${esc(verdict.closing)}</p></section>${renderReflection('verdict',deepCount>0,verdict)}<div class="choice-comparison">${comparison}</div><div class="thought-map deep-map">${activeSession.nodes.slice(2).map((node,index) => renderCard(node,index + 2,true)).join('')}</div>` : `<div class="thought-map">${activeSession.nodes.map((node,index)=>renderCard(node,index,true)).join('')}</div>`}
     </section>`;
+}
+
+function toggleReflection(button) {
+  const panel=document.getElementById(button.getAttribute('aria-controls'));
+  if(!panel)return;
+  const expanded=button.getAttribute('aria-expanded')==='true';
+  button.setAttribute('aria-expanded',String(!expanded));
+  panel.hidden=expanded;
+  if(!expanded)panel.querySelector('button')?.focus({preventScroll:true});
 }
 
 function addDeep(prompt) {
@@ -821,6 +834,7 @@ document.addEventListener('click', event => {
   else if (action === 'flip-card') flipCard(Number(el.dataset.slot));
   else if (action === 'flip-both') flipBoth();
   else if (action === 'select-back') { settings.back=el.dataset.value; persist(); const modal=document.querySelector('#settings-modal'); if(modal){ modal.querySelectorAll('.back-choice').forEach(item=>{ const chosen=item.dataset.value===settings.back; item.classList.toggle('selected',chosen); item.querySelector('b').textContent=chosen?'✓':''; }); } document.querySelectorAll('.flip-back,.mode-art i').forEach(item=>{ [...item.classList].filter(name=>name.startsWith('back-')).forEach(name=>item.classList.remove(name)); item.classList.add(`back-${settings.back}`); }); sensoryFeedback('tick'); toast('カードの裏面を変更しました'); }
+  else if (action === 'toggle-reflection') toggleReflection(el);
   else if (action === 'deepen') addDeep(el.dataset.prompt);
   else if (action === 'decide') navigate('decide');
   else if (action === 'select-decision') { sensoryFeedback('tap'); selectedDecision=el.dataset.value; renderDecision(); }
