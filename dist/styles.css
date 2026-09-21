@@ -62,7 +62,6 @@ button { color: inherit; }
 .icon-button.icon-only::before { content: ''; position: absolute; inset: 2px; border: 1px solid var(--line); border-radius: 50%; background: var(--paper); }
 .icon-button.icon-only svg { position: relative; width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .gear-button { font-size: 1.05rem; line-height: 1; }
-.gear-button > span { position: relative; z-index: 1; }
 main { min-height: calc(100dvh - 158px); }
 .screen { padding: 30px 22px 44px; animation: rise .24s ease both; }
 @keyframes rise { from { transform: translateY(6px); } }
