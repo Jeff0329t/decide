@@ -429,7 +429,9 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .score-lines { display: grid; gap: 7px; padding: 12px; border-radius: 12px; background: var(--paper); }
 .score-lines > div { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .score-lines b { font-size: .78rem; }
-.score-stars { color: var(--accent); font-size: 1rem; font-weight: 900; letter-spacing: .08em; white-space: nowrap; }
+.score-stars { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 2px; white-space: nowrap; }
+.score-stars svg { width: 15px; height: 15px; fill: var(--line); stroke: none; }
+.score-stars svg.filled { fill: var(--accent); }
 .score-help { margin: 8px 0 0; }
 .score-help summary { width: fit-content; color: var(--accent); cursor: pointer; font-size: .7rem; font-weight: 800; }
 .score-help p { margin: 6px 0 0; padding: 9px 11px; border-radius: 10px; background: var(--paper); }
@@ -437,7 +439,9 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .verdict-note { margin: 10px 0 0; padding: 10px 12px; border-left: 3px solid var(--accent); border-radius: 0 9px 9px 0; background: var(--paper); }
 .verdict-closing { margin: 12px 0 0; font-weight: 800; }
 .compare-node { min-width: 0; }
-.compare-node > span { display: inline-flex; align-items: center; min-height: 31px; margin-bottom: 9px; padding: 6px 10px; border-radius: 99px; background: var(--accent); color: var(--on-accent); font-size: .72rem; font-weight: 900; }
+.compare-heading { display: grid; justify-items: start; gap: 5px; margin-bottom: 9px; }
+.compare-heading > span:first-child { display: inline-flex; align-items: center; min-height: 31px; padding: 6px 10px; border-radius: 99px; background: var(--accent); color: var(--on-accent); font-size: .72rem; font-weight: 900; }
+.compare-heading .score-stars svg { width: 13px; height: 13px; }
 .compare-card { width: 100%; padding: 10px; display: grid; border: 1px solid var(--line); border-radius: 14px; background: var(--soft); animation: reveal-card .48s ease both; text-align: left; cursor: pointer; }
 .compare-card .card-image-frame { width: 100%; border-radius: 8px; }
 .compare-card b { margin-top: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .86rem; }

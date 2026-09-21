@@ -513,8 +513,13 @@ function comparisonVerdict(nodes) {
     {score:cardScore(second.card),keywords:cardKeywords(second.card)}
   );
 }
+const SCORE_STAR_PATH='M12 2.6l2.8 5.67 6.26.91-4.53 4.42 1.07 6.24L12 16.88 6.4 19.83l1.07-6.24L2.94 9.17l6.26-.91L12 2.6z';
+function renderStars(score,label) {
+  const stars=Array.from({length:5},(_,index) => `<svg class="${index < score ? 'filled' : ''}" viewBox="0 0 24 24" aria-hidden="true"><path d="${SCORE_STAR_PATH}"/></svg>`).join('');
+  return `<span class="score-stars" role="img" aria-label="${esc(label)}、5段階中${score}">${stars}</span>`;
+}
 function renderScoreRow(label,score) {
-  return `<div><b>${label}</b><span class="score-stars" role="img" aria-label="5段階中${score}">${DECIDE_SCORING.stars(score)}</span></div>`;
+  return `<div><b>${label}</b>${renderStars(score,`${label}の進めやすさ`)}</div>`;
 }
 
 function deepPrompts() {
@@ -535,7 +540,8 @@ function renderSession() {
   const verdict=activeSession.mode === 'two' ? comparisonVerdict(activeSession.nodes.slice(0,2)) : null;
   const comparison=activeSession.mode === 'two' ? activeSession.nodes.slice(0,2).map((node,index) => {
     const reading=nodeReading(node,'two',index);
-    return `<article class="compare-node"><span>${esc(node.label.replace(' ',''))}</span><button class="compare-card card-detail-button" data-action="card-detail" data-index="${index}" aria-label="${esc(node.card.name)}の詳しい意味を見る"><span class="card-image-frame"><img data-card-image width="480" height="830" class="${node.card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(node.card)}" alt="${esc(node.card.name)}"></span><b>${esc(node.card.name)}</b><small>${orientationLabel(node.card)}</small></button><p><strong>${esc(reading.heading)}</strong>${esc(reading.body)}</p></article>`;
+    const label=node.label.replace(' ','');
+    return `<article class="compare-node"><div class="compare-heading"><span>${esc(label)}</span>${renderStars(verdict.scores[index],`${label}の進めやすさ`)}</div><button class="compare-card card-detail-button" data-action="card-detail" data-index="${index}" aria-label="${esc(node.card.name)}の詳しい意味を見る"><span class="card-image-frame"><img data-card-image width="480" height="830" class="${node.card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(node.card)}" alt="${esc(node.card.name)}"></span><b>${esc(node.card.name)}</b><small>${orientationLabel(node.card)}</small></button><p><strong>${esc(reading.heading)}</strong>${esc(reading.body)}</p></article>`;
   }).join('') : '';
   app.innerHTML = `
     <section class="screen map-screen">

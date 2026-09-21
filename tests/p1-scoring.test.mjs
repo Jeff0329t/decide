@@ -50,10 +50,12 @@ assert.equal(cases.bothHigh.note,'どちらも追い風です。差は小さい�
 for(const file of ['../dist/app.js','../dist/scoring.js','../dist/assets/cards.json'])assert.doesNotMatch(readFileSync(new URL(file,import.meta.url),'utf8'),/優勢/);
 assert.match(readFileSync(new URL('../dist/app.js',import.meta.url),'utf8'),/\['選択肢1','選択肢2','保留する'\]/);
 const appSource=readFileSync(new URL('../dist/app.js',import.meta.url),'utf8');
-assert.match(appSource,/aria-label="5段階中\$\{score\}"/);
+assert.match(appSource,/aria-label="\$\{esc\(label\)\}、5段階中\$\{score\}"/);
 assert.match(appSource,/activeSession\.imageReady=preloadCardImages\(drawOptions\)/);
 assert.match(appSource,/await \(activeSession\.imageReady \|\| preloadCardImages/);
 assert.equal(scoring.stars(2),'★★☆☆☆');
+assert.match(appSource,/function renderStars\(score,label\)/,'stars are rendered as mobile-safe SVG icons');
+assert.match(appSource,/class="compare-heading"[\s\S]*renderStars\(verdict\.scores\[index\]/,'each choice heading includes its five-star score');
 
 console.log(`P1 scoring: OK (${combinations} ordered combinations)`);
 for(const [name,result] of Object.entries(cases))console.log(`${name}: ${result.label}${result.note?` / ${result.note}`:''}`);
