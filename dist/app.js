@@ -732,23 +732,65 @@ function saveStory(id) {
 function openDeleteConfirm(id) {
   const log=logs.find(item=>item.id===id); if(!log)return;
   const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='delete-modal';
-  wrap.innerHTML=`<button class="modal-shade" data-action="close-delete" aria-label="削除確認を閉じる"></button><section class="settings-sheet confirm-sheet" role="dialog" aria-modal="true" aria-labelledby="delete-title"><div class="sheet-handle"></div><p class="eyebrow">Delete log</p><h2 id="delete-title">この履歴を削除しますか？</h2><p>「${esc(log.title)}」のカード、メモ、振り返り、ストーリーが削除されます。この操作は元に戻せません。</p><div class="confirm-actions"><button class="button secondary" data-action="close-delete">キャンセル</button><button class="button danger" data-action="confirm-delete" data-id="${log.id}">削除する</button></div></section>`;
+  wrap.innerHTML=`<button class="modal-shade" data-action="close-delete" aria-label="削除確認を閉じる"></button><section class="settings-sheet confirm-sheet" role="dialog" aria-modal="true" aria-labelledby="delete-title"><div class="sheet-handle"></div><p class="eyebrow">Delete log</p><h2 id="delete-title">この履歴を削除しますか？</h2><p>「<span data-delete-title></span>」のカード、メモ、振り返り、ストーリーが削除されます。この操作は元に戻せません。</p><div class="confirm-actions"><button class="button secondary" data-action="close-delete">キャンセル</button><button class="button danger" data-action="confirm-delete" data-id="${log.id}">削除する</button></div></section>`;
+  wrap.querySelector('[data-delete-title]').textContent=log.title;
   mountModal(wrap,'.settings-sheet [data-action="close-delete"]');
 }
 const modalBackground=()=>document.querySelectorAll('.topbar, #app, .bottom-nav');
 function setBackgroundInert(value) { modalBackground().forEach(element=>{ element.inert=value; if(value)element.setAttribute('aria-hidden','true'); else element.removeAttribute('aria-hidden'); }); }
 function focusableElements(modal) { return [...modal.querySelectorAll('.settings-sheet a[href], .settings-sheet button:not([disabled]), .settings-sheet input:not([disabled]), .settings-sheet textarea:not([disabled]), .settings-sheet select:not([disabled]), .settings-sheet [tabindex]:not([tabindex="-1"])')].filter(element=>!element.hidden && element.getClientRects().length); }
+let modalScrollY=0;
+function setBodyScrollLocked(value) {
+  const shell=document.querySelector('.app-shell');
+  if(value) {
+    if(document.body.classList.contains('modal-open'))return;
+    modalScrollY=window.scrollY;
+    if(shell)shell.style.top=`-${modalScrollY}px`;
+    document.body.classList.add('modal-open');
+    return;
+  }
+  if(!document.body.classList.contains('modal-open'))return;
+  document.body.classList.remove('modal-open');
+  shell?.style.removeProperty('top');
+  window.scrollTo(0,modalScrollY);
+}
+function enableSheetSwipe(wrap) {
+  const sheet=wrap.querySelector('.settings-sheet'); const handle=wrap.querySelector('.sheet-handle');
+  if(!sheet || !handle)return;
+  let startY=0; let distance=0; let tracking=false;
+  handle.addEventListener('pointerdown',event=>{
+    if(!event.isPrimary || sheet.scrollTop>0)return;
+    tracking=true; startY=event.clientY; distance=0; sheet.classList.add('is-dragging'); handle.setPointerCapture?.(event.pointerId);
+  });
+  handle.addEventListener('pointermove',event=>{
+    if(!tracking)return;
+    const next=event.clientY-startY;
+    if(next<=0){ distance=0; sheet.style.removeProperty('transform'); return; }
+    distance=Math.min(next,220); sheet.style.transform=`translateY(${distance}px)`; event.preventDefault();
+  });
+  const finish=()=>{
+    if(!tracking)return;
+    tracking=false; sheet.classList.remove('is-dragging'); sheet.style.removeProperty('transform');
+    if(distance>=72)closeModal(`#${wrap.id}`);
+    distance=0;
+  };
+  handle.addEventListener('pointerup',finish);
+  handle.addEventListener('pointercancel',finish);
+}
 function mountModal(wrap, initialSelector) {
   wrap.returnFocus=document.activeElement;
   document.body.appendChild(wrap);
+  setBodyScrollLocked(true);
   setBackgroundInert(true);
+  enableSheetSwipe(wrap);
   requestAnimationFrame(()=>{ wrap.classList.add('open'); const initial=wrap.querySelector(initialSelector) || focusableElements(wrap)[0] || wrap.querySelector('[role="dialog"]'); initial?.focus(); });
 }
 function closeModal(selector) {
   const modal=document.querySelector(selector); if(!modal || modal.classList.contains('closing'))return;
+  if(selector==='#card-modal')activeCardDetail=null;
   const returnFocus=modal.returnFocus;
   modal.classList.add('closing'); modal.classList.remove('open');
-  setTimeout(()=>{ modal.remove(); if(!document.querySelector('.modal-wrap:not(.closing)'))setBackgroundInert(false); if(returnFocus?.isConnected)returnFocus.focus(); else app.focus(); },180);
+  setTimeout(()=>{ modal.remove(); if(!document.querySelector('.modal-wrap:not(.closing)')){ setBackgroundInert(false); setBodyScrollLocked(false); } if(returnFocus?.isConnected)returnFocus.focus(); else app.focus(); },180);
 }
 function closeDelete() { closeModal('#delete-modal'); }
 function deleteLog(id) {
@@ -770,7 +812,7 @@ function openCardDetail(card, originQuestion='') {
   const content=cardContent(card);
   if(!content) {
     const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='card-modal';
-    wrap.innerHTML=`<button class="modal-shade" data-action="close-card-detail" aria-label="カード詳細を閉じる"></button><section class="settings-sheet card-detail-sheet" role="dialog" aria-modal="true" aria-labelledby="card-detail-title"><div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">Card meaning</p><h2 id="card-detail-title">カードの詳しい意味</h2></div><button data-action="close-card-detail" aria-label="閉じる">×</button></div><header class="card-detail-header"><span class="card-image-frame card-detail-image-frame"><img data-card-image width="480" height="830" class="${direction==='reversed'?'reversed-image':''}" src="${esc(cardImage(card))}" alt="${esc(card.name)}"></span><div><span class="orientation-badge">${orientationLabel(card)}</span><h3>${esc(card.name)}</h3></div></header></section>`;
+    wrap.innerHTML=`<button class="modal-shade" data-action="close-card-detail" aria-label="カード詳細を閉じる"></button><section class="settings-sheet card-detail-sheet" role="dialog" aria-modal="true" aria-labelledby="card-detail-title"><div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">Card meaning</p><h2 id="card-detail-title">カードの詳しい意味</h2></div><button data-action="close-card-detail" aria-label="閉じる">×</button></div><header class="card-detail-header"><span class="card-image-frame card-detail-image-frame"><img data-card-image width="480" height="830" class="${direction==='reversed'?'reversed-image':''}" src="${esc(cardImage(card))}" alt="${esc(card.name)}"></span><div><span class="orientation-badge">${orientationLabel(card)}</span><h3>${esc(card.name)}</h3></div></header><button class="button card-detail-close" data-action="close-card-detail">閉じる</button></section>`;
     mountModal(wrap,'.sheet-head button'); return;
   }
   const opposite=direction==='upright'?'reversed':'upright';
@@ -784,7 +826,7 @@ function openCardDetail(card, originQuestion='') {
     <div class="card-detail-copy"><section><h3>物語のなかの位置</h3><p>${esc(content.story)}</p></section><section><h3>絵柄と背景</h3><p>${esc(content.background)}</p></section><section><h3>この向きの意味</h3><div class="keyword-chips">${current.keywords.map(keyword=>`<i>${esc(keyword)}</i>`).join('')}</div><p class="direction-meaning">${esc(current.meaning)}</p></section>
     <section class="theme-reading"><h3>テーマ別の読み方</h3><div class="theme-tabs" role="tablist" aria-label="テーマを選ぶ">${Object.entries(cardThemeLabels).map(([key,label])=>`<button role="tab" aria-selected="${key===originKey}" class="${key===originKey?'selected':''}" data-action="card-theme" data-theme="${key}">${key===originKey?'<span aria-hidden="true">●</span>':''}${esc(label)}</button>`).join('')}</div><div class="theme-panel" role="tabpanel"><b data-theme-title>${esc(cardThemeLabels[originKey])}</b><p data-theme-text>${esc(current.themes[originKey])}</p></div></section>
     <details class="opposite-meaning"><summary>反対の向きでは <span>${opposite==='upright'?'正位置':'逆位置'}</span></summary><div class="keyword-chips">${other.keywords.map(keyword=>`<i>${esc(keyword)}</i>`).join('')}</div><p>${esc(other.meaning)}</p></details>
-    <small class="card-disclaimer">カードは未来を断定するものではありません。自分の状況を考える視点として使ってください。</small></div></section>`;
+    <small class="card-disclaimer">カードは未来を断定するものではありません。自分の状況を考える視点として使ってください。</small></div><button class="button card-detail-close" data-action="close-card-detail">閉じる</button></section>`;
   mountModal(wrap,'.sheet-head button');
 }
 function closeCardDetail() { activeCardDetail=null; closeModal('#card-modal'); }
@@ -867,7 +909,7 @@ function openShare(type='app', id=null) {
   wrap.innerHTML=`<button class="modal-shade" data-action="close-share" aria-label="共有画面を閉じる"></button><section class="settings-sheet share-sheet" role="dialog" aria-modal="true" aria-labelledby="share-title">
     <div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">Share</p><h2 id="share-title">${esc(heading)}</h2></div><button data-action="close-share" aria-label="閉じる">×</button></div>
     <p class="share-lead">${esc(lead)}</p>
-    ${type !== 'app' ? `<div class="share-card-preview"><div class="share-preview-images">${activeShareData.cards.map(card=>`<img class="${card.orientation==='reversed'?'reversed-image':''}" src="${card.image}" alt="${esc(card.name)}">`).join('')}</div><div class="share-preview">${esc(shareText).replace(/\n/g,'<br>')}</div></div>` : ''}
+    ${type !== 'app' ? `<div class="share-card-preview"><div class="share-preview-images">${activeShareData.cards.map(card=>`<img class="${card.orientation==='reversed'?'reversed-image':''}" src="${card.image}" alt="${esc(card.name)}">`).join('')}</div><div class="share-preview" data-share-preview></div></div>` : ''}
     <div class="share-grid">
       <a class="share-option line" href="https://line.me/R/msg/text/?${encodeURIComponent(`${shareText}\n${url}`)}" target="_blank" rel="noopener"><b>LINE</b><span>LINEで送る</span></a>
       <a class="share-option x-share" href="https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>𝕏</b><span>Xで共有</span></a>
@@ -875,8 +917,10 @@ function openShare(type='app', id=null) {
       <button class="share-option" data-action="native-share"><b>↗</b><span>その他</span></button>
     </div>
     ${type !== 'app' ? `<button class="copy-link image-save" data-action="save-share-image"><span>カード画像と結論を1枚にまとめます</span><b>画像を保存</b></button>` : ''}
-    <button class="copy-link" data-action="copy-link"><span>${esc(type === 'app' ? url : title)}</span><b>${type === 'app' ? 'リンクをコピー' : '文章をコピー'}</b></button>
+    <button class="copy-link" data-action="copy-link"><span data-share-copy-label></span><b>${type === 'app' ? 'リンクをコピー' : '文章をコピー'}</b></button>
   </section>`;
+  const preview=wrap.querySelector('[data-share-preview]'); if(preview)preview.textContent=shareText;
+  wrap.querySelector('[data-share-copy-label]').textContent=type==='app'?url:title;
   mountModal(wrap,'.sheet-head button');
 }
 function closeShare() { closeModal('#share-modal'); }
