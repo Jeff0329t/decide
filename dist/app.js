@@ -270,9 +270,24 @@ function cardImage(card) {
   const match=card.id?.match(/^m(\d)-(\d+)$/); if(!match)return '';
   const codes=['wa','cu','sw','pe']; return `./assets/rider-waite/${codes[Number(match[1])]}${String(Number(match[2])+1).padStart(2,'0')}.jpg`;
 }
-function preloadCardImages(cards=[]) {
-  cards.filter(Boolean).forEach(card => { const image=new Image(); image.src=cardImage(card); });
+const cardImagePromises=new Map();
+function preloadCardImage(card) {
+  const src=cardImage(card); if(!src)return Promise.resolve(false);
+  if(cardImagePromises.has(src))return cardImagePromises.get(src);
+  const promise=new Promise(resolve=>{
+    const image=new Image();
+    image.onload=()=>{
+      const decoded=typeof image.decode==='function' ? image.decode() : null;
+      if(decoded?.then)decoded.catch(()=>{}).finally(()=>resolve(true));
+      else resolve(true);
+    };
+    image.onerror=()=>resolve(false);
+    image.src=src;
+  });
+  cardImagePromises.set(src,promise);
+  return promise;
 }
+function preloadCardImages(cards=[]) { return Promise.all(cards.filter(Boolean).map(preloadCardImage)); }
 function prepareCardImage(image) {
   if (!(image instanceof HTMLImageElement) || !image.matches('[data-card-image]')) return;
   const reveal=()=>image.classList.add('is-loaded');
@@ -368,6 +383,7 @@ function startSession(mode) {
     ? [first, randomCard([first.id])]
     : shuffledDeck();
   activeSession = { id: crypto.randomUUID?.() || String(Date.now()), mode, startedAt:new Date().toISOString(), nodes:[], drawOptions, revealed:[] };
+  if(mode==='two')activeSession.imageReady=preloadCardImages(drawOptions);
   selectedDecision = '';
   navigate('draw');
 }
@@ -418,12 +434,17 @@ function renderDraw() {
   if(!two) requestAnimationFrame(()=>{ const deck=document.querySelector('.fan-deck'); if(deck){deck.scrollLeft=(deck.scrollWidth-deck.clientWidth)/2;setupFanFeedback(deck);} });
 }
 
-function flipCard(slot) {
+async function flipCard(slot) {
   if (!activeSession || activeSession.mode === 'two' || activeSession.revealed.includes(slot)) return;
   sensoryFeedback('reveal');
   activeSession.revealed.push(slot);
   const card = activeSession.drawOptions[slot];
-  preloadCardImages([card]);
+  const sessionId=activeSession.id;
+  document.querySelectorAll('.flip-card').forEach((item,index) => { if(index !== slot) item.disabled = true; });
+  const instruction = document.querySelector('.draw-instruction');
+  if (instruction) instruction.textContent = 'カードを開いています…';
+  await preloadCardImages([card]);
+  if(!activeSession || activeSession.id!==sessionId)return;
   const button = document.querySelector(`.flip-card[data-slot="${slot}"]`);
   if (button) {
     button.querySelector('.flip-inner')?.insertAdjacentHTML('beforeend',`<span class="flip-face flip-front" aria-hidden="false"><img class="${card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(card)}" alt="${esc(card.name)}"><em>${esc(card.name)}</em></span>`);
@@ -434,20 +455,21 @@ function flipCard(slot) {
     front?.setAttribute('aria-hidden','false');
     if (image) image.alt = card.name;
   }
-  const instruction = document.querySelector('.draw-instruction');
-  if (activeSession.mode === 'one') {
-    document.querySelectorAll('.flip-card').forEach((item,index) => { if(index !== slot) item.disabled = true; });
-    if (instruction) instruction.textContent = 'カードを開いています…';
-  }
   activeSession.nodes = [{question:'いま必要な視点',label:'NOW',card}];
-  setTimeout(() => { if (activeSession) navigate('session'); }, 620);
+  setTimeout(() => { if (activeSession?.id===sessionId) navigate('session'); }, 520);
 }
 
-function flipBoth() {
+async function flipBoth() {
   if (!activeSession || activeSession.mode !== 'two' || activeSession.revealed.length) return;
   sensoryFeedback('reveal');
   activeSession.revealed = [0, 1];
-  preloadCardImages(activeSession.drawOptions.slice(0,2));
+  const sessionId=activeSession.id;
+  const reveal = document.querySelector('[data-action="flip-both"]');
+  if (reveal) reveal.disabled = true;
+  const instruction = document.querySelector('.draw-instruction');
+  if (instruction) instruction.textContent = '2枚のカードを準備しています…';
+  await (activeSession.imageReady || preloadCardImages(activeSession.drawOptions.slice(0,2)));
+  if(!activeSession || activeSession.id!==sessionId)return;
   document.querySelectorAll('.flip-card').forEach((item, slot) => {
     const card = activeSession.drawOptions[slot];
     item.querySelector('.flip-inner')?.insertAdjacentHTML('beforeend',`<span class="flip-face flip-front" aria-hidden="false"><img class="${card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(card)}" alt="${esc(card.name)}"><em>${esc(card.name)}</em></span>`);
@@ -458,15 +480,12 @@ function flipBoth() {
     front?.setAttribute('aria-hidden','false');
     if (image) image.alt = card.name;
   });
-  const reveal = document.querySelector('[data-action="flip-both"]');
-  if (reveal) reveal.disabled = true;
-  const instruction = document.querySelector('.draw-instruction');
   if (instruction) instruction.textContent = '2つの視点を開いています…';
   activeSession.nodes = [
     {question:'選択肢1を選んだとき',label:'選択肢 1',card:activeSession.drawOptions[0]},
     {question:'選択肢2を選んだとき',label:'選択肢 2',card:activeSession.drawOptions[1]}
   ];
-  setTimeout(() => { if (activeSession) navigate('session'); }, 620);
+  setTimeout(() => { if (activeSession?.id===sessionId) navigate('session'); }, 520);
 }
 
 function renderCard(node, index) {
@@ -483,22 +502,19 @@ function renderCard(node, index) {
   </article>`;
 }
 
-const MAJOR_SIGNAL = {'愚者':1,'魔術師':2,'女教皇':1,'女帝':2,'皇帝':2,'教皇':1,'恋人':2,'戦車':2,'力':2,'隠者':0,'運命の輪':1,'正義':1,'吊るされた男':0,'死神':-1,'節制':2,'悪魔':-2,'塔':-2,'星':2,'月':-1,'太陽':2,'審判':2,'世界':2};
-function cardSignal(card) {
-  if(card.id?.startsWith('M')) {
-    const base=MAJOR_SIGNAL[card.name] ?? 0;
-    if(card.orientation==='upright')return base;
-    if(['悪魔','死神'].includes(card.name))return .5;
-    return Math.min(.5,-base || -.5);
-  }
-  const rank=Number(card.id?.match(/^m\d-(\d+)$/)?.[1]);
-  const upright=[1.5,.5,1.2,.8,-.7,1,.5,1.4,.4,.6,1,1.1,1.3,1.5][rank] ?? .5;
-  return card.orientation==='upright' ? upright : -Math.max(.4,upright*.7);
+function cardScore(card) {
+  const score=Number(orientationContent(card)?.score);
+  return Number.isInteger(score) && score>=1 && score<=5 ? score : 3;
 }
 function comparisonVerdict(nodes) {
-  const [first,second]=nodes; const difference=cardSignal(first.card)-cardSignal(second.card);
-  const winner=difference>=0 ? first : second; const other=difference>=0 ? second : first;
-  return {label:`${winner.label.replace(' ','')}が優勢です`,detail:`${winner.card.name}の「${meaning(winner.card)}」が、${other.label.replace(' ','')}より前へ進む材料を示しています。迷ったままにせず、現時点では${winner.label.replace(' ','')}を軸に考えるという結論です。`};
+  const [first,second]=nodes;
+  return DECIDE_SCORING.compare(
+    {score:cardScore(first.card),keywords:cardKeywords(first.card)},
+    {score:cardScore(second.card),keywords:cardKeywords(second.card)}
+  );
+}
+function renderScoreRow(label,score) {
+  return `<div><b>${label}</b><span class="score-stars" role="img" aria-label="5段階中${score}">${DECIDE_SCORING.stars(score)}</span></div>`;
 }
 
 function deepPrompts() {
@@ -525,10 +541,10 @@ function renderSession() {
     <section class="screen map-screen">
       <button class="text-back" data-action="home">← 最初に戻る</button>
       <div class="map-heading"><p class="eyebrow">Thought map</p><h2>${activeSession.mode === 'two' ? '2つの選択肢を<wbr>比べる' : 'カードが示す、<wbr>ひとつの視点'}</h2><p>${activeSession.mode === 'two' ? 'カードの向きと意味から、<wbr>どちらが今進めやすいかを<wbr>比べます。' : 'カードに未来を決めてもらうのではなく、<wbr>解説を自分の状況に照らして<wbr>読んでみてください。'}</p></div>
-      ${activeSession.mode === 'two' ? `<section class="verdict-card"><span>比較の目安</span><h3>${esc(verdict.label)}</h3><p>${esc(verdict.detail)}</p></section><div class="choice-comparison">${comparison}</div><div class="thought-map deep-map">${activeSession.nodes.slice(2).map((node,index) => renderCard(node,index + 2)).join('')}</div>` : `<div class="thought-map">${activeSession.nodes.map(renderCard).join('')}</div>`}
+      ${activeSession.mode === 'two' ? `<section class="verdict-card"><span class="verdict-kicker">カードの視点</span><h3>${esc(verdict.label)}</h3><div class="score-lines">${renderScoreRow('選択肢1',verdict.scores[0])}${renderScoreRow('選択肢2',verdict.scores[1])}</div><details class="score-help"><summary>進めやすさとは？</summary><p>その選択肢を「いま進める」ときの追い風の強さです。運勢の良し悪しではありません。</p></details><p class="verdict-reason">${esc(verdict.reason)}</p>${verdict.note?`<p class="verdict-note">${esc(verdict.note)}</p>`:''}<p class="verdict-closing">${esc(verdict.closing)}</p></section><div class="choice-comparison">${comparison}</div><div class="thought-map deep-map">${activeSession.nodes.slice(2).map((node,index) => renderCard(node,index + 2)).join('')}</div>` : `<div class="thought-map">${activeSession.nodes.map(renderCard).join('')}</div>`}
       <section class="deep-panel">
         ${caution ? `<div class="decision-nudge"><b>そろそろ、材料は十分かもしれません。</b><p>新しい視点を増やすより、今ある材料から決めてみませんか。</p></div>` : `<p class="panel-title">もう少し考えるなら</p>`}
-        ${canDraw ? `<p class="deep-help">気になるテーマを選ぶと、もう1枚のカードから詳しい視点を得られます。</p><div class="prompt-list">${prompts.map(p => `<button class="prompt-button" data-action="deepen" data-prompt="${esc(p)}"><b>${esc(p)}</b><span>このテーマを深掘り →</span></button>`).join('')}</div>` : `<p class="limit-note">カードはここまで。いま見えている材料を使って決めましょう。</p>`}
+        ${canDraw ? `<p class="deep-help">気になるテーマを選ぶと、もう1枚のカードから詳しい視点を得られます。</p><div class="prompt-list">${prompts.map(p => `<button class="prompt-button ${verdict?.tie && p==='決め手になる違い'?'recommended-prompt':''}" data-action="deepen" data-prompt="${esc(p)}">${verdict?.tie && p==='決め手になる違い'?'<em>今のおすすめ</em>':''}<b>${esc(p)}</b><span>このテーマを深掘り →</span></button>`).join('')}</div>` : `<p class="limit-note">カードはここまで。いま見えている材料を使って決めましょう。</p>`}
       </section>
       <div class="decision-dock"><button class="button" data-action="decide">これで決めた <span>→</span></button></div>
     </section>`;
@@ -545,7 +561,7 @@ function addDeep(prompt) {
 
 function renderDecision() {
   if (!activeSession) return navigate('home');
-  const options = activeSession.mode === 'two' ? ['選択肢1を選ぶ','選択肢2を選ぶ','保留する'] : ['進む','見送る','保留する'];
+  const options = activeSession.mode === 'two' ? ['選択肢1','選択肢2','保留する'] : ['進む','見送る','保留する'];
   app.innerHTML = `
     <section class="screen decide-screen">
       <button class="text-back" data-action="session">← マップに戻る</button>
