@@ -56,7 +56,7 @@
   function nodeLabel(log={},node={},index=0){
     const value=index<2?optionValue(log.options?.[String(index+1)]):'';
     const label=String(node.label||`CARD ${index+1}`).replace('選択肢 ','選択肢');
-    return value?`${label}・${value}`:label;
+    return value?`${label}：${value}`:label;
   }
   return {GENRES,PAIRS,optionValue,validGenre,savedOptions,autoTitle,recentChoices,decisionText,nodeLabel};
 });

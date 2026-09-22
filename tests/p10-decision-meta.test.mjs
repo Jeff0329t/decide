@@ -37,7 +37,7 @@ test('automatic titles follow priority and manual title is preserved in save cod
 test('history labels expose genre/options and old records remain compatible',()=>{
   const log={decision:'選択肢2',genre:'仕事',options:{'1':'続ける','2':'挑戦する'}};
   assert.equal(meta.decisionText(log),'選択肢2（挑戦する）');
-  assert.equal(meta.nodeLabel(log,nodes[0],0),'選択肢1・続ける');
+  assert.equal(meta.nodeLabel(log,nodes[0],0),'選択肢1：続ける');
   assert.equal(nodes[0].question,'選択肢1を選んだとき');
   assert.equal(meta.decisionText({decision:'進む'}),'進む');
   assert.equal(meta.nodeLabel({},nodes[0],0),'選択肢1');

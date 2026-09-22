@@ -42,13 +42,24 @@
           background:typeof content?.background==='string'?content.background:''
         };
       });
+      const verdict=cards.length===2?compare(cards.map((card,index)=>({card,label:`選択肢 ${index+1}`}))):null;
       return {
         title:payload.t||'決定の記録', decision:payload.d, cards, story:payload.s||'',
-        verdict:cards.length===2?compare(cards.map((card,index)=>({card,label:`選択肢 ${index+1}`}))).label:''
+        verdict
       };
     } catch {
       return null;
     }
+  }
+
+  function sharedOutcomeText(decision,verdict){
+    const answer=String(decision||'');
+    const base=`選んだ答え：${answer}`;
+    if(!verdict || verdict.tie || !/^選択肢[12]$/.test(answer))return base;
+    const recommended=verdict.difference>0?'選択肢1':'選択肢2';
+    return answer===recommended
+      ? `${base}　（カードの視点でもおすすめでした）`
+      : `${base}　（カードの視点では、${recommended}が進めやすそうでした。決めたのは本人です）`;
   }
 
   function renderSharedCard(card,escapeHtml){
@@ -59,5 +70,5 @@
     return `<article><img class="${card.orientation==='reversed'?'reversed-image':''}" src="${esc(card.image)}" alt="${esc(card.name)}"><div><span>${card.orientation==='reversed'?'逆位置':'正位置'}</span><h2>${esc(card.name)}</h2>${keywords}${meaning}${background}</div></article>`;
   }
 
-  root.DECIDE_SHARED={validSharedPayload,readSharedHash,normalizeSharedPayload,renderSharedCard};
+  root.DECIDE_SHARED={validSharedPayload,readSharedHash,normalizeSharedPayload,renderSharedCard,sharedOutcomeText};
 })(globalThis);

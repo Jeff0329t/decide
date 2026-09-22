@@ -54,7 +54,7 @@ const MAJOR_EXTRA_KEYWORDS={
 };
 
 const savedSettings = load(SETTINGS_KEY, {});
-let settings = { back:savedSettings.back || 'ink', feedback: savedSettings.feedback !== false, deckMode: savedSettings.deckMode || (savedSettings.reversed === false ? 'all-upright' : 'all-reversed'), ...savedSettings };
+let settings = { back:savedSettings.back || 'ink', feedback: savedSettings.feedback === true, deckMode: savedSettings.deckMode || (savedSettings.reversed === false ? 'all-upright' : 'all-reversed'), ...savedSettings };
 let logs = load(STORAGE_KEY, []);
 let activeSession = null;
 let currentView = 'home';
@@ -346,8 +346,8 @@ function renderHome() {
       <h1>心から納得いく<wbr>決断を。</h1>
       <p class="lead">カードをきっかけに、<wbr>考えを整理するための<wbr>ツールです。</p>
       <div class="choice-grid">
-        <button class="draw-choice primary" data-action="start" data-mode="one"><span class="mode-art one-art" aria-hidden="true"><i class="card-back back-${settings.back}"></i></span><strong>1枚引き</strong><span>設定中の${deckCount}枚から選ぶ</span></button>
-        <button class="draw-choice" data-action="start" data-mode="two"><span class="mode-art two-art" aria-hidden="true"><i class="card-back back-${settings.back}"></i><i class="card-back back-${settings.back}"></i></span><strong>2枚引き</strong><span>同じ${deckCount}枚から2枚を開く</span></button>
+        <button class="draw-choice primary" data-action="start" data-mode="one"><span class="mode-art one-art" aria-hidden="true"><i class="card-back back-${settings.back}"></i></span><strong>1枚引き</strong><span>ひとつの迷いを考える</span><small>設定中の${deckCount}枚から選ぶ</small></button>
+        <button class="draw-choice" data-action="start" data-mode="two"><span class="mode-art two-art" aria-hidden="true"><i class="card-back back-${settings.back}"></i><i class="card-back back-${settings.back}"></i></span><strong>2枚引き</strong><span>2つの選択肢を比べる</span><small>同じ${deckCount}枚から2枚を開く</small></button>
       </div>
       ${last ? `<button class="last-log" data-action="detail" data-id="${last.id}"><span>最近の決定</span><strong>${esc(last.title)}</strong><small>${esc(last.decision)} · ${formatDate(last.createdAt)}</small></button>` : ''}
     </section>`;
@@ -533,7 +533,7 @@ function renderSession() {
   app.innerHTML = `
     <section class="screen map-screen">
       <button class="text-back" data-action="home">← 最初に戻る</button>
-      <div class="map-heading"><p class="eyebrow">Thought map</p><h2>${activeSession.mode === 'two' ? '2つの選択肢を<wbr>比べる' : 'カードが示す、<wbr>ひとつの視点'}</h2><p>${activeSession.mode === 'two' ? 'カードの向きと意味から、<wbr>どちらが今進めやすいかを<wbr>比べます。' : 'カードに未来を決めてもらうのではなく、<wbr>解説を自分の状況に照らして<wbr>読んでみてください。'}</p></div>
+      <div class="map-heading"><p class="eyebrow">Thought map</p><h1>${activeSession.mode === 'two' ? '2つの選択肢を<wbr>比べる' : 'カードが示す、<wbr>ひとつの視点'}</h1><p>${activeSession.mode === 'two' ? 'カードの向きと意味から、<wbr>どちらが今進めやすいかを<wbr>比べます。' : 'カードに未来を決めてもらうのではなく、<wbr>解説を自分の状況に照らして<wbr>読んでみてください。'}</p></div>
       ${activeSession.mode === 'two' ? `<section class="verdict-card"><span class="verdict-kicker">カードの視点</span><h3>${esc(verdict.label)}</h3><div class="score-lines">${renderScoreRow('選択肢1',verdict.scores[0])}${renderScoreRow('選択肢2',verdict.scores[1])}</div><details class="score-help"><summary>進めやすさとは？</summary><p>その選択肢を「いま進める」ときの追い風の強さです。運勢の良し悪しではありません。</p></details><p class="verdict-reason">${esc(verdict.reason)}</p>${verdict.note?`<p class="verdict-note">${esc(verdict.note)}</p>`:''}<p class="verdict-closing">${esc(verdict.closing)}</p></section>${renderReflection('verdict',deepCount>0,verdict)}<div class="choice-comparison">${comparison}</div><div class="thought-map deep-map">${activeSession.nodes.slice(2).map((node,index) => renderCard(node,index + 2,true)).join('')}</div>` : `<div class="thought-map">${activeSession.nodes.map((node,index)=>renderCard(node,index,true)).join('')}</div>`}
     </section>`;
 }
@@ -709,7 +709,7 @@ function renderHistoryResults(results=filteredLogs()) {
 function historyItem(log) {
   const cards=(log.nodes || []).slice(0,3);
   const first=cards[0]?.card;
-  return `<div class="history-swipe" data-swipe-id="${log.id}"><button class="swipe-delete" data-action="delete-log" data-id="${log.id}">削除</button><div class="history-row"><button class="history-item" data-action="detail" data-id="${log.id}">
+  return `<div class="history-swipe" data-swipe-id="${log.id}"><button class="swipe-delete" data-action="delete-log" data-id="${log.id}" aria-hidden="true" tabindex="-1">削除</button><div class="history-row"><button class="history-item" data-action="detail" data-id="${log.id}">
     <span class="history-thumbs">${cards.map((node,index)=>`<img style="--stack:${index}" class="${node.card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(node.card)}" alt="">`).join('')}</span>
     <span class="history-copy"><time>${formatDate(log.createdAt)}</time><strong>${esc(log.title)}</strong>${log.genre?`<small class="history-genre">${esc(log.genre)}</small>`:''}<span>${esc(DECIDE_DECISION.decisionText(log))}</span>${first ? `<small>${esc(first.name)} · ${orientationLabel(first)} — ${esc(meaning(first))}</small>` : ''}</span>
     ${log.review ? `<em>${reviewIcon(log.review)} ${esc(log.review)}</em>` : '<em class="pending">未評価</em>'}<i class="history-arrow" aria-hidden="true">→</i>
@@ -916,7 +916,10 @@ function renderSharedResult() {
   if(!sharedPayload){ currentView='home'; return renderHome(); }
   const payload=normalizeSharedPayload(sharedPayload);
   if(!payload)return renderInvalidSharedResult();
-  app.innerHTML=`<section class="screen shared-screen"><p class="eyebrow">Shared from DECIDE</p><h1>${esc(payload.title||'決定の記録')}</h1><div class="shared-outcome"><span>選んだ答え</span><strong>${esc(payload.decision||'')}</strong>${payload.verdict?`<p>${esc(payload.verdict)}</p>`:''}</div><div class="shared-card-grid">${payload.cards.map(card=>DECIDE_SHARED.renderSharedCard(card,esc)).join('')}</div>${payload.story?`<section class="shared-story"><span>その後のストーリー</span><p>${esc(payload.story)}</p></section>`:''}<div class="shared-note"><b>DECIDEとは？</b><p>タロットカードをきっかけに、心から納得できる決断を助ける思考ツールです。</p></div><button class="button" data-action="open-app">自分もカードを引いてみる</button></section>`;
+  app.innerHTML=`<section class="screen shared-screen"><p class="eyebrow">Shared from DECIDE</p><h1 data-shared-title></h1><div class="shared-outcome"><strong data-shared-outcome></strong></div><div class="shared-card-grid">${payload.cards.map(card=>DECIDE_SHARED.renderSharedCard(card,esc)).join('')}</div>${payload.story?'<section class="shared-story"><span>その後のストーリー</span><p data-shared-story></p></section>':''}<div class="shared-note"><b>DECIDEとは？</b><p>タロットカードをきっかけに、心から納得できる決断を助ける思考ツールです。</p></div><button class="button" data-action="open-app">自分もカードを引いてみる</button></section>`;
+  app.querySelector('[data-shared-title]').textContent=payload.title||'決定の記録';
+  app.querySelector('[data-shared-outcome]').textContent=DECIDE_SHARED.sharedOutcomeText(payload.decision,payload.verdict);
+  const sharedStory=app.querySelector('[data-shared-story]'); if(sharedStory)sharedStory.textContent=payload.story;
 }
 
 async function createShareImageBlob(data) {
