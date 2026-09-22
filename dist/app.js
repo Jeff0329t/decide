@@ -963,7 +963,7 @@ function shareData(type='app', log=null) {
     const cardNodes=(log.nodes || []).slice(0,2);
     return {title:`${log.title}のその後 — DECIDE`,logTitle:log.title,decision:log.decision,heading:'その後をシェア',lead:'相手がリンクを開くと、カード画像・結論・その後のストーリーが表示されます。',text:`「${log.title}」\n結論：${log.decision}\nその後：${story}${log.story?.length > 420 ? '…' : ''}\n#DECIDE`,url:sharedResultUrl(log,type),cards:cardNodes.map(node=>({...node.card,image:cardImage(node.card),meaning:meaning(node.card)}))};
   }
-  return {title:'DECIDE — 決める前に、別の角度を。',heading:'DECIDEを共有',lead:'友だちにも、心から納得できる決断の時間を。共有されるのはアプリのURLだけで、あなたの履歴は含まれません。',text:'DECIDE — 決める前に、別の角度を。',url};
+  return {title:'DECIDE — 心から納得いく決断を。',heading:'DECIDEを共有',lead:'友だちにも、心から納得できる決断の時間を。共有されるのはアプリのURLだけで、あなたの履歴は含まれません。',text:'DECIDE — 心から納得いく決断を。',url};
 }
 function openShare(type='app', id=null) {
   const log=id ? logs.find(item=>item.id===id) : null;
