@@ -30,6 +30,7 @@ test('worker caches shell and up to 100 card images without skipWaiting',()=>{
   for(const file of ['index.html','app.js','styles.css','manifest.webmanifest','assets/cards.json'])assert.ok(worker.includes(file));
   assert.match(worker,/const IMAGE_LIMIT = 100/);
   assert.match(worker,/request\.mode === 'navigate'/);
+  assert.match(worker,/caches\.match\(new URL\('\.\/', SCOPE\)\.href\)/);
   assert.match(worker,/cacheCardImage\(request, event\)/);
   assert.doesNotMatch(worker,/skipWaiting\(/);
   assert.doesNotMatch(worker,/localStorage/);

@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'decide-shell-p14-v1';
+const SHELL_CACHE = 'decide-shell-p14-v2';
 const IMAGE_CACHE = 'decide-card-images-p14-v1';
 const IMAGE_LIMIT = 100;
 const SHELL_FILES = [
@@ -54,7 +54,7 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   if (url.origin !== SCOPE.origin) return;
   if (request.mode === 'navigate') {
-    event.respondWith(caches.match(new URL('./index.html', SCOPE).href).then(saved => saved || fetch(request)));
+    event.respondWith(caches.match(new URL('./', SCOPE).href).then(saved => saved || fetch(request)));
     return;
   }
   if (/^\/assets\/rider-waite\/(?:ar|wa|cu|sw|pe)\d{2}(?:-(?:320|480))?\.(?:jpg|webp)$/.test(url.pathname)) {
