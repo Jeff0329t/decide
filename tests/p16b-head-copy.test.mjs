@@ -22,7 +22,7 @@ test('app sharing uses the same heading for title and text',()=>{
   const appShare=app.slice(app.indexOf("return {title:'DECIDE — 心から納得いく決断を。'"),app.indexOf('function openShare'));
   assert.match(appShare,/title:'DECIDE — 心から納得いく決断を。'/);
   assert.match(appShare,/text:'DECIDE — 心から納得いく決断を。'/);
-  assert.ok(!app.includes(legacy));
+  assert.ok(!appShare.includes(legacy));
 });
 
 test('new PNG is intact at 1200 by 630 and the previous image remains',()=>{

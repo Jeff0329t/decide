@@ -1,6 +1,7 @@
 const app = document.querySelector('#app');
 const STORAGE_KEY = 'decide.tarot.logs.v1';
 const SETTINGS_KEY = 'decide.tarot.settings.v1';
+const TUTORIAL_KEY = 'decide.tarot.tutorial.v1';
 const BACKUP_SCHEMA = 1;
 const IMPORT_LIMIT_BYTES = 5 * 1024 * 1024;
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -83,6 +84,7 @@ let deepenThemeMap = {
 };
 let cardContentPromise = null;
 let activeCardDetail = null;
+let tutorial = null;
 let sharedPayload = readSharedPayload();
 if(sharedPayload)currentView='shared';
 
@@ -213,8 +215,7 @@ function randomCard(exclude=[]) {
   const useReversed = settings.deckMode.endsWith('reversed');
   return { ...base, orientation: useReversed && Math.random() < .28 ? 'reversed' : 'upright' };
 }
-function shuffledDeck() {
-  const source=settings.deckMode.startsWith('major') ? MAJOR : DECK;
+function shuffledDeck(source=settings.deckMode.startsWith('major') ? MAJOR : DECK) {
   const useReversed=settings.deckMode.endsWith('reversed');
   return source.map(card=>({...card,orientation:useReversed && Math.random()<.28 ? 'reversed' : 'upright'})).sort(()=>Math.random()-.5);
 }
@@ -310,6 +311,7 @@ function updateNavigationState(view=currentView) {
   });
 }
 function navigate(view, id=null) {
+  if(tutorial && ['home','history','detail','decide'].includes(view))finishTutorial('skipped',false);
   currentView = view; detailId = id;
   render(); requestAnimationFrame(() => app.focus({preventScroll:true}));
 }
@@ -351,6 +353,105 @@ function renderHome() {
       </div>
       ${last ? `<button class="last-log" data-action="detail" data-id="${last.id}"><span>最近の決定</span><strong>${esc(last.title)}</strong><small>${esc(last.decision)} · ${formatDate(last.createdAt)}</small></button>` : ''}
     </section>`;
+}
+
+function tutorialEvent(action, step) { window.dispatchEvent(new CustomEvent('decide:tutorial',{detail:{action,step}})); }
+function shouldAutoStartTutorial() {
+  if(currentView!=='home' || sharedPayload || logs.length || tutorial)return false;
+  try { return localStorage.getItem(TUTORIAL_KEY)===null; } catch { return false; }
+}
+function tutorialProgress(step) {
+  const dots=document.createElement('div'); dots.className='tutorial-progress'; dots.setAttribute('aria-label',`${step}/3`);
+  for(let index=1;index<=3;index++){ const dot=document.createElement('span'); dot.className=index===step?'current':''; dot.setAttribute('aria-hidden','true'); dots.append(dot); }
+  return dots;
+}
+function startTutorialIntro() {
+  if(tutorial || currentView!=='home')return;
+  tutorial={stage:1,selectedKeyword:null,returnFocus:document.activeElement};
+  tutorialEvent('start',1);
+  const wrap=document.createElement('div'); wrap.id='tutorial-intro'; wrap.className='tutorial-intro';
+  const dialog=document.createElement('section'); dialog.className='tutorial-intro-card'; dialog.setAttribute('role','dialog'); dialog.setAttribute('aria-modal','true'); dialog.setAttribute('aria-labelledby','tutorial-intro-title');
+  const skip=document.createElement('button'); skip.className='tutorial-intro-skip'; skip.dataset.action='tutorial-skip'; skip.textContent='スキップ';
+  const heading=document.createElement('h2'); heading.id='tutorial-intro-title'; heading.textContent='心から納得いく決断を。';
+  const lines=document.createElement('div'); lines.className='tutorial-intro-lines';
+  ['1 迷いを1つ、心の中で思い浮かべる（入力は要りません）','2 カードを1枚、直感で選ぶ','3 出てきた言葉が『しっくりくるか』だけ、答える'].forEach(copy=>{ const line=document.createElement('p'); line.textContent=copy; lines.append(line); });
+  const note=document.createElement('p'); note.className='tutorial-intro-note'; note.textContent='カードは答えを決めません。決めるのは、あなたです。';
+  const start=document.createElement('button'); start.className='button tutorial-intro-start'; start.dataset.action='tutorial-start'; start.textContent='やってみる';
+  dialog.append(skip,tutorialProgress(1),heading,lines,note,start); wrap.append(dialog);
+  document.body.append(wrap); setBodyScrollLocked(true); setBackgroundInert(true); start.focus();
+}
+function releaseTutorialIntro() {
+  const intro=document.querySelector('#tutorial-intro'); if(!intro)return;
+  intro.remove();
+  setBackgroundInert(false); setBodyScrollLocked(false);
+}
+function setTutorialInactive(element) { if(!element)return; element.inert=true; element.dataset.tutorialInert=''; }
+function restoreTutorialControls() {
+  document.querySelectorAll('[data-tutorial-inert]').forEach(element=>{ element.inert=false; delete element.dataset.tutorialInert; });
+  document.body.classList.remove('tutorial-running');
+}
+function tutorialCallout(copy) {
+  const bubble=document.createElement('aside'); bubble.className='tutorial-callout'; bubble.setAttribute('role','status'); bubble.setAttribute('aria-live','polite');
+  const text=document.createElement('p'); bubble.append(text);
+  requestAnimationFrame(()=>{ if(bubble.isConnected)text.textContent=copy; });
+  return bubble;
+}
+function renderTutorialStage() {
+  if(!tutorial || ![2,3].includes(tutorial.stage))return;
+  restoreTutorialControls(); document.body.classList.add('tutorial-running');
+  document.querySelectorAll('.tutorial-guidance').forEach(element=>element.remove());
+  const screen=app.querySelector(tutorial.stage===2?'.draw-screen':'.map-screen'); if(!screen)return;
+  const controls=document.createElement('div'); controls.className='tutorial-guidance tutorial-stage-controls';
+  const skip=document.createElement('button'); skip.dataset.action='tutorial-skip'; skip.textContent='スキップ'; controls.append(tutorialProgress(tutorial.stage),skip); document.body.append(controls);
+  let target;
+  if(tutorial.stage===2) {
+    setTutorialInactive(document.querySelector('.topbar')); setTutorialInactive(document.querySelector('.bottom-nav'));
+    [...screen.children].filter(element=>!element.classList.contains('fan-deck') && !element.classList.contains('tutorial-guidance')).forEach(setTutorialInactive);
+    target=screen.querySelector('.fan-deck');
+    const bubble=tutorialCallout('迷いを1つ、思い浮かべてください。気になるカードを1枚、タップ。'); bubble.classList.add('tutorial-guidance'); target?.before(bubble);
+  } else {
+    const node=screen.querySelector('.thought-node'); const reading=node?.querySelector('.reading'); const reflection=node?.querySelector('.reflection-card');
+    if(!node || !reading || !reflection)return;
+    setTutorialInactive(reflection); setTutorialInactive(node.querySelector('.compact-card'));
+    if(tutorial.phase==='keyword') {
+      target=reading;
+      const bubble=tutorialCallout(tutorial.selectedKeyword!==null?'その言葉が、迷いを整理する入口になるかもしれません。':'この中で、いま心に引っかかる言葉はどれですか？（1つ選んでください）'); bubble.classList.add('tutorial-guidance');
+      const chips=document.createElement('div'); chips.className='tutorial-keywords';
+      cardKeywords(activeSession.nodes[0].card).forEach((keyword,index)=>{ const button=document.createElement('button'); button.dataset.action='tutorial-keyword'; button.dataset.index=String(index); button.textContent=keyword; button.setAttribute('aria-pressed',String(tutorial.selectedKeyword===index)); if(tutorial.selectedKeyword===index)button.classList.add('selected'); chips.append(button); });
+      bubble.append(chips); reading.after(bubble);
+    } else {
+      target=reflection; reflection.classList.add('tutorial-highlight');
+      const bubble=tutorialCallout('しっくりきたら『決める』へ。まだ引っかかるなら、別の角度からもう1枚引けます。'); bubble.classList.add('tutorial-guidance');
+      const done=document.createElement('button'); done.className='button'; done.dataset.action='tutorial-complete'; done.textContent='わかった'; bubble.append(done); reflection.before(bubble);
+    }
+  }
+  requestAnimationFrame(()=>target?.scrollIntoView({block:'center',inline:'nearest',behavior:'auto'}));
+}
+function beginTutorialDraw() {
+  if(tutorial?.stage!==1)return;
+  releaseTutorialIntro(); tutorial.stage=2; tutorialEvent('step',2);
+  activeSession={id:crypto.randomUUID?.()||String(Date.now()),mode:'one',startedAt:new Date().toISOString(),nodes:[],drawOptions:shuffledDeck(MAJOR),revealed:[],tutorial:true};
+  selectedDecision=''; decisionDraft={genre:'',option1:'',option2:'',title:'',memo:''}; navigate('draw');
+}
+function beginTutorialResult() {
+  if(tutorial?.stage!==2)return;
+  tutorial.stage=3; tutorial.phase='keyword'; tutorialEvent('step',3); navigate('session');
+}
+function chooseTutorialKeyword(index) {
+  if(tutorial?.stage!==3 || tutorial.phase!=='keyword' || !cardKeywords(activeSession.nodes[0].card)[index])return;
+  tutorial.selectedKeyword=index; renderTutorialStage();
+  setTimeout(()=>{ if(tutorial?.stage===3 && tutorial.phase==='keyword' && tutorial.selectedKeyword===index){ tutorial.phase='reflection'; tutorialEvent('step',3); renderTutorialStage(); } },1400);
+}
+function finishTutorial(status, redirect=true) {
+  if(!tutorial)return;
+  const {stage,returnFocus}=tutorial; tutorialEvent(status==='completed'?'complete':'skip',stage);
+  safeSetItem(TUTORIAL_KEY,JSON.stringify({status,at:new Date().toISOString(),version:1}));
+  tutorial=null; releaseTutorialIntro(); document.querySelectorAll('.tutorial-guidance').forEach(element=>element.remove()); restoreTutorialControls();
+  if(activeSession?.tutorial)activeSession.tutorial=false;
+  if(status==='completed'){ renderSession(); toast('使い方は以上です。設定からいつでも見直せます。'); app.focus({preventScroll:true}); }
+  else if(redirect && stage===2){ activeSession=null; navigate('home'); }
+  else if(redirect && stage===3){ renderSession(); app.focus({preventScroll:true}); }
+  else if(returnFocus?.isConnected)returnFocus.focus({preventScroll:true});
 }
 
 function startSession(mode) {
@@ -410,6 +511,7 @@ function renderDraw() {
     <p class="draw-instruction">${two ? (activeSession.revealed.length ? '2つの視点を読み取っています…' : '2つを思い浮かべたら、カードを開きます') : (activeSession.revealed.length ? '選んだカードを開いています…' : '横にスワイプできます。気になるカードをタップしてください')}</p>
   </section>`;
   if(!two) requestAnimationFrame(()=>{ const deck=document.querySelector('.fan-deck'); if(deck){deck.scrollLeft=(deck.scrollWidth-deck.clientWidth)/2;setupFanFeedback(deck);} });
+  renderTutorialStage();
 }
 
 async function flipCard(slot) {
@@ -422,6 +524,7 @@ async function flipCard(slot) {
   const instruction = document.querySelector('.draw-instruction');
   if (instruction) instruction.textContent = 'カードを開いています…';
   await preloadCardImages([card]);
+  if(activeSession?.tutorial)await loadCardContent();
   if(!activeSession || activeSession.id!==sessionId)return;
   const button = document.querySelector(`.flip-card[data-slot="${slot}"]`);
   if (button) {
@@ -434,7 +537,7 @@ async function flipCard(slot) {
     if (image) image.alt = card.name;
   }
   activeSession.nodes = [{question:'いま必要な視点',label:'NOW',card}];
-  setTimeout(() => { if (activeSession?.id===sessionId) navigate('session'); }, 520);
+  setTimeout(() => { if (activeSession?.id===sessionId){ if(tutorial?.stage===2)beginTutorialResult(); else navigate('session'); } }, 520);
 }
 
 async function flipBoth() {
@@ -536,6 +639,7 @@ function renderSession() {
       <div class="map-heading"><p class="eyebrow">Thought map</p><h1>${activeSession.mode === 'two' ? '2つの選択肢を<wbr>比べる' : 'カードが示す、<wbr>ひとつの視点'}</h1><p>${activeSession.mode === 'two' ? 'カードの向きと意味から、<wbr>どちらが今進めやすいかを<wbr>比べます。' : 'カードに未来を決めてもらうのではなく、<wbr>解説を自分の状況に照らして<wbr>読んでみてください。'}</p></div>
       ${activeSession.mode === 'two' ? `<section class="verdict-card"><span class="verdict-kicker">カードの視点</span><h3>${esc(verdict.label)}</h3><div class="score-lines">${renderScoreRow('選択肢1',verdict.scores[0])}${renderScoreRow('選択肢2',verdict.scores[1])}</div><details class="score-help"><summary>進めやすさとは？</summary><p>その選択肢を「いま進める」ときの追い風の強さです。運勢の良し悪しではありません。</p></details><p class="verdict-reason">${esc(verdict.reason)}</p>${verdict.note?`<p class="verdict-note">${esc(verdict.note)}</p>`:''}<p class="verdict-closing">${esc(verdict.closing)}</p></section>${renderReflection('verdict',deepCount>0,verdict)}<div class="choice-comparison">${comparison}</div><div class="thought-map deep-map">${activeSession.nodes.slice(2).map((node,index) => renderCard(node,index + 2,true)).join('')}</div>` : `<div class="thought-map">${activeSession.nodes.map((node,index)=>renderCard(node,index,true)).join('')}</div>`}
     </section>`;
+  renderTutorialStage();
 }
 
 function toggleReflection(button) {
@@ -948,7 +1052,9 @@ function openSettings() {
     <div class="feedback-setting"><div><b>操作音・振動</b><p>カードを開く時や決定を保存する時に、控えめな反応を返します。</p></div><button class="toggle-button ${settings.feedback ? 'on' : ''}" data-action="toggle-feedback" aria-pressed="${settings.feedback}"><span></span><b>${settings.feedback ? 'ON' : 'OFF'}</b></button></div>
     <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">データ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}${isIOS() && !isStandalone() ? '<p class="safari-storage-note">Safariでは、記録は端末内に保存されます。しばらく開かないと消えることがあるため、ホーム画面への追加と、書き出しをおすすめします。</p>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-logs">履歴を書き出す</button><button class="button secondary" data-action="import-logs">履歴を読み込む</button></div><input id="import-file" type="file" accept="application/json,.json" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップJSON"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
     <div class="setting-note"><b>カードと深掘り提案</b><p>逆位置ありでは、引いたカードの約3割が逆位置になります。表面はパメラ・コールマン・スミスによる1909年のライダー＝ウェイト＝スミス版（パブリックドメイン）です。決定ログはこのブラウザ内だけに保存されます。</p></div>
+    <button class="tutorial-replay" data-action="tutorial-replay"></button>
   </section>`;
+  wrap.querySelector('[data-action="tutorial-replay"]').textContent='使い方をもう一度見る';
   mountModal(wrap,'.sheet-head button');
 }
 function closeSettings() { closeModal('#settings-modal'); }
@@ -1004,7 +1110,12 @@ function updateDeckSettingUI() {
 document.addEventListener('click', event => {
   const el = event.target.closest('[data-action], [data-nav]'); if (!el) return;
   const action = el.dataset.action || el.dataset.nav;
-  if (action === 'start') startSession(el.dataset.mode);
+  if (action === 'tutorial-start') beginTutorialDraw();
+  else if (action === 'tutorial-skip') finishTutorial('skipped');
+  else if (action === 'tutorial-keyword') chooseTutorialKeyword(Number(el.dataset.index));
+  else if (action === 'tutorial-complete') { if(tutorial?.stage===3 && tutorial.phase==='reflection')finishTutorial('completed'); }
+  else if (action === 'tutorial-replay') { closeSettings(); setTimeout(()=>{ try{localStorage.removeItem(TUTORIAL_KEY);}catch{} activeSession=null; navigate('home'); startTutorialIntro(); },180); }
+  else if (action === 'start') startSession(el.dataset.mode);
   else if (action === 'home') { activeSession=null; navigate('home'); }
   else if (action === 'history') navigate('history');
   else if (action === 'session') navigate('session');
@@ -1054,7 +1165,7 @@ document.addEventListener('click', event => {
   else if (action === 'save-share-image') downloadShareImage();
   else if (action === 'copy-link') copyShareLink();
   else if (action === 'close-settings') closeSettings();
-  else if (action === 'open-app') { history.replaceState(null,'',location.pathname); sharedPayload=null; activeSession=null; navigate('home'); }
+  else if (action === 'open-app') { history.replaceState(null,'',location.pathname); sharedPayload=null; activeSession=null; navigate('home'); if(shouldAutoStartTutorial())requestAnimationFrame(startTutorialIntro); }
 });
 document.addEventListener('submit', event => { if(event.target.id === 'save-form'){ event.preventDefault(); saveDecision(event.target); } });
 document.addEventListener('input', event => { if(event.target.id === 'history-search'){ historyQuery=event.target.value; const results=document.querySelector('[data-history-results]'); if(results)results.innerHTML=renderHistoryResults(); const count=event.target.closest('.history-search')?.querySelector('small'); if(count)count.textContent=historyQuery?`${filteredLogs().length}件`:''; } });
@@ -1062,6 +1173,16 @@ document.addEventListener('change', event => { if(event.target.id === 'import-fi
 document.querySelector('#settings-button').addEventListener('click', openSettings);
 document.querySelector('#share-button').addEventListener('click', () => openShare());
 document.addEventListener('keydown', event => {
+  if(tutorial) {
+    if(event.key==='Escape'){ event.preventDefault(); finishTutorial('skipped'); return; }
+    const intro=document.querySelector('#tutorial-intro');
+    if(intro && event.key==='Tab'){
+      const controls=[...intro.querySelectorAll('button')]; const first=controls[0],last=controls.at(-1);
+      if(event.shiftKey && document.activeElement===first){event.preventDefault();last.focus();}
+      else if(!event.shiftKey && document.activeElement===last){event.preventDefault();first.focus();}
+      return;
+    }
+  }
   const modal=document.querySelector('.modal-wrap.open');
   if(modal) {
     if(event.key === 'Escape') { event.preventDefault(); closeModal(`#${modal.id}`); return; }
@@ -1102,3 +1223,4 @@ function registerWebMcp() {
 registerWebMcp();
 loadCardContent();
 render();
+if(shouldAutoStartTutorial())requestAnimationFrame(startTutorialIntro);
