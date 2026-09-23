@@ -51,8 +51,8 @@ for(const file of ['../dist/app.js','../dist/scoring.js','../dist/assets/cards.j
 assert.match(readFileSync(new URL('../dist/app.js',import.meta.url),'utf8'),/\['選択肢1','選択肢2','保留する'\]/);
 const appSource=readFileSync(new URL('../dist/app.js',import.meta.url),'utf8');
 assert.match(appSource,/aria-label="\$\{esc\(label\)\}、5段階中\$\{score\}"/);
-assert.match(appSource,/activeSession\.imageReady=preloadCardImages\(drawOptions\)/);
-assert.match(appSource,/await \(activeSession\.imageReady \|\| preloadCardImages/);
+assert.match(appSource,/if\(mode==='two'\)preloadCardImages\(drawOptions\)/);
+assert.doesNotMatch(appSource,/await \(activeSession\.imageReady \|\| preloadCardImages/);
 assert.equal(scoring.stars(2),'★★☆☆☆');
 assert.match(appSource,/function renderStars\(score,label\)/,'stars are rendered as mobile-safe SVG icons');
 assert.match(appSource,/class="compare-heading"[\s\S]*renderStars\(verdict\.scores\[index\]/,'each choice heading includes its five-star score');

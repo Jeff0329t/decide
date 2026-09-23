@@ -236,6 +236,28 @@ function cardImage(card) {
   const match=card.id?.match(/^m(\d)-(\d+)$/); if(!match)return '';
   const codes=['wa','cu','sw','pe']; return `./assets/rider-waite/${codes[Number(match[1])]}${String(Number(match[2])+1).padStart(2,'0')}.jpg`;
 }
+function cardWebpSrcset(card) {
+  const jpg=cardImage(card);
+  return /\.jpg$/i.test(jpg) ? `${jpg.slice(0,-4)}-320.webp 320w, ${jpg.slice(0,-4)}-480.webp 480w` : '';
+}
+const CARD_IMAGE_HEIGHTS = [
+  805,832,825,821,825,827,821,829,827,821,835,827,844,829,833,846,831,827,829,827,827,829,
+  833,827,836,832,832,824,831,827,827,837,831,827,824,835,829,831,825,824,822,827,831,827,827,831,827,831,827,822,
+  831,822,836,825,831,829,827,827,827,833,832,829,835,825,831,829,825,830,829,831,827,825,832,827,829,829,831,833
+];
+function cardImageHeight(card) {
+  const match=cardImage(card).match(/(?:ar|wa|cu|sw|pe)(\d{2})\.jpg$/);
+  const code=cardImage(card).match(/(ar|wa|cu|sw|pe)\d{2}\.jpg$/)?.[1];
+  if(!match || !code)return 830;
+  const rank=Number(match[1]);
+  const start={ar:0,wa:22,cu:36,sw:50,pe:64}[code];
+  return CARD_IMAGE_HEIGHTS[start + rank - (code==='ar'?0:1)] || 830;
+}
+function cardPicture(card, {className='',alt=card.name,sizes='160px',attributes=''}={}) {
+  const src=esc(cardImage(card));
+  const srcset=cardWebpSrcset(card);
+  return `<picture>${srcset ? `<source type="image/webp" srcset="${esc(srcset)}" sizes="${sizes}">` : ''}<img data-card-image width="480" height="${cardImageHeight(card)}" class="${className}" src="${src}" alt="${esc(alt)}" ${attributes}></picture>`;
+}
 const cardImagePromises=new Map();
 function preloadCardImage(card) {
   const src=cardImage(card); if(!src)return Promise.resolve(false);
@@ -247,7 +269,12 @@ function preloadCardImage(card) {
       if(decoded?.then)decoded.catch(()=>{}).finally(()=>resolve(true));
       else resolve(true);
     };
-    image.onerror=()=>resolve(false);
+    image.onerror=()=>{
+      if(image.srcset){ image.srcset=''; image.src=src; }
+      else resolve(false);
+    };
+    image.srcset=cardWebpSrcset(card);
+    image.sizes='160px';
     image.src=src;
   });
   cardImagePromises.set(src,promise);
@@ -461,7 +488,7 @@ function startSession(mode) {
     ? [first, randomCard([first.id])]
     : shuffledDeck();
   activeSession = { id: crypto.randomUUID?.() || String(Date.now()), mode, startedAt:new Date().toISOString(), nodes:[], drawOptions, revealed:[] };
-  if(mode==='two')activeSession.imageReady=preloadCardImages(drawOptions);
+  if(mode==='two')preloadCardImages(drawOptions);
   selectedDecision = '';
   decisionDraft = {genre:'',option1:'',option2:'',title:'',memo:''};
   navigate('draw');
@@ -485,7 +512,7 @@ function drawCardButton(card, slot, label='') {
   const fanStyle=activeSession.mode === 'one' ? ` style="--tilt:${(((slot-center)/Math.max(center,1))*9).toFixed(2)}deg;--drop:${(Math.abs(slot-center)/Math.max(center,1)*18).toFixed(1)}px"` : '';
   const hiddenLabel=activeSession.mode === 'two' ? `選択肢${slot + 1}のカード（伏せてある）` : `伏せたカード ${slot + 1}枚目`;
   const tabIndex=activeSession.mode === 'one' ? ` tabindex="${slot === Math.floor(center) ? '0' : '-1'}"` : '';
-  const front=revealed ? `<span class="flip-face flip-front" aria-hidden="false"><img class="${card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(card)}" alt="${esc(card.name)}"><em>${esc(card.name)}</em></span>` : '';
+  const front=revealed ? `<span class="flip-face flip-front" aria-hidden="false">${cardPicture(card,{className:card.orientation === 'reversed' ? 'reversed-image' : ''})}<em>${esc(card.name)}</em></span>` : '';
   return `<${tag} class="flip-card ${activeSession.mode === 'two' ? 'pair-card' : ''} ${revealed ? 'flipped chosen' : ''}"${action} data-slot="${slot}"${fanStyle}${tabIndex} ${locked ? 'disabled' : ''} aria-label="${revealed ? `${card.name}を選びました` : hiddenLabel}">
     ${label ? `<b class="draw-label">${label}</b>` : ''}
     <span class="flip-inner">
@@ -514,7 +541,7 @@ function renderDraw() {
   renderTutorialStage();
 }
 
-async function flipCard(slot) {
+function flipCard(slot) {
   if (!activeSession || activeSession.mode === 'two' || activeSession.revealed.includes(slot)) return;
   sensoryFeedback('reveal');
   activeSession.revealed.push(slot);
@@ -523,12 +550,12 @@ async function flipCard(slot) {
   document.querySelectorAll('.flip-card').forEach((item,index) => { if(index !== slot) item.disabled = true; });
   const instruction = document.querySelector('.draw-instruction');
   if (instruction) instruction.textContent = 'カードを開いています…';
-  await preloadCardImages([card]);
-  if(activeSession?.tutorial)await loadCardContent();
+  preloadCardImages([card]);
+  if(activeSession?.tutorial)loadCardContent();
   if(!activeSession || activeSession.id!==sessionId)return;
   const button = document.querySelector(`.flip-card[data-slot="${slot}"]`);
   if (button) {
-    button.querySelector('.flip-inner')?.insertAdjacentHTML('beforeend',`<span class="flip-face flip-front" aria-hidden="false"><img class="${card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(card)}" alt="${esc(card.name)}"><em>${esc(card.name)}</em></span>`);
+    button.querySelector('.flip-inner')?.insertAdjacentHTML('beforeend',`<span class="flip-face flip-front" aria-hidden="false">${cardPicture(card,{className:card.orientation === 'reversed' ? 'reversed-image' : ''})}<em>${esc(card.name)}</em></span>`);
     button.classList.add('flipped','chosen');
     button.setAttribute('aria-label',`${card.name}を選びました`);
     const front = button.querySelector('.flip-front');
@@ -537,10 +564,13 @@ async function flipCard(slot) {
     if (image) image.alt = card.name;
   }
   activeSession.nodes = [{question:'いま必要な視点',label:'NOW',card}];
-  setTimeout(() => { if (activeSession?.id===sessionId){ if(tutorial?.stage===2)beginTutorialResult(); else navigate('session'); } }, 520);
+  setTimeout(async () => {
+    await loadCardContent();
+    if (activeSession?.id===sessionId){ if(tutorial?.stage===2)beginTutorialResult(); else navigate('session'); }
+  }, 520);
 }
 
-async function flipBoth() {
+function flipBoth() {
   if (!activeSession || activeSession.mode !== 'two' || activeSession.revealed.length) return;
   sensoryFeedback('reveal');
   activeSession.revealed = [0, 1];
@@ -549,11 +579,11 @@ async function flipBoth() {
   if (reveal) reveal.disabled = true;
   const instruction = document.querySelector('.draw-instruction');
   if (instruction) instruction.textContent = '2枚のカードを準備しています…';
-  await (activeSession.imageReady || preloadCardImages(activeSession.drawOptions.slice(0,2)));
+  preloadCardImages(activeSession.drawOptions.slice(0,2));
   if(!activeSession || activeSession.id!==sessionId)return;
   document.querySelectorAll('.flip-card').forEach((item, slot) => {
     const card = activeSession.drawOptions[slot];
-    item.querySelector('.flip-inner')?.insertAdjacentHTML('beforeend',`<span class="flip-face flip-front" aria-hidden="false"><img class="${card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(card)}" alt="${esc(card.name)}"><em>${esc(card.name)}</em></span>`);
+    item.querySelector('.flip-inner')?.insertAdjacentHTML('beforeend',`<span class="flip-face flip-front" aria-hidden="false">${cardPicture(card,{className:card.orientation === 'reversed' ? 'reversed-image' : ''})}<em>${esc(card.name)}</em></span>`);
     item.classList.add('flipped','chosen');
     item.setAttribute('aria-label',`${card.name}を開きました`);
     const front = item.querySelector('.flip-front');
@@ -566,7 +596,10 @@ async function flipBoth() {
     {question:'選択肢1を選んだとき',label:'選択肢 1',card:activeSession.drawOptions[0]},
     {question:'選択肢2を選んだとき',label:'選択肢 2',card:activeSession.drawOptions[1]}
   ];
-  setTimeout(() => { if (activeSession?.id===sessionId) navigate('session'); }, 520);
+  setTimeout(async () => {
+    await loadCardContent();
+    if (activeSession?.id===sessionId) navigate('session');
+  }, 520);
 }
 
 function renderCard(node, index, showReflection=false) {
@@ -576,7 +609,7 @@ function renderCard(node, index, showReflection=false) {
   return `<article class="thought-node ${c.orientation === 'reversed' ? 'is-reversed' : ''}">
     <div class="node-label"><span>${esc(node.label)}</span><b>${esc(node.question)}</b></div>
     <button class="compact-card card-detail-button" data-action="card-detail" data-index="${index}" aria-label="${esc(c.name)}の詳しい意味を見る">
-      <span class="card-image-frame reading-image-frame"><img data-card-image width="480" height="830" class="${c.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(c)}" alt="${esc(c.name)}"></span>
+      <span class="card-image-frame reading-image-frame">${cardPicture(c,{className:c.orientation === 'reversed' ? 'reversed-image' : '',sizes:'104px'})}</span>
       <div><span class="tarot-index">${esc(c.number)} · ${orientationLabel(c)}</span><strong>${esc(c.name)}</strong></div>
     </button>
     <div class="reading"><b>${esc(reading.heading)}</b><p>${esc(reading.body)}</p></div>
@@ -631,7 +664,7 @@ function renderSession() {
   const comparison=activeSession.mode === 'two' ? activeSession.nodes.slice(0,2).map((node,index) => {
     const reading=nodeReading(node,'two',index);
     const label=node.label.replace(' ','');
-    return `<article class="compare-node"><div class="compare-heading"><span>${esc(label)}</span>${renderStars(verdict.scores[index],`${label}の進めやすさ`)}</div><button class="compare-card card-detail-button" data-action="card-detail" data-index="${index}" aria-label="${esc(node.card.name)}の詳しい意味を見る"><span class="card-image-frame"><img data-card-image width="480" height="830" class="${node.card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(node.card)}" alt="${esc(node.card.name)}"></span><b>${esc(node.card.name)}</b><small>${orientationLabel(node.card)}</small></button><p><strong>${esc(reading.heading)}</strong>${esc(reading.body)}</p></article>`;
+    return `<article class="compare-node"><div class="compare-heading"><span>${esc(label)}</span>${renderStars(verdict.scores[index],`${label}の進めやすさ`)}</div><button class="compare-card card-detail-button" data-action="card-detail" data-index="${index}" aria-label="${esc(node.card.name)}の詳しい意味を見る"><span class="card-image-frame">${cardPicture(node.card,{className:node.card.orientation === 'reversed' ? 'reversed-image' : '',sizes:'160px'})}</span><b>${esc(node.card.name)}</b><small>${orientationLabel(node.card)}</small></button><p><strong>${esc(reading.heading)}</strong>${esc(reading.body)}</p></article>`;
   }).join('') : '';
   app.innerHTML = `
     <section class="screen map-screen">
@@ -814,7 +847,7 @@ function historyItem(log) {
   const cards=(log.nodes || []).slice(0,3);
   const first=cards[0]?.card;
   return `<div class="history-swipe" data-swipe-id="${log.id}"><button class="swipe-delete" data-action="delete-log" data-id="${log.id}" aria-hidden="true" tabindex="-1">削除</button><div class="history-row"><button class="history-item" data-action="detail" data-id="${log.id}">
-    <span class="history-thumbs">${cards.map((node,index)=>`<img style="--stack:${index}" class="${node.card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(node.card)}" alt="">`).join('')}</span>
+    <span class="history-thumbs">${cards.map((node,index)=>cardPicture(node.card,{className:node.card.orientation === 'reversed' ? 'reversed-image' : '',alt:'',sizes:'46px',attributes:`style="--stack:${index}"`})).join('')}</span>
     <span class="history-copy"><time>${formatDate(log.createdAt)}</time><strong>${esc(log.title)}</strong>${log.genre?`<small class="history-genre">${esc(log.genre)}</small>`:''}<span>${esc(DECIDE_DECISION.decisionText(log))}</span>${first ? `<small>${esc(first.name)} · ${orientationLabel(first)} — ${esc(meaning(first))}</small>` : ''}</span>
     ${log.review ? `<em>${reviewIcon(log.review)} ${esc(log.review)}</em>` : '<em class="pending">未評価</em>'}<i class="history-arrow" aria-hidden="true">→</i>
   </button><button class="history-delete-action" data-action="delete-log" data-id="${log.id}" aria-label="「${esc(log.title)}」を削除">削除</button></div></div>`;
@@ -850,7 +883,7 @@ function reviewIcon(review) { return ({'良かった':'◎','まあ良かった'
 function renderSavedCard(log,node,index) {
   const reading=nodeReading(node,log.mode,index);
   return `<article class="saved-card">
-    <button class="saved-card-image-button" data-action="saved-card-detail" data-id="${log.id}" data-index="${index}" aria-label="${esc(node.card.name)}の詳しい意味を見る"><span class="card-image-frame saved-card-image-frame"><img data-card-image width="480" height="830" class="${node.card.orientation === 'reversed' ? 'reversed-image' : ''}" src="${cardImage(node.card)}" alt="${esc(node.card.name)}"></span></button>
+    <button class="saved-card-image-button" data-action="saved-card-detail" data-id="${log.id}" data-index="${index}" aria-label="${esc(node.card.name)}の詳しい意味を見る"><span class="card-image-frame saved-card-image-frame">${cardPicture(node.card,{className:node.card.orientation === 'reversed' ? 'reversed-image' : '',sizes:'92px'})}</span></button>
     <div><span>${esc(DECIDE_DECISION.nodeLabel(log,node,index))} · ${esc(node.question || '')}</span><h3>${esc(node.card.name)} <small>${orientationLabel(node.card)}</small></h3><b>${esc(reading.heading)}</b><p>${esc(reading.body)}</p><button class="card-more" data-action="saved-card-detail" data-id="${log.id}" data-index="${index}">カードの詳しい意味を見る</button></div>
   </article>`;
 }
@@ -977,7 +1010,7 @@ function openCardDetail(card, originQuestion='') {
   const content=cardContent(card);
   if(!content) {
     const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='card-modal';
-    wrap.innerHTML=`<button class="modal-shade" data-action="close-card-detail" aria-label="カード詳細を閉じる"></button><section class="settings-sheet card-detail-sheet" role="dialog" aria-modal="true" aria-labelledby="card-detail-title"><div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">Card meaning</p><h2 id="card-detail-title">カードの詳しい意味</h2></div><button data-action="close-card-detail" aria-label="閉じる">×</button></div><header class="card-detail-header"><span class="card-image-frame card-detail-image-frame"><img data-card-image width="480" height="830" class="${direction==='reversed'?'reversed-image':''}" src="${esc(cardImage(card))}" alt="${esc(card.name)}"></span><div><span class="orientation-badge">${orientationLabel(card)}</span><h3>${esc(card.name)}</h3></div></header><button class="button card-detail-close" data-action="close-card-detail">閉じる</button></section>`;
+    wrap.innerHTML=`<button class="modal-shade" data-action="close-card-detail" aria-label="カード詳細を閉じる"></button><section class="settings-sheet card-detail-sheet" role="dialog" aria-modal="true" aria-labelledby="card-detail-title"><div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">Card meaning</p><h2 id="card-detail-title">カードの詳しい意味</h2></div><button data-action="close-card-detail" aria-label="閉じる">×</button></div><header class="card-detail-header"><span class="card-image-frame card-detail-image-frame">${cardPicture(card,{className:direction==='reversed'?'reversed-image':'',sizes:'132px'})}</span><div><span class="orientation-badge">${orientationLabel(card)}</span><h3>${esc(card.name)}</h3></div></header><button class="button card-detail-close" data-action="close-card-detail">閉じる</button></section>`;
     mountModal(wrap,'.sheet-head button'); return;
   }
   const opposite=direction==='upright'?'reversed':'upright';
@@ -987,7 +1020,7 @@ function openCardDetail(card, originQuestion='') {
   const number=card.number || content.id?.slice(2) || '';
   const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='card-modal';
   wrap.innerHTML=`<button class="modal-shade" data-action="close-card-detail" aria-label="カード詳細を閉じる"></button><section class="settings-sheet card-detail-sheet" role="dialog" aria-modal="true" aria-labelledby="card-detail-title"><div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">Card meaning</p><h2 id="card-detail-title">カードの詳しい意味</h2></div><button data-action="close-card-detail" aria-label="閉じる">×</button></div>
-    <header class="card-detail-header"><span class="card-image-frame card-detail-image-frame"><img data-card-image width="480" height="830" class="${direction==='reversed'?'reversed-image':''}" src="${cardImage(card)}" alt="${esc(card.name)}"></span><div><span class="orientation-badge">${orientationLabel(card)}</span><h3>${esc(content.name)}</h3>${content.en?`<p class="card-english">${esc(content.en)}</p>`:''}<p class="card-meta">番号 ${esc(number)} ・ ${esc(content.arcana)}</p>${content.symbol?`<p class="card-symbol">${esc(content.symbol)}</p>`:''}</div></header>
+    <header class="card-detail-header"><span class="card-image-frame card-detail-image-frame">${cardPicture(card,{className:direction==='reversed'?'reversed-image':'',sizes:'132px'})}</span><div><span class="orientation-badge">${orientationLabel(card)}</span><h3>${esc(content.name)}</h3>${content.en?`<p class="card-english">${esc(content.en)}</p>`:''}<p class="card-meta">番号 ${esc(number)} ・ ${esc(content.arcana)}</p>${content.symbol?`<p class="card-symbol">${esc(content.symbol)}</p>`:''}</div></header>
     <div class="card-detail-copy"><section><h3>物語のなかの位置</h3><p>${esc(content.story)}</p></section><section><h3>絵柄と背景</h3><p>${esc(content.background)}</p></section><section><h3>この向きの意味</h3><div class="keyword-chips">${current.keywords.map(keyword=>`<i>${esc(keyword)}</i>`).join('')}</div><p class="direction-meaning">${esc(current.meaning)}</p></section>
     <section class="theme-reading"><h3>テーマ別の読み方</h3><div class="theme-tabs" role="tablist" aria-label="テーマを選ぶ">${Object.entries(cardThemeLabels).map(([key,label])=>`<button role="tab" aria-selected="${key===originKey}" class="${key===originKey?'selected':''}" data-action="card-theme" data-theme="${key}">${key===originKey?'<span aria-hidden="true">●</span>':''}${esc(label)}</button>`).join('')}</div><div class="theme-panel" role="tabpanel"><b data-theme-title>${esc(cardThemeLabels[originKey])}</b><p data-theme-text>${esc(current.themes[originKey])}</p></div></section>
     <details class="opposite-meaning"><summary>反対の向きでは <span>${opposite==='upright'?'正位置':'逆位置'}</span></summary><div class="keyword-chips">${other.keywords.map(keyword=>`<i>${esc(keyword)}</i>`).join('')}</div><p>${esc(other.meaning)}</p></details>
@@ -1079,7 +1112,7 @@ function openShare(type='app', id=null) {
   wrap.innerHTML=`<button class="modal-shade" data-action="close-share" aria-label="共有画面を閉じる"></button><section class="settings-sheet share-sheet" role="dialog" aria-modal="true" aria-labelledby="share-title">
     <div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">Share</p><h2 id="share-title">${esc(heading)}</h2></div><button data-action="close-share" aria-label="閉じる">×</button></div>
     <p class="share-lead">${esc(lead)}</p>
-    ${type !== 'app' ? `<div class="share-card-preview"><div class="share-preview-images">${activeShareData.cards.map(card=>`<img class="${card.orientation==='reversed'?'reversed-image':''}" src="${card.image}" alt="${esc(card.name)}">`).join('')}</div><div class="share-preview" data-share-preview></div></div>` : ''}
+    ${type !== 'app' ? `<div class="share-card-preview"><div class="share-preview-images">${activeShareData.cards.map(card=>cardPicture(card,{className:card.orientation==='reversed'?'reversed-image':'',sizes:'82px'})).join('')}</div><div class="share-preview" data-share-preview></div></div>` : ''}
     <div class="share-grid">
       <a class="share-option line" href="https://line.me/R/msg/text/?${encodeURIComponent(`${shareText}\n${url}`)}" target="_blank" rel="noopener"><b>LINE</b><span>LINEで送る</span></a>
       <a class="share-option x-share" href="https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>𝕏</b><span>Xで共有</span></a>
@@ -1221,6 +1254,11 @@ function registerWebMcp() {
 }
 
 registerWebMcp();
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').then(registration => registration.update()).catch(() => {});
+  }, {once:true});
+}
 loadCardContent();
 render();
 if(shouldAutoStartTutorial())requestAnimationFrame(startTutorialIntro);

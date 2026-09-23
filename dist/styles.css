@@ -147,8 +147,10 @@ h2 { font-size: 1.5rem; line-height: 1.35; letter-spacing: -.025em; }
 .compact-card strong { font-size: clamp(1.08rem,5vw,1.35rem); word-break: keep-all; overflow-wrap: normal; }
 .is-reversed .compact-card { background: linear-gradient(145deg,var(--card-surface),var(--paper)); }
 .card-image-frame { position: relative; display: block; overflow: hidden; aspect-ratio: 480 / 830; background: var(--card-placeholder); }
-.card-image-frame > img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .24s ease; }
-.card-image-frame > img.is-loaded { opacity: 1; }
+.card-image-frame > picture { display: block; width: 100%; height: 100%; }
+.card-image-frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
+img[data-card-image] { opacity: 0; transition: opacity .24s ease; }
+img[data-card-image].is-loaded { opacity: 1; }
 .reading-image-frame { flex: 0 0 auto; width: 104px; margin-right: 18px; border-radius: 7px; box-shadow: 0 5px 14px rgba(30,36,48,.16); }
 .reversed-image { transform: rotate(180deg); }
 .reading { padding: 16px 4px 0 16px; }
@@ -482,6 +484,7 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .flip-face { position: absolute; inset: 0; display: grid; place-items: center; backface-visibility: hidden; border-radius: 11px; box-shadow: 0 15px 32px rgba(30,36,48,.2); overflow: hidden; }
 .flip-back i { color: rgba(255,255,255,.82); font-size: .75rem; font-style: normal; font-weight: 800; letter-spacing: .17em; }
 .flip-front { transform: rotateY(180deg); background: var(--front-surface); border: 1px solid var(--front-border); }
+.flip-front picture { display: block; width: 100%; height: 100%; }
 .flip-front img { width: 100%; height: 100%; object-fit: cover; }
 .flip-front em { position: absolute; inset: auto 4px 4px; padding: 4px 3px; border-radius: 5px; background: var(--front-label); color: var(--front-label-ink); font-style: normal; font-size: .75rem; font-weight: 800; line-height: 1.2; }
 .draw-label { display: block; margin-bottom: 9px; color: var(--accent); font-size: 1rem; }

@@ -25,7 +25,7 @@ test('tutorial draw uses 22 major cards and keeps deck mode unchanged',()=>{
   assert.match(app,/drawOptions:shuffledDeck\(MAJOR\)/);
   assert.match(app,/function shuffledDeck\(source=settings\.deckMode\.startsWith\('major'\) \? MAJOR : DECK\)/);
   assert.match(app,/orientation:useReversed && Math\.random\(\)<\.28 \? 'reversed' : 'upright'/);
-  assert.match(app,/if\(activeSession\?\.tutorial\)await loadCardContent\(\)/);
+  assert.match(app,/if\(activeSession\?\.tutorial\)loadCardContent\(\)/);
   assert.match(app,/if\(tutorial\?\.stage===2\)beginTutorialResult\(\)/);
 });
 
