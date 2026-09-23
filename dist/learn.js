@@ -2,7 +2,7 @@
 (() => {
   const KEY='decide.tarot.learn.v1';
   const FILTERS=[['all','すべて'],['ar','大アルカナ'],['wa','ワンド'],['cu','カップ'],['sw','ソード'],['pe','ペンタクル']];
-  let data=null, pending=null, tab='cards', filter='all', query='', lessonId=null, answer=null;
+  let data=null, pending=null, tab='cards', filter='all', query='', lessonId=null;
   let viewed=[], read={}, visible=[], cardIndex=-1, direction='upright', returnTile=null, observer=null;
   const state=load(KEY,{});
   if(Array.isArray(state.viewed))viewed=[...new Set(state.viewed.filter(id=>typeof id==='string'))];
@@ -190,10 +190,7 @@
       [...data.numbers.map(n=>[String(n.n),n.label]),...data.court.map(c=>[c.name,c.label])].forEach(([name,label])=>{const row=el('tr');row.append(el('th','',name),el('td','',label));body.append(row);});table.append(body);pane.append(table);
     }
     const points=el('section','learn-points');points.append(el('h3','','要点'));const list=el('ul');lesson.points.forEach(p=>list.append(el('li','',p)));points.append(list);pane.append(points);
-    const quiz=el('section','learn-quiz');quiz.append(el('h3','','ミニクイズ'),el('p','',lesson.quiz.q));
-    lesson.quiz.choices.forEach((choice,i)=>{const b=btn(choice,'answer','learn-answer');b.dataset.index=String(i);if(answer!==null){b.disabled=true;b.classList.toggle('correct',i===lesson.quiz.answer);b.classList.toggle('incorrect',i===answer && i!==lesson.quiz.answer);}quiz.append(b);});
-    if(answer!==null)quiz.append(el('p','learn-explain',`${answer===lesson.quiz.answer?'正解です。':'不正解です。'}${lesson.quiz.explain}`));
-    pane.append(quiz,btn(read[lesson.id]?'読んだ ✓':'読んだ','read-lesson','button learn-mark-read'));
+    pane.append(btn(read[lesson.id]?'読んだ ✓':'読んだ','read-lesson','button learn-mark-read'));
   }
   document.addEventListener('click',event=>{
     const target=event.target.closest('[data-learn]');if(!target)return;
@@ -209,13 +206,12 @@
       modal.querySelectorAll('[data-learn="theme"]').forEach(b=>b.setAttribute('aria-selected',String(b===target)));
       const panel=modal.querySelector('.theme-panel');panel.querySelector('b').textContent=cardThemeLabels[target.dataset.theme];panel.querySelector('p').textContent=copy.themes[target.dataset.theme];return;
     }
-    if(action==='related'){closeModal('#card-modal');tab='lessons';lessonId=target.dataset.id;answer=null;setTimeout(()=>{render();window.scrollTo(0,0);signal('lesson',lessonId);},190);return;}
-    if(action==='tab'){tab=target.dataset.tab;lessonId=null;answer=null;render();return;}
+    if(action==='related'){closeModal('#card-modal');tab='lessons';lessonId=target.dataset.id;setTimeout(()=>{render();window.scrollTo(0,0);signal('lesson',lessonId);},190);return;}
+    if(action==='tab'){tab=target.dataset.tab;lessonId=null;render();return;}
     if(action==='filter'){filter=target.dataset.filter;document.querySelectorAll('.learn-filter').forEach(b=>b.setAttribute('aria-pressed',String(b===target)));fillGrid(document.querySelector('[data-learn-grid]'));return;}
-    if(action==='lesson'){lessonId=target.dataset.id;answer=null;render();window.scrollTo(0,0);signal('lesson',lessonId);return;}
-    if(action==='lesson-list'){lessonId=null;answer=null;render();return;}
-    if(action==='answer'){answer=Number(target.dataset.index);signal('quiz',lessonId);render();requestAnimationFrame(()=>document.querySelector('.learn-explain')?.scrollIntoView({block:'nearest'}));return;}
-    if(action==='read-lesson'){read[lessonId]=true;save();lessonId=null;answer=null;render();return;}
+    if(action==='lesson'){lessonId=target.dataset.id;render();window.scrollTo(0,0);signal('lesson',lessonId);return;}
+    if(action==='lesson-list'){lessonId=null;render();return;}
+    if(action==='read-lesson'){read[lessonId]=true;save();lessonId=null;render();return;}
   });
   document.addEventListener('input',event=>{
     if(event.target.id!=='learn-search')return;

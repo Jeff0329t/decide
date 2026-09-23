@@ -8,20 +8,19 @@ const source=await readFile(new URL('../dist/learn.js',import.meta.url),'utf8');
 const app=await readFile(new URL('../dist/app.js',import.meta.url),'utf8');
 const worker=await readFile(new URL('../dist/service-worker.js',import.meta.url),'utf8');
 
-test('six lessons contain body, points and valid three-choice quizzes',()=>{
+test('six lessons contain complete reading content',()=>{
   assert.equal(learn.lessons.length,6);
   for(const [index,lesson] of learn.lessons.entries()){
     assert.equal(lesson.id,`l${index+1}`);
     assert.ok(lesson.title && lesson.summary && lesson.minutes===1);
     assert.ok(lesson.body.length && lesson.body.every(Boolean));
     assert.ok(lesson.points.length && lesson.points.every(Boolean));
-    assert.equal(lesson.quiz.choices.length,3);
-    assert.ok(lesson.quiz.answer>=0 && lesson.quiz.answer<3 && lesson.quiz.explain);
   }
   assert.equal(learn.suits.length,4);
   assert.equal(learn.numbers.length,10);
   assert.equal(learn.court.length,4);
   assert.equal(learn.majorJourney.length,4);
+  assert.doesNotMatch(source,/learn-quiz|action==='answer'/);
 });
 
 test('all 78 cards have searchable meanings, keywords and themes',()=>{

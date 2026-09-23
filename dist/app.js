@@ -58,7 +58,7 @@ const savedSettings = load(SETTINGS_KEY, {});
 let settings = { back:savedSettings.back || 'ink', feedback: savedSettings.feedback === true, deckMode: savedSettings.deckMode || (savedSettings.reversed === false ? 'all-upright' : 'all-reversed'), ...savedSettings };
 const DECK_PRESETS = [
   {mode:'major-upright',name:'シンプル',subtitle:'大アルカナ22枚・正位置のみ',one:'絵柄が印象的で、意味が分かりやすい。',benefit:'迷わず読める／初めてでも使いやすい',drawback:'日常の細かい場面までは出にくい',scene:'はじめての方。大きなテーマを考えたいとき'},
-  {mode:'major-reversed',name:'ふかみ',subtitle:'大アルカナ22枚・正位置と逆位置（44通り）',one:'22枚のまま、気をつけたい点も読める。',benefit:'一つの札を、両面から読める',drawback:'逆位置の読み方に、少し慣れが要る',scene:'大きな決断を、両面から見たいとき'},
+  {mode:'major-reversed',name:'深め',subtitle:'大アルカナ22枚・正位置と逆位置（44通り）',one:'22枚のまま、気をつけたい点も読める。',benefit:'一つの札を、両面から読める',drawback:'逆位置の読み方に、少し慣れが要る',scene:'大きな決断を、両面から見たいとき'},
   {mode:'all-upright',name:'いろいろ',subtitle:'全78枚・正位置のみ',one:'身近な場面まで、カードが広がる。',benefit:'仕事・お金・人間関係など、日常の具体的な場面が出る',drawback:'枚数が多く、選ぶのに少し時間がかかる',scene:'日々の迷いを整理したいとき'},
   {mode:'all-reversed',name:'くわしい',subtitle:'全78枚・正位置と逆位置（156通り）',one:'状況の細部まで、両面から読める。',benefit:'細やかな読みが得られる',drawback:'情報量が多く、読むのに時間がかかる',scene:'じっくり整理したいとき'}
 ];

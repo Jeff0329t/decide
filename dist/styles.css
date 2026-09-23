@@ -330,7 +330,7 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .sheet-handle { width: 38px; height: 4px; border-radius: 99px; background: var(--line); margin: 0 auto 12px; }
 .sheet-head { display: flex; justify-content: space-between; align-items: center; }
 .sheet-head h2 { margin: 0; }
-.sheet-head button { width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--soft); cursor: pointer; font-size: 1.4rem; }
+.sheet-head button { box-sizing: border-box; width: 48px; min-width: 48px; max-width: 48px; height: 48px; min-height: 48px; flex: 0 0 48px; padding: 0; border: 0; border-radius: 50%; background: var(--soft); cursor: pointer; font-size: 1.4rem; line-height: 1; }
 .setting-row { display: flex; justify-content: space-between; gap: 18px; align-items: center; margin-top: 24px; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); cursor: pointer; }
 .setting-row span { display: grid; gap: 5px; }
 .setting-row small { color: var(--muted); font-size: .78rem; }
@@ -638,7 +638,7 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .shared-card-grid h2 { margin: 3px 0 7px; font-size: .95rem; word-break: keep-all; overflow-wrap: normal; }
 .shared-card-grid b { color: var(--accent); font-size: .8rem; }
 .shared-card-grid p { margin: 7px 0 0; color: var(--muted); font-size: .76rem; line-height: 1.6; }
-.card-detail-sheet .sheet-head button { width: 44px; height: 44px; }
+.card-detail-sheet .sheet-head button { width: 48px; height: 48px; }
 .shared-keywords { margin: 7px 0 9px; }
 .shared-background { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
 .shared-background h3 { margin: 0; color: var(--ink); font-size: .76rem; }
@@ -770,13 +770,9 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .learn-rank-table { width: 100%; margin: 20px 0; border-collapse: collapse; font-size: .85rem; }
 .learn-rank-table th, .learn-rank-table td { padding: 8px; border-bottom: 1px solid var(--line); text-align: left; }
 .learn-rank-table th { width: 34%; color: var(--accent); }
-.learn-points, .learn-quiz, .learn-complete { margin: 20px 0; padding: 16px; border-radius: 14px; background: var(--soft); }
-.learn-points h3, .learn-quiz h3 { margin-bottom: 8px; font-size: 1rem; }
+.learn-points, .learn-complete { margin: 20px 0; padding: 16px; border-radius: 14px; background: var(--soft); }
+.learn-points h3 { margin-bottom: 8px; font-size: 1rem; }
 .learn-points ul { margin: 0; padding-left: 22px; }
-.learn-answer { width: 100%; min-height: 44px; display: block; margin: 7px 0; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); text-align: left; cursor: pointer; }
-.learn-answer.correct { border-color: var(--accent); background: var(--accent-soft); font-weight: 800; }
-.learn-answer.incorrect { border-color: var(--danger); }
-.learn-explain { margin: 12px 0 0; font-weight: 700; }
 .learn-mark-read { width: 100%; min-height: 48px; }
 .learn-complete .button { min-height: 48px; }
 @media (max-width: 380px) { .learn-grid { gap: 8px 6px; } .learn-tile { padding: 4px; } .learn-tile-name { font-size: .75rem; } }

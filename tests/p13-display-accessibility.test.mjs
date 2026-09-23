@@ -47,7 +47,7 @@ test('declared small text and requested tap targets meet minimums',()=>{
     [/\.outcome button \{[^}]*min-height: 44px/,'share result button'],
     [/\.card-more \{[^}]*min-height: 44px/,'card detail link'],
     [/\.danger-zone button \{[^}]*min-height: 44px/,'history delete button'],
-    [/\.sheet-head button \{ width: 44px; height: 44px/,'sheet close button'],
+    [/\.sheet-head button \{[^}]*width: 48px;[^}]*height: 48px/,'sheet close button'],
     [/\.segmented-switch button \{[^}]*min-height: 44px/,'settings switches'],
     [/\.toggle-button \{[^}]*min-height: 44px/,'feedback switch'],
     [/\.storage-banner \.banner-close \{[^}]*width: 44px; height: 44px/,'banner close button'],

@@ -78,6 +78,6 @@ assert.match(appSource,/view==='history' \|\| view==='detail'/);
 assert.match(appSource,/setAttribute\('aria-current','page'\)/);
 assert.match(appSource,/try \{[\s\S]*renderSharedResult\(\)[\s\S]*catch\(error\)/);
 assert.match(cssSource,/\.theme-tabs button \{[^}]*min-height: 44px/);
-assert.match(cssSource,/\.card-detail-sheet \.sheet-head button \{ width: 44px; height: 44px; \}/);
+assert.match(cssSource,/\.card-detail-sheet \.sheet-head button \{ width: 48px; height: 48px; \}/);
 
 console.log(`P8 shared result: OK (${rendered} card orientations rendered)`);
