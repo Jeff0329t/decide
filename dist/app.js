@@ -519,11 +519,8 @@ function startSession(mode) {
 
 function backPicker() {
   const choice=([id,label])=>`<button class="back-choice ${settings.back === id ? 'selected' : ''}" data-action="select-back" data-value="${id}" aria-label="${label}" aria-pressed="${settings.back === id}"><i class="card-back back-${id}"></i><small>${label}</small><b aria-hidden="true">${settings.back === id ? '✓' : ''}</b></button>`;
-  const extra=DECIDE_CARD_BACKS.slice(10);
-  const showExtra=extra.some(([id])=>id===settings.back);
   return `<div class="back-picker" aria-label="カードの裏面を選ぶ">
-    ${DECIDE_CARD_BACKS.slice(0,10).map(choice).join('')}
-    <details class="back-more" ${showExtra?'open':''}><summary>ほかの${extra.length}種類を見る</summary><div class="back-more-grid">${extra.map(choice).join('')}</div></details>
+    ${DECIDE_CARD_BACKS.map(choice).join('')}
   </div>`;
 }
 function selectBack(id) {

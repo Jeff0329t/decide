@@ -44,8 +44,10 @@ test('old card-back IDs remain and all new designs have styles',()=>{
   assert.equal(new Set(backs.map(([id])=>id)).size,34);
   for(const id of ['lines','classic','plain','ivory','cobalt','graph','ripple','sunrise','ink','steps'])assert.ok(backs.some(([name])=>name===id));
   for(const [id] of backs)assert.ok(css.includes(`.back-${id} {`),`${id} missing style`);
-  assert.match(app,/DECIDE_CARD_BACKS\.slice\(0,10\)\.map\(choice\)/);
-  assert.match(app,/extra\.map\(choice\)/);
+  assert.match(app,/DECIDE_CARD_BACKS\.map\(choice\)/);
+  assert.doesNotMatch(app,/ほかの\$\{extra\.length\}種類を見る/);
+  assert.equal(backs[0][0],'coral-glow');
+  assert.equal(backs.at(-1)[0],'lines');
   assert.match(html,/\.\/card-backs\.js/);
   assert.match(worker,/\.\/card-backs\.js/);
 });
