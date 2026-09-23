@@ -56,6 +56,12 @@ const MAJOR_EXTRA_KEYWORDS={
 
 const savedSettings = load(SETTINGS_KEY, {});
 let settings = { back:savedSettings.back || 'ink', feedback: savedSettings.feedback === true, deckMode: savedSettings.deckMode || (savedSettings.reversed === false ? 'all-upright' : 'all-reversed'), ...savedSettings };
+const DECK_PRESETS = [
+  {mode:'major-upright',name:'シンプル',subtitle:'大アルカナ22枚・正位置のみ',one:'絵柄が印象的で、意味が分かりやすい。',benefit:'迷わず読める／初めてでも使いやすい',drawback:'日常の細かい場面までは出にくい',scene:'はじめての方。大きなテーマを考えたいとき'},
+  {mode:'major-reversed',name:'ふかみ',subtitle:'大アルカナ22枚・正位置と逆位置（44通り）',one:'22枚のまま、気をつけたい点も読める。',benefit:'一つの札を、両面から読める',drawback:'逆位置の読み方に、少し慣れが要る',scene:'大きな決断を、両面から見たいとき'},
+  {mode:'all-upright',name:'いろいろ',subtitle:'全78枚・正位置のみ',one:'身近な場面まで、カードが広がる。',benefit:'仕事・お金・人間関係など、日常の具体的な場面が出る',drawback:'枚数が多く、選ぶのに少し時間がかかる',scene:'日々の迷いを整理したいとき'},
+  {mode:'all-reversed',name:'くわしい',subtitle:'全78枚・正位置と逆位置（156通り）',one:'状況の細部まで、両面から読める。',benefit:'細やかな読みが得られる',drawback:'情報量が多く、読むのに時間がかかる',scene:'じっくり整理したいとき'}
+];
 let logs = load(STORAGE_KEY, []);
 let activeSession = null;
 let currentView = 'home';
@@ -1072,19 +1078,36 @@ function wrapCanvasText(ctx,text,x,y,maxWidth,lineHeight,maxLines=3){ let line='
 function loadShareImage(src){return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=reject;image.src=src;});}
 async function downloadShareImage(){ if(!activeShareData?.cards?.length)return; const blob=await createShareImageBlob(activeShareData); if(!blob)return; const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download='decide-result.png';link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000);toast('共有画像を保存しました'); }
 
+function renderDeckPresets() {
+  return DECK_PRESETS.map(preset => {
+    const selected=settings.deckMode===preset.mode;
+    return `<button type="button" class="deck-preset ${selected?'selected':''}" role="radio" aria-checked="${selected}" tabindex="${selected?'0':'-1'}" data-action="deck-preset" data-value="${preset.mode}">
+      <span class="deck-preset-head"><strong>${preset.name}</strong><span class="deck-preset-badge" ${selected?'':'hidden'}>使用中</span></span>
+      <span class="deck-preset-subtitle">${preset.subtitle}</span>
+      <span class="deck-preset-line"><b>ひとこと：</b>${preset.one}</span>
+      <span class="deck-preset-line"><b>メリット：</b>${preset.benefit}</span>
+      <span class="deck-preset-line"><b>デメリット：</b>${preset.drawback}</span>
+      <span class="deck-preset-line"><b>向いている場面：</b>${preset.scene}</span>
+    </button>`;
+  }).join('');
+}
 function openSettings() {
   const wrap = document.createElement('div'); wrap.className='modal-wrap'; wrap.id='settings-modal';
   wrap.innerHTML = `<button class="modal-shade" data-action="close-settings" aria-label="設定を閉じる"></button><section class="settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title">
     <div class="sheet-handle"></div><div class="sheet-head"><h2 id="settings-title">設定</h2><button data-action="close-settings" aria-label="閉じる">×</button></div>
-    <div class="deck-setting"><b>使うカード</b><p>2つのスイッチを組み合わせて選びます</p>
+    <div class="deck-setting"><b id="deck-setting-title">使うカード</b><p>引くカードの種類と、逆位置の有無を選べます。あとから、いつでも変えられます。</p>
+      <div class="deck-presets" role="radiogroup" aria-labelledby="deck-setting-title">${renderDeckPresets()}</div>
+      <div class="deck-preset-notes"><p>選ぶと、次に引くカードから変わります。これまでの履歴は変わりません。</p><p>逆位置ありでは、引いたカードの約3割が逆位置になります。</p></div>
+      <details class="deck-advanced"><summary>詳しく設定する</summary>
       <div class="setting-switch-row"><span><b>カード範囲</b><small data-deck-count>${settings.deckMode.startsWith('major') ? '22枚' : '78枚'}</small></span><div class="segmented-switch" aria-label="使うカードの範囲"><button class="${settings.deckMode.startsWith('major') ? 'selected' : ''}" data-action="deck-scope" data-value="major">大アルカナ</button><button class="${settings.deckMode.startsWith('all') ? 'selected' : ''}" data-action="deck-scope" data-value="all">全カード</button></div></div>
       <div class="setting-switch-row"><span><b>カードの向き</b><small data-orientation-note>${settings.deckMode.endsWith('reversed') ? '逆位置を含む' : '正位置だけ'}</small></span><div class="segmented-switch" aria-label="カードの向き"><button class="${settings.deckMode.endsWith('upright') ? 'selected' : ''}" data-action="deck-orientation" data-value="upright">正位置のみ</button><button class="${settings.deckMode.endsWith('reversed') ? 'selected' : ''}" data-action="deck-orientation" data-value="reversed">正逆あり</button></div></div>
       <div class="deck-summary"><span>現在</span><strong data-deck-summary>${settings.deckMode.startsWith('major') ? '大アルカナ22枚' : '全78枚'}・${settings.deckMode.endsWith('reversed') ? '正位置／逆位置' : '正位置のみ'}</strong></div>
+      </details>
     </div>
     <div class="setting-backs"><b>カードの裏面</b>${backPicker()}</div>
     <div class="feedback-setting"><div><b>操作音・振動</b><p>カードを開く時や決定を保存する時に、控えめな反応を返します。</p></div><button class="toggle-button ${settings.feedback ? 'on' : ''}" data-action="toggle-feedback" aria-pressed="${settings.feedback}"><span></span><b>${settings.feedback ? 'ON' : 'OFF'}</b></button></div>
     <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">データ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}${isIOS() && !isStandalone() ? '<p class="safari-storage-note">Safariでは、記録は端末内に保存されます。しばらく開かないと消えることがあるため、ホーム画面への追加と、書き出しをおすすめします。</p>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-logs">履歴を書き出す</button><button class="button secondary" data-action="import-logs">履歴を読み込む</button></div><input id="import-file" type="file" accept="application/json,.json" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップJSON"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
-    <div class="setting-note"><b>カードと深掘り提案</b><p>逆位置ありでは、引いたカードの約3割が逆位置になります。表面はパメラ・コールマン・スミスによる1909年のライダー＝ウェイト＝スミス版（パブリックドメイン）です。決定ログはこのブラウザ内だけに保存されます。</p></div>
+    <div class="setting-note"><b>カードと深掘り提案</b><p>表面はパメラ・コールマン・スミスによる1909年のライダー＝ウェイト＝スミス版（パブリックドメイン）です。決定ログはこのブラウザ内だけに保存されます。</p></div>
     <button class="tutorial-replay" data-action="tutorial-replay"></button>
   </section>`;
   wrap.querySelector('[data-action="tutorial-replay"]').textContent='使い方をもう一度見る';
@@ -1130,9 +1153,22 @@ function closeShare() { closeModal('#share-modal'); }
 async function shareNative() { const data=activeShareData || shareData(); if(navigator.share){ try{ const blob=data.cards?.length?await createShareImageBlob(data):null; const file=blob?new File([blob],'decide-result.png',{type:'image/png'}):null; const payload={title:data.title,text:data.text,url:data.url}; if(file&&navigator.canShare?.({files:[file]}))payload.files=[file]; await navigator.share(payload); }catch{} } else { await copyShareLink(); } }
 async function copyShareLink() { const data=activeShareData || shareData(); try{ await navigator.clipboard.writeText(`${data.text}\n${data.url}`); sensoryFeedback('tap'); toast(data.heading === 'DECIDEを共有' ? '共有リンクをコピーしました' : '共有する文章をコピーしました'); }catch{ toast('コピーできませんでした'); } }
 function toast(message) { const t=document.querySelector('#toast'); t.textContent=message; t.classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>t.classList.remove('show'),1800); }
+function selectDeckMode(mode) {
+  const preset=DECK_PRESETS.find(item=>item.mode===mode); if(!preset)return;
+  settings.deckMode=mode; persist(); updateDeckSettingUI();
+  if(currentView==='home')renderHome();
+  toast(`${preset.name}を使います`);
+}
 function updateDeckSettingUI() {
   const modal=document.querySelector('#settings-modal'); if(!modal)return;
   const major=settings.deckMode.startsWith('major'); const reversed=settings.deckMode.endsWith('reversed');
+  modal.querySelectorAll('[data-action="deck-preset"]').forEach(item=>{
+    const selected=item.dataset.value===settings.deckMode;
+    item.classList.toggle('selected',selected);
+    item.setAttribute('aria-checked',String(selected));
+    item.tabIndex=selected?0:-1;
+    item.querySelector('.deck-preset-badge').hidden=!selected;
+  });
   modal.querySelectorAll('[data-action="deck-scope"]').forEach(item=>item.classList.toggle('selected',item.dataset.value===(major?'major':'all')));
   modal.querySelectorAll('[data-action="deck-orientation"]').forEach(item=>item.classList.toggle('selected',item.dataset.value===(reversed?'reversed':'upright')));
   modal.querySelector('[data-deck-count]').textContent=major?'22枚':'78枚';
@@ -1165,8 +1201,9 @@ document.addEventListener('click', event => {
   else if (action === 'recent-option') useRecentChoice(Number(el.dataset.recentIndex));
   else if (action === 'detail') navigate('detail', el.dataset.id);
   else if (action === 'review') setReview(el.dataset.value);
-  else if (action === 'deck-scope') { const orientation=settings.deckMode.endsWith('reversed')?'reversed':'upright'; settings.deckMode=`${el.dataset.value}-${orientation}`; persist(); updateDeckSettingUI(); if(currentView==='home')renderHome(); toast('使うカードを変更しました'); }
-  else if (action === 'deck-orientation') { const scope=settings.deckMode.startsWith('major')?'major':'all'; settings.deckMode=`${scope}-${el.dataset.value}`; persist(); updateDeckSettingUI(); if(currentView==='home')renderHome(); toast('カードの向きを変更しました'); }
+  else if (action === 'deck-preset') selectDeckMode(el.dataset.value);
+  else if (action === 'deck-scope') { const orientation=settings.deckMode.endsWith('reversed')?'reversed':'upright'; selectDeckMode(`${el.dataset.value}-${orientation}`); }
+  else if (action === 'deck-orientation') { const scope=settings.deckMode.startsWith('major')?'major':'all'; selectDeckMode(`${scope}-${el.dataset.value}`); }
   else if (action === 'toggle-feedback') { settings.feedback=!settings.feedback; persist(); el.classList.toggle('on',settings.feedback); el.setAttribute('aria-pressed',String(settings.feedback)); el.querySelector('b').textContent=settings.feedback?'ON':'OFF'; if(settings.feedback)sensoryFeedback('tap'); toast(settings.feedback?'操作音・振動をONにしました':'操作音・振動をOFFにしました'); }
   else if (action === 'export-logs') exportLogs();
   else if (action === 'export-failed-log') { const failed=el.closest('#save-failed-modal')?.failedLog; if(failed){ storageEvent('exportFromError'); exportLogs([failed],false); } }
@@ -1219,6 +1256,17 @@ document.addEventListener('keydown', event => {
   const modal=document.querySelector('.modal-wrap.open');
   if(modal) {
     if(event.key === 'Escape') { event.preventDefault(); closeModal(`#${modal.id}`); return; }
+    const radio=event.target.closest?.('[data-action="deck-preset"]');
+    if(radio && modal.id==='settings-modal') {
+      if(['ArrowDown','ArrowRight','ArrowUp','ArrowLeft','Home','End'].includes(event.key)) {
+        event.preventDefault();
+        const radios=[...modal.querySelectorAll('[data-action="deck-preset"]')];
+        const step=['ArrowDown','ArrowRight'].includes(event.key)?1:-1;
+        const index=event.key==='Home'?0:event.key==='End'?radios.length-1:(radios.indexOf(radio)+step+radios.length)%radios.length;
+        radios[index].click(); radios[index].focus(); return;
+      }
+      if(event.key==='Enter' || event.key===' ') { event.preventDefault(); radio.click(); return; }
+    }
     if(event.key === 'Tab') {
       const focusable=focusableElements(modal); if(!focusable.length)return;
       const first=focusable[0], last=focusable.at(-1);

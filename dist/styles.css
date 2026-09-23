@@ -390,7 +390,25 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .copy-link b { flex: 0 0 auto; color: var(--accent); font-size: .75rem; }
 .deck-setting { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
 .deck-setting > b { font-size: .9rem; }
-.deck-setting > p { margin: 4px 0 12px; color: var(--muted); font-size: .76rem; }
+.deck-setting > p { margin: 4px 0 12px; color: var(--muted); font-size: .875rem; line-height: 1.5; }
+.deck-presets { display: grid; gap: 10px; }
+.deck-preset { width: 100%; min-height: 44px; padding: 15px; display: grid; gap: 6px; border: 1px solid var(--line); border-radius: 13px; background: var(--paper); color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.deck-preset.selected { border-color: var(--accent); background: var(--accent-soft); }
+.deck-preset:focus-visible, .deck-advanced summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.deck-preset-head { min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.deck-preset-head strong { font-size: 1rem; }
+.deck-preset-badge { flex: 0 0 auto; padding: 3px 8px; border-radius: 99px; background: var(--accent); color: var(--on-accent); font-size: .75rem; font-weight: 800; }
+.deck-preset-badge[hidden] { display: none; }
+.deck-preset-subtitle { color: var(--accent); font-size: .875rem; font-weight: 800; }
+.deck-preset-line { min-width: 0; font-size: .875rem; line-height: 1.5; overflow-wrap: break-word; }
+.deck-preset-line b { font-weight: 800; }
+.deck-preset-notes { margin: 11px 0 0; }
+.deck-preset-notes p { margin: 4px 0; color: var(--muted); font-size: .78rem; line-height: 1.55; }
+.deck-advanced { margin-top: 16px; border-top: 1px solid var(--line); }
+.deck-advanced summary { min-height: 44px; display: flex; align-items: center; justify-content: space-between; color: var(--accent); cursor: pointer; font-size: .875rem; font-weight: 800; list-style: none; }
+.deck-advanced summary::-webkit-details-marker { display: none; }
+.deck-advanced summary::after { content: '＋'; font-size: 1.1rem; }
+.deck-advanced[open] summary::after { content: '−'; }
 .deck-mode-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
 .deck-mode { position: relative; min-height: 82px; padding: 13px 32px 13px 13px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 8px; border: 1px solid var(--line); border-radius: 13px; background: var(--paper); cursor: pointer; text-align: left; }
 .deck-mode > span { display: grid; gap: 3px; }
