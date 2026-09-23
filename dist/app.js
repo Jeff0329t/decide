@@ -349,6 +349,7 @@ function navigate(view, id=null) {
   render(); requestAnimationFrame(() => app.focus({preventScroll:true}));
 }
 function render() {
+  document.body.classList.toggle('learn-active',currentView==='learn');
   updateNavigationState();
   try {
     if (currentView === 'shared') return renderSharedResult();
@@ -357,6 +358,7 @@ function render() {
     if (currentView === 'decide') return renderDecision();
     if (currentView === 'history') return renderHistory();
     if (currentView === 'detail') return renderDetail();
+    if (currentView === 'learn') return window.DECIDE_LEARN.render();
     return renderHome();
   } catch(error) {
     console.error('DECIDE render error',error);
@@ -1107,8 +1109,9 @@ function openSettings() {
     <div class="setting-backs"><b>カードの裏面</b>${backPicker()}</div>
     <div class="feedback-setting"><div><b>操作音・振動</b><p>カードを開く時や決定を保存する時に、控えめな反応を返します。</p></div><button class="toggle-button ${settings.feedback ? 'on' : ''}" data-action="toggle-feedback" aria-pressed="${settings.feedback}"><span></span><b>${settings.feedback ? 'ON' : 'OFF'}</b></button></div>
     <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">データ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}${isIOS() && !isStandalone() ? '<p class="safari-storage-note">Safariでは、記録は端末内に保存されます。しばらく開かないと消えることがあるため、ホーム画面への追加と、書き出しをおすすめします。</p>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-logs">履歴を書き出す</button><button class="button secondary" data-action="import-logs">履歴を読み込む</button></div><input id="import-file" type="file" accept="application/json,.json" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップJSON"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
-    <div class="setting-note"><b>カードと深掘り提案</b><p>表面はパメラ・コールマン・スミスによる1909年のライダー＝ウェイト＝スミス版（パブリックドメイン）です。決定ログはこのブラウザ内だけに保存されます。</p></div>
-    <button class="tutorial-replay" data-action="tutorial-replay"></button>
+     <div class="setting-note"><b>カードと深掘り提案</b><p>表面はパメラ・コールマン・スミスによる1909年のライダー＝ウェイト＝スミス版（パブリックドメイン）です。決定ログはこのブラウザ内だけに保存されます。</p></div>
+     <button class="learn-entry" data-action="open-learn"><span aria-hidden="true">▣</span><span>タロットを学ぶ（カード図鑑）</span><span aria-hidden="true">→</span></button>
+     <button class="tutorial-replay" data-action="tutorial-replay"></button>
   </section>`;
   wrap.querySelector('[data-action="tutorial-replay"]').textContent='使い方をもう一度見る';
   mountModal(wrap,'.sheet-head button');
@@ -1184,6 +1187,7 @@ document.addEventListener('click', event => {
   else if (action === 'tutorial-keyword') chooseTutorialKeyword(Number(el.dataset.index));
   else if (action === 'tutorial-complete') { if(tutorial?.stage===3 && tutorial.phase==='reflection')finishTutorial('completed'); }
   else if (action === 'tutorial-replay') { closeSettings(); setTimeout(()=>{ try{localStorage.removeItem(TUTORIAL_KEY);}catch{} activeSession=null; navigate('home'); startTutorialIntro(); },180); }
+  else if (action === 'open-learn') window.DECIDE_LEARN.open();
   else if (action === 'start') startSession(el.dataset.mode);
   else if (action === 'home') { activeSession=null; navigate('home'); }
   else if (action === 'history') navigate('history');
