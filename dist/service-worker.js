@@ -1,9 +1,9 @@
-const SHELL_CACHE = 'decide-shell-p19-v1';
+const SHELL_CACHE = 'decide-shell-obsidian-backs-v1';
 const IMAGE_CACHE = 'decide-card-images-p14-v1';
 const IMAGE_LIMIT = 100;
 const SHELL_FILES = [
   './', './index.html', './app.js', './styles.css', './scoring.js',
-  './shared.js', './interview.js', './decision-meta.js', './learn.js',
+  './shared.js', './interview.js', './decision-meta.js', './backup-format.js', './card-backs.js', './learn.js',
   './manifest.webmanifest', './icon-192.png', './icon-512.png',
   './icon-512-maskable.png', './apple-touch-icon.png',
   './assets/cards.json', './assets/card-back-lines.jpg'

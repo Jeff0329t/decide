@@ -4,6 +4,7 @@ const SETTINGS_KEY = 'decide.tarot.settings.v1';
 const TUTORIAL_KEY = 'decide.tarot.tutorial.v1';
 const BACKUP_SCHEMA = 1;
 const IMPORT_LIMIT_BYTES = 5 * 1024 * 1024;
+const MARKDOWN_IMPORT_LIMIT_BYTES = 16 * 1024 * 1024;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 const MAJOR = [
@@ -123,18 +124,22 @@ function backupPayload() { return { app:'DECIDE', schema:BACKUP_SCHEMA, exported
 function backupPayloadFor(records=logs) { const payload=backupPayload(); return records===logs ? payload : {...payload,logs:records}; }
 function setBackupStatus(message, isError=false) { const status=document.querySelector('[data-backup-status]'); if(!status)return; status.textContent=message; status.classList.toggle('is-error',isError); }
 function markBackupComplete(exportedAt) { settings.lastBackupAt=exportedAt; settings.backupReminderDismissedUntil=Date.now()+14*DAY_MS; persist(); const date=document.querySelector('[data-backup-date]'); if(date)date.textContent=backupDateLabel(exportedAt); document.querySelector('[data-backup-reminder]')?.remove(); }
-function showBackupText(json) { const output=document.querySelector('[data-backup-output]'); const field=output?.querySelector('textarea'); if(!output || !field)return; field.value=json; output.hidden=false; setBackupStatus('ファイルとして保存できなかったため、内容をコピーできます。'); }
+function showBackupText(content) { const output=document.querySelector('[data-backup-output]'); const field=output?.querySelector('textarea'); if(!output || !field)return; field.value=content; output.hidden=false; setBackupStatus('ファイルとして保存できなかったため、内容をコピーできます。'); }
 async function copyBackupText() { const field=document.querySelector('[data-backup-output] textarea'); if(!field)return; try { await navigator.clipboard.writeText(field.value); toast('バックアップ内容をコピーしました'); } catch { field.select(); document.execCommand('copy'); toast('バックアップ内容をコピーしました'); } }
-async function exportLogs(records=logs, markComplete=true) {
-  const payload=backupPayloadFor(records); const json=JSON.stringify(payload,null,2); const exportedAt=payload.exportedAt; const filename=backupFileName(new Date(exportedAt));
-  const blob=new Blob([json],{type:'application/json'}); const file=typeof File==='function' ? new File([blob],filename,{type:'application/json'}) : null;
+async function exportLogs(records=logs, markComplete=true, format='json') {
+  const payload=backupPayloadFor(records); const exportedAt=payload.exportedAt;
+  const markdown=format==='markdown';
+  const content=markdown ? DECIDE_BACKUP_FORMAT.render(payload) : JSON.stringify(payload,null,2);
+  const filename=backupFileName(new Date(exportedAt)).replace(/\.json$/,markdown?'.md':'.json');
+  const mime=markdown?'text/markdown':'application/json';
+  const blob=new Blob([content],{type:mime}); const file=typeof File==='function' ? new File([blob],filename,{type:mime}) : null;
   if(file && navigator.canShare?.({files:[file]}) && navigator.share) {
     try { await navigator.share({files:[file],title:'DECIDEの履歴バックアップ'}); if(markComplete)markBackupComplete(exportedAt); toast('履歴を書き出しました'); return; }
     catch(error) { if(error?.name==='AbortError')return; }
   }
   const link=document.createElement('a');
   if('download' in link && URL?.createObjectURL) { const url=URL.createObjectURL(blob); link.href=url; link.download=filename; link.style.display='none'; document.body.appendChild(link); link.click(); link.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); if(markComplete)markBackupComplete(exportedAt); toast('履歴を書き出しました'); return; }
-  showBackupText(json); if(markComplete)markBackupComplete(exportedAt);
+  showBackupText(content); if(markComplete)markBackupComplete(exportedAt);
 }
 function isImportLog(value) { return value && typeof value==='object' && typeof value.id==='string' && value.id && Array.isArray(value.nodes); }
 function reviewedAtTime(log) { const value=Date.parse(log?.reviewedAt || ''); return Number.isNaN(value) ? 0 : value; }
@@ -153,12 +158,16 @@ function prepareImport(payload) {
   const dateValue=log=>Date.parse(log.createdAt || '') || 0;
   return { additions, duplicates, reviewedUpdates, mergedLogs:[...updated,...additions].sort((a,b)=>dateValue(b)-dateValue(a)) };
 }
-function openImportPicker() { const input=document.querySelector('#import-file'); input?.click(); }
+function openImportPicker(format='json') { const input=document.querySelector(format==='markdown'?'#import-markdown-file':'#import-file'); input?.click(); }
 async function readImportFile(file) {
   if(!file)return;
-  if(file.size>IMPORT_LIMIT_BYTES) { setBackupStatus('ファイルは5MB以下にしてください。',true); return; }
+  const markdown=/\.md$/i.test(file.name) || file.type==='text/markdown';
+  const limit=markdown?MARKDOWN_IMPORT_LIMIT_BYTES:IMPORT_LIMIT_BYTES;
+  if(file.size>limit) { setBackupStatus(`ファイルは${markdown?'16':'5'}MB以下にしてください。`,true); return; }
   try {
-    const payload=JSON.parse(await file.text()); pendingImport=prepareImport(payload);
+    const content=await file.text();
+    const payload=markdown?DECIDE_BACKUP_FORMAT.parse(content):JSON.parse(content);
+    pendingImport=prepareImport(payload);
     closeSettings(); setTimeout(openImportConfirm,190);
   } catch(error) { setBackupStatus(error instanceof Error ? error.message : 'ファイルを読み込めませんでした。',true); }
 }
@@ -166,13 +175,19 @@ function openImportConfirm() {
   if(!pendingImport)return;
   const {additions,duplicates,reviewedUpdates}=pendingImport;
   const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='import-modal';
-  wrap.innerHTML=`<button class="modal-shade" data-action="close-import" aria-label="読み込み確認を閉じる"></button><section class="settings-sheet confirm-sheet import-sheet" role="dialog" aria-modal="true" aria-labelledby="import-title"><div class="sheet-handle"></div><p class="eyebrow">Import backup</p><h2 id="import-title">履歴を読み込みますか？</h2><p>既存の履歴は残したまま、バックアップの内容を追加します。</p><dl class="import-summary"><div><dt>追加</dt><dd>${additions.length}件</dd></div><div><dt>重複</dt><dd>${duplicates}件</dd></div>${reviewedUpdates ? `<div><dt>振り返り更新</dt><dd>${reviewedUpdates}件</dd></div>` : ''}</dl><p class="import-note">同じIDの履歴は既存内容を優先し、より新しい振り返り日時だけを反映します。</p><div class="confirm-actions"><button class="button secondary" data-action="close-import">キャンセル</button><button class="button" data-action="confirm-import">取り込む</button></div></section>`;
+  wrap.innerHTML=`<button class="modal-shade" data-action="close-import" aria-label="読み込み確認を閉じる"></button><section class="settings-sheet confirm-sheet import-sheet" role="dialog" aria-modal="true" aria-labelledby="import-title"><div class="sheet-handle"></div><p class="eyebrow">Import backup</p><h2 id="import-title">履歴を読み込みますか？</h2><p>既存の履歴は残したまま、バックアップの内容を追加します。</p><dl class="import-summary"><div><dt>追加</dt><dd>${additions.length}件</dd></div><div><dt>重複</dt><dd>${duplicates}件</dd></div>${reviewedUpdates ? `<div><dt>振り返り更新</dt><dd>${reviewedUpdates}件</dd></div>` : ''}</dl><p class="import-note">同じIDの履歴は既存内容を優先し、より新しい振り返り日時だけを反映します。</p><p class="storage-error" data-import-error role="alert" hidden></p><div class="confirm-actions"><button class="button secondary" data-action="close-import">キャンセル</button><button class="button" data-action="confirm-import">取り込む</button></div></section>`;
   mountModal(wrap,'.settings-sheet [data-action="close-import"]');
 }
 function closeImport() { pendingImport=null; closeModal('#import-modal'); }
 function confirmImport() {
   if(!pendingImport)return; const {additions,reviewedUpdates,mergedLogs}=pendingImport;
-  logs=mergedLogs; persist(); pendingImport=null; closeModal('#import-modal');
+  if(!safeSetItem(STORAGE_KEY,JSON.stringify(mergedLogs))) {
+    storageSaveFailed=true;
+    const error=document.querySelector('[data-import-error]');
+    if(error){error.textContent='この端末では保存できませんでした。履歴は変更していません。空き容量やブラウザの設定を確認してください。';error.hidden=false;}
+    return;
+  }
+  logs=mergedLogs; pendingImport=null; closeModal('#import-modal');
   if(currentView==='history')renderHistory(); toast(`履歴を${additions.length}件追加しました${reviewedUpdates ? `（振り返り${reviewedUpdates}件を更新）` : ''}`);
 }
 function esc(value='') { return String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
@@ -503,12 +518,28 @@ function startSession(mode) {
 }
 
 function backPicker() {
+  const choice=([id,label])=>`<button class="back-choice ${settings.back === id ? 'selected' : ''}" data-action="select-back" data-value="${id}" aria-label="${label}" aria-pressed="${settings.back === id}"><i class="card-back back-${id}"></i><small>${label}</small><b aria-hidden="true">${settings.back === id ? '✓' : ''}</b></button>`;
+  const extra=DECIDE_CARD_BACKS.slice(10);
+  const showExtra=extra.some(([id])=>id===settings.back);
   return `<div class="back-picker" aria-label="カードの裏面を選ぶ">
-    ${[
-      ['lines','分岐ライン'],['classic','クラシック'],['plain','シンプル'],['ivory','アイボリー'],['cobalt','コバルト'],
-      ['graph','方眼'],['ripple','波紋'],['sunrise','夜明け'],['ink','インク'],['steps','ステップ']
-    ].map(([id,label]) => `<button class="back-choice ${settings.back === id ? 'selected' : ''}" data-action="select-back" data-value="${id}" aria-label="${label}"><i class="card-back back-${id}"></i><small>${label}</small><b aria-hidden="true">${settings.back === id ? '✓' : ''}</b></button>`).join('')}
+    ${DECIDE_CARD_BACKS.slice(0,10).map(choice).join('')}
+    <details class="back-more" ${showExtra?'open':''}><summary>ほかの${extra.length}種類を見る</summary><div class="back-more-grid">${extra.map(choice).join('')}</div></details>
   </div>`;
+}
+function selectBack(id) {
+  if(!DECIDE_CARD_BACKS.some(([value])=>value===id))return;
+  settings.back=id; persist();
+  document.querySelectorAll('#settings-modal .back-choice').forEach(item=>{
+    const chosen=item.dataset.value===id;
+    item.classList.toggle('selected',chosen);
+    item.setAttribute('aria-pressed',String(chosen));
+    item.querySelector('b').textContent=chosen?'✓':'';
+  });
+  document.querySelectorAll('.flip-back,.mode-art i').forEach(item=>{
+    [...item.classList].filter(name=>name.startsWith('back-')).forEach(name=>item.classList.remove(name));
+    item.classList.add(`back-${id}`);
+  });
+  sensoryFeedback('tick'); toast('カードの裏面を変更しました');
 }
 
 function drawCardButton(card, slot, label='') {
@@ -1108,7 +1139,7 @@ function openSettings() {
     </div>
     <div class="setting-backs"><b>カードの裏面</b>${backPicker()}</div>
     <div class="feedback-setting"><div><b>操作音・振動</b><p>カードを開く時や決定を保存する時に、控えめな反応を返します。</p></div><button class="toggle-button ${settings.feedback ? 'on' : ''}" data-action="toggle-feedback" aria-pressed="${settings.feedback}"><span></span><b>${settings.feedback ? 'ON' : 'OFF'}</b></button></div>
-    <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">データ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}${isIOS() && !isStandalone() ? '<p class="safari-storage-note">Safariでは、記録は端末内に保存されます。しばらく開かないと消えることがあるため、ホーム画面への追加と、書き出しをおすすめします。</p>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-logs">履歴を書き出す</button><button class="button secondary" data-action="import-logs">履歴を読み込む</button></div><input id="import-file" type="file" accept="application/json,.json" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップJSON"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
+    <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">データ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}${isIOS() && !isStandalone() ? '<p class="safari-storage-note">Safariでは、記録は端末内に保存されます。しばらく開かないと消えることがあるため、ホーム画面への追加と、書き出しをおすすめします。</p>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-logs">履歴を書き出す（JSON）</button><button class="button secondary" data-action="import-logs">履歴を読み込む（JSON）</button><button class="button secondary" data-action="export-markdown">Obsidian用に書き出す（MD）</button><button class="button secondary" data-action="import-markdown">Obsidianから読み込む（MD）</button></div><p class="backup-format-note">MDはObsidianで読める1つのノートとして保存します。保管庫へはご自身で移してください。題名・メモ・ストーリーを含み、読み込みには末尾のバックアップデータを使います。表示部分の編集は反映されません。</p><input id="import-file" type="file" accept="application/json,.json" hidden><input id="import-markdown-file" type="file" accept="text/markdown,.md" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップ内容"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
      <div class="setting-note"><b>カードと深掘り提案</b><p>表面はパメラ・コールマン・スミスによる1909年のライダー＝ウェイト＝スミス版（パブリックドメイン）です。決定ログはこのブラウザ内だけに保存されます。</p></div>
      <button class="learn-entry" data-action="open-learn"><span aria-hidden="true">▣</span><span>タロットを学ぶ（カード図鑑）</span><span aria-hidden="true">→</span></button>
      <button class="tutorial-replay" data-action="tutorial-replay"></button>
@@ -1194,7 +1225,7 @@ document.addEventListener('click', event => {
   else if (action === 'session') navigate('session');
   else if (action === 'flip-card') flipCard(Number(el.dataset.slot));
   else if (action === 'flip-both') flipBoth();
-  else if (action === 'select-back') { settings.back=el.dataset.value; persist(); const modal=document.querySelector('#settings-modal'); if(modal){ modal.querySelectorAll('.back-choice').forEach(item=>{ const chosen=item.dataset.value===settings.back; item.classList.toggle('selected',chosen); item.querySelector('b').textContent=chosen?'✓':''; }); } document.querySelectorAll('.flip-back,.mode-art i').forEach(item=>{ [...item.classList].filter(name=>name.startsWith('back-')).forEach(name=>item.classList.remove(name)); item.classList.add(`back-${settings.back}`); }); sensoryFeedback('tick'); toast('カードの裏面を変更しました'); }
+  else if (action === 'select-back') selectBack(el.dataset.value);
   else if (action === 'toggle-reflection') toggleReflection(el);
   else if (action === 'deepen') addDeep(el.dataset.prompt);
   else if (action === 'decide') navigate('decide');
@@ -1210,6 +1241,7 @@ document.addEventListener('click', event => {
   else if (action === 'deck-orientation') { const scope=settings.deckMode.startsWith('major')?'major':'all'; selectDeckMode(`${scope}-${el.dataset.value}`); }
   else if (action === 'toggle-feedback') { settings.feedback=!settings.feedback; persist(); el.classList.toggle('on',settings.feedback); el.setAttribute('aria-pressed',String(settings.feedback)); el.querySelector('b').textContent=settings.feedback?'ON':'OFF'; if(settings.feedback)sensoryFeedback('tap'); toast(settings.feedback?'操作音・振動をONにしました':'操作音・振動をOFFにしました'); }
   else if (action === 'export-logs') exportLogs();
+  else if (action === 'export-markdown') exportLogs(logs,true,'markdown');
   else if (action === 'export-failed-log') { const failed=el.closest('#save-failed-modal')?.failedLog; if(failed){ storageEvent('exportFromError'); exportLogs([failed],false); } }
   else if (action === 'close-save-failed') closeModal('#save-failed-modal');
   else if (action === 'a2hs-help') openA2HSHelp();
@@ -1217,6 +1249,7 @@ document.addEventListener('click', event => {
   else if (action === 'dismiss-a2hs') dismissA2HS();
   else if (action === 'dismiss-backup-reminder') { settings.backupReminderDismissedUntil=Date.now()+14*DAY_MS; persist(); document.querySelector('[data-backup-reminder]')?.remove(); }
   else if (action === 'import-logs') openImportPicker();
+  else if (action === 'import-markdown') openImportPicker('markdown');
   else if (action === 'copy-backup-text') copyBackupText();
   else if (action === 'close-import') closeImport();
   else if (action === 'confirm-import') confirmImport();
@@ -1243,7 +1276,7 @@ document.addEventListener('click', event => {
 });
 document.addEventListener('submit', event => { if(event.target.id === 'save-form'){ event.preventDefault(); saveDecision(event.target); } });
 document.addEventListener('input', event => { if(event.target.id === 'history-search'){ historyQuery=event.target.value; const results=document.querySelector('[data-history-results]'); if(results)results.innerHTML=renderHistoryResults(); const count=event.target.closest('.history-search')?.querySelector('small'); if(count)count.textContent=historyQuery?`${filteredLogs().length}件`:''; } });
-document.addEventListener('change', event => { if(event.target.id === 'import-file') { const [file]=event.target.files || []; readImportFile(file).finally(()=>{ event.target.value=''; }); } });
+document.addEventListener('change', event => { if(['import-file','import-markdown-file'].includes(event.target.id)) { const [file]=event.target.files || []; readImportFile(file).finally(()=>{ event.target.value=''; }); } });
 document.querySelector('#settings-button').addEventListener('click', openSettings);
 document.querySelector('#share-button').addEventListener('click', () => openShare());
 document.addEventListener('keydown', event => {
