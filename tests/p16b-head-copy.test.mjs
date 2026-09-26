@@ -13,8 +13,8 @@ test('document and social metadata use the unified heading and v2 image',()=>{
   assert.match(html,new RegExp(`<title>${heading}</title>`));
   assert.match(html,new RegExp(`property="og:title" content="${heading}"`));
   assert.match(html,new RegExp(`name="twitter:title" content="${heading}"`));
-  assert.match(html,/property="og:image" content="https:\/\/decide-tarot-6aafab\.muddy-crane-3536\.chatgpt\.site\/og-image-v2\.png"/);
-  assert.match(html,/name="twitter:image" content="https:\/\/decide-tarot-6aafab\.muddy-crane-3536\.chatgpt\.site\/og-image-v2\.png"/);
+  assert.match(html,/property="og:image" content="https:\/\/jeff0329t\.github\.io\/decide\/og-image-v2\.png"/);
+  assert.match(html,/name="twitter:image" content="https:\/\/jeff0329t\.github\.io\/decide\/og-image-v2\.png"/);
   assert.ok(!html.includes(legacy));
 });
 
