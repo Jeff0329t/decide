@@ -36,11 +36,11 @@ test('automatic titles follow priority and manual title is preserved in save cod
 
 test('history labels expose genre/options and old records remain compatible',()=>{
   const log={decision:'選択肢2',genre:'仕事',options:{'1':'続ける','2':'挑戦する'}};
-  assert.equal(meta.decisionText(log),'選択肢2（挑戦する）');
-  assert.equal(meta.nodeLabel(log,nodes[0],0),'選択肢1：続ける');
+  assert.equal(meta.decisionText(log),'選択肢B（挑戦する）');
+  assert.equal(meta.nodeLabel(log,nodes[0],0),'選択肢A：続ける');
   assert.equal(nodes[0].question,'選択肢1を選んだとき');
   assert.equal(meta.decisionText({decision:'進む'}),'進む');
-  assert.equal(meta.nodeLabel({},nodes[0],0),'選択肢1');
+  assert.equal(meta.nodeLabel({},nodes[0],0),'選択肢A');
   assert.match(app,/log\.genre,log\.options\?\.\['1'\],log\.options\?\.\['2'\]/);
 });
 
@@ -54,7 +54,7 @@ test('new fields save and export/import paths preserve optional fields without c
 test('share payload remains limited to existing fields and never serializes genre/options',()=>{
   const shareFunction=app.slice(app.indexOf('function sharedResultUrl'),app.indexOf('function openShare'));
   assert.doesNotMatch(shareFunction,/genre|options/);
-  assert.match(shareFunction,/decision:log\.decision/);
+  assert.match(shareFunction,/decision:DECIDE_DECISION\.choiceText\(log\.decision\)/);
 });
 
 test('user-facing values are escaped or assigned with textContent/value',()=>{
@@ -67,4 +67,11 @@ test('user-facing values are escaped or assigned with textContent/value',()=>{
 test('mobile-safe inputs have required Japanese keyboard attributes',()=>{
   assert.match(app,/name="option1" maxlength="30" autocomplete="off" enterkeyhint="done" lang="ja"/);
   assert.match(app,/name="option2" maxlength="30" autocomplete="off" enterkeyhint="done" lang="ja"/);
+});
+
+test('stored choice values are displayed as A/B',()=>{
+  assert.equal(meta.choiceText('選択肢1を選んだとき'),'選択肢Aを選んだとき');
+  assert.equal(meta.choiceText('選択肢 2'),'選択肢B');
+  assert.equal(meta.choiceText('保留する'),'保留する');
+  assert.doesNotMatch(app,/choice-ratio/);
 });

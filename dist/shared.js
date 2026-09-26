@@ -54,12 +54,13 @@
 
   function sharedOutcomeText(decision,verdict){
     const answer=String(decision||'');
-    const base=`選んだ答え：${answer}`;
+    const label=answer.replace(/^選択肢([12])$/,(_,n)=>`選択肢${'AB'[n-1]}`);
+    const base=`選んだ答え：${label}`;
     if(!verdict || verdict.tie || !/^選択肢[12]$/.test(answer))return base;
     const recommended=verdict.difference>0?'選択肢1':'選択肢2';
     return answer===recommended
       ? `${base}　（カードの視点でもおすすめでした）`
-      : `${base}　（カードの視点では、${recommended}が進めやすそうでした。決めたのは本人です）`;
+      : `${base}　（カードの視点では、${recommended.replace('1','A').replace('2','B')}が進めやすそうでした。決めたのは本人です）`;
   }
 
   function renderSharedCard(card,escapeHtml){

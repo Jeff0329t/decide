@@ -21,8 +21,8 @@ const DECIDE_BACKUP_FORMAT = (() => {
   function logSection(log,index) {
     const lines=[`## ${index+1}. ${safeText(log.title || '題名なし')}`];
     for(const [label,value] of [
-      ['日時',log.createdAt],['選んだ答え',log.decision],['ジャンル',log.genre],
-      ['選択肢1',log.option1],['選択肢2',log.option2],['振り返り',log.review]
+      ['日時',log.createdAt],['選んだ答え',String(log.decision??'').replace(/^選択肢([12])$/,(_,n)=>`選択肢${'AB'[n-1]}`)],['ジャンル',log.genre],
+      ['選択肢A',log.option1],['選択肢B',log.option2],['振り返り',log.review]
     ])if(value)lines.push(`- ${label}：${safeText(value)}`);
     for(const [i,node] of (Array.isArray(log.nodes)?log.nodes:[]).entries()) {
       const card=node?.card||{};

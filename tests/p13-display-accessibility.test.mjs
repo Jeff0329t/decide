@@ -33,9 +33,9 @@ test('P13 copy, headings, defaults, and duplicate delete semantics',()=>{
 
 test('shared result wording covers match, mismatch, and tie',()=>{
   const outcome=context.DECIDE_SHARED.sharedOutcomeText;
-  assert.equal(outcome('選択肢2',{tie:false,difference:-2}),'選んだ答え：選択肢2　（カードの視点でもおすすめでした）');
-  assert.equal(outcome('選択肢2',{tie:false,difference:2}),'選んだ答え：選択肢2　（カードの視点では、選択肢1が進めやすそうでした。決めたのは本人です）');
-  assert.equal(outcome('選択肢2',{tie:true,difference:0}),'選んだ答え：選択肢2');
+  assert.equal(outcome('選択肢2',{tie:false,difference:-2}),'選んだ答え：選択肢B　（カードの視点でもおすすめでした）');
+  assert.equal(outcome('選択肢2',{tie:false,difference:2}),'選んだ答え：選択肢B　（カードの視点では、選択肢Aが進めやすそうでした。決めたのは本人です）');
+  assert.equal(outcome('選択肢2',{tie:true,difference:0}),'選んだ答え：選択肢B');
 });
 
 test('declared small text and requested tap targets meet minimums',()=>{

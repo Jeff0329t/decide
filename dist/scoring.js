@@ -13,8 +13,8 @@
     const absoluteDifference=Math.abs(difference);
     const recommended=difference>=0 ? 1 : 2;
     let label='拮抗しています。どちらも同じくらいの追い風です';
-    if(absoluteDifference>=2)label=`カードの視点では、選択肢${recommended}がおすすめです`;
-    else if(absoluteDifference===1)label=`わずかに、選択肢${recommended}が進めやすそうです`;
+    if(absoluteDifference>=2)label=`カードの視点では、選択肢${'AB'[recommended-1]}がおすすめです`;
+    else if(absoluteDifference===1)label=`わずかに、選択肢${'AB'[recommended-1]}が進めやすそうです`;
     let note='';
     if(first.score<=2 && second.score<=2)note='どちらも今は慎重に。急がず条件を整える時期かもしれません。';
     else if(first.score>=4 && second.score>=4)note='どちらも追い風です。差は小さいので、本音で選んで大丈夫です。';
@@ -24,7 +24,7 @@
       scores:[first.score,second.score],
       difference,
       tie:difference===0,
-      reason:`選択肢1は「${first.keywords.join('・')}」、選択肢2は「${second.keywords.join('・')}」を示しています。`,
+      reason:`選択肢Aは「${first.keywords.join('・')}」、選択肢Bは「${second.keywords.join('・')}」を示しています。`,
       note,
       closing:'最終的に決めるのは、あなたです。'
     };

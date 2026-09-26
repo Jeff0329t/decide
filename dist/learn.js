@@ -58,7 +58,7 @@
     document.body.classList.toggle('learn-active',currentView==='learn');
     const root=el('section','screen learn-screen');
     const header=el('header','learn-header');
-    header.append(btn('← 戻る','home','learn-back'),el('h1','', 'タロットを学ぶ'));
+    header.append(btn('← 戻る','home','learn-back'),el('p','learn-kicker','TAROT ATLAS'),el('h1','', 'タロットを学ぶ'));
     root.append(header);
     if(!data){
       root.append(el('p','learn-loading',pending?'読み込み中…':'学習データを読み込めませんでした。'));
@@ -156,7 +156,7 @@
     const id=copy.id, suit=data.suits.find(s=>id.startsWith(s.id));const rank=Number(id.slice(2));
     if(suit){paragraph(type,`${suit.name}（${suit.element}）：${suit.theme}。${suit.asks}`);const n=data.numbers.find(n=>n.n===rank);const c=data.court.find(c=>c.n===rank);if(n)paragraph(type,`${rank}：${n.label}`);if(c)paragraph(type,`${c.name}：${c.label}`);}
     else paragraph(type,'大アルカナ');
-    const links=el('div','learn-related');for(const lid of suit?['l3','l4']:['l2']){const lesson=data.lessons.find(l=>l.id===lid);const b=btn(`関連レッスン：${lesson.title}`,'related','learn-related-link');b.dataset.id=lid;links.append(b);}type.append(links);copyBox.append(type);
+    const links=el('div','learn-related');for(const lid of suit?['l3','l4']:['l2']){const lesson=data.lessons.find(l=>l.id===lid);if(!lesson)continue;const b=btn(`関連レッスン：${lesson.title}`,'related','learn-related-link');b.dataset.id=lid;links.append(b);}type.append(links);copyBox.append(type);
     copyBox.append(el('small','card-disclaimer','カードは未来を断定するものではありません。自分の状況を考える視点として使ってください。'));
     sheet.append(copyBox);
     const nav=el('div','learn-card-nav');const prev=btn('← 前のカード','prev','button secondary');const next=btn('次のカード →','next','button secondary');
@@ -177,7 +177,7 @@
   }
   function renderLesson(pane) {
     const lesson=data.lessons.find(l=>l.id===lessonId);if(!lesson)return;
-    pane.append(btn('← レッスン一覧','lesson-list','learn-lesson-back'),el('h2','',lesson.title),el('p','learn-minutes',`所要${lesson.minutes}分`));
+    pane.append(btn('← レッスン一覧','lesson-list','learn-lesson-back'),el('p','learn-kicker','LESSON'),el('h2','',lesson.title),el('p','learn-minutes',`所要${lesson.minutes}分`));
     lesson.body.forEach(part=>paragraph(pane,part));
     if(lesson.id==='l2'){
       const journey=el('div','learn-journey');data.majorJourney.forEach(part=>{const row=el('div','learn-journey-step');row.append(el('b','',part.range),el('strong','',part.title),el('p','',part.text));journey.append(row);});pane.append(journey);

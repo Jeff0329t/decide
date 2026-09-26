@@ -16,7 +16,10 @@ test('tutorial uses its own key and requires no marker, no logs and no shared li
 test('intro is an accessible three-step dialog with exact copy and no input',()=>{
   assert.match(app,/setAttribute\('role','dialog'\)/);
   assert.match(app,/setAttribute\('aria-modal','true'\)/);
-  for(const copy of ['心から納得いく決断を。','1 迷いを1つ、心の中で思い浮かべる（入力は要りません）','2 カードを1枚、直感で選ぶ','3 出てきた言葉が『しっくりくるか』だけ、答える','カードは答えを決めません。決めるのは、あなたです。','やってみる','スキップ'])assert.ok(app.includes(copy));
+  for(const copy of ['心から納得いく決断を。','DRAW','DECIDE','LOOK BACK','迷いを1つ思い浮かべ、カードを直感で1枚引く','記録して、後日振り返る。','カードは答えを決めません。決めるのは、あなたです。','やってみる','スキップ'])assert.ok(app.includes(copy));
+  assert.match(app,/tutorial-intro-actions/);
+  assert.match(app,/tutorial-intro-skip-bottom/);
+  assert.match(app,/actions\.append\(skipBottom,start\)/);
   assert.match(app,/start\.focus\(\)/);
   assert.match(app,/event\.key==='Escape'\)\{ event\.preventDefault\(\); finishTutorial\('skipped'\)/);
 });

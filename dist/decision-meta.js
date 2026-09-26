@@ -48,15 +48,19 @@
     }
     return found;
   }
+  // 保存値は「選択肢1/2」のまま。画面・共有文では「選択肢A/B」と表示する。
+  function choiceText(s){
+    return String(s??'').replace(/選択肢\s?1/g,'選択肢A').replace(/選択肢\s?2/g,'選択肢B');
+  }
   function decisionText(log={}){
     const key=log.decision==='選択肢1'?'1':log.decision==='選択肢2'?'2':'';
     const value=key?optionValue(log.options?.[key]):'';
-    return value?`${log.decision}（${value}）`:String(log.decision||'');
+    return value?`${choiceText(log.decision)}（${value}）`:choiceText(log.decision);
   }
   function nodeLabel(log={},node={},index=0){
     const value=index<2?optionValue(log.options?.[String(index+1)]):'';
-    const label=String(node.label||`CARD ${index+1}`).replace('選択肢 ','選択肢');
+    const label=choiceText(String(node.label||`CARD ${index+1}`));
     return value?`${label}：${value}`:label;
   }
-  return {GENRES,PAIRS,optionValue,validGenre,savedOptions,autoTitle,recentChoices,decisionText,nodeLabel};
+  return {GENRES,PAIRS,optionValue,validGenre,savedOptions,autoTitle,recentChoices,choiceText,decisionText,nodeLabel};
 });

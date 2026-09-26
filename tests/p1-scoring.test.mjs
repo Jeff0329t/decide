@@ -14,7 +14,7 @@ const pentaclesTen=state('pe10','upright');
 const requested=compare(swordFour,pentaclesTen);
 assert.equal(swordFour.score,2);
 assert.equal(pentaclesTen.score,5);
-assert.equal(requested.label,'カードの視点では、選択肢2がおすすめです');
+assert.equal(requested.label,'カードの視点では、選択肢Bがおすすめです');
 
 let combinations=0;
 for(const first of states)for(const second of states) {
@@ -43,7 +43,7 @@ const cases={
 };
 assert.equal(cases.equal.label,'拮抗しています。どちらも同じくらいの追い風です');
 assert.equal(cases.equal.note,'差がつかないときは、「決め手になる違い」を深掘りしましょう。');
-assert.match(cases.differenceOne.label,/^わずかに、選択肢[12]が進めやすそうです$/);
+assert.match(cases.differenceOne.label,/^わずかに、選択肢[AB]が進めやすそうです$/);
 assert.equal(cases.bothLow.note,'どちらも今は慎重に。急がず条件を整える時期かもしれません。');
 assert.equal(cases.bothHigh.note,'どちらも追い風です。差は小さいので、本音で選んで大丈夫です。');
 

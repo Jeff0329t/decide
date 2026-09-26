@@ -43,5 +43,5 @@ test('learning state is separate and learning asset loads on entry',()=>{
   assert.doesNotMatch(source,/localStorage\.(?:setItem|removeItem)\((?:STORAGE_KEY|SETTINGS_KEY)/);
   assert.match(app,/data-action="open-learn"/);
   assert.match(worker,/\.\/learn\.js/);
-  assert.doesNotMatch(worker,/\.\/assets\/learn\.json/);
+  assert.match(worker,/\.\/assets\/learn\.json/);
 });

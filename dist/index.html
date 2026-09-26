@@ -27,8 +27,8 @@
   <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/manifest.webmanifest" />
-  <meta name="theme-color" content="#f4f5f7" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#1e2430" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#080808" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#080808" media="(prefers-color-scheme: dark)" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="DECIDE" />
@@ -50,8 +50,11 @@
     <main id="app" tabindex="-1"></main>
 
     <nav class="bottom-nav" aria-label="メインナビゲーション">
-      <button class="nav-item active" data-nav="home"><span>DECIDE</span></button>
-      <button class="nav-item" data-nav="history"><span>DECISION LOG</span></button>
+      <button class="nav-item nav-back" data-action="nav-back"><span>戻る</span></button>
+      <button class="nav-item active" data-nav="home"><span>ホーム</span></button>
+      <button class="nav-item" data-nav="history"><span>ログ</span></button>
+      <button class="nav-item" data-nav="stats"><span>統計</span></button>
+      <button class="nav-item" data-action="open-settings"><span>設定</span></button>
     </nav>
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>

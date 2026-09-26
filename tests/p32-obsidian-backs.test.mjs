@@ -39,15 +39,12 @@ test('existing JSON path stays and Markdown shares the same import validation',(
   assert.match(worker,/\.\/backup-format\.js/);
 });
 
-test('old card-back IDs remain and all new designs have styles',()=>{
-  assert.equal(backs.length,34);
-  assert.equal(new Set(backs.map(([id])=>id)).size,34);
-  for(const id of ['lines','classic','plain','ivory','cobalt','graph','ripple','sunrise','ink','steps'])assert.ok(backs.some(([name])=>name===id));
-  for(const [id] of backs)assert.ok(css.includes(`.back-${id} {`),`${id} missing style`);
+test('the single celestial card back defines the visual identity',()=>{
+  assert.equal(backs.length,1);
+  assert.deepEqual(Array.from(backs[0]),['celestial','星と月']);
+  for(const [id] of backs)assert.match(css,new RegExp(`\\.back-${id}(?:,|\\s*\\{)`),`${id} missing style`);
   assert.match(app,/DECIDE_CARD_BACKS\.map\(choice\)/);
-  assert.doesNotMatch(app,/ほかの\$\{extra\.length\}種類を見る/);
-  assert.equal(backs[0][0],'coral-glow');
-  assert.equal(backs.at(-1)[0],'lines');
+  assert.match(app,/settings\.back = DEFAULT_CARD_BACK/);
   assert.match(html,/\.\/card-backs\.js/);
   assert.match(worker,/\.\/card-backs\.js/);
 });
