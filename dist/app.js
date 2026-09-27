@@ -738,7 +738,8 @@ function renderDraw() {
     ${two ? '' : '<p class="fan-guide">横に滑らせて、1枚選ぶ</p>'}
     <div class="${two ? 'dual-draw' : 'fan-deck'}">
       ${activeSession.drawOptions.map((card,i) => drawCardButton(card,i,two ? 'AB'[i] : '')).join('')}
-      ${two ? '<span class="draw-vs" aria-hidden="true">OR</span>' : ''}
+      ${two ? `<span class="draw-vs" aria-hidden="true">OR</span>
+      <p class="draw-instruction">${activeSession.revealed.length ? '2つの視点を読み取っています…' : '2つを思い浮かべたら、カードを開きます'}</p>` : ''}
     </div>
     ${two ? `<button class="button reveal-both reveal-hold" data-action="flip-both" ${activeSession.revealed.length ? 'disabled' : ''}>
       <span class="reveal-kicker">REVEAL · 2 CARDS</span>
@@ -746,7 +747,7 @@ function renderDraw() {
       <span class="reveal-hint">${activeSession.revealed.length ? 'OPEN' : '長押しで開く'}</span>
       <i class="reveal-charge" aria-hidden="true"></i>
     </button>` : ''}
-    <p class="draw-instruction">${two ? (activeSession.revealed.length ? '2つの視点を読み取っています…' : '2つを思い浮かべたら、カードを開きます') : (activeSession.revealed.length ? '選んだカードを開いています…' : '横にスワイプできます。気になるカードをタップしてください')}</p>
+    ${two ? '' : `<p class="draw-instruction">${activeSession.revealed.length ? '選んだカードを開いています…' : '横にスワイプできます。気になるカードをタップしてください'}</p>`}
   </section>`;
   if(!two) requestAnimationFrame(()=>{ const deck=document.querySelector('.fan-deck'); if(deck){deck.scrollLeft=(deck.scrollWidth-deck.clientWidth)/2;setupFanFeedback(deck);} });
   renderTutorialStage();

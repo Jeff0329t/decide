@@ -3320,7 +3320,7 @@ button.stats-pending:focus-visible { transform: translate(-2px,-2px) rotate(.35d
   .one-result .reflection-actions .button,
   .two-result > .reflection-card .reflection-actions .button { white-space: normal; }
 }
-/* Two-card instruction matches the one-card black plate (position unchanged). */
+/* Two-card instruction matches the one-card black plate (placed above OPTION A — see rule at end of file). */
 .draw-screen.draw-two .draw-instruction {
   border: 0;
   border-left: 5px solid #f1d527;
@@ -3695,3 +3695,18 @@ body[data-view="decide"] .decide-screen .timestamp { margin: 0; color: #6b6458; 
 .tutorial-mock-field p { margin: 2px 0 0; font-size: .92rem; line-height: 1.45; }
 .tutorial-mock-past { display: grid; gap: 6px; margin: 0 0 12px; }
 .tutorial-mock-past .tutorial-mock-field:first-child p { font-weight: 800; }
+/* Two-card instruction sits above the OPTION A plate (inside .dual-draw). */
+.draw-screen.draw-two .dual-draw .draw-instruction {
+  top: auto;
+  right: auto;
+  bottom: calc(100% + 14px);
+  left: 0;
+  width: max-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 7px 12px 7px 14px;
+  font-size: .8rem;
+  text-align: left;
+  white-space: nowrap;
+  transform: rotate(-1deg);
+}
