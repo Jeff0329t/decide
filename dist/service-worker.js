@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'decide-shell-editorial-v58';
+const SHELL_CACHE = 'decide-shell-editorial-v59';
 const IMAGE_CACHE = 'decide-card-images-p14-v1';
 const IMAGE_LIMIT = 100;
 const CARD_SHELL_FILES = [
@@ -8,8 +8,8 @@ const CARD_SHELL_FILES = [
 const SHELL_FILES = [
   './', './index.html', './app.js', './styles.css', './scoring.js',
   './shared.js', './interview.js', './decision-meta.js', './backup-format.js', './card-backs.js', './learn.js',
-  './manifest.webmanifest', './icon-192.png', './icon-512.png',
-  './icon-512-maskable.png', './apple-touch-icon.png',
+  './manifest.webmanifest', './icon-192.png?v=2', './icon-512.png?v=2',
+  './icon-512-maskable.png?v=2', './apple-touch-icon.png?v=2',
   './assets/cards.json', './assets/learn.json', './assets/card-back-lines.jpg',
   './assets/editorial/home-collage.webp', './assets/editorial/choice-collage.webp',
   './assets/editorial/draw-collage.webp', './assets/editorial/result-collage.webp',
@@ -66,6 +66,8 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   if (url.origin !== SCOPE.origin) return;
   if (request.mode === 'navigate') {
+    // Standalone pages such as privacy.html must not be answered with the app shell.
+    if (/\.html$/.test(url.pathname) && !url.pathname.endsWith('/index.html')) return;
     event.respondWith(caches.match(new URL('./', SCOPE).href).then(saved => saved || fetch(request)));
     return;
   }
