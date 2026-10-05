@@ -3710,3 +3710,76 @@ body[data-view="decide"] .decide-screen .timestamp { margin: 0; color: #6b6458; 
   white-space: nowrap;
   transform: rotate(-1deg);
 }
+
+/* Completion: keep the doorway visible above the saved-decision controls. */
+body[data-detail-mode="complete"] .bottom-nav { display: none !important; }
+body[data-detail-mode="complete"] .app-shell { padding-bottom: 0; }
+.screen.completion-screen {
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px calc(28px + env(safe-area-inset-bottom));
+  background: #080808 !important;
+  animation: none;
+  overflow: hidden;
+}
+.completion-screen::before,
+.screen.completion-screen::after { content: none; }
+.screen.completion-screen > .completion-hero {
+  position: relative;
+  flex: none;
+  height: clamp(300px, 48svh, 520px);
+  margin: 0 -16px;
+  background: #080808 url("./assets/editorial/complete-collage.webp") 50% 66% / cover no-repeat;
+  animation: completion-light 1.2s ease-out both;
+}
+.completion-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,.18), transparent 65%, #080808);
+  pointer-events: none;
+}
+.screen.completion-screen .completion-script {
+  display: inline-block;
+  position: relative;
+  z-index: 1;
+  margin: max(30px, env(safe-area-inset-top)) 0 0 24px;
+  padding: 10px 16px;
+  border: 2px solid #080808;
+  background: #f1d527;
+  color: #080808;
+  box-shadow: 5px 5px 0 #080808, 5px 5px 0 1px #f4efe3;
+  font: 900 clamp(2rem, 8vw, 3rem)/1 Didot, "Bodoni 72", serif;
+  text-shadow: none;
+  transform: rotate(-6deg);
+  animation: completion-stamp .5s .15s ease-out both;
+}
+.completion-script span { display: block; margin-top: 8px; font: 700 .75rem/1.5 "Hiragino Mincho ProN", "Yu Mincho", serif; letter-spacing: .08em; }
+.screen.completion-screen > .completion-dock {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  gap: 18px;
+  animation: completion-settle .6s ease-out both;
+}
+.completion-dock .completion-copy {
+  padding: 12px 10px 18px;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.completion-copy strong { overflow-wrap: anywhere; }
+.completion-dock .remind-picker { transform: rotate(.4deg); }
+@keyframes completion-light { from { opacity: .35; } to { opacity: 1; } }
+@keyframes completion-stamp { from { opacity: 0; transform: translateY(-12px) rotate(-10deg) scale(1.08); } to { opacity: 1; transform: rotate(-6deg); } }
+@keyframes completion-settle { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .screen.completion-screen > .completion-hero,
+  .screen.completion-screen .completion-script,
+  .screen.completion-screen > .completion-dock { animation: none; }
+}
+
+.completion-dock .completion-sub .button { border-radius: 0; border-width: 2px; font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; }

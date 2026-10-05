@@ -1196,7 +1196,7 @@ function renderDetail() {
   if(completionId===log.id) {
     document.body.dataset.detailMode='complete';
     app.innerHTML=`<section class="screen completion-screen">
-      <p class="completion-script">Decided!</p>
+      <div class="completion-hero" aria-hidden="true"><p class="completion-script">DECIDED<span>決断を、次の一歩へ。</span></p></div>
       <div class="completion-dock">
         <div class="completion-copy"><h1>よし、決めた。</h1><p>この決断を記録しました。</p><strong data-completion-title></strong></div>
         ${renderRemindPicker(log)}
