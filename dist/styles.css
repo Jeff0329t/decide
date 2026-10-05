@@ -3710,3 +3710,30 @@ body[data-view="decide"] .decide-screen .timestamp { margin: 0; color: #6b6458; 
   white-space: nowrap;
   transform: rotate(-1deg);
 }
+
+/* Optional preparation and mobile readability, 2026-10-04. */
+.prepare-screen { max-width: 620px; margin: auto; padding-bottom: 110px; }
+.prepare-screen h1 { font-size: clamp(1.65rem,7vw,2.5rem); }
+.prepare-screen .save-form { background: #fffaf0; color: #0b0b0b; padding: 20px; border: 2px solid #0b0b0b; }
+.prepare-screen .lead { color: #fffaf0; }
+.prepare-screen .genre-chips { margin-bottom: 18px; }
+.prepare-screen .meta-chip { min-height: 44px; color: #0b0b0b; }
+.option-candidate-group { margin-bottom: 18px; }
+.option-candidate-group > b { display: block; margin-bottom: 8px; }
+.option-editor { grid-template-columns: minmax(0,1fr) 44px; }
+.option-editor label:last-child { grid-column: 1 / -1; }
+.option-editor textarea { width: 100%; min-height: 76px; font-size: 16px; line-height: 1.5; resize: vertical; overflow-wrap: anywhere; }
+.session-context { padding: 10px 14px; background: #fffaf0; color: #0b0b0b; border: 2px solid #0b0b0b; font-size: 1rem; line-height: 1.6; overflow-wrap: anywhere; }
+.draw-screen .draw-prompt { position: relative; z-index: 3; margin: 6px 0 12px; width: fit-content; max-width: 100%; padding: 8px 12px; background: #0b0b0b; color: #fffaf0; font-size: 1rem; font-weight: 700; }
+.draw-screen .session-context { position: relative; z-index: 3; }
+.draw-screen .draw-prompt { margin: 54px 16px 10px; }
+.draw-screen .session-context { margin: 0 16px 10px; }
+.prepare-screen { width: 100%; overflow: hidden; color: #0b0b0b; }
+.prepare-screen .lead { color: #333; }
+.prepare-screen::after { display: none; }
+/* Keep variable-length choices and controls in flow on short phone screens. */
+.draw-screen.draw-two { padding-bottom: 24px; }
+.draw-screen.draw-two .dual-draw { position: relative; left: auto; right: auto; bottom: auto; margin: 16px 20px 24px; }
+.draw-screen.draw-two .dual-draw .draw-instruction { position: static; grid-column: 1 / -1; grid-row: 1; width: 100%; white-space: normal; transform: none; margin-bottom: 10px; }
+.draw-screen.draw-two .pair-card { grid-row: 2; }
+.draw-screen.draw-two .reveal-both { position: relative; left: auto; right: auto; bottom: auto; width: calc(100% - 40px); margin: 0 20px 18px; }

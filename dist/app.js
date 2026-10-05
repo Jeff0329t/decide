@@ -396,7 +396,8 @@ function navigateBack() {
   const deepToggle=document.querySelector('.deep-menu-open [data-action="toggle-reflection"][aria-expanded="true"]');
   if(deepToggle)return toggleReflection(deepToggle);
   if(currentView==='detail')return navigate(detailReturn);
-  if(currentView==='decide')return navigate('session');
+  if(currentView==='prepare-options'){ captureDecisionDraft(); return navigate('prepare-genre'); }
+  if(currentView==='decide'){ captureDecisionDraft(); return navigate('session'); }
   if(currentView==='learn'){ window.DECIDE_LEARN?.close?.(); return; }
   if(currentView==='home'&&homeStage==='quickstart'){ homeStage='splash'; return renderHome(); }
   activeSession=null; completionId=null; homeStage='quickstart'; navigate('home');
@@ -415,6 +416,7 @@ function render() {
   updateNavigationState();
   try {
     if (currentView === 'shared') return renderSharedResult();
+    if (currentView === 'prepare-genre' || currentView === 'prepare-options') return renderPreparation();
     if (currentView === 'draw') return renderDraw();
     if (currentView === 'session') return renderSession();
     if (currentView === 'decide') return renderDecision();
@@ -682,7 +684,33 @@ function startSession(mode) {
   if(mode==='two')preloadCardImages(drawOptions);
   selectedDecision = '';
   decisionDraft = {genre:'',option1:'',option2:'',title:'',memo:''};
-  navigate('draw');
+  navigate('prepare-genre');
+}
+
+function genreChips() {
+  return `<div class="genre-chips">${DECIDE_DECISION.GENRES.map(genre=>`<button type="button" class="meta-chip" data-action="select-genre" data-value="${genre}" aria-pressed="false">${genre}</button>`).join('')}</div>`;
+}
+function optionEditor() {
+  return `<div class="option-editor"><label>選択肢A<textarea id="option-1" name="option1" maxlength="30" autocomplete="off" enterkeyhint="done" lang="ja" rows="2" placeholder="例：今の仕事を続ける"></textarea></label><button type="button" class="swap-options" data-action="swap-options" aria-label="選択肢AとBを入れ替える">⇄</button><label>選択肢B<textarea id="option-2" name="option2" maxlength="30" autocomplete="off" enterkeyhint="done" lang="ja" rows="2" placeholder="例：新しい仕事に挑戦する"></textarea></label></div>`;
+}
+function sessionContext() {
+  const values=[decisionDraft.genre, activeSession.mode==='two' && decisionDraft.option1 ? `A：${decisionDraft.option1}` : '', activeSession.mode==='two' && decisionDraft.option2 ? `B：${decisionDraft.option2}` : ''].filter(Boolean);
+  return values.length ? `<p class="session-context">${values.map(esc).join('<br>')}</p>` : '';
+}
+function renderPreparation() {
+  if(!activeSession)return navigate('home');
+  const options=currentView==='prepare-options';
+  app.innerHTML=`<section class="screen prepare-screen"><button class="text-back" data-action="${options?'prepare-back':'home'}">← 戻る</button><p class="eyebrow">${activeSession.mode==='two'?'2枚引き':'1枚引き'}</p><h1>${options?'2つの選択肢を選ぶ':'どんな迷いですか？'}</h1><p class="lead">${options?'候補からA・Bを1つずつ選ぶか、自由に入力できます。':'ジャンルを1タップで選べます。'}入力は任意です。</p><form id="prepare-form" class="save-form">${options?`${sessionContext()}<div class="pair-candidates" data-option-candidates></div>${optionEditor()}`:genreChips()}<button class="button" type="button" data-action="prepare-next">${options||activeSession.mode==='one'?'カードを引く':'選択肢を選ぶ →'}</button><button class="button secondary" type="button" data-action="prepare-skip">スキップして引く</button></form></section>`;
+  restoreDecisionDraft();
+  if(options){
+    const values=[...new Set((DECIDE_DECISION.PAIRS[decisionDraft.genre]||[]).flat())];
+    document.querySelector('[data-option-candidates]').innerHTML=['1','2'].map(key=>`<div class="option-candidate-group"><b>選択肢${key==='1'?'A':'B'}の候補</b><div class="genre-chips">${values.map(value=>`<button type="button" class="meta-chip" data-action="prepare-choice" data-key="${key}" data-value="${esc(value)}" aria-pressed="${decisionDraft['option'+key]===value}">${esc(value)}</button>`).join('')}</div></div>`).join('');
+  }
+}
+function continuePreparation(skip=false) {
+  captureDecisionDraft();
+  if(skip){ if(currentView==='prepare-genre')decisionDraft.genre=''; decisionDraft.option1=''; decisionDraft.option2=''; }
+  navigate(!skip && currentView==='prepare-genre' && activeSession.mode==='two'?'prepare-options':'draw');
 }
 
 function backPicker() {
@@ -731,7 +759,7 @@ function renderDraw() {
   const two = activeSession.mode === 'two';
   app.innerHTML = `<section class="screen draw-screen${two ? ' draw-two' : ''}">
     <button class="text-back" data-action="home">← 最初に戻る</button>
-    <p class="eyebrow">Take a moment</p>
+    <p class="eyebrow">Take a moment</p><p class="draw-prompt">${two ? '2つの選択肢を思い浮かべてください。' : '迷いを1つ、思い浮かべてください。'}</p>${sessionContext()}
     <h1>${two ? '2つの選択肢を、<wbr>思い浮かべる。' : '問いを、心の中で<wbr>決める。'}</h1>
     <p class="lead">${two ? '左を選択肢A、右を選択肢Bとして<wbr>思い浮かべてください。<wbr>カードは答えを決めるものではなく、<wbr>それぞれを考える視点を映します。' : `問いは言葉にしなくて<wbr>大丈夫です。<wbr>伏せた${activeSession.drawOptions.length}枚を左右に動かし、<wbr>気になる1枚を選んでください。`}</p>
     ${two ? '' : `<div class="deck-count"><b>${activeSession.drawOptions.length}枚</b><span>すべてのカードから選べます</span></div>`}
@@ -908,8 +936,8 @@ function renderSession() {
   app.innerHTML = `
     <section class="screen map-screen ${activeSession.mode === 'two' ? 'two-result' : 'one-result'} ${deepCount > 0 ? 'has-deep' : ''}">
       <button class="text-back" data-action="home">← 最初に戻る</button>
-      <div class="map-heading"><p class="eyebrow">Thought map</p><h1>${activeSession.mode === 'two' ? '2つの選択肢を<wbr>比べる' : 'カードが示す、<wbr>ひとつの視点'}</h1><p>${activeSession.mode === 'two' ? 'カードの向きと意味から、<wbr>どちらが今進めやすいかを<wbr>比べます。' : 'カードに未来を決めてもらうのではなく、<wbr>解説を自分の状況に照らして<wbr>読んでみてください。'}</p></div>
-      ${activeSession.mode === 'two' ? `<div class="choice-comparison">${comparison}</div><section class="verdict-card"><span class="verdict-kicker">今回のカードでは</span><h3>${esc(verdict.label)}</h3><div class="score-lines">${renderScoreRow('選択肢A',verdict.scores[0])}${renderScoreRow('選択肢B',verdict.scores[1])}</div><details class="score-help"><summary>進めやすさとは？</summary><p>その選択肢を「いま進める」ときの追い風の強さです。運勢の良し悪しではありません。</p></details><p class="verdict-reason">${esc(verdict.reason)}</p>${verdict.note?`<p class="verdict-note">${esc(verdict.note)}</p>`:''}<p class="verdict-closing">${esc(verdict.closing)}</p></section>${renderReflection('verdict',deepCount>0,verdict)}<div class="thought-map deep-map">${activeSession.nodes.slice(2).map((node,index) => renderCard(node,index + 2,true)).join('')}</div>` : `<div class="thought-map">${activeSession.nodes.map((node,index)=>renderCard(node,index,true)).join('')}</div>`}
+      ${sessionContext()}<div class="map-heading"><p class="eyebrow">Thought map</p><h1>${activeSession.mode === 'two' ? '2つの選択肢を<wbr>比べる' : 'カードが示す、<wbr>ひとつの視点'}</h1><p>${activeSession.mode === 'two' ? 'カードの向きと意味から、<wbr>どちらが今進めやすいかを<wbr>比べます。' : 'カードに未来を決めてもらうのではなく、<wbr>解説を自分の状況に照らして<wbr>読んでみてください。'}</p></div>
+      ${activeSession.mode === 'two' ? `<div class="choice-comparison">${comparison}</div><section class="verdict-card"><span class="verdict-kicker">今回のカードでは</span><h3>${esc(verdict.label.replace(/選択肢([AB])/g,(_,letter)=>decisionDraft['option'+(letter==='A'?'1':'2')] ? `『${decisionDraft['option'+(letter==='A'?'1':'2')]}』` : `選択肢${letter}`))}</h3><div class="score-lines">${renderScoreRow('選択肢A',verdict.scores[0])}${renderScoreRow('選択肢B',verdict.scores[1])}</div><details class="score-help"><summary>進めやすさとは？</summary><p>その選択肢を「いま進める」ときの追い風の強さです。運勢の良し悪しではありません。</p></details><p class="verdict-reason">${esc(verdict.reason)}</p>${verdict.note?`<p class="verdict-note">${esc(verdict.note)}</p>`:''}<p class="verdict-closing">${esc(verdict.closing)}</p></section>${renderReflection('verdict',deepCount>0,verdict)}<div class="thought-map deep-map">${activeSession.nodes.slice(2).map((node,index) => renderCard(node,index + 2,true)).join('')}</div>` : `<div class="thought-map">${activeSession.nodes.map((node,index)=>renderCard(node,index,true)).join('')}</div>`}
     </section>`;
   renderTutorialStage();
 }
@@ -946,7 +974,7 @@ function renderDecision() {
       <form id="save-form" class="save-form">
         ${selectedDecision ? `<section class="decision-meta" aria-label="決定の補足">
           <div class="form-section"><div class="form-section-head"><b>ジャンル</b><span>任意・1つだけ</span></div><div class="genre-chips">${DECIDE_DECISION.GENRES.map(genre=>`<button type="button" class="meta-chip" data-action="select-genre" data-value="${genre}" aria-pressed="false">${genre}</button>`).join('')}</div></div>
-          ${activeSession.mode==='two'?`<div class="form-section"><div class="form-section-head"><b>選択肢の内容</b><span>任意</span></div><div class="pair-candidates" data-pair-candidates></div><div class="option-editor"><label>選択肢A<input id="option-1" name="option1" maxlength="30" autocomplete="off" enterkeyhint="done" lang="ja" placeholder="例：今の仕事を続ける"></label><button type="button" class="swap-options" data-action="swap-options" aria-label="選択肢AとBを入れ替える">⇄</button><label>選択肢B<input id="option-2" name="option2" maxlength="30" autocomplete="off" enterkeyhint="done" lang="ja" placeholder="例：新しい仕事に挑戦する"></label></div><div class="recent-options" data-recent-options></div></div>`:''}
+          ${activeSession.mode==='two'?`<div class="form-section"><div class="form-section-head"><b>選択肢の内容</b><span>任意</span></div><div class="pair-candidates" data-pair-candidates></div>${optionEditor()}<div class="recent-options" data-recent-options></div></div>`:''}
         </section>`:''}
         <label>題名 <span>任意</span><input name="title" maxlength="60" autocomplete="off" enterkeyhint="done" lang="ja" placeholder="空欄なら内容から自動で作成"></label>
         <label>ひとことメモ <span>任意</span><textarea name="memo" maxlength="240" rows="3" lang="ja" placeholder="決め手や、今の気持ち"></textarea></label>
@@ -958,11 +986,11 @@ function renderDecision() {
 }
 
 function captureDecisionDraft() {
-  const form=document.querySelector('#save-form'); if(!form)return;
+  const form=document.querySelector('#save-form, #prepare-form'); if(!form)return;
   decisionDraft.title=String(form.elements.title?.value||'').slice(0,60);
   decisionDraft.memo=String(form.elements.memo?.value||'').slice(0,240);
-  decisionDraft.option1=DECIDE_DECISION.optionValue(form.elements.option1?.value||decisionDraft.option1);
-  decisionDraft.option2=DECIDE_DECISION.optionValue(form.elements.option2?.value||decisionDraft.option2);
+  decisionDraft.option1=DECIDE_DECISION.optionValue(form.elements.option1?.value??decisionDraft.option1);
+  decisionDraft.option2=DECIDE_DECISION.optionValue(form.elements.option2?.value??decisionDraft.option2);
 }
 
 function renderPairCandidates() {
@@ -985,7 +1013,7 @@ function renderRecentChoices() {
 }
 
 function restoreDecisionDraft() {
-  const form=document.querySelector('#save-form'); if(!form)return;
+  const form=document.querySelector('#save-form, #prepare-form'); if(!form)return;
   if(form.elements.title)form.elements.title.value=decisionDraft.title;
   if(form.elements.memo)form.elements.memo.value=decisionDraft.memo;
   if(form.elements.option1)form.elements.option1.value=decisionDraft.option1;
@@ -997,7 +1025,7 @@ function restoreDecisionDraft() {
 function selectGenre(value) {
   captureDecisionDraft();
   decisionDraft.genre=decisionDraft.genre===value?'':DECIDE_DECISION.validGenre(value);
-  restoreDecisionDraft(); sensoryFeedback('tick');
+  if(currentView.startsWith('prepare-'))renderPreparation(); else restoreDecisionDraft(); sensoryFeedback('tick');
 }
 
 function selectPair(index) {
@@ -1179,7 +1207,7 @@ function renderStats() {
   };
   const themePanel=rankPanel('THEME RANKING','テーマ別の決断',themes,'stats-theme',statsTheme,(name,index)=>String(index+1).padStart(2,'0'),'決断を記録すると、よく考えるテーマが見えてきます。',themeLogPanel);
   const periodPanel=rankPanel('MONTHLY RECORD','最近6か月の記録',recentMonthCounts(logs),'stats-period',statsPeriod,name=>{ const [,y,m]=name.match(/^(\d+)年(\d+)月$/)||[]; return `${String(m).padStart(2,'0')}<small>${y}</small>`; },'記録が増えると、月ごとの決断数を比べられます。',periodLogPanel);
-  const summaryPanel=`<section class="stats-summary"><span>これまでの決断</span><strong>${logs.length}<small>件</small></strong></section>${pendingBlock}${pendingLogPanel}<section class="satisfaction"><h2>決断の満足度</h2><div class="satisfaction-ring${reviewed.length?'':' empty'}" style="${ringStyle}"><strong>${satisfaction}<small>%</small></strong><span>満足</span></div><div class="review-bars">${reviewRows}</div></section>${reviewLogPanel}<section class="stats-themes"><h2>よくあるテーマ</h2><div>${themes.length?themes.map(([name,count])=>themeButton(name,`${esc(name)} <b>${count}</b>`,'stats-theme-ticket')).join(''):'<span>まだデータがありません</span>'}</div></section>${themeLogPanel}`;
+  const summaryPanel=`<section class="stats-summary"><span>これまでの決断</span><strong>${logs.length}<small>件</small></strong></section>${pendingBlock}${pendingLogPanel}<section class="satisfaction"><h2>決断の満足度</h2><div class="satisfaction-ring${reviewed.length?'':' empty'}" style="${ringStyle}"><strong>${reviewed.length ? `${satisfaction}<small>%</small>` : '—'}</strong><span>${reviewed.length ? '満足' : '評価待ち'}</span></div><div class="review-bars">${reviewRows}</div></section>${reviewLogPanel}<section class="stats-themes"><h2>よくあるテーマ</h2><div>${themes.length?themes.map(([name,count])=>themeButton(name,`${esc(name)} <b>${count}</b>`,'stats-theme-ticket')).join(''):'<span>まだデータがありません</span>'}</div></section>${themeLogPanel}`;
   const panels={summary:summaryPanel,theme:themePanel,period:periodPanel};
   const tabs=[['summary','サマリー'],['theme','テーマ'],['period','期間']];
   const current=panels[statsTab] ? statsTab : 'summary';
@@ -1591,6 +1619,10 @@ document.addEventListener('click', event => {
   else if (action === 'stats-tab') { statsTab=el.dataset.value; renderStats(); }
   else if (action === 'stats-theme' || action === 'stats-review' || action === 'stats-period') { const current={'stats-theme':statsTheme,'stats-review':statsReview,'stats-period':statsPeriod}[action]; const next=current===el.dataset.value?'':el.dataset.value; statsTheme=action==='stats-theme'?next:''; statsReview=action==='stats-review'?next:''; statsPeriod=action==='stats-period'?next:''; renderStats(); if(next)requestAnimationFrame(()=>document.querySelector('.stats-theme-logs')?.scrollIntoView({behavior:'smooth',block:'start'})); }
   else if (action === 'session') navigate('session');
+  else if (action === 'prepare-next') continuePreparation();
+  else if (action === 'prepare-skip') continuePreparation(true);
+  else if (action === 'prepare-back') { captureDecisionDraft(); navigate('prepare-genre'); }
+  else if (action === 'prepare-choice') { captureDecisionDraft(); decisionDraft['option'+el.dataset.key]=el.dataset.value; renderPreparation(); }
   else if (action === 'flip-card') flipCard(Number(el.dataset.slot));
   else if (action === 'flip-both') { if(event.detail===0 || prefersReducedMotion()) flipBoth(); else if(!revealHold) nudgeRevealHold(el); }
   else if (action === 'select-back') selectBack(el.dataset.value);
