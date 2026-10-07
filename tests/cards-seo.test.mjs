@@ -40,7 +40,7 @@ test('app index is indexable and links to cards', () => {
 
 test('service worker bypasses /cards/ and is bumped', () => {
   const sw = read('dist/service-worker.js');
-  assert.match(sw, /decide-shell-editorial-v78/);
+  assert.match(sw, /decide-shell-editorial-v79/);
   assert.match(sw, /url\.pathname\.includes\('\/cards\/'\)/);
 });
 
@@ -52,4 +52,33 @@ test('sitemap and robots', () => {
 
 test('no secrets in card pages', () => {
   for (const id of ids) assert.doesNotMatch(read(`dist/cards/${id}.html`), /sk_live|sk_test|whsec_|service_role/, id);
+});
+
+const cats = { ar: 'major', wa: 'wands', cu: 'cups', sw: 'swords', pe: 'pentacles' };
+
+test('category pages exist with SEO essentials and one CTA', () => {
+  for (const slug of Object.values(cats)) {
+    const html = read(`dist/cards/${slug}.html`);
+    assert.match(html, new RegExp(`<link rel="canonical" href="https://decisionprocess\\.net/cards/${slug}\\.html"`), slug);
+    assert.match(html, /"@type":\s*"BreadcrumbList"/, slug);
+    assert.match(html, /"@type":\s*"ItemList"/, slug);
+    assert.equal(html.split(CTA).length - 1, 1, `${slug} CTA count`);
+    assert.doesNotMatch(html, /<script(?![^>]*application\/ld\+json)/, slug);
+  }
+});
+
+test('card pages link to their category and neighbours', () => {
+  for (const id of ids) {
+    const html = read(`dist/cards/${id}.html`);
+    assert.match(html, new RegExp(`href="\\./${cats[id.slice(0, 2)]}\\.html"`), id);
+    if (id !== 'ar00') assert.match(html, /rel="prev"/, id);
+    if (id !== 'pe14') assert.match(html, /rel="next"/, id);
+  }
+  const idx = read('dist/cards/index.html');
+  for (const slug of Object.values(cats)) assert.match(idx, new RegExp(`href="\\./${slug}\\.html"`), slug);
+});
+
+test('sitemap includes category pages', () => {
+  const sm = read('dist/sitemap.xml');
+  for (const slug of Object.values(cats)) assert.match(sm, new RegExp(`<loc>https://decisionprocess\\.net/cards/${slug}\\.html</loc>`), slug);
 });

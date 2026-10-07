@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Phase 4: SEO 用カード解説ページ（静的・JS 不要・ログイン不要）を生成する。
 // 入力: dist/assets/cards.json + scripts/data/cards-extra-*.json
-// 出力: dist/cards/index.html, dist/cards/{id}.html, dist/sitemap.xml, dist/robots.txt
+// 出力: dist/cards/index.html, dist/cards/{major,wands,cups,swords,pentacles}.html,
+//       dist/cards/{id}.html, dist/sitemap.xml, dist/robots.txt
 // 使い方: node scripts/build-cards.mjs
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -34,6 +35,30 @@ const SUIT_NOTE = {
   ペンタクル: 'お金・仕事・暮らしの土台を司る地のスート。',
 };
 
+const CATEGORY = {
+  大アルカナ: {
+    slug: 'major', label: '大アルカナ',
+    intro: '大アルカナは「愚者」から「世界」までの22枚で、タロットの物語の骨格にあたるカードです。旅立ち、学び、試練、喪失、再生、完成という人生の大きな流れが、一枚ずつ象徴として描かれています。日々の出来事よりも、価値観や生き方の向きそのものに関わる問いを映しやすいのが特徴です。決断の場面で大アルカナが出たときは、目の前の損得だけでなく「この選択は自分がどんな人でありたいかとつながっているか」を考える手がかりになります。番号順に読むと、ひとつの成長の物語として前後のカードの意味もつながって見えてきます。0番の「愚者」は何も持たずに一歩を踏み出す存在で、残りの21枚はその旅で出会う人物や出来事、心の状態だと考えると覚えやすくなります。迷いが深いときほど、一枚の意味だけでなく流れの中での位置を見てみてください。',
+  },
+  ワンド: {
+    slug: 'wands', label: 'ワンド',
+    intro: 'ワンド（棒）は火のエレメントに対応し、情熱・意欲・行動・挑戦を司るスートです。エースからテンまでの数札は、ひらめきが生まれ、計画を立て、競い合い、成果を得て、やがて重荷を抱えるまでの流れを描きます。ペイジ・ナイト・クイーン・キングの人物札は、その熱量をどう扱う人なのかを表します。決断の場面でワンドが出たときは、「本当にやりたいのはどちらか」「勢いと準備のバランスは取れているか」を確かめる視点として読むと役立ちます。気持ちが先走りやすい選択や、新しい挑戦を前にしたときに特に参考になるスートです。同じワンドでも、数が小さいほど始まりの勢いを、大きいほど抱え込んだ責任を表す傾向があります。いま自分の熱意がどの段階にあるのかを照らし合わせながら読んでみてください。',
+  },
+  カップ: {
+    slug: 'cups', label: 'カップ',
+    intro: 'カップ（聖杯）は水のエレメントに対応し、感情・人間関係・愛情・心の満足を司るスートです。エースからテンまでの数札は、気持ちが満ちあふれ、誰かと分かち合い、失望や迷いを経て、心からの充足へ向かう流れを描きます。人物札は、感受性や共感力をどう使う人なのかを表します。決断の場面でカップが出たときは、条件や合理性だけでは見えにくい「自分は本当はどう感じているか」「大切な人との関係はどうなるか」に目を向けるきっかけになります。頭では決めているのに心が追いつかない、そんな迷いを整理するときに頼りになるスートです。数が小さいほど気持ちの芽生えを、大きいほど成熟した満足や関係の完成を表す傾向があります。いま自分の心がどの段階にあるのかを確かめながら読んでみてください。',
+  },
+  ソード: {
+    slug: 'swords', label: 'ソード',
+    intro: 'ソード（剣）は風のエレメントに対応し、思考・判断・言葉・対立を司るスートです。エースからテンまでの数札には、明晰なひらめきから始まり、迷い、心の痛み、駆け引き、不安、そして区切りと再出発までが描かれ、厳しい絵柄が多いのも特徴です。人物札は、知性や言葉をどう使う人なのかを表します。決断の場面でソードが出たときは、「事実と思い込みを分けられているか」「怖れが判断を曇らせていないか」を点検する視点として読むと役立ちます。つらい状況を直視し、考えを研ぎ澄ませて線を引く必要がある選択で、特に力を発揮するスートです。厳しい絵柄でも、それは「危険を知らせ、考え直す機会をくれる」サインとして読めます。数の流れの中で、いまの思考がどの段階にあるのかを照らし合わせてみてください。',
+  },
+  ペンタクル: {
+    slug: 'pentacles', label: 'ペンタクル',
+    intro: 'ペンタクル（金貨）は地のエレメントに対応し、お金・仕事・技術・健康・暮らしの土台を司るスートです。エースからテンまでの数札は、小さな機会をつかみ、工夫と努力を重ね、蓄えと成果を得て、次の世代へ受け継ぐまでの着実な流れを描きます。人物札は、現実的な力をどう育て、どう使う人なのかを表します。決断の場面でペンタクルが出たときは、「時間とお金の見通しは立っているか」「長く続けられる形になっているか」を確かめる視点として読むと役立ちます。転職や引っ越し、買い物など、生活に直結する選択で特に参考になるスートです。数が小さいほど種まきの段階を、大きいほど実りや継承の段階を表す傾向があります。焦らず積み上げることの価値を思い出させてくれるカードが多いのも特徴です。',
+  },
+};
+const catOf = (c) => CATEGORY[c.arcana];
+
 const esc = (s) => String(s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -59,6 +84,18 @@ function related(c) {
   for (const p of Object.values(SUIT_PREFIX)) if (p !== pre) ids.push(p + String(rank).padStart(2, '0'));
   return ids.map((id) => byId.get(id)).filter(Boolean);
 }
+
+// 正位置の「進めやすさ」が同じカード（デッキ順で近いものから最大4枚、関連カードと重複しない）
+function sameScore(c, exclude) {
+  const skip = new Set([c.id, ...exclude.map((r) => r.id)]);
+  const i = cards.indexOf(c);
+  return cards
+    .filter((o) => o.upright.score === c.upright.score && !skip.has(o.id))
+    .sort((a, b) => Math.abs(cards.indexOf(a) - i) - Math.abs(cards.indexOf(b) - i))
+    .slice(0, 4);
+}
+
+const gridHtml = (list) => `<ul class="grid">${list.map((r) => `<li><a href="./${r.id}.html">${picture(r, { sizes: '120px' })}${esc(r.name)}</a></li>`).join('')}</ul>`;
 
 const imgBase = (id) => `../assets/rider-waite/${id}`;
 const altOf = (c) => `${c.name}（${c.en}）のカード画像。ライダー版タロット`;
@@ -102,6 +139,14 @@ dl.themes dd{margin:0}
 .grid a{display:block;text-decoration:none;font-size:.82rem;line-height:1.4;text-align:center}
 .grid img{width:100%;height:auto;display:block;border:1.5px solid #111;border-radius:4px;margin-bottom:4px;background:#111}
 .note{font-size:.85rem;color:var(--muted)}
+.pager{display:flex;justify-content:space-between;gap:12px;margin:28px 0 0;padding:0;list-style:none;font-size:.88rem}
+.pager li{flex:1}
+.pager li.next{text-align:right}
+.pager a{display:block;padding:10px 12px;border:1.5px solid var(--line);border-radius:6px;text-decoration:none;background:var(--card)}
+.pager small{display:block;color:var(--muted);font-size:.75rem}
+.cats{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;padding:0;list-style:none;font-size:.88rem}
+.cats a{display:inline-block;padding:2px 12px;border:1.5px solid var(--line);border-radius:999px;text-decoration:none}
+.cats [aria-current]{border:1.5px solid #111;background:var(--accent);color:#111;padding:2px 12px;border-radius:999px;font-weight:600}
 footer{max-width:720px;margin:0 auto;padding:16px 16px 48px;border-top:1px solid var(--line);font-size:.8rem;color:var(--muted)}
 footer p{margin:4px 0}`;
 
@@ -179,6 +224,7 @@ function cardPage(c) {
   const crumbs = [
     { name: 'DECIDE', href: '../', path: '/' },
     { name: 'カード解説', href: './', path: '/cards/' },
+    { name: catOf(c).label, href: `./${catOf(c).slug}.html`, path: `/cards/${catOf(c).slug}.html` },
     { name: c.name, path },
   ];
   const article = {
@@ -190,6 +236,11 @@ function cardPage(c) {
     publisher: { '@type': 'Organization', name: 'DECIDE', url: ORIGIN + '/' },
   };
   const rel = related(c);
+  const same = sameScore(c, rel);
+  const idx = cards.indexOf(c);
+  const prev = cards[idx - 1];
+  const next = cards[idx + 1];
+  const cat = catOf(c);
   const body = `<main>
 ${crumbsHtml(crumbs)}
 <article>
@@ -199,7 +250,7 @@ ${crumbsHtml(crumbs)}
 ${picture(c, { eager: true })}
 <div>
 <ul class="facts">
-<li><b>分類</b>${esc(c.arcana)}</li>
+<li><b>分類</b><a href="./${cat.slug}.html">${esc(c.arcana)}</a></li>
 <li><b>象徴</b>${esc(c.symbol)}</li>
 <li><b>正位置</b>${esc(c.upright.keywords.join('・'))}</li>
 <li><b>逆位置</b>${esc(c.reversed.keywords.join('・'))}</li>
@@ -227,8 +278,14 @@ ${sideHtml(c, 'reversed')}
 ${ctaHtml(c, 'end')}
 <section>
 <h2>関連するカード</h2>
-<ul class="grid">${rel.map((r) => `<li><a href="./${r.id}.html">${picture(r, { sizes: '120px' })}${esc(r.name)}</a></li>`).join('')}</ul>
-<p class="note"><a href="./">78枚すべてのカード解説を見る</a></p>
+${gridHtml(rel)}
+${same.length ? `<h3>正位置の${esc(deck.scoring.axis)}が同じ（${c.upright.score} / 5）カード</h3>
+${gridHtml(same)}` : ''}
+<p class="note"><a href="./${cat.slug}.html">${esc(cat.label)}のカード一覧（${cards.filter((o) => o.arcana === c.arcana).length}枚）</a> ／ <a href="./">78枚すべてのカード解説を見る</a></p>
+<nav aria-label="前後のカード"><ul class="pager">
+<li class="prev">${prev ? `<a href="./${prev.id}.html" rel="prev"><small>← 前のカード</small>${esc(prev.name)}</a>` : ''}</li>
+<li class="next">${next ? `<a href="./${next.id}.html" rel="next"><small>次のカード →</small>${esc(next.name)}</a>` : ''}</li>
+</ul></nav>
 </section>
 </article>
 </main>`;
@@ -243,9 +300,9 @@ function indexPage() {
   const groups = ARCANA_ORDER.map((a) => {
     const list = cards.filter((c) => c.arcana === a);
     return `<section>
-<h2 id="${a === '大アルカナ' ? 'major' : SUIT_PREFIX[a]}">${esc(a)}（${list.length}枚）</h2>
-<p class="note">${esc(SUIT_NOTE[a])}</p>
-<ul class="grid">${list.map((c) => `<li><a href="./${c.id}.html">${picture(c, { sizes: '120px' })}${esc(c.name)}</a></li>`).join('')}</ul>
+<h2 id="${a === '大アルカナ' ? 'major' : SUIT_PREFIX[a]}"><a href="./${CATEGORY[a].slug}.html">${esc(a)}（${list.length}枚）</a></h2>
+<p class="note">${esc(SUIT_NOTE[a])} <a href="./${CATEGORY[a].slug}.html">${esc(a)}の解説を読む</a></p>
+${gridHtml(list)}
 </section>`;
   }).join('\n');
   const itemList = {
@@ -265,6 +322,48 @@ ${groups}
   });
 }
 
+function catsNav(current) {
+  return `<ul class="cats" aria-label="カテゴリ">${ARCANA_ORDER.map((a) => a === current
+    ? `<li aria-current="page">${esc(a)}</li>`
+    : `<li><a href="./${CATEGORY[a].slug}.html">${esc(a)}</a></li>`).join('')}<li><a href="./">78枚すべて</a></li></ul>`;
+}
+
+function categoryPage(a) {
+  const cat = CATEGORY[a];
+  const list = cards.filter((c) => c.arcana === a);
+  const path = `/cards/${cat.slug}.html`;
+  const title = a === '大アルカナ'
+    ? `大アルカナ${list.length}枚の意味一覧｜正位置・逆位置と決断のヒント - DECIDE`
+    : `${a}（${list.length}枚）の意味一覧｜タロット小アルカナと決断のヒント - DECIDE`;
+  const description = `${SUIT_NOTE[a]}タロット「${a}」${list.length}枚それぞれの正位置・逆位置のキーワードと、迷いや決断の場面での読み方をまとめました。`.slice(0, 160);
+  const crumbs = [
+    { name: 'DECIDE', href: '../', path: '/' },
+    { name: 'カード解説', href: './', path: '/cards/' },
+    { name: a, path },
+  ];
+  const itemList = {
+    '@context': 'https://schema.org', '@type': 'ItemList', name: `${a}のカード解説`,
+    itemListElement: list.map((c, i) => ({ '@type': 'ListItem', position: i + 1, url: `${ORIGIN}/cards/${c.id}.html`, name: c.name })),
+  };
+  const rows = list.map((c) => `<li><a href="./${c.id}.html"><b>${esc(c.name)}</b></a>：正位置「${esc(c.upright.keywords.join('・'))}」／逆位置「${esc(c.reversed.keywords.join('・'))}」</li>`).join('\n');
+  const body = `<main>
+${crumbsHtml(crumbs)}
+<h1>${esc(a)}の意味一覧（${list.length}枚）</h1>
+${catsNav(a)}
+<p>${esc(cat.intro)}</p>
+${gridHtml(list)}
+<div class="cta"><p>${esc(a)}の視点を、いまの選択肢に当てはめてみる</p><a href="../">${CTA_TEXT}</a></div>
+<section>
+<h2>${esc(a)}のキーワード早見表</h2>
+<ul>
+${rows}
+</ul>
+</section>
+<p class="note"><a href="./">78枚すべてのカード解説を見る</a></p>
+</main>`;
+  return layout({ title, description, path, ogType: 'website', ogImage: `${ORIGIN}/assets/rider-waite/${list[0].id}.jpg`, ld: [itemList, crumbsLd(crumbs)], body });
+}
+
 // ---- 生成 ----
 mkdirSync(DIST + 'cards', { recursive: true });
 const thin = [];
@@ -275,9 +374,15 @@ for (const c of cards) {
   writeFileSync(`${DIST}cards/${c.id}.html`, cardPage(c));
 }
 writeFileSync(DIST + 'cards/index.html', indexPage());
+for (const a of ARCANA_ORDER) {
+  const n = countChars(CATEGORY[a].intro);
+  if (n < 300) throw new Error(`category intro too short: ${a} (${n})`);
+  writeFileSync(`${DIST}cards/${CATEGORY[a].slug}.html`, categoryPage(a));
+}
 
 const urls = [
   ['/', '1.0'], ['/cards/', '0.8'],
+  ...ARCANA_ORDER.map((a) => [`/cards/${CATEGORY[a].slug}.html`, '0.7']),
   ...cards.map((c) => [`/cards/${c.id}.html`, '0.6']),
   ['/privacy.html', '0.2'], ['/terms.html', '0.2'], ['/tokushoho.html', '0.2'],
 ];
@@ -293,7 +398,7 @@ Sitemap: ${ORIGIN}/sitemap.xml
 `);
 
 const counts = cards.map((c) => countChars(cardText(c)));
-console.log(`cards: ${cards.length} pages + index, sitemap ${urls.length} URLs`);
+console.log(`cards: ${cards.length} pages + index + ${ARCANA_ORDER.length} categories, sitemap ${urls.length} URLs`);
 console.log(`card-specific chars: min ${Math.min(...counts)} / max ${Math.max(...counts)} (threshold ${MIN_CHARS})`);
 if (thin.length) {
   console.log(`THIN CONTENT (< ${MIN_CHARS}):`);

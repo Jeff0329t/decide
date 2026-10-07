@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://decisionprocess.net/</loc><lastmod>2026-10-07</lastmod><priority>1.0</priority></url>
   <url><loc>https://decisionprocess.net/cards/</loc><lastmod>2026-10-07</lastmod><priority>0.8</priority></url>
+  <url><loc>https://decisionprocess.net/cards/major.html</loc><lastmod>2026-10-07</lastmod><priority>0.7</priority></url>
+  <url><loc>https://decisionprocess.net/cards/wands.html</loc><lastmod>2026-10-07</lastmod><priority>0.7</priority></url>
+  <url><loc>https://decisionprocess.net/cards/cups.html</loc><lastmod>2026-10-07</lastmod><priority>0.7</priority></url>
+  <url><loc>https://decisionprocess.net/cards/swords.html</loc><lastmod>2026-10-07</lastmod><priority>0.7</priority></url>
+  <url><loc>https://decisionprocess.net/cards/pentacles.html</loc><lastmod>2026-10-07</lastmod><priority>0.7</priority></url>
   <url><loc>https://decisionprocess.net/cards/ar00.html</loc><lastmod>2026-10-07</lastmod><priority>0.6</priority></url>
   <url><loc>https://decisionprocess.net/cards/ar01.html</loc><lastmod>2026-10-07</lastmod><priority>0.6</priority></url>
   <url><loc>https://decisionprocess.net/cards/ar02.html</loc><lastmod>2026-10-07</lastmod><priority>0.6</priority></url>

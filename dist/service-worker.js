@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'decide-shell-editorial-v78';
+const SHELL_CACHE = 'decide-shell-editorial-v79';
 const IMAGE_CACHE = 'decide-card-images-p14-v1';
 const IMAGE_LIMIT = 100;
 const CARD_SHELL_FILES = [

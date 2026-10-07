@@ -10,6 +10,7 @@ node scripts/build-cards.mjs
 
 - `dist/cards/index.html` … 78枚の一覧
 - `dist/cards/{id}.html` … 各カード（ar00〜ar21 / wa,cu,sw,pe + 01〜14）
+- `dist/cards/{major,wands,cups,swords,pentacles}.html` … 分類別一覧（大アルカナ・各スート）
 - `dist/sitemap.xml` / `dist/robots.txt`
 
 ### 文章を直すとき
