@@ -1062,6 +1062,7 @@ function saveDecision(form) {
   const firstRecord=retry ? pendingSave.firstRecord : logs.length===0;
   const requestPersistence=retry ? pendingSave.requestPersistence : firstRecord && !settings.storagePersistRequested;
   const existing=logs.findIndex(item=>item.id===log.id);
+  if(existing>=0 && 'remindAt' in logs[existing]) log.remindAt=logs[existing].remindAt; else if(existing<0){ const remindAt=window.DECIDE_REMINDERS?.defaultRemindAt?.(log.createdAt); if(remindAt) log.remindAt=remindAt; }
   if(existing<0 && !retry && window.DECIDE_ENTITLEMENTS && !window.DECIDE_ENTITLEMENTS.canSaveLog(logs.length)){ window.DECIDE_ENTITLEMENTS.openPaywall('save'); return; }
   if(existing>=0)logs[existing]=log; else logs.unshift(log);
   if(requestPersistence)settings.storagePersistRequested=true;
@@ -1496,11 +1497,12 @@ async function createShareImageBlob(data) {
   return await new Promise(resolve=>canvas.toBlob(resolve,'image/png',.94));
 }
 // Instagramストーリーズ用 9:16（上下約250pxは安全域として空ける）
-async function createStoryImageBlob(data) {
+async function createStoryImageBlob(data, theme) {
   const W=1080, H=1920; const canvas=document.createElement('canvas'); canvas.width=W; canvas.height=H; const ctx=canvas.getContext('2d');
-  const YELLOW='#f1d527', INK='#0b0b0b', CREAM='#f4efe3', SERIF='Didot,"Bodoni 72","Bodoni MT",serif', MINCHO='"Hiragino Mincho ProN","Yu Mincho",serif';
+  const P=window.DECIDE_SHARE_THEMES?.palette?.(theme)||{};
+  const YELLOW=P.yellow||'#f1d527', INK=P.ink||'#0b0b0b', CREAM=P.cream||'#f4efe3', SERIF='Didot,"Bodoni 72","Bodoni MT",serif', MINCHO='"Hiragino Mincho ProN","Yu Mincho",serif';
   ctx.fillStyle=INK; ctx.fillRect(0,0,W,H);
-  ctx.strokeStyle='rgba(244,239,227,.08)'; ctx.lineWidth=1; for(let y=0;y<H;y+=6){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  ctx.strokeStyle=P.line||'rgba(244,239,227,.08)'; ctx.lineWidth=1; for(let y=0;y<H;y+=6){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
   ctx.save(); ctx.translate(540,330); ctx.rotate(-.025); ctx.fillStyle=YELLOW; ctx.fillRect(-560,-62,1120,124); ctx.restore();
   ctx.fillStyle=INK; ctx.textBaseline='middle'; ctx.textAlign='center'; ctx.font=`italic 700 100px ${SERIF}`; ctx.fillText('DECIDE.',540,334);
   ctx.textBaseline='alphabetic'; ctx.fillStyle=YELLOW; ctx.font=`700 28px ${SERIF}`; ctx.fillText('— MY DECISION —',540,500);
@@ -1519,7 +1521,7 @@ async function createStoryImageBlob(data) {
     x+=cardWidth+gap;
   }
   ctx.fillStyle=YELLOW; ctx.font=`700 34px ${SERIF}`; ctx.fillText('decisionprocess.net',540,1660);
-  ctx.fillStyle='rgba(244,239,227,.6)'; ctx.font=`500 24px ${MINCHO}`; ctx.fillText('タロットで、迷いに答えを出す',540,1704);
+  ctx.fillStyle=P.soft||'rgba(244,239,227,.6)'; ctx.font=`500 24px ${MINCHO}`; ctx.fillText('タロットで、迷いに答えを出す',540,1704);
   return await new Promise(resolve=>canvas.toBlob(resolve,'image/png',.94));
 }
 function wrapCanvasText(ctx,text,x,y,maxWidth,lineHeight,maxLines=3){ let line='';let count=0;for(const char of String(text||'')){const next=line+char;if(ctx.measureText(next).width>maxWidth&&line){ctx.fillText(line,x,y+count*lineHeight);line=char;count++;if(count>=maxLines)return;}else line=next;}if(count<maxLines)ctx.fillText(line,x,y+count*lineHeight); }
@@ -1563,6 +1565,7 @@ function openSettings() {
   </section>`;
   wrap.querySelector('[data-action="tutorial-replay"]').textContent='使い方をもう一度見る';
   window.DECIDE_AUTH?.renderSettings?.(wrap);
+  window.DECIDE_REMINDERS?.mountSettings?.(wrap);
   mountModal(wrap,'.sheet-head button');
 }
 function closeSettings() { closeModal('#settings-modal'); }
@@ -1591,6 +1594,7 @@ function openShare(type='app', id=null) {
     <div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">Share</p><h2 id="share-title">${esc(heading)}</h2></div><button data-action="close-share" aria-label="閉じる">×</button></div>
     <p class="share-lead">${esc(lead)}</p>
     ${type !== 'app' ? `<div class="share-card-preview"><div class="share-preview-images">${activeShareData.cards.map(card=>cardPicture(card,{className:card.orientation==='reversed'?'reversed-image':'',sizes:'82px'})).join('')}</div><div class="share-preview" data-share-preview></div></div>` : ''}
+    ${type !== 'app' ? (window.DECIDE_SHARE_THEMES?.renderPicker?.()||'') : ''}
     ${type !== 'app' ? `<div class="share-primary"><button class="share-big instagram" data-action="share-instagram-story"><b>◎</b><span>Instagramストーリーズにシェア</span></button><a class="share-big x-post" href="https://x.com/intent/post?text=${encodeURIComponent(activeShareData.postText)}&url=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>𝕏</b><span>Xにポスト</span></a></div>` : ''}
     <div class="share-grid">
       <a class="share-option line" href="https://line.me/R/msg/text/?${encodeURIComponent(`${shareText}\n${url}`)}" target="_blank" rel="noopener"><b>LINE</b><span>LINEで送る</span></a>
@@ -1604,13 +1608,13 @@ function openShare(type='app', id=null) {
   </section>`;
   const preview=wrap.querySelector('[data-share-preview]'); if(preview)preview.textContent=shareText;
   wrap.querySelector('[data-share-copy-label]').textContent=type==='app'?url:title;
-  if(type!=='app') activeShareData.storyBlobPromise=createStoryImageBlob(activeShareData).catch(()=>null);
+  if(type!=='app') activeShareData.storyBlobPromise=createStoryImageBlob(activeShareData,window.DECIDE_SHARE_THEMES?.current?.()).catch(()=>null);
   mountModal(wrap,'.sheet-head button');
 }
 function closeShare() { closeModal('#share-modal'); }
 async function shareInstagramStory() {
   const data=activeShareData; if(!data?.cards?.length) return;
-  const blob=await (data.storyBlobPromise || createStoryImageBlob(data).catch(()=>null));
+  const blob=await (data.storyBlobPromise || createStoryImageBlob(data,window.DECIDE_SHARE_THEMES?.current?.()).catch(()=>null));
   if(!blob){ toast('画像を作れませんでした'); return; }
   const file=new File([blob],'decide-story.png',{type:'image/png'});
   if(navigator.canShare?.({files:[file]})){
@@ -1807,7 +1811,8 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./service-worker.js').then(registration => registration.update()).catch(() => {});
   }, {once:true});
 }
-window.DECIDE_APP_BRIDGE={getLogs:()=>logs,setLogs:v=>{logs=v},getSettings:()=>settings,persist,render};
+window.DECIDE_APP_BRIDGE={getLogs:()=>logs,setLogs:v=>{logs=v},getSettings:()=>settings,persist,render,
+  rebuildStory:theme=>{ if(activeShareData?.cards) activeShareData.storyBlobPromise=createStoryImageBlob(activeShareData,theme).catch(()=>null); }};
 loadCardContent();
 render();
 if(shouldAutoStartTutorial())requestAnimationFrame(startTutorialIntro);

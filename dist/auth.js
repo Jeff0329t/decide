@@ -104,6 +104,7 @@
       ? `<div><b id="account-setting-title">アカウント</b>
         <p class="account-email">${escapeHtml(user.email)} でログイン中</p></div>
         ${window.DECIDE_SYNC?.renderToggle?.() || ''}
+        ${window.DECIDE_REFERRAL?.renderSettings?.() || ''}
         <div class="data-actions">
           <button class="button secondary" type="button" data-auth-action="logout">ログアウト</button>
           <button class="button secondary danger" type="button" data-auth-action="delete-confirm">アカウント削除</button>

@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'decide-shell-editorial-v73';
+const SHELL_CACHE = 'decide-shell-editorial-v74';
 const IMAGE_CACHE = 'decide-card-images-p14-v1';
 const IMAGE_LIMIT = 100;
 const CARD_SHELL_FILES = [
@@ -8,6 +8,7 @@ const CARD_SHELL_FILES = [
 const SHELL_FILES = [
   './', './index.html', './app.js', './styles.css', './scoring.js',
   './shared.js', './interview.js', './decision-meta.js', './backup-format.js', './card-backs.js', './learn.js', './config.js', './auth.js', './entitlements.js', './sync.js',
+  './reminders.js', './share-themes.js', './referral.js',
   './manifest.webmanifest', './icon-192.png?v=2', './icon-512.png?v=2',
   './icon-512-maskable.png?v=2', './apple-touch-icon.png?v=2',
   './assets/cards.json', './assets/learn.json', './assets/card-back-lines.jpg',
@@ -78,4 +79,58 @@ self.addEventListener('fetch', event => {
   if (shellUrls.has(url.href)) {
     event.respondWith(caches.match(request).then(saved => saved || fetch(request)));
   }
+});
+
+// ふり返りの通知：ページが IndexedDB に入れた {id, remindAt, notified} だけを見る（ログの中身は見ない）
+function openRemindDb() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('decide-remind', 1);
+    req.onupgradeneeded = () => { if (!req.result.objectStoreNames.contains('items')) req.result.createObjectStore('items', {keyPath: 'id'}); };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function notifyDueReviews() {
+  const db = await openRemindDb();
+  try {
+    const items = await new Promise((resolve, reject) => {
+      const req = db.transaction('items', 'readonly').objectStore('items').getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => reject(req.error);
+    });
+    const now = Date.now();
+    const due = items.filter(item => item && !item.notified && Date.parse(item.remindAt) <= now);
+    if (!due.length) return;
+    await self.registration.showNotification('あの決断、どうなった？', {
+      body: 'ふり返りの時間です。アプリを開いて、その後を記録しましょう。',
+      tag: 'decide-remind',
+      icon: new URL('./icon-192.png?v=2', SCOPE).href
+    });
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction('items', 'readwrite');
+      const store = tx.objectStore('items');
+      due.forEach(item => store.put({...item, notified: true}));
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+      tx.onabort = () => reject(tx.error);
+    });
+  } finally {
+    db.close();
+  }
+}
+
+self.addEventListener('periodicsync', event => {
+  if (event.tag !== 'decide-remind') return;
+  event.waitUntil(notifyDueReviews().catch(() => {}));
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({type: 'window', includeUncontrolled: true});
+    const open = windows.find(client => client.url.startsWith(SCOPE.href));
+    if (open) return open.focus();
+    return self.clients.openWindow(SCOPE.href);
+  })());
 });

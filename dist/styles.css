@@ -387,6 +387,15 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .copy-link { width: 100%; min-height: 50px; margin-top: 14px; padding: 9px 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid var(--line); border-radius: 13px; background: var(--soft); cursor: pointer; }
 .copy-link span { min-width: 0; overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; font-size: .75rem; text-align: left; }
 .copy-link b { flex: 0 0 auto; color: var(--accent); font-size: .75rem; }
+.share-theme-picker { margin-top: 14px; }
+.share-theme-picker > b { display: block; margin-bottom: 8px; font-size: .78rem; }
+.share-theme-chips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.share-theme-chip { min-height: 40px; padding: 6px 4px; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--line); border-radius: 3px; background: transparent; color: inherit; font-size: .75rem; cursor: pointer; }
+.share-theme-chip.active { border-color: var(--accent); color: var(--accent); font-weight: 700; }
+.share-theme-swatch { width: 14px; height: 18px; flex: 0 0 auto; border: 1px solid; }
+.referral-setting { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+.referral-setting p { margin: 4px 0 10px; color: var(--muted); font-size: .76rem; line-height: 1.6; }
+.referral-code b { margin-left: 6px; font-size: 1rem; letter-spacing: .14em; color: var(--accent); }
 .deck-setting { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
 .deck-setting > b { font-size: .9rem; }
 .deck-setting > p { margin: 4px 0 12px; color: var(--muted); font-size: .875rem; line-height: 1.5; }
@@ -2228,6 +2237,9 @@ body[data-view="history"] .history-screen > .text-back { display: none; }
 }
 #share-modal .copy-link span { color: #d2cbbf; }
 #share-modal .copy-link b { color: #f1d527; }
+#share-modal .share-theme-picker > b { color: #fff; }
+#share-modal .share-theme-chip { border-color: #625b50; background: #171717; color: #d2cbbf; }
+#share-modal .share-theme-chip.active { border-color: #f1d527; color: #f1d527; }
 
 /* Settings sheet: monochrome editorial rows instead of generic rounded cards. */
 #settings-modal .settings-sheet {
@@ -2250,6 +2262,9 @@ body[data-view="history"] .history-screen > .text-back { display: none; }
 #settings-modal .data-setting small,
 #settings-modal .setting-note p,
 #settings-modal .backup-format-note { color: #cfc7ba; }
+#settings-modal .referral-setting { border-color: #4d4841; }
+#settings-modal .referral-setting p { color: #cfc7ba; }
+#settings-modal .referral-code b { color: #f1d527; }
 #settings-modal .deck-presets { gap: 0; border-top: 1px solid #4c4740; }
 #settings-modal .deck-preset {
   min-height: 70px;
@@ -3342,7 +3357,7 @@ button.stats-pending:focus-visible { transform: translate(-2px,-2px) rotate(.35d
 .tutorial-intro-lines p:nth-child(even){transform:rotate(.7deg)}
 .tutorial-intro-start{border-radius:0;box-shadow:4px 4px 0 #0b0b0b;font-family:"Hiragino Mincho ProN","Yu Mincho",serif;letter-spacing:.08em}
 
-#settings-modal .deck-setting>b#deck-setting-title,#settings-modal .setting-backs>b,#settings-modal .feedback-setting>div>b,#settings-modal .data-setting b#data-setting-title,#settings-modal .data-setting b#account-setting-title{display:inline-block;width:auto;padding:3px 10px;background:#f1d527;color:#0b0b0b;font-family:"Hiragino Mincho ProN","Yu Mincho",serif;letter-spacing:.06em;transform:rotate(-1.5deg);box-shadow:3px 3px 0 rgba(244,239,227,.85)}
+#settings-modal .deck-setting>b#deck-setting-title,#settings-modal .setting-backs>b,#settings-modal .feedback-setting>div>b,#settings-modal .referral-setting>div>b,#settings-modal .data-setting b#data-setting-title,#settings-modal .data-setting b#account-setting-title{display:inline-block;width:auto;padding:3px 10px;background:#f1d527;color:#0b0b0b;font-family:"Hiragino Mincho ProN","Yu Mincho",serif;letter-spacing:.06em;transform:rotate(-1.5deg);box-shadow:3px 3px 0 rgba(244,239,227,.85)}
 .toggle-button{border-radius:0;background:#0b0b0b;border:1.5px solid #f4efe3;box-shadow:3px 3px 0 rgba(244,239,227,.35);transition:background .2s,box-shadow .2s}
 .toggle-button span{border-radius:0;background:#f4efe3}
 .toggle-button b{color:#f4efe3;font-family:Didot,"Bodoni 72",serif;letter-spacing:.08em}
