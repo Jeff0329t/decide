@@ -1234,7 +1234,7 @@ function renderDetail() {
       <div class="completion-dock">
         <div class="completion-copy"><h1>よし、決めた。</h1><p>この決断を記録しました。</p><strong data-completion-title></strong></div>
         ${renderRemindPicker(log)}
-        <div class="completion-actions"><button class="button satisfied-button" data-action="satisfied"><small>DONE</small>納得できた！</button><div class="completion-sub"><button class="button secondary" data-action="share-log" data-id="${esc(log.id)}">□ シェア</button><button class="button ghost" data-action="home">ホームへ</button></div></div>
+        <div class="completion-actions"><button class="button satisfied-button" data-action="satisfied"><small>DONE</small>納得できた！</button><div class="completion-sub"><button class="button secondary" data-action="share-log" data-id="${esc(log.id)}">SNSでシェア ↗</button><button class="button ghost" data-action="home">ホームへ</button></div></div>
       </div>
     </section>`;
     app.querySelector('[data-completion-title]').textContent=DECIDE_DECISION.decisionText(log);
@@ -1495,6 +1495,33 @@ async function createShareImageBlob(data) {
   ctx.save(); ctx.translate(72,1218); ctx.rotate(-.012); ctx.fillStyle=YELLOW; ctx.fillRect(10,10,936,84); ctx.fillStyle=CREAM; ctx.fillRect(0,0,936,84); ctx.fillStyle=INK; ctx.font=`700 22px ${SERIF}`; ctx.textBaseline='middle'; ctx.fillText('DECIDED',28,42); ctx.font=`700 36px ${MINCHO}`; ctx.fillText(data.decision||'',180,44,730); ctx.restore();
   return await new Promise(resolve=>canvas.toBlob(resolve,'image/png',.94));
 }
+// Instagramストーリーズ用 9:16（上下約250pxは安全域として空ける）
+async function createStoryImageBlob(data) {
+  const W=1080, H=1920; const canvas=document.createElement('canvas'); canvas.width=W; canvas.height=H; const ctx=canvas.getContext('2d');
+  const YELLOW='#f1d527', INK='#0b0b0b', CREAM='#f4efe3', SERIF='Didot,"Bodoni 72","Bodoni MT",serif', MINCHO='"Hiragino Mincho ProN","Yu Mincho",serif';
+  ctx.fillStyle=INK; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(244,239,227,.08)'; ctx.lineWidth=1; for(let y=0;y<H;y+=6){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  ctx.save(); ctx.translate(540,330); ctx.rotate(-.025); ctx.fillStyle=YELLOW; ctx.fillRect(-560,-62,1120,124); ctx.restore();
+  ctx.fillStyle=INK; ctx.textBaseline='middle'; ctx.textAlign='center'; ctx.font=`italic 700 100px ${SERIF}`; ctx.fillText('DECIDE.',540,334);
+  ctx.textBaseline='alphabetic'; ctx.fillStyle=YELLOW; ctx.font=`700 28px ${SERIF}`; ctx.fillText('— MY DECISION —',540,500);
+  ctx.fillStyle=CREAM; ctx.font=`700 64px ${MINCHO}`; wrapCanvasText(ctx,`私は「${data.decision||''}」に決めた`,540,600,920,84,3);
+  const cards=data.cards||[]; const cardWidth=cards.length>1?340:380; const cardHeight=cardWidth*1.7; const gap=cards.length>1?100:0; const total=cardWidth*cards.length+gap*Math.max(0,cards.length-1); let x=(W-total)/2; const top=860;
+  for(const [index,card] of cards.entries()){
+    const tilt=cards.length>1?(index?.035:-.035):-.02;
+    ctx.save(); ctx.translate(x+cardWidth/2,top+cardHeight/2); ctx.rotate(tilt);
+    ctx.fillStyle=YELLOW; ctx.fillRect(-cardWidth/2+16,-cardHeight/2+16,cardWidth,cardHeight);
+    ctx.fillStyle=CREAM; ctx.fillRect(-cardWidth/2-8,-cardHeight/2-8,cardWidth+16,cardHeight+16);
+    try{ const image=await loadShareImage(card.image); if(card.orientation==='reversed')ctx.rotate(Math.PI); ctx.drawImage(image,-cardWidth/2,-cardHeight/2,cardWidth,cardHeight); }catch{}
+    ctx.restore();
+    const cx=x+cardWidth/2, textTop=top+cardHeight+70;
+    if(card.keyword){ ctx.font=`700 36px ${MINCHO}`; const w=Math.min(cardWidth+20,ctx.measureText(card.keyword).width+48); ctx.fillStyle=YELLOW; ctx.fillRect(cx-w/2,textTop-40,w,60); ctx.fillStyle=INK; ctx.fillText(card.keyword,cx,textTop,cardWidth); }
+    ctx.fillStyle=CREAM; ctx.font=`700 30px ${MINCHO}`; ctx.fillText(`${card.name}${card.orientation==='reversed'?'（逆位置）':''}`,cx,textTop+64,cardWidth);
+    x+=cardWidth+gap;
+  }
+  ctx.fillStyle=YELLOW; ctx.font=`700 34px ${SERIF}`; ctx.fillText('decisionprocess.net',540,1660);
+  ctx.fillStyle='rgba(244,239,227,.6)'; ctx.font=`500 24px ${MINCHO}`; ctx.fillText('タロットで、迷いに答えを出す',540,1704);
+  return await new Promise(resolve=>canvas.toBlob(resolve,'image/png',.94));
+}
 function wrapCanvasText(ctx,text,x,y,maxWidth,lineHeight,maxLines=3){ let line='';let count=0;for(const char of String(text||'')){const next=line+char;if(ctx.measureText(next).width>maxWidth&&line){ctx.fillText(line,x,y+count*lineHeight);line=char;count++;if(count>=maxLines)return;}else line=next;}if(count<maxLines)ctx.fillText(line,x,y+count*lineHeight); }
 function loadShareImage(src){return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=reject;image.src=src;});}
 async function downloadShareImage(){ if(!activeShareData?.cards?.length)return; try { const blob=await createShareImageBlob(activeShareData); if(!blob){toast('画像を保存できませんでした');return;} const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download='decide-result.png';link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000);toast('共有画像を保存しました'); } catch { toast('画像を保存できませんでした'); } }
@@ -1539,16 +1566,18 @@ function openSettings() {
   mountModal(wrap,'.sheet-head button');
 }
 function closeSettings() { closeModal('#settings-modal'); }
+function shareCards(cardNodes){ return cardNodes.map(node=>({...node.card,image:cardImage(node.card),meaning:meaning(node.card),keyword:cardKeywords(node.card)[0]||''})); }
+function sharePostText(log,cardNodes){ const keywords=cardNodes.map(node=>cardKeywords(node.card)[0]).filter(Boolean); return `私は「${DECIDE_DECISION.choiceText(log.decision)}」に決めた${keywords.length?`\nカード：${keywords.join('・')}`:''}\n#DECIDE #タロット`; }
 function shareData(type='app', log=null) {
   const url=`${location.origin}${location.pathname}`;
   if (type === 'result' && log) {
     const cardNodes=(log.nodes || []).slice(0,2); const cards=cardNodes.map(node=>`${node.card.name}（${orientationLabel(node.card)}）`).join('・');
-    return {title:'DECIDE — 決定結果',logTitle:'決定の記録',decision:DECIDE_DECISION.choiceText(log.decision),heading:'結果をシェア',lead:'相手がリンクを開くと、カード画像・意味・あなたの結論が表示されます。題名とメモは共有されません。',text:`結論：${DECIDE_DECISION.choiceText(log.decision)}${cards ? `\nカード：${cards}` : ''}\n#DECIDE`,url:sharedResultUrl(log,type),cards:cardNodes.map(node=>({...node.card,image:cardImage(node.card),meaning:meaning(node.card)}))};
+    return {title:'DECIDE — 決定結果',logTitle:'決定の記録',decision:DECIDE_DECISION.choiceText(log.decision),heading:'結果をシェア',lead:'相手がリンクを開くと、カード画像・意味・あなたの結論が表示されます。題名とメモは共有されません。',text:`結論：${DECIDE_DECISION.choiceText(log.decision)}${cards ? `\nカード：${cards}` : ''}\n#DECIDE`,url:sharedResultUrl(log,type),cards:shareCards(cardNodes),postText:sharePostText(log,cardNodes)};
   }
   if (type === 'story' && log) {
     const story=(log.story || '').slice(0,420);
     const cardNodes=(log.nodes || []).slice(0,2);
-    return {title:`${log.title}のその後 — DECIDE`,logTitle:log.title,decision:DECIDE_DECISION.choiceText(log.decision),heading:'その後をシェア',lead:'相手がリンクを開くと、カード画像・結論・その後のストーリーが表示されます。',text:`「${log.title}」\n結論：${DECIDE_DECISION.choiceText(log.decision)}\nその後：${story}${log.story?.length > 420 ? '…' : ''}\n#DECIDE`,url:sharedResultUrl(log,type),cards:cardNodes.map(node=>({...node.card,image:cardImage(node.card),meaning:meaning(node.card)}))};
+    return {title:`${log.title}のその後 — DECIDE`,logTitle:log.title,decision:DECIDE_DECISION.choiceText(log.decision),heading:'その後をシェア',lead:'相手がリンクを開くと、カード画像・結論・その後のストーリーが表示されます。',text:`「${log.title}」\n結論：${DECIDE_DECISION.choiceText(log.decision)}\nその後：${story}${log.story?.length > 420 ? '…' : ''}\n#DECIDE`,url:sharedResultUrl(log,type),cards:shareCards(cardNodes),postText:sharePostText(log,cardNodes)};
   }
   return {title:'DECIDE — 心から納得いく決断を。',heading:'DECIDEを共有',lead:'友だちにも、心から納得できる決断の時間を。共有されるのはアプリのURLだけで、あなたの履歴は含まれません。',text:'DECIDE — 心から納得いく決断を。',url};
 }
@@ -1562,6 +1591,7 @@ function openShare(type='app', id=null) {
     <div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">Share</p><h2 id="share-title">${esc(heading)}</h2></div><button data-action="close-share" aria-label="閉じる">×</button></div>
     <p class="share-lead">${esc(lead)}</p>
     ${type !== 'app' ? `<div class="share-card-preview"><div class="share-preview-images">${activeShareData.cards.map(card=>cardPicture(card,{className:card.orientation==='reversed'?'reversed-image':'',sizes:'82px'})).join('')}</div><div class="share-preview" data-share-preview></div></div>` : ''}
+    ${type !== 'app' ? `<div class="share-primary"><button class="share-big instagram" data-action="share-instagram-story"><b>◎</b><span>Instagramストーリーズにシェア</span></button><a class="share-big x-post" href="https://x.com/intent/post?text=${encodeURIComponent(activeShareData.postText)}&url=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>𝕏</b><span>Xにポスト</span></a></div>` : ''}
     <div class="share-grid">
       <a class="share-option line" href="https://line.me/R/msg/text/?${encodeURIComponent(`${shareText}\n${url}`)}" target="_blank" rel="noopener"><b>LINE</b><span>LINEで送る</span></a>
       <a class="share-option x-share" href="https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>𝕏</b><span>Xで共有</span></a>
@@ -1574,9 +1604,21 @@ function openShare(type='app', id=null) {
   </section>`;
   const preview=wrap.querySelector('[data-share-preview]'); if(preview)preview.textContent=shareText;
   wrap.querySelector('[data-share-copy-label]').textContent=type==='app'?url:title;
+  if(type!=='app') activeShareData.storyBlobPromise=createStoryImageBlob(activeShareData).catch(()=>null);
   mountModal(wrap,'.sheet-head button');
 }
 function closeShare() { closeModal('#share-modal'); }
+async function shareInstagramStory() {
+  const data=activeShareData; if(!data?.cards?.length) return;
+  const blob=await (data.storyBlobPromise || createStoryImageBlob(data).catch(()=>null));
+  if(!blob){ toast('画像を作れませんでした'); return; }
+  const file=new File([blob],'decide-story.png',{type:'image/png'});
+  if(navigator.canShare?.({files:[file]})){
+    try { await navigator.share({files:[file]}); return; } catch(error) { if(error?.name==='AbortError') return; }
+  }
+  const link=document.createElement('a'); link.href=URL.createObjectURL(blob); link.download='decide-story.png'; link.click(); setTimeout(()=>URL.revokeObjectURL(link.href),1000);
+  toast('画像を保存しました。Instagramのストーリーズで貼ってください');
+}
 async function shareNative() { const data=activeShareData || shareData(); if(navigator.share){ try{ const blob=data.cards?.length?await createShareImageBlob(data):null; const file=blob?new File([blob],'decide-result.png',{type:'image/png'}):null; const payload={title:data.title,text:data.text,url:data.url}; if(file&&navigator.canShare?.({files:[file]}))payload.files=[file]; await navigator.share(payload); }catch{} } else { await copyShareLink(); } }
 async function copyShareLink() { const data=activeShareData || shareData(); try{ await navigator.clipboard.writeText(`${data.text}\n${data.url}`); sensoryFeedback('tap'); toast(data.heading === 'DECIDEを共有' ? '共有リンクをコピーしました' : '共有する文章をコピーしました'); }catch{ toast('コピーできませんでした'); } }
 function toast(message) { const t=document.querySelector('#toast'); t.textContent=message; t.classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>t.classList.remove('show'),1800); }
@@ -1684,6 +1726,7 @@ document.addEventListener('click', event => {
   else if (action === 'close-share') closeShare();
   else if (action === 'native-share') shareNative();
   else if (action === 'save-share-image') downloadShareImage();
+  else if (action === 'share-instagram-story') shareInstagramStory();
   else if (action === 'copy-link') copyShareLink();
   else if (action === 'close-settings') closeSettings();
   else if (action === 'open-app') { history.replaceState(null,'',location.pathname); sharedPayload=null; activeSession=null; navigate('home'); if(shouldAutoStartTutorial())requestAnimationFrame(startTutorialIntro); }
