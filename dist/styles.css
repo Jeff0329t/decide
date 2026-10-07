@@ -3811,3 +3811,81 @@ body[data-detail-mode="complete"] .app-shell { padding-bottom: 0; }
 }
 
 .completion-dock .completion-sub .button { border-radius: 0; border-width: 2px; font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; }
+
+/* Prepare screen: match editorial black / yellow style, 2026-10-07. */
+.prepare-screen .eyebrow {
+  display: inline-block; margin: 14px 0 10px; padding: 5px 10px 4px; background: #0b0b0b; color: #f1d527;
+  box-shadow: 3px 3px 0 #f1d527; font: 700 .8rem/1 Didot, "Bodoni 72", "Hiragino Mincho ProN", serif; letter-spacing: .18em; transform: rotate(-2deg);
+}
+.prepare-screen h1 { color: #0b0b0b; font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; }
+.prepare-screen .save-form {
+  position: relative; display: grid; gap: 14px; margin-top: 26px; padding: 30px 16px 20px;
+  border: 2px solid #0b0b0b; border-radius: 0; background: #f4efe3; box-shadow: 8px 8px 0 #0b0b0b; backdrop-filter: none;
+}
+.prepare-screen .save-form::before {
+  content: "SELECT — 選ぶ"; position: absolute; top: -13px; left: 12px; padding: 5px 10px 4px;
+  background: #0b0b0b; color: #f1d527; box-shadow: 3px 3px 0 #f1d527;
+  font: 700 .78rem/1 Didot, "Bodoni 72", "Hiragino Mincho ProN", serif; letter-spacing: .18em; transform: rotate(-2deg);
+}
+.prepare-screen .genre-chips { gap: 10px; margin-bottom: 8px; }
+.prepare-screen .meta-chip {
+  min-height: 42px; border: 2px solid #0b0b0b; border-radius: 0; background: #fffdf6; color: #0b0b0b;
+  box-shadow: 3px 3px 0 #0b0b0b; font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.prepare-screen .meta-chip:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 #0b0b0b; }
+.prepare-screen .meta-chip.selected,
+.prepare-screen .meta-chip[aria-pressed="true"] { border-color: #0b0b0b; background: #0b0b0b; color: #f1d527; box-shadow: 3px 3px 0 #f1d527, 3px 3px 0 1px #0b0b0b; }
+.prepare-screen .option-candidate-group > b { position: relative; padding-left: 12px; font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; }
+.prepare-screen .option-candidate-group > b::before { content: ""; position: absolute; left: 0; top: .2em; width: 5px; height: 1em; background: #f1d527; box-shadow: 1px 1px 0 #0b0b0b; }
+.prepare-screen input, .prepare-screen textarea { border: 2px solid #0b0b0b; border-radius: 0; background: #fffdf6; color: #0b0b0b; }
+.prepare-screen .save-form .button {
+  min-height: 58px; border: 2px solid #0b0b0b; border-radius: 0; background: #0b0b0b; color: #f1d527;
+  box-shadow: 6px 6px 0 #f1d527, 6px 6px 0 2px #0b0b0b;
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; font-size: 1.05rem; font-weight: 800; letter-spacing: .08em;
+  transition: transform .14s ease, box-shadow .14s ease;
+}
+.prepare-screen .save-form .button:active { transform: translate(4px,4px); box-shadow: 2px 2px 0 #f1d527, 2px 2px 0 2px #0b0b0b; }
+.prepare-screen .save-form .button.secondary { min-height: 48px; margin-top: 6px; background: #fffdf6; color: #0b0b0b; box-shadow: 4px 4px 0 #0b0b0b; font-size: .95rem; }
+.prepare-screen .save-form .button.secondary:active { box-shadow: 1px 1px 0 #0b0b0b; }
+.prepare-screen .session-context { border-radius: 0; box-shadow: 3px 3px 0 #0b0b0b; }
+.prepare-screen .swap-options { border: 2px solid #0b0b0b; border-radius: 0; background: #f1d527; color: #0b0b0b; box-shadow: 3px 3px 0 #0b0b0b; }
+/* Reveal: reserve room so the bottom-anchored back button never covers the reveal button. */
+.draw-screen.draw-two { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
+
+/* P41 — deep menu: hide context box; two-card follow-up deep cards reuse the one-card layout. */
+.deep-menu-open > .session-context { display: none; }
+.two-result.deep-menu-open > .reflection-card.answered { display: none; }
+.two-result.has-deep.deep-menu-open > .thought-map.deep-map {
+  display: block;
+  position: relative;
+  z-index: 4;
+  max-width: none;
+  margin: 230px 0 0;
+  padding: 0;
+}
+.two-result.deep-menu-open .deep-map .thought-node { display: none; }
+.two-result.deep-menu-open .deep-map .thought-node:last-child { display: block; }
+.two-result.deep-menu-open .deep-map .thought-node:last-child > * { display: none; }
+.two-result.deep-menu-open .deep-map .thought-node:last-child > .reflection-card {
+  display: block;
+  position: relative;
+  z-index: 5;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.two-result.deep-menu-open .deep-map .thought-node:last-child > .reflection-card > h3,
+.two-result.deep-menu-open .deep-map .thought-node:last-child > .reflection-card > .reflection-actions,
+.two-result.deep-menu-open .deep-map .reflection-options > p { display: none; }
+.two-result.deep-menu-open .deep-map .reflection-options {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* P41 — settings: bottom close sits after content instead of floating over sections. */
+#settings-modal .sheet-bottom-close { position: static; box-shadow: none; margin-bottom: env(safe-area-inset-bottom); }
