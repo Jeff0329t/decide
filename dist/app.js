@@ -1566,6 +1566,7 @@ function openSettings() {
   wrap.querySelector('[data-action="tutorial-replay"]').textContent='使い方をもう一度見る';
   window.DECIDE_AUTH?.renderSettings?.(wrap);
   window.DECIDE_REMINDERS?.mountSettings?.(wrap);
+  window.DECIDE_PUSH?.mountSettings?.(wrap);
   mountModal(wrap,'.sheet-head button');
 }
 function closeSettings() { closeModal('#settings-modal'); }

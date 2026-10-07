@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'decide-shell-editorial-v74';
+const SHELL_CACHE = 'decide-shell-editorial-v75';
 const IMAGE_CACHE = 'decide-card-images-p14-v1';
 const IMAGE_LIMIT = 100;
 const CARD_SHELL_FILES = [
@@ -8,7 +8,7 @@ const CARD_SHELL_FILES = [
 const SHELL_FILES = [
   './', './index.html', './app.js', './styles.css', './scoring.js',
   './shared.js', './interview.js', './decision-meta.js', './backup-format.js', './card-backs.js', './learn.js', './config.js', './auth.js', './entitlements.js', './sync.js',
-  './reminders.js', './share-themes.js', './referral.js',
+  './reminders.js', './share-themes.js', './referral.js', './push.js',
   './manifest.webmanifest', './icon-192.png?v=2', './icon-512.png?v=2',
   './icon-512-maskable.png?v=2', './apple-touch-icon.png?v=2',
   './assets/cards.json', './assets/learn.json', './assets/card-back-lines.jpg',
@@ -133,4 +133,15 @@ self.addEventListener('notificationclick', event => {
     if (open) return open.focus();
     return self.clients.openWindow(SCOPE.href);
   })());
+});
+
+// プッシュ通知（push.js / Edge Function send-reminders）。文面は決まった一文だけ。
+self.addEventListener('push', event => {
+  let data = {};
+  try { data = event.data?.json() || {}; } catch (error) {}
+  event.waitUntil(self.registration.showNotification(data.title || 'あの決断、どうなった？', {
+    body: data.body || 'ふり返りの時間です。アプリを開いて、その後を記録しましょう。',
+    tag: data.tag || 'decide-remind',
+    icon: new URL('./icon-192.png?v=2', SCOPE).href
+  }));
 });
