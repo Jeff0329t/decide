@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'decide-shell-editorial-v79';
+const SHELL_CACHE = 'decide-shell-editorial-v80';
 const IMAGE_CACHE = 'decide-card-images-p14-v1';
 const IMAGE_LIMIT = 100;
 const CARD_SHELL_FILES = [
@@ -8,7 +8,7 @@ const CARD_SHELL_FILES = [
 const SHELL_FILES = [
   './', './index.html', './app.js', './styles.css', './scoring.js',
   './shared.js', './interview.js', './decision-meta.js', './backup-format.js', './card-backs.js', './learn.js', './config.js', './auth.js', './entitlements.js', './sync.js',
-  './reminders.js', './share-themes.js', './referral.js', './push.js',
+  './reminders.js', './share-themes.js', './referral.js', './push.js', './card-entry.js',
   './manifest.webmanifest', './icon-192.png?v=2', './icon-512.png?v=2',
   './icon-512-maskable.png?v=2', './apple-touch-icon.png?v=2',
   './assets/cards.json', './assets/learn.json', './assets/card-back-lines.jpg',

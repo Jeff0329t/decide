@@ -3917,3 +3917,8 @@ body[data-detail-mode="complete"] .app-shell { padding-bottom: 0; }
 .share-big.line{background:#06c755}
 .share-big.facebook{background:#1877f2}
 #share-modal .share-grid.share-grid-single{grid-template-columns:1fr}
+.card-entry-guide{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:40;width:min(560px,calc(100% - 32px));box-sizing:border-box;display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#0b0b0b;color:#f4efe3;border:1.5px solid #f1d527;box-shadow:4px 4px 0 rgba(241,213,39,.9)}
+.card-entry-guide p{margin:0;flex:1;display:grid;gap:4px}
+.card-entry-guide strong{color:#f1d527;font-family:"Hiragino Mincho ProN","Yu Mincho",serif;letter-spacing:.04em}
+.card-entry-guide span{font-size:.82rem;line-height:1.5}
+.card-entry-guide button{background:none;border:0;color:#f4efe3;font-size:1.2rem;line-height:1;padding:2px 4px;cursor:pointer}

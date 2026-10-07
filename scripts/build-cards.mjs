@@ -200,7 +200,7 @@ const crumbsLd = (items) => ({
 
 const ctaHtml = (c, where) => `<aside class="cta" aria-label="DECIDE で考える">
 <p>${where === 'mid' ? `${esc(c.name)}が示す視点を、あなた自身の選択肢に当てはめてみませんか。` : '二つの選択肢を並べて、カードと一緒に整理できます。'}</p>
-<a href="../">${CTA_TEXT}</a>
+<a href="../?from=${c.id}">${CTA_TEXT}</a>
 </aside>`;
 
 function sideHtml(c, key) {
@@ -352,7 +352,7 @@ ${crumbsHtml(crumbs)}
 ${catsNav(a)}
 <p>${esc(cat.intro)}</p>
 ${gridHtml(list)}
-<div class="cta"><p>${esc(a)}の視点を、いまの選択肢に当てはめてみる</p><a href="../">${CTA_TEXT}</a></div>
+<div class="cta"><p>${esc(a)}の視点を、いまの選択肢に当てはめてみる</p><a href="../?from=${cat.slug}">${CTA_TEXT}</a></div>
 <section>
 <h2>${esc(a)}のキーワード早見表</h2>
 <ul>

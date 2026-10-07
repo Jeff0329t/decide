@@ -25,4 +25,5 @@ node scripts/build-cards.mjs
 
 - カードページはJS不要の静的HTML。Service Worker は `/cards/`・`sitemap.xml`・`robots.txt` をキャッシュしません。
 - ドメインは `https://decisionprocess.net` 固定（canonical / OGP / sitemap）。変更時はスクリプト冒頭の定数を変更して再ビルド。
+- CTAは `../?from={id}`（分類ページは `../?from={slug}`）へリンク。アプリ側は `dist/card-entry.js` が読み取り「◯◯の視点で考える」ガイドを表示し、URLから `from` を消します（localStorageは使いません）。
 - 画像クレジット: images: sixseeds/tarot-api, public domain

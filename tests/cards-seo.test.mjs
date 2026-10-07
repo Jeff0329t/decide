@@ -40,7 +40,7 @@ test('app index is indexable and links to cards', () => {
 
 test('service worker bypasses /cards/ and is bumped', () => {
   const sw = read('dist/service-worker.js');
-  assert.match(sw, /decide-shell-editorial-v79/);
+  assert.match(sw, /decide-shell-editorial-v80/);
   assert.match(sw, /url\.pathname\.includes\('\/cards\/'\)/);
 });
 
@@ -81,4 +81,26 @@ test('card pages link to their category and neighbours', () => {
 test('sitemap includes category pages', () => {
   const sm = read('dist/sitemap.xml');
   for (const slug of Object.values(cats)) assert.match(sm, new RegExp(`<loc>https://decisionprocess\\.net/cards/${slug}\\.html</loc>`), slug);
+});
+
+test('card CTAs carry ?from= context into the app', () => {
+  for (const id of ids) {
+    const html = read(`dist/cards/${id}.html`);
+    assert.equal(html.split(`href="../?from=${id}"`).length - 1, 2, `${id} from links`);
+  }
+  for (const slug of Object.values(cats)) assert.match(read(`dist/cards/${slug}.html`), new RegExp(`href="\\.\\./\\?from=${slug}"`), slug);
+});
+
+test('card-entry.js validates from and is loaded/cached by the app', async () => {
+  await import(new URL('../dist/card-entry.js', import.meta.url));
+  const { parseCardEntry, cardEntryLabel } = globalThis.DECIDE_CARD_ENTRY;
+  for (const id of ids) assert.deepEqual(parseCardEntry(id), { type: 'card', id });
+  for (const slug of Object.values(cats)) assert.equal(parseCardEntry(slug).type, 'category');
+  for (const bad of ['', 'ar22', 'wa00', 'wa15', 'xx01', 'WA05', '<script>', 'constructor', 'toString']) assert.equal(parseCardEntry(bad), null, bad);
+  assert.equal(cardEntryLabel({ type: 'card', id: 'wa05' }, [{ name: 'ワンドの5', image: './assets/rider-waite/wa05.jpg' }]), 'ワンドの5');
+  assert.equal(cardEntryLabel({ type: 'category', id: 'wands' }, []), 'ワンド');
+  const src = read('dist/card-entry.js');
+  assert.doesNotMatch(src, /localStorage|innerHTML/);
+  assert.match(read('dist/index.html'), /<script src="\.\/app\.js"><\/script>\s*<script src="\.\/card-entry\.js"><\/script>/);
+  assert.match(read('dist/service-worker.js'), /'\.\/card-entry\.js'/);
 });
