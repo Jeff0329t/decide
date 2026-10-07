@@ -24,7 +24,7 @@ test('quickstart styles keep the card backs intact',()=>{
 });
 
 test('shell cache was bumped for the quickstart redesign',()=>{
-  assert.match(sw,/decide-shell-editorial-v60/);
+  assert.match(sw,/decide-shell-editorial-v69/);
 });
 
 test('quickstart shows the app name as a brand header',()=>{

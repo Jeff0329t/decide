@@ -1,0 +1,8 @@
+// DECIDE. 公開設定（フロントに置いてよい値だけ）
+// SUPABASE_ANON_KEY は公開前提のキー。service_role・Stripeシークレット・Webhook秘密は絶対にここへ書かない。
+// 値が空のあいだはログイン機能が無効になり、ログアウト状態のまま従来どおり使えます。
+window.DECIDE_CONFIG = Object.freeze({
+  SUPABASE_URL: 'https://ppuyenvuepxqqrhiswwb.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwdXllbnZ1ZXB4cXFyaGlzd3diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMjg4MDIsImV4cCI6MjEwNjgwNDgwMn0.NvbyTthzp3ELRJyI-PXO0ZTGhzfpjd7E5JTL1rujbI4',
+  SITE_URL: 'https://decisionprocess.net'
+});

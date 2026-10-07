@@ -3342,7 +3342,7 @@ button.stats-pending:focus-visible { transform: translate(-2px,-2px) rotate(.35d
 .tutorial-intro-lines p:nth-child(even){transform:rotate(.7deg)}
 .tutorial-intro-start{border-radius:0;box-shadow:4px 4px 0 #0b0b0b;font-family:"Hiragino Mincho ProN","Yu Mincho",serif;letter-spacing:.08em}
 
-#settings-modal .deck-setting>b#deck-setting-title,#settings-modal .setting-backs>b,#settings-modal .feedback-setting>div>b,#settings-modal .data-setting b#data-setting-title{display:inline-block;width:auto;padding:3px 10px;background:#f1d527;color:#0b0b0b;font-family:"Hiragino Mincho ProN","Yu Mincho",serif;letter-spacing:.06em;transform:rotate(-1.5deg);box-shadow:3px 3px 0 rgba(244,239,227,.85)}
+#settings-modal .deck-setting>b#deck-setting-title,#settings-modal .setting-backs>b,#settings-modal .feedback-setting>div>b,#settings-modal .data-setting b#data-setting-title,#settings-modal .data-setting b#account-setting-title{display:inline-block;width:auto;padding:3px 10px;background:#f1d527;color:#0b0b0b;font-family:"Hiragino Mincho ProN","Yu Mincho",serif;letter-spacing:.06em;transform:rotate(-1.5deg);box-shadow:3px 3px 0 rgba(244,239,227,.85)}
 .toggle-button{border-radius:0;background:#0b0b0b;border:1.5px solid #f4efe3;box-shadow:3px 3px 0 rgba(244,239,227,.35);transition:background .2s,box-shadow .2s}
 .toggle-button span{border-radius:0;background:#f4efe3}
 .toggle-button b{color:#f4efe3;font-family:Didot,"Bodoni 72",serif;letter-spacing:.08em}
@@ -3737,3 +3737,5 @@ body[data-view="decide"] .decide-screen .timestamp { margin: 0; color: #6b6458; 
 .draw-screen.draw-two .dual-draw .draw-instruction { position: static; grid-column: 1 / -1; grid-row: 1; width: 100%; white-space: normal; transform: none; margin-bottom: 10px; }
 .draw-screen.draw-two .pair-card { grid-row: 2; }
 .draw-screen.draw-two .reveal-both { position: relative; left: auto; right: auto; bottom: auto; width: calc(100% - 40px); margin: 0 20px 18px; }
+
+#settings-modal .account-email{word-break:break-all;font-size:.9em;opacity:.85}

@@ -665,6 +665,7 @@ function finishTutorial(status, redirect=true) {
 
 let pickingDrawMode=false;
 function pickDrawMode(button, event){
+  if(window.DECIDE_ENTITLEMENTS && !window.DECIDE_ENTITLEMENTS.canDraw()){ window.DECIDE_ENTITLEMENTS.openPaywall('draw'); return; }
   const screen=button.closest('.quickstart-screen');
   if(!screen || event.detail===0 || prefersReducedMotion()){ startSession(button.dataset.mode); return; }
   if(pickingDrawMode)return;
@@ -675,6 +676,8 @@ function pickDrawMode(button, event){
   setTimeout(()=>{ pickingDrawMode=false; if(button.isConnected)startSession(button.dataset.mode); },420);
 }
 function startSession(mode) {
+  if(window.DECIDE_ENTITLEMENTS && !window.DECIDE_ENTITLEMENTS.canDraw()){ window.DECIDE_ENTITLEMENTS.openPaywall('draw'); return false; }
+  window.DECIDE_ENTITLEMENTS?.recordDraw?.();
   sensoryFeedback('tap');
   const first = randomCard();
   const drawOptions = mode === 'two'
@@ -1058,6 +1061,7 @@ function saveDecision(form) {
   const firstRecord=retry ? pendingSave.firstRecord : logs.length===0;
   const requestPersistence=retry ? pendingSave.requestPersistence : firstRecord && !settings.storagePersistRequested;
   const existing=logs.findIndex(item=>item.id===log.id);
+  if(existing<0 && !retry && window.DECIDE_ENTITLEMENTS && !window.DECIDE_ENTITLEMENTS.canSaveLog(logs.length)){ window.DECIDE_ENTITLEMENTS.openPaywall('save'); return; }
   if(existing>=0)logs[existing]=log; else logs.unshift(log);
   if(requestPersistence)settings.storagePersistRequested=true;
   if(!persist()) { pendingSave={log,firstRecord,requestPersistence}; openSaveFailure(log); return; }
@@ -1067,6 +1071,7 @@ function saveDecision(form) {
   activeSession = null; selectedDecision = ''; detailId = log.id;
   decisionDraft = {genre:'',option1:'',option2:'',title:'',memo:''};
   completionId=log.id; currentView = 'detail'; render(); toast('決定を記録しました');
+  window.DECIDE_AUTH?.maybePromptAfterSave?.(logs.length, existing<0);
 }
 
 function openSaveFailure(log) {
@@ -1522,12 +1527,14 @@ function openSettings() {
     <div class="setting-backs"><b>カードの裏面</b>${backPicker()}</div>
     <div class="feedback-setting"><div><b>操作音・振動</b><p>カードを開く時や決定を保存する時に、控えめな反応を返します。</p></div><button class="toggle-button ${settings.feedback ? 'on' : ''}" data-action="toggle-feedback" aria-pressed="${settings.feedback}"><span></span><b>${settings.feedback ? 'ON' : 'OFF'}</b></button></div>
     <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">データ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}${isIOS() && !isStandalone() ? '<p class="safari-storage-note">Safariでは、記録は端末内に保存されます。しばらく開かないと消えることがあるため、ホーム画面への追加と、書き出しをおすすめします。</p>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-logs">履歴を書き出す（JSON）</button><button class="button secondary" data-action="import-logs">履歴を読み込む（JSON）</button><button class="button secondary" data-action="export-markdown">Obsidian用に書き出す（MD）</button><button class="button secondary" data-action="import-markdown">Obsidianから読み込む（MD）</button></div><p class="backup-format-note">MDはObsidianで読める1つのノートとして保存します。保管庫へはご自身で移してください。題名・メモ・ストーリーを含み、読み込みには末尾のバックアップデータを使います。表示部分の編集は反映されません。</p><input id="import-file" type="file" accept="application/json,.json" hidden><input id="import-markdown-file" type="file" accept="text/markdown,.md" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップ内容"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
+     <section class="data-setting account-setting" data-account-setting aria-labelledby="account-setting-title" hidden></section>
      <div class="setting-note"><b>カードと深掘り提案</b><p>表面はパメラ・コールマン・スミスによる1909年のライダー＝ウェイト＝スミス版（パブリックドメイン）です。決定ログはこのブラウザ内だけに保存されます。</p><p><a href="./privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a></p></div>
      <button class="learn-entry" data-action="open-learn"><span aria-hidden="true">▣</span><span>タロットを学ぶ（カード図鑑）</span><span aria-hidden="true">→</span></button>
      <button class="tutorial-replay" data-action="tutorial-replay"></button>
      <button class="sheet-bottom-close" data-action="close-settings">設定を閉じる</button>
   </section>`;
   wrap.querySelector('[data-action="tutorial-replay"]').textContent='使い方をもう一度見る';
+  window.DECIDE_AUTH?.renderSettings?.(wrap);
   mountModal(wrap,'.sheet-head button');
 }
 function closeSettings() { closeModal('#settings-modal'); }
@@ -1743,7 +1750,7 @@ document.addEventListener('touchend',()=>{ if(!swipeState)return; document.query
 function registerWebMcp() {
   const context = document.modelContext; if (!context?.registerTool) return;
   const tools = [
-    { name:'start_decision_session', title:'カードを引く', description:'1枚引きまたは2枚引きの意思決定セッションを開始して画面に表示します。', inputSchema:{type:'object',properties:{mode:{type:'string',enum:['one','two']}},required:['mode'],additionalProperties:false}, annotations:{readOnlyHint:false,untrustedContentHint:false}, execute:({mode})=>{ if(!['one','two'].includes(mode)) throw new Error('mode must be one or two'); startSession(mode); return {status:'started',mode,cards:activeSession.nodes.map(n=>n.card.name)}; } },
+    { name:'start_decision_session', title:'カードを引く', description:'1枚引きまたは2枚引きの意思決定セッションを開始して画面に表示します。', inputSchema:{type:'object',properties:{mode:{type:'string',enum:['one','two']}},required:['mode'],additionalProperties:false}, annotations:{readOnlyHint:false,untrustedContentHint:false}, execute:({mode})=>{ if(!['one','two'].includes(mode)) throw new Error('mode must be one or two'); if(startSession(mode)===false) return {status:'blocked',reason:'free_limit'}; return {status:'started',mode,cards:activeSession.nodes.map(n=>n.card.name)}; } },
     { name:'list_decision_logs', title:'決定履歴を見る', description:'このブラウザに保存された決定ログを新しい順に読み取ります。', inputSchema:{type:'object',properties:{},additionalProperties:false}, annotations:{readOnlyHint:true,untrustedContentHint:false}, execute:()=>logs.map(l=>({id:l.id,date:l.createdAt,title:l.title,decision:l.decision,review:l.review})) },
     { name:'review_decision', title:'決定を振り返る', description:'保存済みの決定に後日の評価を記録します。', inputSchema:{type:'object',properties:{id:{type:'string'},review:{type:'string',enum:['良かった','まあ良かった','どちらとも言えない','違った']}},required:['id','review'],additionalProperties:false}, annotations:{readOnlyHint:false,untrustedContentHint:false}, execute:({id,review})=>{ const log=logs.find(l=>l.id===id); if(!log) throw new Error('log not found'); log.review=review; log.reviewedAt=new Date().toISOString(); persist(); if(detailId===id) renderDetail(); return {status:'saved',id,review}; } }
   ];
