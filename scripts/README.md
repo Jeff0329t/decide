@@ -11,11 +11,13 @@ node scripts/build-cards.mjs
 - `dist/cards/index.html` … 78枚の一覧
 - `dist/cards/{id}.html` … 各カード（ar00〜ar21 / wa,cu,sw,pe + 01〜14）
 - `dist/cards/{major,wands,cups,swords,pentacles}.html` … 分類別一覧（大アルカナ・各スート）
+- `dist/cards/worries.html` / `dist/cards/worry-{slug}.html` … 悩み別ページ（転職・別れ・引っ越し・結婚・学び直し・独立・人間関係・お金）
 - `dist/sitemap.xml` / `dist/robots.txt`
 
 ### 文章を直すとき
 
 1. カード固有の追加文は `scripts/data/cards-extra-*.json`（`{ id: { hint, scene, check } }`）を編集
+   - 悩み別ページの文章は `scripts/data/worries.json`（slug・本文・関連カードid）を編集
 2. `node scripts/build-cards.mjs` を再実行（文字数が800字未満のページがあると警告が出ます）
 3. `node --test tests/*.test.mjs` で確認
 
@@ -25,5 +27,5 @@ node scripts/build-cards.mjs
 
 - カードページはJS不要の静的HTML。Service Worker は `/cards/`・`sitemap.xml`・`robots.txt` をキャッシュしません。
 - ドメインは `https://decisionprocess.net` 固定（canonical / OGP / sitemap）。変更時はスクリプト冒頭の定数を変更して再ビルド。
-- CTAは `../?from={id}`（分類ページは `../?from={slug}`）へリンク。アプリ側は `dist/card-entry.js` が読み取り「◯◯の視点で考える」ガイドを表示し、URLから `from` を消します（localStorageは使いません）。
+- CTAは `../?from={id}`（分類ページは `../?from={slug}`、悩み別ページは `../?from={代表カードid}`）へリンク。アプリ側は `dist/card-entry.js` が読み取り「◯◯の視点で考える」ガイドを表示し、URLから `from` を消します（localStorageは使いません）。
 - 画像クレジット: images: sixseeds/tarot-api, public domain

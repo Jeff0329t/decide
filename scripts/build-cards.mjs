@@ -2,7 +2,9 @@
 // Phase 4: SEO 用カード解説ページ（静的・JS 不要・ログイン不要）を生成する。
 // 入力: dist/assets/cards.json + scripts/data/cards-extra-*.json
 // 出力: dist/cards/index.html, dist/cards/{major,wands,cups,swords,pentacles}.html,
-//       dist/cards/{id}.html, dist/sitemap.xml, dist/robots.txt
+//       dist/cards/{id}.html, dist/cards/worries.html, dist/cards/worry-{slug}.html,
+//       dist/sitemap.xml, dist/robots.txt
+// 悩み別ページの文章: scripts/data/worries.json
 // 使い方: node scripts/build-cards.mjs
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -23,6 +25,14 @@ for (const f of ['major', 'wands', 'cups', 'swords', 'pentacles']) {
 
 const cards = deck.cards;
 const byId = new Map(cards.map((c) => [c.id, c]));
+const worries = JSON.parse(readFileSync(DATA + 'worries.json', 'utf8'));
+for (const w of worries) {
+  if (!/^[a-z]+$/.test(w.slug)) throw new Error(`bad worry slug: ${w.slug}`);
+  for (const id of [w.primary, ...w.cards.map((x) => x.id)]) {
+    if (!byId.has(id)) throw new Error(`unknown card in worry ${w.slug}: ${id}`);
+  }
+}
+const worryText = (w) => [w.lead, ...w.sections.flatMap((s) => [s.h2, s.p])].join('');
 const THEMES = deck.themes;
 const LEVELS = deck.scoring.levels;
 const ARCANA_ORDER = ['大アルカナ', 'ワンド', 'カップ', 'ソード', 'ペンタクル'];
@@ -144,6 +154,11 @@ dl.themes dd{margin:0}
 .pager li.next{text-align:right}
 .pager a{display:block;padding:10px 12px;border:1.5px solid var(--line);border-radius:6px;text-decoration:none;background:var(--card)}
 .pager small{display:block;color:var(--muted);font-size:.75rem}
+.wcards{margin:12px 0 0;padding:0;list-style:none}
+.wcards li{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:start;padding:12px 0;border-bottom:1px dashed var(--line)}
+.wcards img{width:100%;height:auto;display:block;border:1.5px solid #111;border-radius:4px;background:#111}
+.wcards h3{margin:0 0 4px}
+.wcards p{margin:0 0 4px}
 .cats{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;padding:0;list-style:none;font-size:.88rem}
 .cats a{display:inline-block;padding:2px 12px;border:1.5px solid var(--line);border-radius:999px;text-decoration:none}
 .cats [aria-current]{border:1.5px solid #111;background:var(--accent);color:#111;padding:2px 12px;border-radius:999px;font-weight:600}
@@ -314,6 +329,11 @@ ${crumbsHtml(crumbs)}
 <h1>タロットカード78枚の意味</h1>
 <p>DECIDE は、二つの選択肢で迷ったときにタロットの視点を借りて考えを整理するアプリです。ここでは78枚それぞれの象徴と、正位置・逆位置の意味、そして決断の場面での読み方を紹介します。カードは未来を言い当てるものではなく、見落としていた視点に気づくための問いかけとして使ってください。</p>
 <div class="cta"><p>カードを引いて、いまの迷いを整理する</p><a href="../">${CTA_TEXT}</a></div>
+<section>
+<h2 id="worries"><a href="./worries.html">悩み別に読む</a></h2>
+<p class="note">転職・別れ・引っ越しなど、よくある迷いごとに考え方と関係するカードをまとめています。</p>
+${worriesNav()}
+</section>
 ${groups}
 </main>`;
   return layout({
@@ -364,6 +384,101 @@ ${rows}
   return layout({ title, description, path, ogType: 'website', ogImage: `${ORIGIN}/assets/rider-waite/${list[0].id}.jpg`, ld: [itemList, crumbsLd(crumbs)], body });
 }
 
+function worriesNav(current) {
+  return `<ul class="cats" aria-label="悩み別">${worries.map((w) => w.slug === current
+    ? `<li aria-current="page">${esc(w.h1)}</li>`
+    : `<li><a href="./worry-${w.slug}.html">${esc(w.h1)}</a></li>`).join('')}<li><a href="./worries.html">悩み別の一覧</a></li></ul>`;
+}
+
+function worryPage(w) {
+  const path = `/cards/worry-${w.slug}.html`;
+  const primary = byId.get(w.primary);
+  const ogImage = `${ORIGIN}/assets/rider-waite/${w.primary}.jpg`;
+  const crumbs = [
+    { name: 'DECIDE', href: '../', path: '/' },
+    { name: 'カード解説', href: './', path: '/cards/' },
+    { name: '悩み別に読む', href: './worries.html', path: '/cards/worries.html' },
+    { name: w.h1, path },
+  ];
+  const article = {
+    '@context': 'https://schema.org', '@type': 'Article',
+    headline: w.h1, description: w.description, image: ogImage, inLanguage: 'ja',
+    mainEntityOfPage: ORIGIN + path, datePublished: TODAY, dateModified: TODAY,
+    author: { '@type': 'Organization', name: 'DECIDE' },
+    publisher: { '@type': 'Organization', name: 'DECIDE', url: ORIGIN + '/' },
+  };
+  const cta = (msg) => `<aside class="cta" aria-label="DECIDE で考える">
+<p>${msg}</p>
+<a href="../?from=${w.primary}">${CTA_TEXT}</a>
+</aside>`;
+  const cardRows = w.cards.map(({ id, reason }) => {
+    const c = byId.get(id);
+    return `<li><a href="./${id}.html">${picture(c, { sizes: '96px' })}</a><div><h3><a href="./${id}.html">${esc(c.name)}</a></h3><p>${esc(reason)}</p></div></li>`;
+  }).join('\n');
+  const body = `<main>
+${crumbsHtml(crumbs)}
+<article>
+<h1>${esc(w.h1)}</h1>
+<p>${esc(w.lead)}</p>
+${cta(`${esc(primary.name)}の視点から、あなた自身の二つの選択肢を並べてみませんか。`)}
+${w.sections.map((s) => `<section>
+<h2>${esc(s.h2)}</h2>
+<p>${esc(s.p)}</p>
+</section>`).join('\n')}
+<section>
+<h2>この悩みに関係するカード</h2>
+<ul class="wcards">
+${cardRows}
+</ul>
+</section>
+${cta('二つの選択肢を並べて、カードと一緒に整理できます。')}
+<section>
+<h2>ほかの悩みから読む</h2>
+${worriesNav(w.slug)}
+<p class="note"><a href="./">78枚すべてのカード解説を見る</a></p>
+</section>
+</article>
+</main>`;
+  return layout({ title: w.title, description: w.description, path, ogImage, ld: [article, crumbsLd(crumbs)], body });
+}
+
+const WORRIES_INTRO = [
+  '大きな決断ほど、ひとりで考えていると同じところをぐるぐる回ってしまいがちです。転職、別れ、引っ越し、結婚、学び直し、独立、人間関係、お金の使い方。どれも正解がひとつに決まらず、どちらを選んでも何かを手放すことになる種類の迷いです。',
+  'このページでは、よくある迷いごとに「何が判断を難しくしているのか」「どんな順番で考えると整理しやすいか」をまとめ、その場面で視点を貸してくれるタロットカードを紹介しています。カードは未来を言い当てるためのものではなく、見落としていた気持ちや条件に気づくための問いかけとして使ってください。',
+  '各ページでは、迷いの中身を分解する考え方を四つの観点から説明したうえで、関係するカードがなぜその場面で役立つのかを一枚ずつ解説しています。気になるテーマから読み始め、最後にDECIDEで実際の二つの選択肢を並べてみると、頭の中だけで考えていたときよりも、自分が本当に大切にしたいものが見えやすくなるはずです。',
+];
+
+function worriesIndex() {
+  const path = '/cards/worries.html';
+  const title = '悩み別に読むタロット｜転職・別れ・引っ越しなど決断の考え方 - DECIDE';
+  const description = '転職、別れ、引っ越し、結婚、学び直し、独立、人間関係、お金。よくある8つの迷いについて、考え方の整理のしかたと視点を貸してくれるタロットカードを紹介します。';
+  const crumbs = [
+    { name: 'DECIDE', href: '../', path: '/' },
+    { name: 'カード解説', href: './', path: '/cards/' },
+    { name: '悩み別に読む', path },
+  ];
+  const itemList = {
+    '@context': 'https://schema.org', '@type': 'ItemList', name: '悩み別のタロット解説',
+    itemListElement: worries.map((w, i) => ({ '@type': 'ListItem', position: i + 1, url: `${ORIGIN}/cards/worry-${w.slug}.html`, name: w.h1 })),
+  };
+  const rows = worries.map((w) => {
+    const c = byId.get(w.primary);
+    return `<li><a href="./worry-${w.slug}.html">${picture(c, { sizes: '96px' })}</a><div><h3><a href="./worry-${w.slug}.html">${esc(w.h1)}</a></h3><p>${esc(w.description)}</p><p class="note">関係するカード：${w.cards.map((x) => `<a href="./${x.id}.html">${esc(byId.get(x.id).name)}</a>`).join('、')}</p></div></li>`;
+  }).join('\n');
+  const body = `<main>
+${crumbsHtml(crumbs)}
+<h1>悩み別に読むタロット</h1>
+${WORRIES_INTRO.map((p) => `<p>${esc(p)}</p>`).join('\n')}
+<h2>迷いのテーマ一覧</h2>
+<ul class="wcards">
+${rows}
+</ul>
+<div class="cta"><p>カードを引いて、いまの迷いを整理する</p><a href="../">${CTA_TEXT}</a></div>
+<p class="note"><a href="./">78枚すべてのカード解説を見る</a></p>
+</main>`;
+  return layout({ title, description, path, ogType: 'website', ogImage: `${ORIGIN}/og-image-v3.png`, ld: [itemList, crumbsLd(crumbs)], body });
+}
+
 // ---- 生成 ----
 mkdirSync(DIST + 'cards', { recursive: true });
 const thin = [];
@@ -379,10 +494,22 @@ for (const a of ARCANA_ORDER) {
   if (n < 300) throw new Error(`category intro too short: ${a} (${n})`);
   writeFileSync(`${DIST}cards/${CATEGORY[a].slug}.html`, categoryPage(a));
 }
+for (const w of worries) {
+  const n = countChars(worryText(w));
+  if (n < MIN_CHARS) thin.push({ id: `worry-${w.slug}`, name: w.h1, chars: n });
+  writeFileSync(`${DIST}cards/worry-${w.slug}.html`, worryPage(w));
+}
+{
+  const n = countChars(WORRIES_INTRO.join('') + worries.map((w) => w.description).join(''));
+  if (n < MIN_CHARS) thin.push({ id: 'worries', name: '悩み別一覧', chars: n });
+  writeFileSync(DIST + 'cards/worries.html', worriesIndex());
+}
 
 const urls = [
   ['/', '1.0'], ['/cards/', '0.8'],
   ...ARCANA_ORDER.map((a) => [`/cards/${CATEGORY[a].slug}.html`, '0.7']),
+  ['/cards/worries.html', '0.7'],
+  ...worries.map((w) => [`/cards/worry-${w.slug}.html`, '0.7']),
   ...cards.map((c) => [`/cards/${c.id}.html`, '0.6']),
   ['/privacy.html', '0.2'], ['/terms.html', '0.2'], ['/tokushoho.html', '0.2'],
 ];
@@ -398,7 +525,9 @@ Sitemap: ${ORIGIN}/sitemap.xml
 `);
 
 const counts = cards.map((c) => countChars(cardText(c)));
-console.log(`cards: ${cards.length} pages + index + ${ARCANA_ORDER.length} categories, sitemap ${urls.length} URLs`);
+console.log(`cards: ${cards.length} pages + index + ${ARCANA_ORDER.length} categories + ${worries.length} worries + worries index, sitemap ${urls.length} URLs`);
+const wcounts = worries.map((w) => countChars(worryText(w)));
+console.log(`worry chars: min ${Math.min(...wcounts)} / max ${Math.max(...wcounts)}`);
 console.log(`card-specific chars: min ${Math.min(...counts)} / max ${Math.max(...counts)} (threshold ${MIN_CHARS})`);
 if (thin.length) {
   console.log(`THIN CONTENT (< ${MIN_CHARS}):`);

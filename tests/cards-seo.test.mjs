@@ -104,3 +104,35 @@ test('card-entry.js validates from and is loaded/cached by the app', async () =>
   assert.match(read('dist/index.html'), /<script src="\.\/app\.js"><\/script>\s*<script src="\.\/card-entry\.js"><\/script>/);
   assert.match(read('dist/service-worker.js'), /'\.\/card-entry\.js'/);
 });
+
+const worries = ['tenshoku', 'wakare', 'hikkoshi', 'kekkon', 'manabi', 'dokuritsu', 'ningen', 'okane'];
+
+test('worry pages have SEO essentials, CTAs into the app, credit and no JS', () => {
+  const sm = read('dist/sitemap.xml');
+  for (const slug of worries) {
+    const html = read(`dist/cards/worry-${slug}.html`);
+    assert.match(html, new RegExp(`<link rel="canonical" href="https://decisionprocess\\.net/cards/worry-${slug}\\.html"`), slug);
+    assert.match(html, /<meta name="description" content="[^"]{20,}"/, slug);
+    assert.match(html, /"@type":\s*"Article"/, slug);
+    assert.match(html, /"@type":\s*"BreadcrumbList"/, slug);
+    assert.equal(html.split(CTA).length - 1, 2, `${slug} CTA count`);
+    const froms = [...html.matchAll(/href="\.\.\/\?from=([^"]+)"/g)].map((m) => m[1]);
+    assert.equal(froms.length, 2, `${slug} from links`);
+    for (const f of froms) assert.ok(ids.includes(f), `${slug} from=${f}`);
+    assert.match(html, /images: sixseeds\/tarot-api, public domain/, slug);
+    assert.match(html, /href="\.\/worries\.html"/, slug);
+    assert.doesNotMatch(html, /<script(?![^>]*application\/ld\+json)/, slug);
+    assert.doesNotMatch(html, /sk_live|sk_test|whsec_|service_role/, slug);
+    assert.match(sm, new RegExp(`<loc>https://decisionprocess\\.net/cards/worry-${slug}\\.html</loc>`), slug);
+  }
+});
+
+test('worries index lists all worry pages and is linked from cards index', () => {
+  const html = read('dist/cards/worries.html');
+  assert.match(html, /"@type":\s*"ItemList"/);
+  assert.equal(html.split(CTA).length - 1, 1, 'worries CTA count');
+  for (const slug of worries) assert.match(html, new RegExp(`href="\\./worry-${slug}\\.html"`), slug);
+  assert.doesNotMatch(html, /<script(?![^>]*application\/ld\+json)/);
+  assert.match(read('dist/cards/index.html'), /href="\.\/worries\.html"/);
+  assert.match(read('dist/sitemap.xml'), /<loc>https:\/\/decisionprocess\.net\/cards\/worries\.html<\/loc>/);
+});
