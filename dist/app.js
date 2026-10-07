@@ -57,7 +57,7 @@ const MAJOR_EXTRA_KEYWORDS={
 
 const savedSettings = load(SETTINGS_KEY, {});
 const DEFAULT_CARD_BACK = DECIDE_CARD_BACKS[0][0];
-let settings = { back:DEFAULT_CARD_BACK, feedback: savedSettings.feedback === true, deckMode: savedSettings.deckMode || (savedSettings.reversed === false ? 'all-upright' : 'all-reversed'), ...savedSettings };
+let settings = { back:DEFAULT_CARD_BACK, feedback: savedSettings.feedback === true, cloudSync: savedSettings.cloudSync === true, deckMode: savedSettings.deckMode || (savedSettings.reversed === false ? 'all-upright' : 'all-reversed'), ...savedSettings };
 settings.back = DEFAULT_CARD_BACK;
 const DECK_MODES = ['major-upright','major-reversed','all-upright','all-reversed'];
 if(!DECK_MODES.includes(settings.deckMode))settings.deckMode='all-reversed';
@@ -116,6 +116,7 @@ function persist() {
   const logsSaved=safeSetItem(STORAGE_KEY,JSON.stringify(logs));
   const settingsSaved=safeSetItem(SETTINGS_KEY,JSON.stringify(settings));
   storageSaveFailed=!(logsSaved && settingsSaved);
+  window.DECIDE_SYNC?.schedule?.();
   return !storageSaveFailed;
 }
 function isStandalone() { return navigator.standalone===true || matchMedia('(display-mode: standalone)').matches; }
@@ -199,7 +200,7 @@ function confirmImport() {
     if(error){error.textContent='この端末では保存できませんでした。履歴は変更していません。空き容量やブラウザの設定を確認してください。';error.hidden=false;}
     return;
   }
-  logs=mergedLogs; pendingImport=null; closeModal('#import-modal');
+  logs=mergedLogs; pendingImport=null; window.DECIDE_SYNC?.schedule?.(); closeModal('#import-modal');
   if(currentView==='history')renderHistory(); toast(`履歴を${additions.length}件追加しました${reviewedUpdates ? `（振り返り${reviewedUpdates}件を更新）` : ''}`);
 }
 function esc(value='') { return String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
@@ -1402,7 +1403,7 @@ function closeModal(selector) {
 function closeDelete() { closeModal('#delete-modal'); }
 function deleteLog(id) {
   const log=logs.find(item=>item.id===id); if(!log)return;
-  logs=logs.filter(item=>item.id!==id); persist(); closeDelete(); detailId=null; currentView='history'; render(); toast('履歴を削除しました');
+  logs=logs.filter(item=>item.id!==id); window.DECIDE_SYNC?.markDeleted?.(id); persist(); closeDelete(); detailId=null; currentView='history'; render(); toast('履歴を削除しました');
 }
 
 function switchCardTheme(key) {
@@ -1528,7 +1529,7 @@ function openSettings() {
     <div class="feedback-setting"><div><b>操作音・振動</b><p>カードを開く時や決定を保存する時に、控えめな反応を返します。</p></div><button class="toggle-button ${settings.feedback ? 'on' : ''}" data-action="toggle-feedback" aria-pressed="${settings.feedback}"><span></span><b>${settings.feedback ? 'ON' : 'OFF'}</b></button></div>
     <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">データ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}${isIOS() && !isStandalone() ? '<p class="safari-storage-note">Safariでは、記録は端末内に保存されます。しばらく開かないと消えることがあるため、ホーム画面への追加と、書き出しをおすすめします。</p>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-logs">履歴を書き出す（JSON）</button><button class="button secondary" data-action="import-logs">履歴を読み込む（JSON）</button><button class="button secondary" data-action="export-markdown">Obsidian用に書き出す（MD）</button><button class="button secondary" data-action="import-markdown">Obsidianから読み込む（MD）</button></div><p class="backup-format-note">MDはObsidianで読める1つのノートとして保存します。保管庫へはご自身で移してください。題名・メモ・ストーリーを含み、読み込みには末尾のバックアップデータを使います。表示部分の編集は反映されません。</p><input id="import-file" type="file" accept="application/json,.json" hidden><input id="import-markdown-file" type="file" accept="text/markdown,.md" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップ内容"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
      <section class="data-setting account-setting" data-account-setting aria-labelledby="account-setting-title" hidden></section>
-     <div class="setting-note"><b>カードと深掘り提案</b><p>表面はパメラ・コールマン・スミスによる1909年のライダー＝ウェイト＝スミス版（パブリックドメイン）です。決定ログはこのブラウザ内だけに保存されます。</p><p><a href="./privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a></p></div>
+     <div class="setting-note"><b>カードと深掘り提案</b><p>表面はパメラ・コールマン・スミスによる1909年のライダー＝ウェイト＝スミス版（パブリックドメイン）です。決定ログはこのブラウザ内に保存されます（PROで同期をONにした場合のみサーバーにも保存）。</p><p><a href="./privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a></p></div>
      <button class="learn-entry" data-action="open-learn"><span aria-hidden="true">▣</span><span>タロットを学ぶ（カード図鑑）</span><span aria-hidden="true">→</span></button>
      <button class="tutorial-replay" data-action="tutorial-replay"></button>
      <button class="sheet-bottom-close" data-action="close-settings">設定を閉じる</button>
@@ -1763,6 +1764,7 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./service-worker.js').then(registration => registration.update()).catch(() => {});
   }, {once:true});
 }
+window.DECIDE_APP_BRIDGE={getLogs:()=>logs,setLogs:v=>{logs=v},getSettings:()=>settings,persist,render};
 loadCardContent();
 render();
 if(shouldAutoStartTutorial())requestAnimationFrame(startTutorialIntro);

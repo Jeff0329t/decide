@@ -1,5 +1,5 @@
 // DECIDE. ログイン（Supabase Google OAuth）
-// 決定ログ本文は送信しない。Supabaseに渡るのはGoogleアカウントのメール等のアカウント情報のみ。
+// 決定ログ本文は、PROで「ログの同期」をONにした場合だけ送信する（sync.js）。それ以外でSupabaseに渡るのはメール等のアカウント情報のみ。
 (function(){
   const config = window.DECIDE_CONFIG || {};
   const PROMPT_AT_SAVE = 5;
@@ -103,12 +103,13 @@
     section.innerHTML = user
       ? `<div><b id="account-setting-title">アカウント</b>
         <p class="account-email">${escapeHtml(user.email)} でログイン中</p></div>
+        ${window.DECIDE_SYNC?.renderToggle?.() || ''}
         <div class="data-actions">
           <button class="button secondary" type="button" data-auth-action="logout">ログアウト</button>
           <button class="button secondary danger" type="button" data-auth-action="delete-confirm">アカウント削除</button>
         </div>`
       : `<div><b id="account-setting-title">アカウント</b>
-        <p>Googleでログインすると、PRO（購入済みの状態）を別の端末でも使えます。決定ログの本文は送信されず、この端末に残ります。</p></div>
+        <p>Googleでログインすると、PRO（購入済みの状態）を別の端末でも使えます。決定ログの本文は、PROで同期をONにしない限り送信されず、この端末に残ります。</p></div>
         <div class="data-actions">
           <button class="button" type="button" data-auth-action="login">ログイン</button>
         </div>`;
@@ -149,7 +150,7 @@
   function openLoginPrompt(message) {
     if(!client) { notify('ログインは準備中です'); return; }
     openSheet('auth-login-modal', 'Googleでログインして記録を引き継ぐ',
-      `<p>${escapeHtml(message || 'ログインしておくと、PROの購入状態を別の端末でも引き継げます。決定ログの本文は送信されず、この端末に保存されたままです。')}</p>`,
+      `<p>${escapeHtml(message || 'ログインしておくと、PROの購入状態を別の端末でも引き継げます。決定ログの本文は、PROで同期をONにしない限り送信されず、この端末に保存されたままです。')}</p>`,
       `<button class="button" type="button" data-auth-action="login">Googleでログイン</button>
        <button class="button secondary" type="button" data-auth-action="close">あとで</button>`);
   }
@@ -157,7 +158,7 @@
   function openDeleteConfirm() {
     if(typeof closeModal === 'function') closeModal('#settings-modal');
     setTimeout(() => openSheet('auth-delete-modal', 'アカウントを削除しますか？',
-      `<p>ログイン情報とPROの購入状態をサーバーから削除します。この操作は取り消せません。</p>
+      `<p>ログイン情報・PROの購入状態・同期した決定ログをサーバーから削除します。この操作は取り消せません。</p>
        <p>この端末に保存された決定ログは削除されません（必要なら設定の「すべて削除」から消せます）。</p>`,
       `<button class="button danger" type="button" data-auth-action="delete">削除する</button>
        <button class="button secondary" type="button" data-auth-action="close">やめる</button>`), 200);
