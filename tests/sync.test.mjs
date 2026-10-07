@@ -30,7 +30,7 @@ function load({ user = null, pro = false, cloudSync = false } = {}) {
     document: { addEventListener() {}, querySelector: () => null }
   };
   vm.runInNewContext(read('sync.js'), sandbox);
-  return { sync: window.DECIDE_SYNC, localStorage };
+  return { sync: window.DECIDE_SYNC, localStorage, settings };
 }
 
 const log = (id, createdAt, extra = {}) => ({ id, createdAt, nodes: [], ...extra });
@@ -88,4 +88,24 @@ test('renderToggle: 未ログインは表示なし、PROはON表示、無料はP
   const free = load({ user, pro: false, cloudSync: true }).sync.renderToggle();
   assert.match(free, /PRO限定/);
   assert.match(free, /aria-pressed="false"/);
+});
+
+test('autoEnable: PROでログイン中なら一度だけ自動でONにし、手動OFFのあとはONに戻さない', async () => {
+  const { sync, localStorage, settings } = load({ user: { id: 'u1' }, pro: true, cloudSync: false });
+  assert.equal(await sync.autoEnable(), true);
+  assert.equal(settings.cloudSync, true);
+  assert.equal(JSON.parse(localStorage.getItem(STORE_KEY)).autoOn, true);
+  settings.cloudSync = false;
+  assert.equal(await sync.autoEnable(), false);
+  assert.equal(settings.cloudSync, false);
+});
+
+test('autoEnable: 無料プランや未ログインでは何もしない', async () => {
+  const free = load({ user: { id: 'u1' }, pro: false });
+  assert.equal(await free.sync.autoEnable(), false);
+  assert.equal(free.settings.cloudSync, false);
+  assert.equal(free.localStorage.getItem(STORE_KEY), null);
+  const guest = load({ user: null, pro: true });
+  assert.equal(await guest.sync.autoEnable(), false);
+  assert.equal(guest.settings.cloudSync, false);
 });

@@ -1596,11 +1596,13 @@ function openShare(type='app', id=null) {
     <p class="share-lead">${esc(lead)}</p>
     ${type !== 'app' ? `<div class="share-card-preview"><div class="share-preview-images">${activeShareData.cards.map(card=>cardPicture(card,{className:card.orientation==='reversed'?'reversed-image':'',sizes:'82px'})).join('')}</div><div class="share-preview" data-share-preview></div></div>` : ''}
     ${type !== 'app' ? (window.DECIDE_SHARE_THEMES?.renderPicker?.()||'') : ''}
-    ${type !== 'app' ? `<div class="share-primary"><button class="share-big instagram" data-action="share-instagram-story"><b>◎</b><span>Instagramストーリーズにシェア</span></button><a class="share-big x-post" href="https://x.com/intent/post?text=${encodeURIComponent(activeShareData.postText)}&url=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>𝕏</b><span>Xにポスト</span></a></div>` : ''}
-    <div class="share-grid">
-      <a class="share-option line" href="https://line.me/R/msg/text/?${encodeURIComponent(`${shareText}\n${url}`)}" target="_blank" rel="noopener"><b>LINE</b><span>LINEで送る</span></a>
-      <a class="share-option x-share" href="https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>𝕏</b><span>Xで共有</span></a>
-      <a class="share-option facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>f</b><span>Facebook</span></a>
+    <div class="share-primary">
+      ${type !== 'app' ? `<button class="share-big instagram" data-action="share-instagram-story"><b>◎</b><span>Instagramストーリーズにシェア</span></button>
+      <a class="share-big x-post" href="https://x.com/intent/post?text=${encodeURIComponent(activeShareData.postText)}&url=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>𝕏</b><span>Xにポスト</span></a>` : ''}
+      <a class="share-big line" href="https://line.me/R/msg/text/?${encodeURIComponent(`${shareText}\n${url}`)}" target="_blank" rel="noopener"><b>LINE</b><span>LINEで送る</span></a>
+      <a class="share-big facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>f</b><span>Facebookでシェア</span></a>
+    </div>
+    <div class="share-grid share-grid-single">
       <button class="share-option" data-action="native-share"><b>↗</b><span>その他</span></button>
     </div>
     ${type !== 'app' ? `<button class="copy-link image-save" data-action="save-share-image"><span>カード画像と結論を1枚にまとめます</span><b>画像を保存</b></button>` : ''}

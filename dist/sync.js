@@ -16,9 +16,9 @@
     try {
       const raw = JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {};
       const tombstones = Array.isArray(raw.tombstones) ? raw.tombstones.filter(id => typeof id === 'string' && id) : [];
-      return { tombstones: [...new Set(tombstones)], lastSyncAt: raw.lastSyncAt || null };
+      return { tombstones: [...new Set(tombstones)], lastSyncAt: raw.lastSyncAt || null, autoOn: raw.autoOn === true };
     } catch(error) {
-      return { tombstones: [], lastSyncAt: null };
+      return { tombstones: [], lastSyncAt: null, autoOn: false };
     }
   }
   let state = loadState();
@@ -161,6 +161,23 @@
     if(wrap) auth()?.renderSettings?.(wrap);
   }
 
+  // PROの人がログインしたら、この端末で一度だけ同期を自動でONにする（あとで手動OFFにしたらそのまま）
+  async function autoEnable() {
+    if(state.autoOn || !auth()?.getUser?.()) return false;
+    const bridge = app();
+    const settings = bridge?.getSettings?.();
+    if(!settings) return false;
+    await ent()?.refresh?.();
+    if(!ent()?.hasProAccess?.()) return false;
+    state.autoOn = true;
+    saveState();
+    if(settings.cloudSync === true) return false;
+    settings.cloudSync = true;
+    bridge.persist?.();
+    refreshSettings();
+    return true;
+  }
+
   async function toggle() {
     const bridge = app();
     const settings = bridge?.getSettings?.();
@@ -190,8 +207,8 @@
 
   const a = auth();
   if(a?.isEnabled?.()) {
-    a.onChange?.(user => { if(user) syncNow(); });
-    Promise.resolve(a.ready?.()).then(() => syncNow()).catch(() => {});
+    a.onChange?.(user => { if(user) autoEnable().then(() => syncNow()).catch(() => {}); });
+    Promise.resolve(a.ready?.()).then(() => autoEnable()).then(() => syncNow()).catch(() => {});
   }
   window.addEventListener('online', () => syncNow());
 
@@ -201,6 +218,7 @@
     syncNow,
     renderToggle,
     isOn,
+    autoEnable,
     _pure: { merge, isValidLog, stampOf }
   });
 })();

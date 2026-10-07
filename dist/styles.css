@@ -3913,3 +3913,7 @@ body[data-detail-mode="complete"] .app-shell { padding-bottom: 0; }
 .share-big.x-post{background:#000;color:#f4efe3;border:1px solid #f4efe3}
 .share-big:active{transform:translateY(1px)}
 #share-modal .share-big.x-post{border-color:#f4efe3}
+/* シェア：Instagram → X → LINE → Facebook の縦並び */
+.share-big.line{background:#06c755}
+.share-big.facebook{background:#1877f2}
+#share-modal .share-grid.share-grid-single{grid-template-columns:1fr}
