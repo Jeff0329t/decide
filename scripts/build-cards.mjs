@@ -183,6 +183,8 @@ function layout({ title, description, path, ogImage, ogType = 'article', ld, bod
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${url}">
 <meta property="og:image" content="${ogImage}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(description)}">
@@ -235,7 +237,7 @@ function cardPage(c) {
   const path = `/cards/${c.id}.html`;
   const title = `${c.name}（${c.en}）の意味｜正位置・逆位置と決断のヒント - DECIDE`;
   const description = `タロット「${c.name}」の象徴と、正位置（${c.upright.keywords.join('・')}）・逆位置（${c.reversed.keywords.join('・')}）の意味。迷いや決断の場面でどう読むかを解説します。`.slice(0, 160);
-  const ogImage = `${ORIGIN}/assets/rider-waite/${c.id}.jpg`;
+  const ogImage = `${ORIGIN}/assets/og/${c.id}.png`;
   const crumbs = [
     { name: 'DECIDE', href: '../', path: '/' },
     { name: 'カード解説', href: './', path: '/cards/' },
@@ -245,7 +247,7 @@ function cardPage(c) {
   const article = {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: `${c.name}（${c.en}）の意味と決断のヒント`,
-    description, image: ogImage, inLanguage: 'ja',
+    description, image: `${ORIGIN}/assets/rider-waite/${c.id}.jpg`, inLanguage: 'ja',
     mainEntityOfPage: ORIGIN + path, datePublished: TODAY, dateModified: TODAY,
     author: { '@type': 'Organization', name: 'DECIDE' },
     publisher: { '@type': 'Organization', name: 'DECIDE', url: ORIGIN + '/' },
@@ -393,7 +395,7 @@ function worriesNav(current) {
 function worryPage(w) {
   const path = `/cards/worry-${w.slug}.html`;
   const primary = byId.get(w.primary);
-  const ogImage = `${ORIGIN}/assets/rider-waite/${w.primary}.jpg`;
+  const ogImage = `${ORIGIN}/assets/og/worry-${w.slug}.png`;
   const crumbs = [
     { name: 'DECIDE', href: '../', path: '/' },
     { name: 'カード解説', href: './', path: '/cards/' },
@@ -402,7 +404,7 @@ function worryPage(w) {
   ];
   const article = {
     '@context': 'https://schema.org', '@type': 'Article',
-    headline: w.h1, description: w.description, image: ogImage, inLanguage: 'ja',
+    headline: w.h1, description: w.description, image: `${ORIGIN}/assets/rider-waite/${w.primary}.jpg`, inLanguage: 'ja',
     mainEntityOfPage: ORIGIN + path, datePublished: TODAY, dateModified: TODAY,
     author: { '@type': 'Organization', name: 'DECIDE' },
     publisher: { '@type': 'Organization', name: 'DECIDE', url: ORIGIN + '/' },

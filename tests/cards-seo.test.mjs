@@ -105,7 +105,7 @@ test('card-entry.js validates from and is loaded/cached by the app', async () =>
   assert.match(read('dist/service-worker.js'), /'\.\/card-entry\.js'/);
 });
 
-const worries = ['tenshoku', 'wakare', 'hikkoshi', 'kekkon', 'manabi', 'dokuritsu', 'ningen', 'okane'];
+const worries = ['tenshoku', 'wakare', 'hikkoshi', 'kekkon', 'manabi', 'dokuritsu', 'ningen', 'okane', 'renai', 'shukatsu', 'kaigo', 'fukugyo'];
 
 test('worry pages have SEO essentials, CTAs into the app, credit and no JS', () => {
   const sm = read('dist/sitemap.xml');
@@ -135,4 +135,21 @@ test('worries index lists all worry pages and is linked from cards index', () =>
   assert.doesNotMatch(html, /<script(?![^>]*application\/ld\+json)/);
   assert.match(read('dist/cards/index.html'), /href="\.\/worries\.html"/);
   assert.match(read('dist/sitemap.xml'), /<loc>https:\/\/decisionprocess\.net\/cards\/worries\.html<\/loc>/);
+});
+
+test('card and worry pages point og:image at a generated 1200x630 PNG', () => {
+  const pages = [...ids.map((id) => `dist/cards/${id}.html`), ...worries.map((slug) => `dist/cards/worry-${slug}.html`)];
+  for (const page of pages) {
+    const html = read(page);
+    const m = html.match(/property="og:image" content="([^"]+)"/);
+    assert.ok(m, page);
+    assert.match(m[1], /^https:\/\/decisionprocess\.net\/assets\/og\/[a-z0-9-]+\.png$/, page);
+    const png = new URL(m[1].replace('https://decisionprocess.net/', '../dist/'), import.meta.url);
+    assert.ok(existsSync(png), `${page} → ${m[1]}`);
+    const buf = readFileSync(png);
+    assert.equal(buf.readUInt32BE(16), 1200, page);
+    assert.equal(buf.readUInt32BE(20), 630, page);
+    assert.match(html, /property="og:image:width" content="1200"/, page);
+    assert.match(html, /property="og:image:height" content="630"/, page);
+  }
 });
