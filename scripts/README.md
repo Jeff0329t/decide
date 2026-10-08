@@ -13,7 +13,7 @@ node scripts/build-cards.mjs
 - `dist/cards/{major,wands,cups,swords,pentacles}.html` … 分類別一覧（大アルカナ・各スート）
 - `dist/cards/worries.html` / `dist/cards/worry-{slug}.html` … 悩み別ページ（転職・別れ・引っ越し・結婚・学び直し・独立・起業・副業・人間関係・お金・恋愛・就活・介護）
 - `dist/sitemap.xml` / `dist/robots.txt`
-- `og:image` は `dist/assets/og/{id}.png` / `worry-{slug}.png` を参照（下の build-og.mjs で生成）
+- `og:image` は `dist/assets/og/{id}.jpg` / `worry-{slug}.jpg` を参照（下の build-og.mjs で生成）
 
 ### 文章を直すとき
 
@@ -37,6 +37,7 @@ node scripts/build-cards.mjs
 node scripts/build-og.mjs [--only=ar00,worry-tenshoku]
 ```
 
-- SNSシェア用の 1200x630 PNG を `dist/assets/og/` に出力（カード78枚 + 悩み別ページ）
+- SNSシェア用の 1200x630 JPEG を `dist/assets/og/` に出力（カード78枚 + 悩み別ページ）
+- Chrome で撮った PNG を `sips` で JPEG（品質80、1枚150〜190KB程度）に変換。古い PNG は削除されます
 - ローカルの Google Chrome（headless）で撮影します。パスが違う場合は環境変数 `CHROME` で指定
 - `cards.json`・`worries.json` を編集したら再実行（`--only=` で一部だけ再生成可）

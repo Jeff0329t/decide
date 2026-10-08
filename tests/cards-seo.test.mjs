@@ -137,18 +137,28 @@ test('worries index lists all worry pages and is linked from cards index', () =>
   assert.match(read('dist/sitemap.xml'), /<loc>https:\/\/decisionprocess\.net\/cards\/worries\.html<\/loc>/);
 });
 
-test('card and worry pages point og:image at a generated 1200x630 PNG', () => {
+function jpegSize(buf) {
+  for (let i = 2; i + 9 < buf.length; ) {
+    if (buf[i] !== 0xff) return null;
+    const marker = buf[i + 1];
+    if (marker === 0xc0 || marker === 0xc2) return { h: buf.readUInt16BE(i + 5), w: buf.readUInt16BE(i + 7) };
+    i += 2 + buf.readUInt16BE(i + 2);
+  }
+  return null;
+}
+
+test('card and worry pages point og:image at a generated 1200x630 JPEG under 250KB', () => {
   const pages = [...ids.map((id) => `dist/cards/${id}.html`), ...worries.map((slug) => `dist/cards/worry-${slug}.html`)];
   for (const page of pages) {
     const html = read(page);
     const m = html.match(/property="og:image" content="([^"]+)"/);
     assert.ok(m, page);
-    assert.match(m[1], /^https:\/\/decisionprocess\.net\/assets\/og\/[a-z0-9-]+\.png$/, page);
-    const png = new URL(m[1].replace('https://decisionprocess.net/', '../dist/'), import.meta.url);
-    assert.ok(existsSync(png), `${page} → ${m[1]}`);
-    const buf = readFileSync(png);
-    assert.equal(buf.readUInt32BE(16), 1200, page);
-    assert.equal(buf.readUInt32BE(20), 630, page);
+    assert.match(m[1], /^https:\/\/decisionprocess\.net\/assets\/og\/[a-z0-9-]+\.jpg$/, page);
+    const jpg = new URL(m[1].replace('https://decisionprocess.net/', '../dist/'), import.meta.url);
+    assert.ok(existsSync(jpg), `${page} → ${m[1]}`);
+    const buf = readFileSync(jpg);
+    assert.deepEqual(jpegSize(buf), { w: 1200, h: 630 }, page);
+    assert.ok(buf.length < 250 * 1024, `${page} ${buf.length} bytes`);
     assert.match(html, /property="og:image:width" content="1200"/, page);
     assert.match(html, /property="og:image:height" content="630"/, page);
   }

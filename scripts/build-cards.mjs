@@ -237,7 +237,7 @@ function cardPage(c) {
   const path = `/cards/${c.id}.html`;
   const title = `${c.name}（${c.en}）の意味｜正位置・逆位置と決断のヒント - DECIDE`;
   const description = `タロット「${c.name}」の象徴と、正位置（${c.upright.keywords.join('・')}）・逆位置（${c.reversed.keywords.join('・')}）の意味。迷いや決断の場面でどう読むかを解説します。`.slice(0, 160);
-  const ogImage = `${ORIGIN}/assets/og/${c.id}.png`;
+  const ogImage = `${ORIGIN}/assets/og/${c.id}.jpg`;
   const crumbs = [
     { name: 'DECIDE', href: '../', path: '/' },
     { name: 'カード解説', href: './', path: '/cards/' },
@@ -395,7 +395,7 @@ function worriesNav(current) {
 function worryPage(w) {
   const path = `/cards/worry-${w.slug}.html`;
   const primary = byId.get(w.primary);
-  const ogImage = `${ORIGIN}/assets/og/worry-${w.slug}.png`;
+  const ogImage = `${ORIGIN}/assets/og/worry-${w.slug}.jpg`;
   const crumbs = [
     { name: 'DECIDE', href: '../', path: '/' },
     { name: 'カード解説', href: './', path: '/cards/' },

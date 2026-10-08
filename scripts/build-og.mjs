@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// SNS シェア用 OGP 画像（1200x630 PNG）を生成する。
+// SNS シェア用 OGP 画像（1200x630 JPEG）を生成する。
 // 入力: dist/assets/cards.json + scripts/data/worries.json + dist/assets/rider-waite/*.jpg
-// 出力: dist/assets/og/{id}.png（78枚）, dist/assets/og/worry-{slug}.png
-// 仕組み: 一時HTMLを書き出し、ローカルの Google Chrome（headless）でスクリーンショットを撮る。
+// 出力: dist/assets/og/{id}.jpg（78枚）, dist/assets/og/worry-{slug}.jpg
+// 仕組み: 一時HTMLを書き出し、ローカルの Google Chrome（headless）でPNGを撮影し、sips で JPEG（品質80）に変換する。
 // 使い方: node scripts/build-og.mjs [--only=ar00,worry-tenshoku]
 import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync, existsSync, statSync } from 'node:fs';
 import { spawn } from 'node:child_process';
@@ -130,6 +130,25 @@ function shot(name, file, out, tmp) {
   });
 }
 
+// PNG は1枚約400KBと重いので、sips で JPEG に変換して配信する
+const QUALITY = 80;
+function run(cmd, args) {
+  return new Promise((resolve, reject) => {
+    const p = spawn(cmd, args, { stdio: 'ignore' });
+    p.on('error', reject);
+    p.on('exit', (code) => (code === 0 ? resolve() : reject(new Error(`${cmd} exited ${code}`))));
+  });
+}
+function jpegSize(buf) {
+  for (let i = 2; i + 9 < buf.length; ) {
+    if (buf[i] !== 0xff) return null;
+    const marker = buf[i + 1];
+    if (marker === 0xc0 || marker === 0xc2) return { h: buf.readUInt16BE(i + 5), w: buf.readUInt16BE(i + 7) };
+    i += 2 + buf.readUInt16BE(i + 2);
+  }
+  return null;
+}
+
 mkdirSync(OUT, { recursive: true });
 const tmp = mkdtempSync(join(tmpdir(), 'decide-og-'));
 try {
@@ -138,11 +157,15 @@ try {
     for (let j = queue.shift(); j; j = queue.shift()) {
       const file = join(tmp, `${j.name}.html`);
       writeFileSync(file, j.html());
-      const out = `${OUT}${j.name}.png`;
-      rmSync(out, { force: true });
-      await shot(j.name, file, out, tmp);
-      const png = readFileSync(out);
-      if (png.readUInt32BE(16) !== W || png.readUInt32BE(20) !== H) throw new Error(`bad size: ${j.name}`);
+      const png = join(tmp, `${j.name}.png`);
+      await shot(j.name, file, png, tmp);
+      const buf = readFileSync(png);
+      if (buf.readUInt32BE(16) !== W || buf.readUInt32BE(20) !== H) throw new Error(`bad size: ${j.name}`);
+      const out = `${OUT}${j.name}.jpg`;
+      await run('sips', ['-s', 'format', 'jpeg', '-s', 'formatOptions', String(QUALITY), png, '--out', out]);
+      const size = jpegSize(readFileSync(out));
+      if (!size || size.w !== W || size.h !== H) throw new Error(`bad jpeg: ${j.name}`);
+      rmSync(`${OUT}${j.name}.png`, { force: true });
     }
   };
   await Promise.all(Array.from({ length: 4 }, worker));
