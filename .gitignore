@@ -1,3 +1,6 @@
 backups/
 supabase/.temp/
 .DS_Store
+.env
+.env.*
+!.env.example

@@ -26,14 +26,18 @@ Phase 1 で追加したログイン機能を有効にするための、人間が
    - 公開ステータスを「本番環境」にする（テスト中はテストユーザーしかログインできません）
 3. 「認証情報」→「認証情報を作成」→「OAuth クライアント ID」
    - 種類：ウェブアプリケーション
-   - 承認済みの JavaScript 生成元：`https://decisionprocess.net`、`http://localhost:8080`（ローカル確認用）
-   - 承認済みのリダイレクト URI：`https://<プロジェクトID>.supabase.co/auth/v1/callback`
+   - 承認済みの JavaScript 生成元：`https://decisionprocess.net`、`http://localhost`、`http://localhost:4173`、`http://localhost:8080`、`http://localhost:8765`（localhost はローカル確認用。Google ボタン方式ではこの生成元が一致しないとボタンが出ません）
+   - 承認済みのリダイレクト URI：`https://<プロジェクトID>.supabase.co/auth/v1/callback`（`GOOGLE_CLIENT_ID` 未設定時のリダイレクト方式＝フォールバック用。残しておく）
 4. 表示されたクライアント ID とクライアントシークレットを控える。
 
 ## 3. Supabase で Google プロバイダを有効化
 
 1. Authentication → Sign In / Providers → Google を有効化。
-2. 手順2のクライアント ID / シークレットを貼り付けて保存。
+2. 手順2のクライアント ID / シークレットを貼り付けて保存（シークレットはフォールバックのリダイレクト方式で使うので消さない）。
+3. 「Client IDs」（承認済みクライアントID）欄にも同じクライアント ID を入れる。`signInWithIdToken` で受け取る IDトークンの `aud` がここと一致しないと拒否されます。
+4. 「Skip nonce check」は OFF のまま。フロントは生の nonce を Supabase に、SHA-256 ハッシュを Google に渡して照合させています。
+
+> ログインは Google Identity Services（GIS）のボタン → `signInWithIdToken` 方式です。Google の同意画面には `supabase.co` ではなく `decisionprocess.net`（アプリ名）が表示されます。
 
 ## 4. Site URL とリダイレクト URL
 
@@ -84,13 +88,15 @@ supabase secrets set ALLOWED_ORIGINS=https://decisionprocess.net,http://localhos
 
 ## 7. フロントの設定
 
-`dist/config.js` に URL と anon キーだけを書きます。
+`dist/config.js` に URL・anon キー・Google クライアント ID（いずれも公開してよい値）だけを書きます。`.env.example` の `NEXT_PUBLIC_GOOGLE_CLIENT_ID` は同じ値の控えで、静的サイトなので実際に読まれるのは `config.js` です。
 
 ```js
 window.DECIDE_CONFIG = Object.freeze({
   SUPABASE_URL: 'https://xxxx.supabase.co',
   SUPABASE_ANON_KEY: 'eyJ...（anon public キー）',
-  SITE_URL: 'https://decisionprocess.net'
+  SITE_URL: 'https://decisionprocess.net',
+  // 空なら従来の signInWithOAuth リダイレクト方式
+  GOOGLE_CLIENT_ID: 'xxxx.apps.googleusercontent.com'
 });
 ```
 

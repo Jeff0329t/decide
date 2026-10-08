@@ -1,4 +1,5 @@
-// DECIDE. ログイン（Supabase Google OAuth）
+// DECIDE. ログイン（Google Identity Services の IDトークン → Supabase signInWithIdToken）
+// GOOGLE_CLIENT_ID 未設定・GISが読めない場合は従来の signInWithOAuth リダイレクトにフォールバックする。
 // 決定ログ本文は、PROで「ログの同期」をONにした場合だけ送信する（sync.js）。それ以外でSupabaseに渡るのはメール等のアカウント情報のみ。
 (function(){
   const config = window.DECIDE_CONFIG || {};
@@ -54,10 +55,71 @@
     return location.origin + location.pathname;
   }
 
-  async function signInWithGoogle() {
+  function googleClientId() {
+    return String(config.GOOGLE_CLIENT_ID || '').trim();
+  }
+
+  // GISスクリプトは async 読み込みなので、少し待ってから使う
+  function waitForGis(timeout = 3000) {
+    return new Promise(resolve => {
+      const started = Date.now();
+      (function check() {
+        if(window.google?.accounts?.id) return resolve(window.google.accounts.id);
+        if(Date.now() - started >= timeout) return resolve(null);
+        setTimeout(check, 100);
+      })();
+    });
+  }
+
+  function randomNonce() {
+    const bytes = new Uint8Array(32);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  async function sha256Hex(value) {
+    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+    return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  // Googleにはnonceのハッシュを渡し、Supabaseには生のnonceを渡す（Supabase側で照合）
+  async function renderGoogleButton(container) {
+    if(!container || !client || !googleClientId() || !window.crypto?.subtle) return false;
+    const gis = await waitForGis();
+    if(!gis || !container.isConnected) return false;
+    try {
+      const nonce = randomNonce();
+      const hashedNonce = await sha256Hex(nonce);
+      gis.initialize({
+        client_id: googleClientId(),
+        nonce: hashedNonce,
+        callback: async response => {
+          const { error } = await client.auth.signInWithIdToken({ provider: 'google', token: response.credential, nonce });
+          if(error) { notify('ログインできませんでした'); return; }
+          if(document.querySelector('#auth-login-modal')) closeSheet('auth-login-modal');
+          notify('ログインしました');
+        }
+      });
+      gis.renderButton(container, { type: 'standard', theme: 'outline', size: 'large', text: 'signin_with', locale: 'ja' });
+    } catch(error) {
+      return false;
+    }
+    container.hidden = false;
+    container.parentElement?.querySelectorAll('[data-auth-action="login"]').forEach(button => { button.hidden = true; });
+    return true;
+  }
+
+  async function signInWithRedirect() {
     if(!client) { notify('ログインは準備中です'); return; }
     const { error } = await client.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: redirectUrl() } });
     if(error) notify('ログインを開始できませんでした');
+  }
+
+  // GISが使えるときはボタン入りのシートを開く。使えなければリダイレクト
+  async function signInWithGoogle() {
+    if(!client) { notify('ログインは準備中です'); return; }
+    if(googleClientId() && !document.querySelector('#auth-login-modal')) { openLoginPrompt(); return; }
+    await signInWithRedirect();
   }
 
   async function signOut() {
@@ -112,8 +174,10 @@
       : `<div><b id="account-setting-title">アカウント</b>
         <p>Googleでログインすると、PRO（購入済みの状態）を別の端末でも使えます。決定ログの本文は、PROで同期をONにしない限り送信されず、この端末に残ります。</p></div>
         <div class="data-actions">
+          <div class="google-signin" data-google-button hidden></div>
           <button class="button" type="button" data-auth-action="login">ログイン</button>
         </div>`;
+    if(!user) renderGoogleButton(section.querySelector('[data-google-button]'));
   }
 
   function refreshOpenSettings() {
@@ -152,8 +216,10 @@
     if(!client) { notify('ログインは準備中です'); return; }
     openSheet('auth-login-modal', 'Googleでログインして記録を引き継ぐ',
       `<p>${escapeHtml(message || 'ログインしておくと、PROの購入状態を別の端末でも引き継げます。決定ログの本文は、PROで同期をONにしない限り送信されず、この端末に保存されたままです。')}</p>`,
-      `<button class="button" type="button" data-auth-action="login">Googleでログイン</button>
+      `<div class="google-signin" data-google-button hidden></div>
+       <button class="button" type="button" data-auth-action="login">Googleでログイン</button>
        <button class="button secondary" type="button" data-auth-action="close">あとで</button>`);
+    renderGoogleButton(document.querySelector('#auth-login-modal [data-google-button]'));
   }
 
   function openDeleteConfirm() {

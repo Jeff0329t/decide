@@ -317,6 +317,8 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .confirm-sheet h2 { margin-bottom: 10px; }
 .confirm-sheet > p:not(.eyebrow) { color: var(--muted); font-size: .86rem; line-height: 1.7; }
 .confirm-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 22px; }
+.google-signin { grid-column: 1 / -1; display: flex; justify-content: center; min-height: 44px; }
+.google-signin[hidden] { display: none; }
 .button.danger { border-color: var(--danger-surface); background: var(--danger-surface); color: var(--on-danger); }
 .modal-wrap { position: fixed; inset: 0; z-index: 50; display: grid; align-items: end; opacity: 0; transition: opacity .18s ease; }
 .modal-wrap.open { opacity: 1; }

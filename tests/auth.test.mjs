@@ -58,3 +58,16 @@ test('プライバシーポリシーがログインと Supabase に触れてい�
   assert.match(privacy, /Cloudflare Pages/);
   assert.doesNotMatch(privacy, /GitHub Pages/);
 });
+
+test('Google ログインは GIS → signInWithIdToken（nonce は SHA-256 ハッシュを Google へ）', () => {
+  for(const name of ['index.html', 'success.html']) {
+    assert.match(read(name), /<script src="https:\/\/accounts\.google\.com\/gsi\/client" async defer><\/script>/, name);
+  }
+  const auth = read('auth.js');
+  assert.match(auth, /signInWithIdToken\(\{ provider: 'google', token: response\.credential, nonce \}\)/);
+  assert.match(auth, /crypto\.subtle\.digest\('SHA-256'/);
+  assert.match(auth, /nonce: hashedNonce/);
+  // クライアントID未設定時のフォールバックとして従来方式も残す
+  assert.match(auth, /signInWithOAuth/);
+  assert.match(read('config.js'), /GOOGLE_CLIENT_ID:/);
+});
