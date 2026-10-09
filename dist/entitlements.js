@@ -6,6 +6,10 @@
   const CHECKOUT_FLAG = 'decide.tarot.pendingCheckout';
   const FREE_DRAWS = 10;
   const FREE_SAVES = 10;
+  // PROキャッシュの有効期限：返金・解約後に端末だけPROのまま残らないよう、期限切れなら無料扱い（再同期で復帰）
+  const PRO_CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+  // フォアグラウンド復帰時の再取得は最短この間隔で
+  const RESYNC_MIN_INTERVAL_MS = 60 * 1000;
 
   const notify = message => { if(typeof toast === 'function') toast(message); };
   const auth = () => window.DECIDE_AUTH || null;
@@ -28,15 +32,19 @@
   // 純粋関数（テスト用にも公開）
   const isProPlan = plan => typeof plan === 'string' && plan !== '' && plan !== 'free';
   const mergeDraws = (local, server) => Math.max(toCount(local), toCount(server));
+  const isCacheFresh = (checkedAt, now = Date.now()) => {
+    const t = Date.parse(checkedAt);
+    return Number.isFinite(t) && now - t < PRO_CACHE_TTL_MS;
+  };
 
   function currentUser() {
     return auth()?.getUser?.() || null;
   }
 
-  // PRO判定：ログイン中ユーザーのキャッシュ済み plan_type が 'free' 以外
+  // PRO判定：ログイン中ユーザーのキャッシュ済み plan_type が 'free' 以外、かつキャッシュが期限内
   function hasProAccess(user = currentUser()) {
     if(!user?.id) return false;
-    return state.userId === user.id && isProPlan(state.plan);
+    return state.userId === user.id && isProPlan(state.plan) && isCacheFresh(state.checkedAt);
   }
   function canDraw() {
     return hasProAccess() || state.draws < FREE_DRAWS;
@@ -70,9 +78,11 @@
   }
 
   // ログイン時：ドロー回数は max(端末, DB)（加算しない）。PRO判定はサーバーから取得してキャッシュ。
+  let lastSyncAt = 0;
   async function syncWithServer(user) {
     const client = rpcClient();
     if(!client || !user?.id) return;
+    lastSyncAt = Date.now();
     try {
       const { data, error } = await client.rpc('merge_local_draws', { p_count: state.draws });
       if(!error && data != null) state.draws = mergeDraws(state.draws, data);
@@ -112,9 +122,14 @@
     const id = 'paywall-modal';
     if(document.querySelector(`#${id}`)) return;
     const user = currentUser();
+    const title = reason === 'save' ? '保存できる上限に達しました'
+      : reason === 'draw' ? '無料で引ける回数を使い切りました'
+      : 'PROで、もっと自由に';
     const lead = reason === 'save'
       ? `無料で保存できる決定ログは${FREE_SAVES}件までです。`
-      : `無料で引けるのは累計${FREE_DRAWS}回までです。`;
+      : reason === 'draw'
+        ? `無料で引けるのは累計${FREE_DRAWS}回までです。`
+        : `無料プランはドロー${FREE_DRAWS}回・ログ保存${FREE_SAVES}件までです。`;
     const next = user
       ? 'PRO（買い切り ¥980）で、ドローもログ保存も無制限になります。'
       : 'PRO（買い切り ¥980）で、ドローもログ保存も無制限になります。購入にはGoogleでのログインが必要です（ログイン後に購入へ進みます）。';
@@ -128,7 +143,7 @@
       <section class="settings-sheet confirm-sheet" role="dialog" aria-modal="true" aria-labelledby="${id}-title">
         <div class="sheet-handle" aria-hidden="true"></div>
         <p class="eyebrow">DECIDE. PRO</p>
-        <h2 id="${id}-title">無料枠を使い切りました</h2>
+        <h2 id="${id}-title">${title}</h2>
         <p>${lead}</p>
         <p>${next}</p>
         <div class="confirm-actions">${primary}
@@ -230,6 +245,12 @@
   handleCheckoutReturn();
 
   window.addEventListener?.('online', () => { const user = currentUser(); if(user) syncWithServer(user); });
+  // フォアグラウンド復帰時に plan_type を取り直す（返金で free に戻った場合を反映）
+  document.addEventListener?.('visibilitychange', () => {
+    if(document.visibilityState !== 'visible' || Date.now() - lastSyncAt < RESYNC_MIN_INTERVAL_MS) return;
+    const user = currentUser();
+    if(user) syncWithServer(user);
+  });
 
   const a = auth();
   if(a?.onChange) {
@@ -249,6 +270,6 @@
     openPaywall,
     startCheckout,
     refresh: () => syncWithServer(currentUser()),
-    _pure: Object.freeze({ isProPlan, mergeDraws })
+    _pure: Object.freeze({ isProPlan, mergeDraws, isCacheFresh })
   });
 })();

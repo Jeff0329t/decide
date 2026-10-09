@@ -164,7 +164,8 @@
     const user = currentUser;
     section.innerHTML = user
       ? `<div><b id="account-setting-title">アカウント</b>
-        <p class="account-email">${escapeHtml(user.email)} でログイン中</p></div>
+        <p class="account-email">${escapeHtml(user.email)} でログイン中</p>
+        <p class="account-plan">プラン：${window.DECIDE_ENTITLEMENTS?.hasProAccess?.(user)?'PRO（買い切り）':'無料'}</p></div>
         ${window.DECIDE_SYNC?.renderToggle?.() || ''}
         ${window.DECIDE_REFERRAL?.renderSettings?.() || ''}
         <div class="data-actions">
@@ -226,7 +227,7 @@
     if(typeof closeModal === 'function') closeModal('#settings-modal');
     setTimeout(() => openSheet('auth-delete-modal', 'アカウントを削除しますか？',
       `<p>ログイン情報・PROの購入状態・同期した決定ログをサーバーから削除します。この操作は取り消せません。</p>
-       <p>この端末に保存された決定ログは削除されません（必要なら設定の「すべて削除」から消せます）。</p>`,
+       <p>この端末に保存された決定ログは削除されません（不要な場合は、ブラウザの設定からこのサイトのデータを削除してください）。</p>`,
       `<button class="button danger" type="button" data-auth-action="delete">削除する</button>
        <button class="button secondary" type="button" data-auth-action="close">やめる</button>`), 200);
   }

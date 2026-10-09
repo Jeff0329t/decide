@@ -15,6 +15,7 @@
     p, li { font-size: .95rem; }
     .meta { color: var(--muted); font-size: .85rem; }
     a { color: inherit; }
+    .button { min-height: 44px; padding: 8px 18px; border: 1px solid var(--ink); border-radius: 3px; background: transparent; color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -31,7 +32,9 @@
     <p><a href="./">DECIDE に戻る</a></p>
   </section>
   <section data-state="timeout" hidden>
-    <p>反映に時間がかかっています。決済は完了していますので、しばらくしてからアプリを開き直してください（設定画面を開くと再確認されます）。</p>
+    <p>反映に時間がかかっています。決済は完了しています。</p>
+    <p>数分後に再読み込み、またはアプリを再起動すると反映されます（設定画面を開いたときにも再確認されます）。</p>
+    <p><button type="button" class="button" data-action="recheck">もう一度確認する</button></p>
     <p>数分たっても反映されない場合はお問い合わせください：twaziki@yahoo.co.jp</p>
     <p><a href="./">DECIDE に戻る</a></p>
   </section>

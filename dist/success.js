@@ -49,12 +49,19 @@
     }
   }
 
+  let running = false;
   async function run() {
+    if(running) return;
+    running = true;
     show('pending');
     const result = await waitForPro();
     show(result);
+    running = false;
   }
 
   window.DECIDE_SUCCESS = Object.freeze({ waitForPro, POLL_INTERVAL, POLL_TIMEOUT });
-  if(typeof document !== 'undefined' && document.querySelector?.('[data-state="pending"]')) run();
+  if(typeof document !== 'undefined' && document.querySelector?.('[data-state="pending"]')) {
+    document.querySelector('[data-action="recheck"]')?.addEventListener('click', run);
+    run();
+  }
 })();

@@ -15,7 +15,7 @@ test('stats themes open a decision log list for that theme',()=>{
 
 test('details opened from stats return to stats',()=>{
   assert.match(app,/navigate\(detailReturn\)/);
-  assert.match(app,/detailReturn==='stats'\?'統計へ':'履歴へ'/);
+  assert.match(app,/detailReturn==='stats'\?'統計へ戻る':'履歴へ戻る'/);
 });
 
 test('satisfaction rows are color-coded buttons that open the matching review log',()=>{

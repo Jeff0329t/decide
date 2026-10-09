@@ -115,7 +115,7 @@ test('成功時はユーザーのトークンと anon キーで create-checkout 
 test('すでにPRO（キャッシュ）なら決済APIを呼ばない', async () => {
   const env = loadEntitlements({
     user: USER,
-    stored: { draws: 0, plan: 'lifetime', proSince: null, userId: USER.id, checkedAt: null },
+    stored: { draws: 0, plan: 'lifetime', proSince: null, userId: USER.id, checkedAt: new Date().toISOString() },
     fetchImpl: () => jsonResponse(200, { url: 'https://checkout.stripe.com/x' })
   });
   await env.ent.startCheckout();

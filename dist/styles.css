@@ -392,7 +392,7 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .share-theme-picker { margin-top: 14px; }
 .share-theme-picker > b { display: block; margin-bottom: 8px; font-size: .78rem; }
 .share-theme-chips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
-.share-theme-chip { min-height: 40px; padding: 6px 4px; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--line); border-radius: 3px; background: transparent; color: inherit; font-size: .75rem; cursor: pointer; }
+.share-theme-chip { min-height: 44px; padding: 6px 4px; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--line); border-radius: 3px; background: transparent; color: inherit; font-size: .75rem; cursor: pointer; }
 .share-theme-chip.active { border-color: var(--accent); color: var(--accent); font-weight: 700; }
 .share-theme-swatch { width: 14px; height: 18px; flex: 0 0 auto; border: 1px solid; }
 .referral-setting { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
@@ -1655,10 +1655,15 @@ body[data-view="stats"] .app-shell { padding-bottom: 70px; }
   .completion-script { font-size: 2.8rem; }
 }
 
-body.has-logs[data-view="home"][data-home-stage="quickstart"] .bottom-nav { display: grid !important; }
-body.has-logs[data-view="home"][data-home-stage="quickstart"] .app-shell { padding-bottom: 70px; }
-body.has-logs[data-view="home"][data-home-stage="quickstart"] .quickstart-screen .choice-grid { bottom: calc(138px + env(safe-area-inset-bottom)); }
-body.has-logs[data-view="home"][data-home-stage="quickstart"] .quickstart-help { bottom: calc(90px + env(safe-area-inset-bottom)); }
+body[data-view="home"] .bottom-nav { display: grid !important; }
+body[data-view="home"] .app-shell { padding-bottom: 70px; }
+body[data-view="home"][data-home-stage="quickstart"] .quickstart-screen .choice-grid { bottom: calc(138px + env(safe-area-inset-bottom)); }
+body[data-view="home"][data-home-stage="quickstart"] .quickstart-help { bottom: calc(90px + env(safe-area-inset-bottom)); }
+body[data-view="home"][data-home-stage="splash"] .splash-screen { min-height: calc(100dvh - 70px); }
+body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(40px + env(safe-area-inset-bottom)); }
+@media (max-height: 720px) { body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(24px + env(safe-area-inset-bottom)); } }
+body[data-view="home"][data-home-stage="splash"] .app-shell { padding-bottom: 70px; height: 100dvh; overflow: hidden; }
+body[data-view="home"][data-home-stage="splash"] .cards-index-link { display: none; }
 
 /* P36 — one visual language: Japanese typography, celestial backs and reliable contrast. */
 body,
@@ -3925,3 +3930,18 @@ body[data-detail-mode="complete"] .app-shell { padding-bottom: 0; }
 .card-entry-guide strong{color:#f1d527;font-family:"Hiragino Mincho ProN","Yu Mincho",serif;letter-spacing:.04em}
 .card-entry-guide span{font-size:.82rem;line-height:1.5}
 .card-entry-guide button{background:none;border:0;color:#f4efe3;font-size:1.2rem;line-height:1;padding:2px 4px;cursor:pointer}
+/* 親指で届くよう、準備・カード選択画面も上部の戻るを下部ナビへ集約 */
+body[data-view="prepare-genre"] .bottom-nav,
+body[data-view="prepare-options"] .bottom-nav,
+body[data-view="draw"] .bottom-nav { display: grid !important; }
+body[data-view="prepare-genre"] .prepare-screen > .text-back,
+body[data-view="prepare-options"] .prepare-screen > .text-back,
+body[data-view="draw"] .draw-screen > .text-back { display: none !important; }
+body[data-view="prepare-genre"] .app-shell,
+body[data-view="prepare-options"] .app-shell,
+body[data-view="draw"] .app-shell { padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
+
+.update-bar { position: fixed; left: 12px; right: 12px; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 40; display: flex; align-items: center; gap: 8px; max-width: 480px; margin: 0 auto; padding: 8px 8px 8px 14px; background: #0b0b0b; color: #f4efe3; border: 1.5px solid #f4efe3; font-size: .8rem; line-height: 1.5; }
+.update-bar p { flex: 1; margin: 0; }
+.update-bar button { min-height: 44px; min-width: 44px; padding: 0 10px; border: 1px solid #f4efe3; background: transparent; color: inherit; font: inherit; font-weight: 700; cursor: pointer; }
+.update-bar .update-bar-close { border: 0; font-size: 1.1rem; }

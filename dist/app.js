@@ -379,7 +379,7 @@ function setupFanFeedback(deck) {
 function updateNavigationState(view=currentView) {
   const selected=view==='history' || view==='detail' ? 'history' : view==='stats' ? 'stats' : view==='home' ? 'home' : '';
   const bottomNav=document.querySelector('.bottom-nav');
-  if(bottomNav)bottomNav.style.display=['history','detail','stats','session','decide'].includes(view)?'grid':'';
+  if(bottomNav)bottomNav.style.display=['history','detail','stats','session','decide','prepare-genre','prepare-options','draw'].includes(view)?'grid':'';
   document.querySelectorAll('.nav-item').forEach(item=>{
     const active=item.dataset.nav===selected;
     item.classList.toggle('active',active);
@@ -388,8 +388,10 @@ function updateNavigationState(view=currentView) {
   });
   const back=document.querySelector('.nav-back');
   if(back){
-    const labels={detail:detailReturn==='stats'?'統計へ':'ログへ',decide:'結果へ',session:'戻る',stats:'戻る',history:'戻る',draw:'戻る',learn:'設定へ'};
-    back.querySelector('span').textContent=labels[view]||'戻る';
+    // 表示は「戻る」に統一し、戻り先は読み上げ用ラベルで補う
+    const labels={detail:detailReturn==='stats'?'統計へ戻る':'ログへ戻る',decide:'結果へ戻る',learn:'設定へ戻る'};
+    back.querySelector('span').textContent='戻る';
+    back.setAttribute('aria-label',labels[view]||'戻る');
     back.disabled=view==='home'&&homeStage==='splash';
   }
 }
@@ -953,7 +955,7 @@ function toggleReflection(button) {
   button.setAttribute('aria-expanded',String(!expanded));
   panel.hidden=expanded;
   button.closest('.map-screen')?.classList.toggle('deep-menu-open',!expanded);
-  const navLabel=document.querySelector('.nav-back span'); if(navLabel)navLabel.textContent=expanded?'ホームへ':'結果へ';
+  const navBack=document.querySelector('.nav-back'); if(navBack){navBack.querySelector('span').textContent='戻る';navBack.setAttribute('aria-label',expanded?'ホームへ戻る':'結果へ戻る');}
   if(!expanded)panel.querySelector('button')?.focus({preventScroll:true});
 }
 
@@ -1245,7 +1247,7 @@ function renderDetail() {
   const showA2HS=log.id===a2hsBannerLogId && shouldShowA2HS();
   const appBrowser=showA2HS && inAppBrowser();
   app.innerHTML = `<section class="screen detail-screen">
-    <button class="text-back" data-action="${detailReturn==='stats'?'stats':'history'}">← ${detailReturn==='stats'?'統計へ':'履歴へ'}</button>
+    <button class="text-back" data-action="${detailReturn==='stats'?'stats':'history'}" aria-label="${detailReturn==='stats'?'統計へ戻る':'履歴へ戻る'}">← 戻る</button>
     ${showA2HS ? `<aside class="storage-banner a2hs-banner" data-a2hs-banner><button class="banner-close" data-action="dismiss-a2hs" aria-label="案内を閉じる">×</button><p>${appBrowser ? 'この画面では、ホーム画面に追加できません。メニューから『ブラウザで開く』（Safariで開く）を選んでから、追加してください。' : '記録を消さないために、ホーム画面に追加しておきませんか？　Safariでは、しばらく開かないと記録が消えることがあります。'}</p><div class="banner-actions">${appBrowser ? '' : '<button class="button secondary" data-action="a2hs-help">追加のしかた</button>'}<button class="button ghost" data-action="dismiss-a2hs">あとで</button></div></aside>` : ''}
     ${renderDetailDate(log.createdAt)}<p class="eyebrow">${formatDate(log.createdAt, true)}</p>
     <h1 data-detail-title></h1><div class="outcome"><span class="decided-stamp" aria-hidden="true">DECIDED</span><span>今回の結論</span><strong>${esc(DECIDE_DECISION.decisionText(log))}</strong><button data-action="share-log" data-id="${esc(log.id)}">この結果をシェア ↗</button></div>
@@ -1447,10 +1449,10 @@ function readSharedPayload() {
     return result.found ? (result.payload || {invalid:true}) : null;
   } catch { return location.hash.startsWith('#share=') ? {invalid:true} : null; }
 }
-function sharedResultUrl(log,type) {
+function sharedResultUrl(log,type,{includeContent=false}={}) {
   const nodes=(log.nodes||[]).slice(0,2);
   const payload={d:log.decision,c:nodes.map(node=>[node.card.id,node.card.orientation==='reversed'?1:0])};
-  if(type==='story'){ payload.t=log.title; payload.s=(log.story||'').slice(0,700); }
+  if(type==='story'&&includeContent){ payload.t=log.title; payload.s=(log.story||'').slice(0,700); }
   return `${location.origin}${location.pathname}#share=${encodeSharedPayload(payload)}`;
 }
 function normalizeSharedPayload(payload) {
@@ -1572,16 +1574,20 @@ function openSettings() {
 function closeSettings() { closeModal('#settings-modal'); }
 function shareCards(cardNodes){ return cardNodes.map(node=>({...node.card,image:cardImage(node.card),meaning:meaning(node.card),keyword:cardKeywords(node.card)[0]||''})); }
 function sharePostText(log,cardNodes){ const keywords=cardNodes.map(node=>cardKeywords(node.card)[0]).filter(Boolean); return `私は「${DECIDE_DECISION.choiceText(log.decision)}」に決めた${keywords.length?`\nカード：${keywords.join('・')}`:''}\n#DECIDE #タロット`; }
-function shareData(type='app', log=null) {
+function shareData(type='app', log=null, {includeContent=false}={}) {
   const url=`${location.origin}${location.pathname}`;
   if (type === 'result' && log) {
     const cardNodes=(log.nodes || []).slice(0,2); const cards=cardNodes.map(node=>`${node.card.name}（${orientationLabel(node.card)}）`).join('・');
-    return {title:'DECIDE — 決定結果',logTitle:'決定の記録',decision:DECIDE_DECISION.choiceText(log.decision),heading:'結果をシェア',lead:'相手がリンクを開くと、カード画像・意味・あなたの結論が表示されます。題名とメモは共有されません。',text:`結論：${DECIDE_DECISION.choiceText(log.decision)}${cards ? `\nカード：${cards}` : ''}\n#DECIDE`,url:sharedResultUrl(log,type),cards:shareCards(cardNodes),postText:sharePostText(log,cardNodes)};
+    return {title:'DECIDE — 決定結果',logTitle:'決定の記録',decision:DECIDE_DECISION.choiceText(log.decision),heading:'結果をシェア',lead:'相手がリンクを開くと、カード画像・意味・あなたの結論（決めた内容）が表示されます。題名とメモは共有されません。',text:`結論：${DECIDE_DECISION.choiceText(log.decision)}${cards ? `\nカード：${cards}` : ''}\n#DECIDE`,url:sharedResultUrl(log,type),cards:shareCards(cardNodes),postText:sharePostText(log,cardNodes)};
   }
   if (type === 'story' && log) {
-    const story=(log.story || '').slice(0,420);
-    const cardNodes=(log.nodes || []).slice(0,2);
-    return {title:`${log.title}のその後 — DECIDE`,logTitle:log.title,decision:DECIDE_DECISION.choiceText(log.decision),heading:'その後をシェア',lead:'相手がリンクを開くと、カード画像・結論・その後のストーリーが表示されます。',text:`「${log.title}」\n結論：${DECIDE_DECISION.choiceText(log.decision)}\nその後：${story}${log.story?.length > 420 ? '…' : ''}\n#DECIDE`,url:sharedResultUrl(log,type),cards:shareCards(cardNodes),postText:sharePostText(log,cardNodes)};
+    const cardNodes=(log.nodes || []).slice(0,2); const decision=DECIDE_DECISION.choiceText(log.decision);
+    const base={heading:'その後をシェア',decision,cards:shareCards(cardNodes),postText:sharePostText(log,cardNodes),logId:log.id,includeContent};
+    if(includeContent){
+      const story=(log.story || '').slice(0,420);
+      return {...base,title:`${log.title}のその後 — DECIDE`,logTitle:log.title,lead:'相手がリンクを開くと、カード画像・結論・その後のストーリーが表示されます。タイトルと本文が共有先に表示されます。',text:`「${log.title}」\n結論：${decision}\nその後：${story}${log.story?.length > 420 ? '…' : ''}\n#DECIDE`,url:sharedResultUrl(log,type,{includeContent:true})};
+    }
+    return {...base,title:'DECIDE — その後',logTitle:'決定の記録',lead:'相手がリンクを開くと、カード画像と結論（決めた内容）が表示されます。タイトルと本文は共有されません。含める場合は下のスイッチをONにしてください。',text:`結論：${decision}\n#DECIDE`,url:sharedResultUrl(log,type)};
   }
   return {title:'DECIDE — 心から納得いく決断を。',heading:'DECIDEを共有',lead:'友だちにも、心から納得できる決断の時間を。共有されるのはアプリのURLだけで、あなたの履歴は含まれません。',text:'DECIDE — 心から納得いく決断を。',url};
 }
@@ -1593,14 +1599,15 @@ function openShare(type='app', id=null) {
   const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='share-modal';
   wrap.innerHTML=`<button class="modal-shade" data-action="close-share" aria-label="共有画面を閉じる"></button><section class="settings-sheet share-sheet" role="dialog" aria-modal="true" aria-labelledby="share-title">
     <div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">Share</p><h2 id="share-title">${esc(heading)}</h2></div><button data-action="close-share" aria-label="閉じる">×</button></div>
-    <p class="share-lead">${esc(lead)}</p>
+    <p class="share-lead" data-share-lead>${esc(lead)}</p>
+    ${type === 'story' ? `<div class="feedback-setting share-content-setting"><div><b>タイトルと本文を含める</b><p>ONにすると、相談のタイトルとその後の本文が投稿文・リンク・画像に入ります。</p></div><button class="toggle-button" data-action="toggle-share-content" aria-pressed="false"><span></span><b>OFF</b></button></div>` : ''}
     ${type !== 'app' ? `<div class="share-card-preview"><div class="share-preview-images">${activeShareData.cards.map(card=>cardPicture(card,{className:card.orientation==='reversed'?'reversed-image':'',sizes:'82px'})).join('')}</div><div class="share-preview" data-share-preview></div></div>` : ''}
     ${type !== 'app' ? (window.DECIDE_SHARE_THEMES?.renderPicker?.()||'') : ''}
     <div class="share-primary">
       ${type !== 'app' ? `<button class="share-big instagram" data-action="share-instagram-story"><b>◎</b><span>Instagramストーリーズにシェア</span></button>
-      <a class="share-big x-post" href="https://x.com/intent/post?text=${encodeURIComponent(activeShareData.postText)}&url=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>𝕏</b><span>Xにポスト</span></a>` : ''}
-      <a class="share-big line" href="https://line.me/R/msg/text/?${encodeURIComponent(`${shareText}\n${url}`)}" target="_blank" rel="noopener"><b>LINE</b><span>LINEで送る</span></a>
-      <a class="share-big facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>f</b><span>Facebookでシェア</span></a>
+      <a class="share-big x-post" data-share-x href="https://x.com/intent/post?text=${encodeURIComponent(activeShareData.postText)}&url=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>𝕏</b><span>Xにポスト</span></a>` : ''}
+      <a class="share-big line" data-share-line href="https://line.me/R/msg/text/?${encodeURIComponent(`${shareText}\n${url}`)}" target="_blank" rel="noopener"><b>LINE</b><span>LINEで送る</span></a>
+      <a class="share-big facebook" data-share-facebook href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>f</b><span>Facebookでシェア</span></a>
     </div>
     <div class="share-grid share-grid-single">
       <button class="share-option" data-action="native-share"><b>↗</b><span>その他</span></button>
@@ -1611,7 +1618,7 @@ function openShare(type='app', id=null) {
   </section>`;
   const preview=wrap.querySelector('[data-share-preview]'); if(preview)preview.textContent=shareText;
   wrap.querySelector('[data-share-copy-label]').textContent=type==='app'?url:title;
-  if(type!=='app') activeShareData.storyBlobPromise=createStoryImageBlob(activeShareData,window.DECIDE_SHARE_THEMES?.current?.()).catch(()=>null);
+  if(type!=='app') rebuildShareStoryBlob();
   mountModal(wrap,'.sheet-head button');
 }
 function closeShare() { closeModal('#share-modal'); }
@@ -1626,8 +1633,32 @@ async function shareInstagramStory() {
   const link=document.createElement('a'); link.href=URL.createObjectURL(blob); link.download='decide-story.png'; link.click(); setTimeout(()=>URL.revokeObjectURL(link.href),1000);
   toast('画像を保存しました。Instagramのストーリーズで貼ってください');
 }
+function rebuildShareStoryBlob(){ if(activeShareData?.cards) activeShareData.storyBlobPromise=createStoryImageBlob(activeShareData,window.DECIDE_SHARE_THEMES?.current?.()).catch(()=>null); }
+function toggleShareContent(button){
+  const log=logs.find(item=>item.id===activeShareData?.logId); const wrap=document.getElementById('share-modal'); if(!log||!wrap)return;
+  activeShareData=shareData('story',log,{includeContent:!activeShareData.includeContent});
+  const {url,title,lead,text,postText,includeContent}=activeShareData;
+  button.classList.toggle('on',includeContent); button.setAttribute('aria-pressed',String(includeContent)); button.querySelector('b').textContent=includeContent?'ON':'OFF';
+  wrap.querySelector('[data-share-lead]').textContent=lead;
+  wrap.querySelector('[data-share-preview]').textContent=text;
+  wrap.querySelector('[data-share-copy-label]').textContent=title;
+  wrap.querySelector('[data-share-x]').href=`https://x.com/intent/post?text=${encodeURIComponent(postText)}&url=${encodeURIComponent(url)}`;
+  wrap.querySelector('[data-share-line]').href=`https://line.me/R/msg/text/?${encodeURIComponent(`${text}\n${url}`)}`;
+  wrap.querySelector('[data-share-facebook]').href=`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+  rebuildShareStoryBlob(); sensoryFeedback('tap');
+}
 async function shareNative() { const data=activeShareData || shareData(); if(navigator.share){ try{ const blob=data.cards?.length?await createShareImageBlob(data):null; const file=blob?new File([blob],'decide-result.png',{type:'image/png'}):null; const payload={title:data.title,text:data.text,url:data.url}; if(file&&navigator.canShare?.({files:[file]}))payload.files=[file]; await navigator.share(payload); }catch{} } else { await copyShareLink(); } }
 async function copyShareLink() { const data=activeShareData || shareData(); try{ await navigator.clipboard.writeText(`${data.text}\n${data.url}`); sensoryFeedback('tap'); toast(data.heading === 'DECIDEを共有' ? '共有リンクをコピーしました' : '共有する文章をコピーしました'); }catch{ toast('コピーできませんでした'); } }
+function showUpdateBar() {
+  if (document.querySelector('.update-bar')) return;
+  const bar = document.createElement('div');
+  bar.className = 'update-bar'; bar.setAttribute('role','status');
+  bar.innerHTML = '<p>新しいバージョンがあります。アプリを閉じて開き直すと反映されます。</p><button type="button">再読み込み</button><button type="button" class="update-bar-close" aria-label="閉じる">×</button>';
+  const [reload, close] = bar.querySelectorAll('button');
+  reload.addEventListener('click', () => location.reload());
+  close.addEventListener('click', () => bar.remove());
+  document.body.appendChild(bar);
+}
 function toast(message) { const t=document.querySelector('#toast'); t.textContent=message; t.classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>t.classList.remove('show'),1800); }
 function selectDeckMode(mode) {
   const preset=DECK_PRESETS.find(item=>item.mode===mode); if(!preset)return;
@@ -1731,6 +1762,7 @@ document.addEventListener('click', event => {
   else if (action === 'confirm-delete') deleteLog(el.dataset.id);
   else if (action === 'close-delete') closeDelete();
   else if (action === 'close-share') closeShare();
+  else if (action === 'toggle-share-content') toggleShareContent(el);
   else if (action === 'native-share') shareNative();
   else if (action === 'save-share-image') downloadShareImage();
   else if (action === 'share-instagram-story') shareInstagramStory();
@@ -1810,8 +1842,25 @@ function registerWebMcp() {
 
 registerWebMcp();
 if ('serviceWorker' in navigator) {
+  // 新しい SW が制御を引き継いだとき、既に制御下にあったページだけ1回再読み込みして新旧の混在を防ぐ
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloadedForUpdate = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController || reloadedForUpdate) return;
+    reloadedForUpdate = true;
+    location.reload();
+  });
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js').then(registration => registration.update()).catch(() => {});
+    navigator.serviceWorker.register('./service-worker.js').then(registration => {
+      // skipWaiting しないので、新版は全画面を閉じるまで待機する。待機中の新版があれば案内を出す
+      const notify = () => { if (registration.waiting && navigator.serviceWorker.controller) showUpdateBar(); };
+      notify();
+      registration.addEventListener('updatefound', () => {
+        const worker = registration.installing;
+        worker?.addEventListener('statechange', () => { if (worker.state === 'installed') notify(); });
+      });
+      return registration.update();
+    }).catch(() => {});
   }, {once:true});
 }
 window.DECIDE_APP_BRIDGE={getLogs:()=>logs,setLogs:v=>{logs=v},getSettings:()=>settings,persist,render,

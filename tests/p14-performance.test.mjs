@@ -35,3 +35,9 @@ test('worker caches shell and up to 100 card images without skipWaiting',()=>{
   assert.doesNotMatch(worker,/skipWaiting\(/);
   assert.doesNotMatch(worker,/localStorage/);
 });
+
+test('page reloads once when an updated worker takes control',()=>{
+  assert.match(app,/const hadController = !!navigator\.serviceWorker\.controller/);
+  assert.match(app,/addEventListener\('controllerchange'/);
+  assert.match(app,/if \(!hadController \|\| reloadedForUpdate\) return;/);
+});
