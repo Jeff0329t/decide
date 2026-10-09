@@ -3383,6 +3383,7 @@ button.stats-pending:focus-visible { transform: translate(-2px,-2px) rotate(.35d
 .confirm-sheet .eyebrow{display:inline-block;background:#f1d527;color:#0b0b0b;padding:2px 8px;transform:rotate(-1.5deg)}
 .confirm-sheet>p:not(.eyebrow),.confirm-sheet label{color:rgba(244,239,227,.78)}
 .confirm-sheet .sheet-handle{background:#f1d527;border-radius:0}
+.confirm-sheet .sheet-head{background:#0b0b0b;border-bottom-color:rgba(244,239,227,.2)}
 .confirm-sheet .sheet-head button{border-radius:0;background:transparent;color:#f4efe3;border:1.5px solid #f4efe3}
 .confirm-sheet .confirm-actions .button{border-radius:0;box-shadow:3px 3px 0 rgba(241,213,39,.9);font-family:"Hiragino Mincho ProN","Yu Mincho",serif}
 .confirm-sheet .confirm-actions .button:not(.secondary):not(.danger){background:#f1d527;color:#0b0b0b;border-color:#f1d527;box-shadow:3px 3px 0 #f4efe3}
