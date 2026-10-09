@@ -40,7 +40,7 @@ test('app index is indexable and links to cards', () => {
 
 test('service worker bypasses /cards/ and is bumped', () => {
   const sw = read('dist/service-worker.js');
-  assert.match(sw, /decide-shell-editorial-v80/);
+  assert.ok(Number((sw.match(/decide-shell-editorial-v(\d+)/) || [])[1]) >= 85, "shell cache must be bumped to >= v85");
   assert.match(sw, /url\.pathname\.includes\('\/cards\/'\)/);
 });
 

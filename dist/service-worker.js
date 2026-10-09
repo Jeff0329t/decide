@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'decide-shell-editorial-v80';
+const SHELL_CACHE = 'decide-shell-editorial-v89';
 const IMAGE_CACHE = 'decide-card-images-p14-v1';
 const IMAGE_LIMIT = 100;
 const CARD_SHELL_FILES = [
@@ -25,6 +25,11 @@ let imageCacheWrite = Promise.resolve();
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(SHELL_CACHE).then(cache => cache.addAll(SHELL_FILES.map(path => new Request(path, {cache: 'reload'})))));
+});
+
+// 案内バーの「更新する」から届く。待機をやめて新版に切り替える
+self.addEventListener('message', event => {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {

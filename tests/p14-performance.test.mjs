@@ -32,7 +32,9 @@ test('worker caches shell and up to 100 card images without skipWaiting',()=>{
   assert.match(worker,/request\.mode === 'navigate'/);
   assert.match(worker,/caches\.match\(new URL\('\.\/', SCOPE\)\.href\)/);
   assert.match(worker,/cacheCardImage\(request, event\)/);
-  assert.doesNotMatch(worker,/skipWaiting\(/);
+  // 自動では切り替えない。skipWaiting は案内バーの「更新する」から届くメッセージでだけ呼ぶ
+  assert.equal(worker.match(/skipWaiting\(/g)?.length,1);
+  assert.match(worker,/event\.data\?\.type === 'SKIP_WAITING'\) self\.skipWaiting\(\)/);
   assert.doesNotMatch(worker,/localStorage/);
 });
 

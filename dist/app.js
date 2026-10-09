@@ -1649,13 +1649,19 @@ function toggleShareContent(button){
 }
 async function shareNative() { const data=activeShareData || shareData(); if(navigator.share){ try{ const blob=data.cards?.length?await createShareImageBlob(data):null; const file=blob?new File([blob],'decide-result.png',{type:'image/png'}):null; const payload={title:data.title,text:data.text,url:data.url}; if(file&&navigator.canShare?.({files:[file]}))payload.files=[file]; await navigator.share(payload); }catch{} } else { await copyShareLink(); } }
 async function copyShareLink() { const data=activeShareData || shareData(); try{ await navigator.clipboard.writeText(`${data.text}\n${data.url}`); sensoryFeedback('tap'); toast(data.heading === 'DECIDEを共有' ? '共有リンクをコピーしました' : '共有する文章をコピーしました'); }catch{ toast('コピーできませんでした'); } }
-function showUpdateBar() {
+function showUpdateBar(registration) {
   if (document.querySelector('.update-bar')) return;
   const bar = document.createElement('div');
   bar.className = 'update-bar'; bar.setAttribute('role','status');
-  bar.innerHTML = '<p>新しいバージョンがあります。アプリを閉じて開き直すと反映されます。</p><button type="button">再読み込み</button><button type="button" class="update-bar-close" aria-label="閉じる">×</button>';
+  bar.innerHTML = '<p>新しいバージョンがあります。</p><button type="button">更新する</button><button type="button" class="update-bar-close" aria-label="閉じる">×</button>';
   const [reload, close] = bar.querySelectorAll('button');
-  reload.addEventListener('click', () => location.reload());
+  reload.addEventListener('click', () => {
+    // 待機中の新版に切り替えを指示すると controllerchange で1回だけ再読み込みされる。届かなかったときの保険も付ける
+    const waiting = registration?.waiting;
+    if (!waiting) { location.reload(); return; }
+    waiting.postMessage({type:'SKIP_WAITING'});
+    setTimeout(() => location.reload(), 3000);
+  });
   close.addEventListener('click', () => bar.remove());
   document.body.appendChild(bar);
 }
@@ -1851,15 +1857,20 @@ if ('serviceWorker' in navigator) {
     location.reload();
   });
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js').then(registration => {
-      // skipWaiting しないので、新版は全画面を閉じるまで待機する。待機中の新版があれば案内を出す
-      const notify = () => { if (registration.waiting && navigator.serviceWorker.controller) showUpdateBar(); };
+    // updateViaCache:'none' で GitHub Pages の HTTP キャッシュ（max-age=600）に関係なく sw.js を確認する
+    navigator.serviceWorker.register('./service-worker.js', {updateViaCache:'none'}).then(registration => {
+      // 新版は自動では切り替えず待機させ、案内バーの「更新する」で切り替える
+      const notify = () => { if (registration.waiting && navigator.serviceWorker.controller) showUpdateBar(registration); };
       notify();
       registration.addEventListener('updatefound', () => {
         const worker = registration.installing;
         worker?.addEventListener('statechange', () => { if (worker.state === 'installed') notify(); });
       });
-      return registration.update();
+      // iOS のホーム画面アプリは終了されにくいので、前面に戻ったときと1時間ごとにも新版を確認する
+      const check = () => registration.update().catch(() => {});
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); });
+      setInterval(check, 60 * 60 * 1000);
+      return check();
     }).catch(() => {});
   }, {once:true});
 }
