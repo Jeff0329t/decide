@@ -31,7 +31,7 @@ function load({ href = 'https://x.test/', auth } = {}) {
   return { referral: window.DECIDE_REFERRAL, localStorage, replaced };
 }
 
-const { normalizeCode, inviteUrl, sectionHtml, takeRefFromUrl } = load().referral._pure;
+const { normalizeCode, inviteUrl, sectionHtml, countHtml, takeRefFromUrl } = load().referral._pure;
 const plain = v => JSON.parse(JSON.stringify(v));
 
 test('normalizeCode: 大文字にそろえ、形がちがうものは空にする', () => {
@@ -54,6 +54,16 @@ test('sectionHtml: コードがあればボタン、なければ準備中', () =
   assert.match(html, /data-referral-action="copy"/);
   assert.match(sectionHtml('', ''), /準備しています/);
   assert.doesNotMatch(sectionHtml('', ''), /data-referral-action/);
+});
+
+test('countHtml: 招待人数と残り枠（5人まで）', () => {
+  assert.equal(countHtml(null), '');
+  assert.match(countHtml(0), /招待した人 <b>0人<\/b>.*あと <b>5人<\/b>/);
+  assert.match(countHtml(3), /招待した人 <b>3人<\/b>.*あと <b>2人<\/b>/);
+  assert.match(countHtml(5), /上限（5人）に達しました/);
+  assert.match(countHtml(7), /招待した人 <b>7人<\/b>.*上限/);
+  assert.match(sectionHtml('ABCD2345', 'u', 2), /referral-count/);
+  assert.doesNotMatch(sectionHtml('ABCD2345', 'u'), /referral-count/);
 });
 
 test('takeRefFromUrl: ref を取り出し、ほかのパラメータは残す', () => {

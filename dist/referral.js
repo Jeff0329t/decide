@@ -5,6 +5,7 @@
 (function(){
   const STORE_KEY = 'decide.tarot.referral.v1';
   const CODE_RE = /^[A-Z0-9]{4,16}$/;
+  const REWARD_CAP = 5; // 招待した側に特典がつく人数（claim_referral（SQL）の referrer_cap と同じ）
 
   const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
   const notify = message => { if(typeof toast === 'function') toast(message); };
@@ -20,11 +21,21 @@
     const c = normalizeCode(code);
     return c ? `${origin}${pathname}?ref=${c}` : '';
   }
-  function sectionHtml(code, url) {
+  // 招待した人数の表示（count が数値でなければ出さない）
+  function countHtml(count) {
+    if(!Number.isInteger(count) || count < 0) return '';
+    const left = Math.max(0, REWARD_CAP - count);
+    const note = left > 0
+      ? `特典はあと <b>${left}人</b> までもらえます`
+      : `特典の上限（${REWARD_CAP}人）に達しました。招待はこれからもできます`;
+    return `<p class="referral-count">招待した人 <b>${count}人</b> ／ ${note}</p>`;
+  }
+  function sectionHtml(code, url, count) {
     const c = normalizeCode(code);
     const body = c
-      ? `<p>このリンクから始めた人がログインすると、招待した人・された人どちらにもUNLIMITEDを3日間プレゼントします。</p>
+      ? `<p>このリンクから始めた人がログインすると、招待した人・された人どちらにもUNLIMITEDを3日間プレゼントします（招待した人への特典は${REWARD_CAP}人まで）。</p>
         <p class="referral-code">招待コード <b>${escapeHtml(c)}</b></p>
+        ${countHtml(count)}
         <div class="data-actions">
           <button class="button" type="button" data-referral-action="share" data-referral-url="${escapeHtml(url)}">招待リンクを送る</button>
           <button class="button secondary" type="button" data-referral-action="copy" data-referral-url="${escapeHtml(url)}">リンクをコピー</button>
@@ -68,6 +79,9 @@
   let loading = null;
   let failedAt = 0; // 取得に失敗した時刻（すぐに再試行して通信がくり返されないように）
   let claiming = false;
+  let invitedCount = null; // 招待した人数（未取得なら null）
+  let countAt = 0;         // 人数を取りにいった時刻（設定を開くたびに通信しすぎないように）
+  let countLoading = false;
 
   async function claimIfNeeded(user) {
     const code = pendingCode();
@@ -106,6 +120,21 @@
     return loading;
   }
 
+  // 招待した人数（referrals は RLS で自分が招待した行だけ見える）
+  function fetchInvitedCount() {
+    const client = auth()?.client?.();
+    const uid = auth()?.getUser?.()?.id;
+    if(!client?.from || !uid || countLoading) return;
+    if(countAt && Date.now() - countAt < 30000) return;
+    countLoading = true;
+    countAt = Date.now();
+    Promise.resolve()
+      .then(() => client.from('referrals').select('referred_id', { count: 'exact', head: true }).eq('referrer_id', uid))
+      .then(({ count, error }) => { if(!error && Number.isInteger(count)) invitedCount = count; })
+      .catch(() => {})
+      .finally(() => { countLoading = false; refreshSection(); });
+  }
+
   function currentUrl() {
     if(!hasLocation() || !myCode) return '';
     return inviteUrl(location.origin, location.pathname, myCode);
@@ -115,7 +144,8 @@
   function renderSettings() {
     if(!auth()?.getUser?.() || !auth()?.client?.()) return '';
     if(!myCode) fetchMyCode();
-    return sectionHtml(myCode, currentUrl());
+    else fetchInvitedCount();
+    return sectionHtml(myCode, currentUrl(), invitedCount);
   }
 
   function refreshSection() {
@@ -162,7 +192,7 @@
 
   captureFromUrl();
   auth()?.onChange?.(user => {
-    if(!user) { myCode = ''; failedAt = 0; return; }
+    if(!user) { myCode = ''; failedAt = 0; invitedCount = null; countAt = 0; return; }
     claimIfNeeded(user);
   });
   auth()?.ready?.()?.then?.(user => { if(user) claimIfNeeded(user); });
@@ -170,6 +200,6 @@
   window.DECIDE_REFERRAL = Object.freeze({
     renderSettings,
     pendingCode,
-    _pure: { normalizeCode, inviteUrl, sectionHtml, takeRefFromUrl }
+    _pure: { normalizeCode, inviteUrl, sectionHtml, countHtml, takeRefFromUrl }
   });
 })();
