@@ -177,12 +177,12 @@
       ? `<div><b id="account-setting-title">アカウント</b>
         <p class="account-email">${escapeHtml(user.email)} でログイン中</p>
         <p class="account-plan">プラン：${planLabel(user)}</p></div>
-        ${window.DECIDE_SYNC?.renderToggle?.() || ''}
-        ${window.DECIDE_REFERRAL?.renderSettings?.() || ''}
         <div class="data-actions">
           <button class="button secondary" type="button" data-auth-action="logout">ログアウト</button>
           <button class="button secondary danger" type="button" data-auth-action="delete-confirm">アカウント削除</button>
-        </div>`
+        </div>
+        ${window.DECIDE_SYNC?.renderToggle?.() || ''}
+        ${window.DECIDE_REFERRAL?.renderSettings?.() || ''}`
       : `<div><b id="account-setting-title">アカウント</b>
         <p>Googleでログインすると、UNLIMITED EDITION（購入済みの状態）を別の端末でも使えます。決定ログの本文は、UNLIMITED EDITIONで同期をONにしない限り送信されず、この端末に残ります。</p></div>
         <div class="data-actions">
