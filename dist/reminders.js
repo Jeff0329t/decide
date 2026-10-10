@@ -112,18 +112,21 @@
     return writeItems(items).catch(() => {});
   }
 
-  function registerPeriodic() {
+  // ready は Service Worker の登録が無いと永遠に待つので、時間切れで必ず抜ける
+  function swReady() {
     const sw = swContainer();
-    if(!sw?.ready) return Promise.resolve();
-    return sw.ready
+    if(!sw?.ready) return Promise.resolve(null);
+    return Promise.race([sw.ready, new Promise(resolve => setTimeout(() => resolve(null), 8000))]).catch(() => null);
+  }
+
+  function registerPeriodic() {
+    return swReady()
       .then(reg => reg?.periodicSync?.register?.(SYNC_TAG, { minInterval: MIN_INTERVAL_MS }))
       .catch(() => {});
   }
 
   function unregisterPeriodic() {
-    const sw = swContainer();
-    if(!sw?.ready) return Promise.resolve();
-    return sw.ready
+    return swReady()
       .then(reg => reg?.periodicSync?.unregister?.(SYNC_TAG))
       .catch(() => {});
   }
@@ -152,30 +155,47 @@
     if(wrap) { mountSettings(wrap); window.DECIDE_PUSH?.mountSettings?.(wrap); }
   }
 
+  const isIOSDevice = () => {
+    const n = typeof navigator !== 'undefined' ? navigator : null;
+    return !!n && (/iPad|iPhone|iPod/.test(n.userAgent || '') || (n.platform === 'MacIntel' && n.maxTouchPoints > 1));
+  };
+  function deniedMessage() {
+    return isIOSDevice()
+      ? '通知がブロックされています。iPhoneの「設定」→「通知」→「DECIDE.」で許可してからもう一度ONにしてください'
+      : '通知がブロックされています。ブラウザのサイト設定で通知を許可してからもう一度ONにしてください';
+  }
+
+  // 切り替えは画面とトーストをすぐに反映し、端末内の予定の書き込みは後ろで進める
+  let busy = false;
   async function toggle() {
+    if(busy) { notify('切り替え中です。少し待ってください'); return; }
     if(state.enabled) {
       state.enabled = false;
       saveState();
       refreshSettings();
-      await syncToDb();
-      await unregisterPeriodic();
       notify('ふり返りの通知をOFFにしました');
+      syncToDb();
+      unregisterPeriodic();
       return;
     }
     if(!hasNotification()) { notify('この端末では通知を使えません'); return; }
+    if(Notification.permission === 'denied') { notify(deniedMessage()); return; }
+    busy = true;
     let permission = Notification.permission;
     try {
       if(permission !== 'granted') permission = await Notification.requestPermission();
     } catch(error) {
       permission = 'denied';
+    } finally {
+      busy = false;
     }
-    if(permission !== 'granted') { notify('通知が許可されませんでした'); return; }
+    if(permission !== 'granted') { notify(permission === 'denied' ? deniedMessage() : '通知が許可されませんでした'); return; }
     state.enabled = true;
     saveState();
     refreshSettings();
-    await syncToDb();
-    await registerPeriodic();
     notify('ふり返りの通知をONにしました');
+    syncToDb();
+    registerPeriodic();
   }
 
   if(typeof document !== 'undefined') {

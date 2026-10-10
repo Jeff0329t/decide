@@ -50,5 +50,5 @@ test('dark mode and reduced-motion rules remain present',()=>{
 test('touched sheet user text is assigned via textContent',()=>{
   assert.match(app,/querySelector\('\[data-delete-title\]'\)\.textContent=log\.title/);
   assert.match(app,/if\(preview\)preview\.textContent=shareText/);
-  assert.match(app,/querySelector\('\[data-share-copy-label\]'\)\.textContent=/);
+  assert.doesNotMatch(app,/data-action="copy-link"|data-share-copy-label/);
 });

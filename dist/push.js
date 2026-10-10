@@ -114,8 +114,27 @@
     return syncing;
   }
 
+  // Service Worker の登録を待つ。ready は登録が無いと永遠に待つので、取得→時間切れ→登録し直しの順で必ず返す
+  async function swRegistration() {
+    const sw = nav()?.serviceWorker;
+    if(!sw) throw new Error('sw-unavailable');
+    try {
+      const reg = await sw.getRegistration?.();
+      if(reg?.active) return reg;
+    } catch(error) {}
+    const timeout = new Promise(resolve => setTimeout(() => resolve(null), 8000));
+    const ready = await Promise.race([sw.ready, timeout]).catch(() => null);
+    if(ready) return ready;
+    try {
+      await sw.register('./service-worker.js', { updateViaCache: 'none' });
+      const again = await Promise.race([sw.ready, new Promise(resolve => setTimeout(() => resolve(null), 8000))]).catch(() => null);
+      if(again) return again;
+    } catch(error) {}
+    throw new Error('sw-unavailable');
+  }
+
   async function subscribe() {
-    const reg = await nav().serviceWorker.ready;
+    const reg = await swRegistration();
     const existing = await reg.pushManager.getSubscription();
     const sub = existing || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(vapidKey()) });
     const json = sub.toJSON ? sub.toJSON() : {};
@@ -127,7 +146,7 @@
 
   async function unsubscribe() {
     try {
-      const reg = await nav().serviceWorker.ready;
+      const reg = await swRegistration();
       const sub = await reg.pushManager.getSubscription();
       if(!sub) return;
       const endpoint = sub.endpoint;
@@ -140,39 +159,65 @@
   }
 
   let busy = false;
+  function setBusy(on) {
+    if(typeof document === 'undefined') return;
+    document.querySelectorAll('[data-push-action="toggle"]').forEach(button => {
+      button.classList.toggle('is-busy', on);
+      button.setAttribute('aria-busy', String(on));
+      const label = button.querySelector('b');
+      if(label) label.textContent = on ? '…' : (isOn() ? 'ON' : 'OFF');
+    });
+  }
+  function deniedMessage() {
+    return isIOSDevice()
+      ? '通知がブロックされています。iPhoneの「設定」→「通知」→「DECIDE.」で許可してからもう一度ONにしてください'
+      : '通知がブロックされています。ブラウザのサイト設定で通知を許可してからもう一度ONにしてください';
+  }
   async function toggle() {
-    if(busy || mode() !== 'ready') return;
+    if(busy) { notify('切り替え中です。少し待ってください'); return; }
+    const m = mode();
+    if(m !== 'ready') {
+      if(!loggedIn()) notify('アプリを閉じていても通知を受け取るには、ログインが必要です');
+      else if(m === 'ios-home') notify('Safariの共有ボタン→「ホーム画面に追加」してから開いてください');
+      else notify('この端末ではプッシュ通知を使えません');
+      return;
+    }
     busy = true;
+    setBusy(true);
     try {
       if(state.enabled) {
+        // OFF は端末側の状態をすぐに切り替え、サーバー側の後片付けは待つだけ
         state.enabled = false;
         saveState();
-        refreshSection();
         await unsubscribe();
         notify('プッシュ通知をOFFにしました');
         return;
       }
+      if(Notification.permission === 'denied') { notify(deniedMessage()); return; }
       let permission = Notification.permission;
       try {
         if(permission !== 'granted') permission = await Notification.requestPermission();
       } catch(error) {
         permission = 'denied';
       }
-      if(permission !== 'granted') { notify('通知が許可されませんでした'); return; }
+      if(permission !== 'granted') { notify(permission === 'denied' ? deniedMessage() : '通知が許可されませんでした'); return; }
       try {
         await subscribe();
       } catch(error) {
-        notify('通知の登録ができませんでした。時間をおいて試してください');
+        notify(error?.message === 'sw-unavailable'
+          ? '通知の準備ができていません。アプリを一度閉じて開き直してから試してください'
+          : '通知の登録ができませんでした。通信状態を確かめて、時間をおいて試してください');
         return;
       }
       state.enabled = true;
       saveState();
-      refreshSection();
       lastSent = '';
       await syncReminders(true);
       notify('プッシュ通知をONにしました');
     } finally {
       busy = false;
+      setBusy(false);
+      refreshSection();
     }
   }
 

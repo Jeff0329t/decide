@@ -33,7 +33,7 @@ test('invalid deck modes fall back to a known preset',()=>{
 
 test('share and image failures are handled',()=>{
   assert.match(app,/if\(type!=='app' && !log\)\{toast\('記録が見つかりません'\);return;\}/);
-  assert.match(app,/async function downloadShareImage\(\)\{[^\n]*try \{[^\n]*catch \{ toast\('画像を保存できませんでした'\)/);
+  assert.doesNotMatch(app,/save-share-image|native-share|downloadShareImage/);
 });
 
 test('missing related lessons are skipped',()=>{

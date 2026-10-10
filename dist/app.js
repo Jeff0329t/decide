@@ -90,6 +90,7 @@ let pendingSave = null;
 let storageSaveFailed = false;
 let a2hsBannerLogId = null;
 let a2hsShownLogId = null;
+let deferredInstallPrompt = null;
 let cardContentById = new Map();
 let cardThemeLabels = {
   blind:'見落としていること', caution:'進むときの注意点', want:'本音（本当はどうしたい？）',
@@ -122,7 +123,8 @@ function persist() {
 function isStandalone() { return navigator.standalone===true || matchMedia('(display-mode: standalone)').matches; }
 function isIOS() { return /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1); }
 function inAppBrowser() { return /Line\/|FBAN|FBAV|Instagram|Twitter/i.test(navigator.userAgent); }
-function shouldShowA2HS() { return isIOS() && !isStandalone() && Number(settings.a2hsDismissedUntil || 0)<=Date.now(); }
+function canInstallPrompt() { return !isIOS() && !!deferredInstallPrompt; }
+function shouldShowA2HS() { return (isIOS() || canInstallPrompt()) && !isStandalone() && Number(settings.a2hsDismissedUntil || 0)<=Date.now(); }
 function shouldShowBackupReminder() {
   if(logs.length<3 || Number(settings.backupReminderDismissedUntil || 0)>Date.now())return false;
   const last=Date.parse(settings.lastBackupAt || '');
@@ -1097,6 +1099,21 @@ function openA2HSHelp() {
 function dismissA2HS() {
   settings.a2hsDismissedUntil=Date.now()+7*DAY_MS; a2hsBannerLogId=null; persist(); storageEvent('a2hsDismiss'); document.querySelector('[data-a2hs-banner]')?.remove();
 }
+// Android/Chrome などはブラウザが出す「インストール」確認をワンタップで呼び出せる（iPhone は Apple の制限で手順案内のみ）
+async function installApp() {
+  const promptEvent=deferredInstallPrompt;
+  if(!promptEvent) { toast('ブラウザのメニューから「ホーム画面に追加」を選んでください'); return; }
+  deferredInstallPrompt=null;
+  storageEvent('a2hsInstall');
+  try {
+    promptEvent.prompt();
+    const choice=await promptEvent.userChoice;
+    if(choice?.outcome==='accepted') { a2hsBannerLogId=null; document.querySelector('[data-a2hs-banner]')?.remove(); toast('ホーム画面に追加しました'); }
+  } catch(error) {}
+  document.querySelectorAll('[data-a2hs-settings]').forEach(el=>{ if(!deferredInstallPrompt) el.remove(); });
+}
+window.addEventListener('beforeinstallprompt', event => { event.preventDefault(); deferredInstallPrompt=event; });
+window.addEventListener('appinstalled', () => { deferredInstallPrompt=null; a2hsBannerLogId=null; document.querySelectorAll('[data-a2hs-banner],[data-a2hs-settings]').forEach(el=>el.remove()); });
 
 function renderHistory() {
   const results=filteredLogs();
@@ -1128,7 +1145,7 @@ function historyItem(log,{deletable=true}={}) {
   return `<div class="${deletable?'history-swipe':'history-static'}"${deletable?` data-swipe-id="${esc(log.id)}"`:''}>${deletable?`<button class="swipe-delete" data-action="delete-log" data-id="${esc(log.id)}" aria-hidden="true" tabindex="-1">削除</button>`:''}<div class="history-row"><button class="history-item" data-action="detail" data-id="${esc(log.id)}">
     <span class="history-thumbs">${cards.map((node,index)=>cardPicture(node.card,{className:node.card.orientation === 'reversed' ? 'reversed-image' : '',alt:'',sizes:'46px',attributes:`style="--stack:${index}"`})).join('')}</span>
     <span class="history-copy"><time>${formatDate(log.createdAt)}</time><strong>${esc(log.title)}</strong>${log.genre?`<small class="history-genre">${esc(log.genre)}</small>`:''}<span>${esc(DECIDE_DECISION.decisionText(log))}</span>${first ? `<small>${esc(first.name)} · ${orientationLabel(first)} — ${esc(meaning(first))}</small>` : ''}</span>
-    ${log.review ? `<em>${reviewIcon(log.review)} ${esc(log.review)}</em>` : '<em class="pending">評価待ち</em>'}<i class="history-arrow" aria-hidden="true">→</i>
+    ${log.review ? `<em class="status-badge status-${reviewKey(log.review)}"><span aria-hidden="true">${reviewIcon(log.review)}</span>${esc(log.review)}</em>` : '<em class="pending status-badge status-pending"><span aria-hidden="true">…</span>評価待ち</em>'}<i class="history-arrow" aria-hidden="true">→</i>
   </button>${deletable?`<button class="history-delete-action" data-action="delete-log" data-id="${esc(log.id)}" aria-label="「${esc(log.title)}」を削除">削除</button>`:''}</div></div>`;
 }
 
@@ -1167,7 +1184,8 @@ function renderCalendar(viewLogs=logs) {
   </div>`;
 }
 
-function reviewIcon(review) { return ({'良かった':'◎','まあ良かった':'○','どちらとも言えない':'△','違った':'×'})[review] || ''; }
+function reviewIcon(review) { return ({'良かった':'◎','まあ良かった':'〇','どちらとも言えない':'△','違った':'×'})[review] || ''; }
+function reviewKey(review) { return ({'良かった':'good','まあ良かった':'fair','どちらとも言えない':'neutral','違った':'bad'})[review] || 'pending'; }
 function renderSavedCard(log,node,index) {
   const reading=nodeReading(node,log.mode,index);
   return `<article class="saved-card">
@@ -1246,10 +1264,11 @@ function renderDetail() {
   }
   document.body.dataset.detailMode='review';
   const showA2HS=log.id===a2hsBannerLogId && shouldShowA2HS();
-  const appBrowser=showA2HS && inAppBrowser();
+  const installable=showA2HS && canInstallPrompt();
+  const appBrowser=showA2HS && !installable && inAppBrowser();
   app.innerHTML = `<section class="screen detail-screen">
     <button class="text-back" data-action="${detailReturn==='stats'?'stats':'history'}" aria-label="${detailReturn==='stats'?'統計へ戻る':'履歴へ戻る'}">← 戻る</button>
-    ${showA2HS ? `<aside class="storage-banner a2hs-banner" data-a2hs-banner><button class="banner-close" data-action="dismiss-a2hs" aria-label="案内を閉じる">×</button><p>${appBrowser ? 'この画面では、ホーム画面に追加できません。メニューから『ブラウザで開く』（Safariで開く）を選んでから、追加してください。' : '記録を消さないために、ホーム画面に追加しておきませんか？　Safariでは、しばらく開かないと記録が消えることがあります。'}</p><div class="banner-actions">${appBrowser ? '' : '<button class="button secondary" data-action="a2hs-help">追加のしかた</button>'}<button class="button ghost" data-action="dismiss-a2hs">あとで</button></div></aside>` : ''}
+    ${showA2HS ? `<aside class="storage-banner a2hs-banner" data-a2hs-banner><button class="banner-close" data-action="dismiss-a2hs" aria-label="案内を閉じる">×</button><p>${installable ? 'ホーム画面に追加すると、アプリのようにすぐ開けて、記録も消えにくくなります。' : appBrowser ? 'この画面では、ホーム画面に追加できません。メニューから『ブラウザで開く』（Safariで開く）を選んでから、追加してください。' : '記録を消さないために、ホーム画面に追加しておきませんか？　Safariでは、しばらく開かないと記録が消えることがあります。'}</p><div class="banner-actions">${installable ? '<button class="button" data-action="a2hs-install">ホーム画面に追加</button>' : appBrowser ? '' : '<button class="button secondary" data-action="a2hs-help">追加のしかた</button>'}<button class="button ghost" data-action="dismiss-a2hs">あとで</button></div></aside>` : ''}
     ${renderDetailDate(log.createdAt)}<p class="eyebrow">${formatDate(log.createdAt, true)}</p>
     <h1 data-detail-title></h1><div class="outcome"><span class="decided-stamp" aria-hidden="true">DECIDED</span><span>今回の結論</span><strong>${esc(DECIDE_DECISION.decisionText(log))}</strong><button data-action="share-log" data-id="${esc(log.id)}">この結果をシェア ↗</button></div>
     <div class="saved-cards"><p class="panel-title">引いたカードと意味</p>${log.nodes.map((node,index) => renderSavedCard(log,node,index)).join('')}</div>
@@ -1262,7 +1281,7 @@ function renderDetail() {
       <div class="review-grid">${['良かった','まあ良かった','どちらとも言えない','違った'].map(r => `<button class="review-button ${log.review === r ? 'selected' : ''}" data-action="review" data-value="${r}"><b>${reviewIcon(r)}</b><span>${r}</span></button>`).join('')}</div>
       ${log.review ? `<p class="review-saved">${formatDate(log.reviewedAt || new Date().toISOString())} に振り返りました</p><button class="button satisfied-button" data-action="satisfied"><small>DONE</small>納得できた！</button>` : `<p class="review-hint">すぐに決めなくても大丈夫です。時間が経ってから戻ってきてください。</p>${renderRemindPicker(log)}`}
     </section>
-    <div class="danger-zone"><button data-action="delete-log" data-id="${esc(log.id)}">この履歴を削除</button></div>
+    <div class="danger-zone"><button class="danger-button" data-action="delete-log" data-id="${esc(log.id)}"><span class="danger-icon" aria-hidden="true">🗑</span>この履歴を削除</button></div>
   </section>`;
   app.querySelector('[data-detail-title]').textContent=log.title;
   const memo=app.querySelector('[data-detail-memo]'); if(memo)memo.textContent=log.memo;
@@ -1536,6 +1555,7 @@ async function createStoryImageBlob(data, theme) {
   const YELLOW=P.yellow||'#f1d527', INK=P.ink||'#0b0b0b', CREAM=P.cream||'#f4efe3', SERIF='Didot,"Bodoni 72","Bodoni MT",serif', MINCHO='"Hiragino Mincho ProN","Yu Mincho",serif';
   ctx.fillStyle=INK; ctx.fillRect(0,0,W,H);
   ctx.strokeStyle=P.line||'rgba(244,239,227,.08)'; ctx.lineWidth=1; for(let y=0;y<H;y+=6){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  if(data.kind==='story') return await drawStoryShareCanvas(canvas,ctx,data,{YELLOW,INK,CREAM,SERIF,MINCHO,SOFT:P.soft||'rgba(244,239,227,.6)'});
   ctx.save(); ctx.translate(540,330); ctx.rotate(-.025); ctx.fillStyle=YELLOW; ctx.fillRect(-560,-62,1120,124); ctx.restore();
   ctx.fillStyle=INK; ctx.textBaseline='middle'; ctx.textAlign='center'; ctx.font=`italic 700 100px ${SERIF}`; ctx.fillText('DECIDE.',540,334);
   ctx.textBaseline='alphabetic'; ctx.fillStyle=YELLOW; ctx.font=`700 28px ${SERIF}`; ctx.fillText('— MY DECISION —',540,500);
@@ -1557,9 +1577,43 @@ async function createStoryImageBlob(data, theme) {
   ctx.fillStyle=P.soft||'rgba(244,239,227,.6)'; ctx.font=`500 24px ${MINCHO}`; ctx.fillText('タロットで、迷いに答えを出す',540,1704);
   return await new Promise(resolve=>canvas.toBlob(resolve,'image/png',.94));
 }
+async function drawStoryShareCanvas(canvas,ctx,data,{YELLOW,INK,CREAM,SERIF,MINCHO,SOFT}){
+  ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+  ctx.save(); ctx.translate(540,300); ctx.rotate(.03); ctx.fillStyle=YELLOW; ctx.fillRect(-620,-80,1240,150);
+  ctx.fillStyle=INK; ctx.font=`italic 700 90px ${SERIF}`; ctx.fillText('AFTER STORY',0,30); ctx.restore();
+  ctx.textAlign='left'; ctx.fillStyle=YELLOW; ctx.font=`700 30px ${MINCHO}`; ctx.fillText('BEFORE — 決めたこと',90,470);
+  const cards=(data.cards||[]).slice(0,2); const cw=150, ch=255;
+  for(const [index,card] of cards.entries()){
+    const x=90+index*(cw+34), top=510, tilt=index?.04:-.04;
+    ctx.save(); ctx.translate(x+cw/2,top+ch/2); ctx.rotate(tilt);
+    ctx.fillStyle=YELLOW; ctx.fillRect(-cw/2+12,-ch/2+12,cw,ch);
+    ctx.fillStyle=CREAM; ctx.fillRect(-cw/2-6,-ch/2-6,cw+12,ch+12);
+    try{ const image=await loadShareImage(card.image); if(card.orientation==='reversed')ctx.rotate(Math.PI); ctx.drawImage(image,-cw/2,-ch/2,cw,ch); }catch{}
+    ctx.restore();
+  }
+  const textX=cards.length?90+cards.length*(cw+34)+20:90; ctx.fillStyle=CREAM; ctx.font=`600 46px ${MINCHO}`;
+  wrapCanvasText(ctx,data.decision||'',textX,580,990-textX,62,4);
+  ctx.strokeStyle=SOFT; ctx.lineWidth=2; ctx.setLineDash([10,12]); ctx.beginPath(); ctx.moveTo(90,830); ctx.lineTo(990,830); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle=YELLOW; ctx.font=`700 30px ${MINCHO}`; ctx.fillText('AFTER — その後',90,910);
+  const bad=data.reviewKey==='bad'; ctx.fillStyle=bad?'#c8321e':YELLOW; ctx.beginPath(); ctx.arc(200,1060,100,0,Math.PI*2); ctx.fill();
+  ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillStyle=bad?'#fff':INK; ctx.font=`700 110px ${MINCHO}`; ctx.fillText(data.reviewIcon||'…',200,1066);
+  ctx.textAlign='left'; ctx.textBaseline='alphabetic'; ctx.fillStyle=CREAM; ctx.font=`700 56px ${MINCHO}`; ctx.fillText(data.review||'評価待ち',350,1060);
+  if(data.reviewedAt){ ctx.fillStyle=SOFT; ctx.font=`500 28px ${MINCHO}`; ctx.fillText(`${formatDate(data.reviewedAt)} にふり返り`,352,1112); }
+  ctx.fillStyle=YELLOW; ctx.fillRect(106,1236,900,360); ctx.fillStyle=CREAM; ctx.fillRect(90,1220,900,360);
+  ctx.fillStyle=INK; ctx.font=`700 120px ${SERIF}`; ctx.fillText('“',120,1330);
+  ctx.font=`500 38px ${MINCHO}`; wrapCanvasText(ctx,data.storyText||'その後の物語を記録しました',140,1360,800,56,4);
+  ctx.textAlign='center'; ctx.fillStyle=YELLOW; ctx.font=`700 34px ${SERIF}`; ctx.fillText('decisionprocess.net',540,1700);
+  ctx.fillStyle=SOFT; ctx.font=`500 24px ${MINCHO}`; ctx.fillText('タロットで、迷いに答えを出す',540,1744);
+  return await new Promise(resolve=>canvas.toBlob(resolve,'image/png',.94));
+}
+function storySharePreviewHtml(data){
+  return `<div class="story-share-before"><span class="story-share-label">BEFORE — 決めたこと</span><div class="story-share-row"><div class="share-preview-images">${(data.cards||[]).map(card=>cardPicture(card,{className:card.orientation==='reversed'?'reversed-image':'',sizes:'54px'})).join('')}</div><p class="story-share-decision">${esc(data.decision||'')}</p></div></div>
+  <div class="story-share-after"><span class="story-share-label">AFTER — その後</span><div class="story-share-review"><em class="status-badge status-${esc(data.reviewKey||'pending')}">${esc(data.reviewIcon||'…')}</em><b>${esc(data.review||'評価待ち')}</b>${data.reviewedAt?`<small>${esc(formatDate(data.reviewedAt))}</small>`:''}</div>
+  ${data.storyText?`<blockquote class="story-share-quote">${esc(data.storyText)}</blockquote>`:''}</div>
+  <div class="share-preview" data-share-preview></div>`;
+}
 function wrapCanvasText(ctx,text,x,y,maxWidth,lineHeight,maxLines=3){ let line='';let count=0;for(const char of String(text||'')){const next=line+char;if(ctx.measureText(next).width>maxWidth&&line){ctx.fillText(line,x,y+count*lineHeight);line=char;count++;if(count>=maxLines)return;}else line=next;}if(count<maxLines)ctx.fillText(line,x,y+count*lineHeight); }
 function loadShareImage(src){return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=reject;image.src=src;});}
-async function downloadShareImage(){ if(!activeShareData?.cards?.length)return; try { const blob=await createShareImageBlob(activeShareData); if(!blob){toast('画像を保存できませんでした');return;} const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download='decide-result.png';link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000);toast('共有画像を保存しました'); } catch { toast('画像を保存できませんでした'); } }
 
 const DECK_VARIATIONS={'major-upright':'22通り','major-reversed':'44通り','all-upright':'78通り','all-reversed':'156通り'};
 function deckPresetVisual(many,reversed) {
@@ -1597,7 +1651,7 @@ function openSettings() {
     </div>
     <div class="feedback-setting"><div><b>操作音・振動</b><p>カードを開く時や決定を保存する時に、控えめな反応を返します。</p></div><button class="toggle-button ${settings.feedback ? 'on' : ''}" data-action="toggle-feedback" aria-pressed="${settings.feedback}"><span></span><b>${settings.feedback ? 'ON' : 'OFF'}</b></button></div>
     <div class="setting-backs"><b>カードの裏面</b>${backPicker()}</div>
-    <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">データ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}${isIOS() && !isStandalone() ? '<p class="safari-storage-note">Safariでは、記録は端末内に保存されます。しばらく開かないと消えることがあるため、ホーム画面への追加と、書き出しをおすすめします。</p>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-markdown">履歴を書き出す</button><button class="button secondary" data-action="import-markdown">履歴を読み込む</button></div><p class="backup-format-note">メモ帳やObsidianでそのまま読めるファイル（.md）で保存します。読み込むと、書き出したときの履歴に戻せます。</p><input id="import-file" type="file" accept="text/markdown,.md,text/plain,application/json,.json" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップ内容"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
+    <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">データ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}${isIOS() && !isStandalone() ? '<p class="safari-storage-note">Safariでは、記録は端末内に保存されます。しばらく開かないと消えることがあるため、ホーム画面への追加と、書き出しをおすすめします。</p>' : ''}${canInstallPrompt() && !isStandalone() ? '<div class="a2hs-settings" data-a2hs-settings><p>ホーム画面に追加すると、アプリのようにすぐ開けます。</p><button class="button" data-action="a2hs-install">ホーム画面に追加</button></div>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-markdown">履歴を書き出す</button><button class="button secondary" data-action="import-markdown">履歴を読み込む</button></div><p class="backup-format-note">メモ帳やObsidianでそのまま読めるファイル（.md）で保存します。読み込むと、書き出したときの履歴に戻せます。</p><input id="import-file" type="file" accept="text/markdown,.md,text/plain,application/json,.json" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップ内容"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
      <section class="data-setting account-setting" data-account-setting aria-labelledby="account-setting-title" hidden></section>
      <nav class="settings-links" aria-label="その他">${window.DECIDE_ENTITLEMENTS?.hasPurchased?.() ? '' : '<button class="settings-link settings-link-pro" data-action="open-paywall"><span><small>UNLIMITED EDITION</small>引き放題・残し放題にする</span><span class="settings-link-chevron" aria-hidden="true">›</span></button>'}<button class="settings-link" data-action="open-learn"><span>カード図鑑</span><span class="settings-link-chevron" aria-hidden="true">›</span></button><button class="settings-link" data-action="tutorial-replay"><span data-tutorial-label>使い方をもう一度見る</span><span class="settings-link-chevron" aria-hidden="true">›</span></button><a class="settings-link" href="./cards/worries.html" target="_blank" rel="noopener"><span>記事を読む</span><span class="settings-link-chevron" aria-hidden="true">›</span></a></nav>
      <button class="sheet-bottom-close" data-action="close-settings">設定を閉じる</button>
@@ -1620,10 +1674,10 @@ function shareData(type='app', log=null, {includeContent=false}={}) {
   }
   if (type === 'story' && log) {
     const cardNodes=(log.nodes || []).slice(0,2); const decision=DECIDE_DECISION.choiceText(log.decision);
-    const base={heading:'その後をシェア',decision,cards:shareCards(cardNodes),postText:sharePostText(log,cardNodes),logId:log.id,includeContent};
+    const base={kind:'story',heading:'その後をシェア',decision,review:log.review||'',reviewIcon:reviewIcon(log.review),reviewKey:reviewKey(log.review),reviewedAt:log.reviewedAt||'',decidedAt:log.createdAt||'',cards:shareCards(cardNodes),postText:sharePostText(log,cardNodes),logId:log.id,includeContent,storyText:''};
     if(includeContent){
       const story=(log.story || '').slice(0,420);
-      return {...base,title:`${log.title}のその後 — DECIDE`,logTitle:log.title,lead:'相手がリンクを開くと、カード画像・結論・その後のストーリーが表示されます。タイトルと本文が共有先に表示されます。',text:`「${log.title}」\n結論：${decision}\nその後：${story}${log.story?.length > 420 ? '…' : ''}\n#DECIDE`,url:sharedResultUrl(log,type,{includeContent:true})};
+      return {...base,storyText:story.slice(0,160)+(story.length>160?'…':''),title:`${log.title}のその後 — DECIDE`,logTitle:log.title,lead:'相手がリンクを開くと、カード画像・結論・その後のストーリーが表示されます。タイトルと本文が共有先に表示されます。',text:`「${log.title}」\n結論：${decision}\nその後：${story}${log.story?.length > 420 ? '…' : ''}\n#DECIDE`,url:sharedResultUrl(log,type,{includeContent:true})};
     }
     return {...base,title:'DECIDE — その後',logTitle:'決定の記録',lead:'相手がリンクを開くと、カード画像と結論（決めた内容）が表示されます。タイトルと本文は共有されません。含める場合は下のスイッチをONにしてください。',text:`結論：${decision}\n#DECIDE`,url:sharedResultUrl(log,type)};
   }
@@ -1635,11 +1689,11 @@ function openShare(type='app', id=null) {
   activeShareData=shareData(type,log);
   const {url,title,heading,lead,text:shareText}=activeShareData;
   const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='share-modal';
-  wrap.innerHTML=`<button class="modal-shade" data-action="close-share" aria-label="共有画面を閉じる"></button><section class="settings-sheet share-sheet" role="dialog" aria-modal="true" aria-labelledby="share-title">
-    <div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">Share</p><h2 id="share-title">${esc(heading)}</h2></div><button data-action="close-share" aria-label="閉じる">×</button></div>
+  wrap.innerHTML=`<button class="modal-shade" data-action="close-share" aria-label="共有画面を閉じる"></button><section class="settings-sheet share-sheet${type==='story'?' story-share':''}" role="dialog" aria-modal="true" aria-labelledby="share-title">
+    <div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">${type==='story'?'After Story':'Share'}</p><h2 id="share-title">${esc(heading)}</h2></div><button data-action="close-share" aria-label="閉じる">×</button></div>
     <p class="share-lead" data-share-lead>${esc(lead)}</p>
     ${type === 'story' ? `<div class="feedback-setting share-content-setting"><div><b>タイトルと本文を含める</b><p>ONにすると、相談のタイトルとその後の本文が投稿文・リンク・画像に入ります。</p></div><button class="toggle-button" data-action="toggle-share-content" aria-pressed="false"><span></span><b>OFF</b></button></div>` : ''}
-    ${type !== 'app' ? `<div class="share-card-preview"><div class="share-preview-images">${activeShareData.cards.map(card=>cardPicture(card,{className:card.orientation==='reversed'?'reversed-image':'',sizes:'82px'})).join('')}</div><div class="share-preview" data-share-preview></div></div>` : ''}
+    ${type === 'story' ? `<div class="share-card-preview story-share-preview" data-story-preview>${storySharePreviewHtml(activeShareData)}</div>` : type !== 'app' ? `<div class="share-card-preview"><div class="share-preview-images">${activeShareData.cards.map(card=>cardPicture(card,{className:card.orientation==='reversed'?'reversed-image':'',sizes:'82px'})).join('')}</div><div class="share-preview" data-share-preview></div></div>` : ''}
     ${type !== 'app' ? (window.DECIDE_SHARE_THEMES?.renderPicker?.()||'') : ''}
     <div class="share-primary">
       ${type !== 'app' ? `<button class="share-big instagram" data-action="share-instagram-story"><b>◎</b><span>Instagramストーリーズにシェア</span></button>
@@ -1647,15 +1701,9 @@ function openShare(type='app', id=null) {
       <a class="share-big line" data-share-line href="https://line.me/R/msg/text/?${encodeURIComponent(`${shareText}\n${url}`)}" target="_blank" rel="noopener"><b>LINE</b><span>LINEで送る</span></a>
       <a class="share-big facebook" data-share-facebook href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}" target="_blank" rel="noopener"><b>f</b><span>Facebookでシェア</span></a>
     </div>
-    <div class="share-grid share-grid-single">
-      <button class="share-option" data-action="native-share"><b>↗</b><span>その他</span></button>
-    </div>
-    ${type !== 'app' ? `<button class="copy-link image-save" data-action="save-share-image"><span>カード画像と結論を1枚にまとめます</span><b>画像を保存</b></button>` : ''}
-    <button class="copy-link" data-action="copy-link"><span data-share-copy-label></span><b>${type === 'app' ? 'リンクをコピー' : '文章をコピー'}</b></button>
     <button class="sheet-bottom-close" data-action="close-share">共有画面を閉じる</button>
   </section>`;
   const preview=wrap.querySelector('[data-share-preview]'); if(preview)preview.textContent=shareText;
-  wrap.querySelector('[data-share-copy-label]').textContent=type==='app'?url:title;
   if(type!=='app') rebuildShareStoryBlob();
   mountModal(wrap,'.sheet-head button');
 }
@@ -1678,15 +1726,13 @@ function toggleShareContent(button){
   const {url,title,lead,text,postText,includeContent}=activeShareData;
   button.classList.toggle('on',includeContent); button.setAttribute('aria-pressed',String(includeContent)); button.querySelector('b').textContent=includeContent?'ON':'OFF';
   wrap.querySelector('[data-share-lead]').textContent=lead;
+  const storyPreview=wrap.querySelector('[data-story-preview]'); if(storyPreview)storyPreview.innerHTML=storySharePreviewHtml(activeShareData);
   wrap.querySelector('[data-share-preview]').textContent=text;
-  wrap.querySelector('[data-share-copy-label]').textContent=title;
   wrap.querySelector('[data-share-x]').href=`https://x.com/intent/post?text=${encodeURIComponent(postText)}&url=${encodeURIComponent(url)}`;
   wrap.querySelector('[data-share-line]').href=`https://line.me/R/msg/text/?${encodeURIComponent(`${text}\n${url}`)}`;
   wrap.querySelector('[data-share-facebook]').href=`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
   rebuildShareStoryBlob(); sensoryFeedback('tap');
 }
-async function shareNative() { const data=activeShareData || shareData(); if(navigator.share){ try{ const blob=data.cards?.length?await createShareImageBlob(data):null; const file=blob?new File([blob],'decide-result.png',{type:'image/png'}):null; const payload={title:data.title,text:data.text,url:data.url}; if(file&&navigator.canShare?.({files:[file]}))payload.files=[file]; await navigator.share(payload); }catch{} } else { await copyShareLink(); } }
-async function copyShareLink() { const data=activeShareData || shareData(); try{ await navigator.clipboard.writeText(`${data.text}\n${data.url}`); sensoryFeedback('tap'); toast(data.heading === 'DECIDEを共有' ? '共有リンクをコピーしました' : '共有する文章をコピーしました'); }catch{ toast('コピーできませんでした'); } }
 let updateRequested = false;
 function showUpdateBar(registration) {
   if (document.querySelector('.update-bar')) return;
@@ -1784,6 +1830,7 @@ document.addEventListener('click', event => {
   else if (action === 'a2hs-help') openA2HSHelp();
   else if (action === 'close-a2hs-help') closeModal('#a2hs-help-modal');
   else if (action === 'dismiss-a2hs') dismissA2HS();
+  else if (action === 'a2hs-install') installApp();
   else if (action === 'dismiss-backup-reminder') { settings.backupReminderDismissedUntil=Date.now()+14*DAY_MS; persist(); document.querySelector('[data-backup-reminder]')?.remove(); }
   else if (action === 'import-logs') openImportPicker();
   else if (action === 'import-markdown') openImportPicker();
@@ -1806,10 +1853,7 @@ document.addEventListener('click', event => {
   else if (action === 'close-delete') closeDelete();
   else if (action === 'close-share') closeShare();
   else if (action === 'toggle-share-content') toggleShareContent(el);
-  else if (action === 'native-share') shareNative();
-  else if (action === 'save-share-image') downloadShareImage();
   else if (action === 'share-instagram-story') shareInstagramStory();
-  else if (action === 'copy-link') copyShareLink();
   else if (action === 'close-settings') closeSettings();
   else if (action === 'open-app') { history.replaceState(null,'',location.pathname); sharedPayload=null; activeSession=null; navigate('home'); if(shouldAutoStartTutorial())requestAnimationFrame(startTutorialIntro); }
 });
