@@ -156,6 +156,37 @@ test('isProPlan / mergeDraws（大きい方を採用・加算しない）', () =
   assert.equal(mergeDraws(-1, null), 0);
 });
 
+test('isProActive: 買い切り or 招待特典の期限内', () => {
+  const { isProActive } = load().ent._pure;
+  const now = Date.now();
+  assert.equal(isProActive('pro', null, now), true);
+  assert.equal(isProActive('free', new Date(now + DAY).toISOString(), now), true);
+  assert.equal(isProActive('free', new Date(now - DAY).toISOString(), now), false);
+  assert.equal(isProActive('free', null, now), false);
+  assert.equal(isProActive('free', 'invalid', now), false);
+});
+
+test('招待特典: UNLIMITEDは使えるが購入済み扱いにはしない', () => {
+  const until = new Date(Date.now() + 7 * DAY).toISOString();
+  const { ent } = load({ user: USER, stored: { plan: 'free', proUntil: until, userId: USER.id, checkedAt: FRESH() } });
+  assert.equal(ent.hasProAccess(), true);
+  assert.equal(ent.hasPurchased(), false);
+  assert.equal(ent.proUntil(), until);
+  assert.equal(ent.canDraw(), true);
+});
+
+test('招待特典: 期限切れなら無料枠に戻る／購入済みなら期限は出さない', () => {
+  const past = new Date(Date.now() - DAY).toISOString();
+  const expired = load({ user: USER, stored: { plan: 'free', proUntil: past, userId: USER.id, checkedAt: FRESH(), draws: 10 } }).ent;
+  assert.equal(expired.hasProAccess(), false);
+  assert.equal(expired.proUntil(), null);
+  assert.equal(expired.canDraw(), false);
+  const future = new Date(Date.now() + DAY).toISOString();
+  const bought = load({ user: USER, stored: { plan: 'pro', proUntil: future, userId: USER.id, checkedAt: FRESH() } }).ent;
+  assert.equal(bought.hasPurchased(), true);
+  assert.equal(bought.proUntil(), null);
+});
+
 test('app.js のフックは最小限', () => {
   const app = read('app.js');
   assert.match(app, /DECIDE_ENTITLEMENTS\.canDraw\(\)\)\{ window\.DECIDE_ENTITLEMENTS\.openPaywall\('draw'\)/);

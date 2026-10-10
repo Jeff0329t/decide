@@ -19,9 +19,9 @@
     try {
       const raw = JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {};
       return { draws: toCount(raw.draws), plan: typeof raw.plan === 'string' ? raw.plan : 'free',
-        proSince: raw.proSince || null, userId: raw.userId || null, checkedAt: raw.checkedAt || null };
+        proSince: raw.proSince || null, proUntil: raw.proUntil || null, userId: raw.userId || null, checkedAt: raw.checkedAt || null };
     } catch(error) {
-      return { draws: 0, plan: 'free', proSince: null, userId: null, checkedAt: null };
+      return { draws: 0, plan: 'free', proSince: null, proUntil: null, userId: null, checkedAt: null };
     }
   }
   let state = load();
@@ -36,15 +36,32 @@
     const t = Date.parse(checkedAt);
     return Number.isFinite(t) && now - t < PRO_CACHE_TTL_MS;
   };
+  // 購入済み、または招待特典（profiles.pro_until）が期限内
+  const isProActive = (plan, proUntil, now = Date.now()) => {
+    if(isProPlan(plan)) return true;
+    const t = Date.parse(proUntil);
+    return Number.isFinite(t) && t > now;
+  };
 
   function currentUser() {
     return auth()?.getUser?.() || null;
   }
 
-  // PRO判定：ログイン中ユーザーのキャッシュ済み plan_type が 'free' 以外、かつキャッシュが期限内
+  // PRO判定：ログイン中ユーザーのキャッシュ済み plan_type が 'free' 以外（または招待特典が期限内）、かつキャッシュが期限内
+  function isCachedFor(user) {
+    return !!user?.id && state.userId === user.id && isCacheFresh(state.checkedAt);
+  }
   function hasProAccess(user = currentUser()) {
-    if(!user?.id) return false;
-    return state.userId === user.id && isProPlan(state.plan) && isCacheFresh(state.checkedAt);
+    return isCachedFor(user) && isProActive(state.plan, state.proUntil);
+  }
+  // 買い切り購入済みか（招待特典だけの人は購入できるように区別する）
+  function hasPurchased(user = currentUser()) {
+    return isCachedFor(user) && isProPlan(state.plan);
+  }
+  // 招待特典の期限（購入済み・特典なし・期限切れなら null）
+  function proUntil(user = currentUser()) {
+    if(!isCachedFor(user) || isProPlan(state.plan)) return null;
+    return isProActive(state.plan, state.proUntil) ? state.proUntil : null;
   }
   function canDraw() {
     return hasProAccess() || state.draws < FREE_DRAWS;
@@ -88,10 +105,11 @@
       if(!error && data != null) state.draws = mergeDraws(state.draws, data);
     } catch(error) {}
     try {
-      const { data, error } = await client.from('profiles').select('plan_type, pro_since').eq('id', user.id).maybeSingle();
+      const { data, error } = await client.from('profiles').select('plan_type, pro_since, pro_until').eq('id', user.id).maybeSingle();
       if(!error && data) {
         state.plan = data.plan_type || 'free';
         state.proSince = data.pro_since || null;
+        state.proUntil = data.pro_until || null;
         state.userId = user.id;
         state.checkedAt = new Date().toISOString();
       }
@@ -105,7 +123,7 @@
   function handleUser(user) {
     if(!user) {
       // ログアウト：ドロー回数は端末に残し、PROキャッシュだけ消す
-      state.plan = 'free'; state.proSince = null; state.userId = null; state.checkedAt = null;
+      state.plan = 'free'; state.proSince = null; state.proUntil = null; state.userId = null; state.checkedAt = null;
       save();
       return;
     }
@@ -175,7 +193,7 @@
   function resumeCheckout(user) {
     if(!user || !hasPendingCheckout()) return;
     setPendingCheckout(false);
-    if(hasProAccess(user)) return;
+    if(hasPurchased(user)) return;
     setTimeout(() => openPaywall('login'), 300);
   }
 
@@ -187,7 +205,7 @@
   }
   async function startCheckout() {
     if(!currentUser()) { openPaywall('login'); return; }
-    if(hasProAccess()) { notify('すでに購入済みです'); return; }
+    if(hasPurchased()) { notify('すでに購入済みです'); return; }
     if(checkoutBusy) return;
     const endpoint = checkoutEndpoint();
     if(typeof fetch !== 'function' || !endpoint || !auth()?.isEnabled?.()) { notify('購入は準備中です'); return; }
@@ -273,6 +291,8 @@
     FREE_DRAWS,
     FREE_SAVES,
     hasProAccess,
+    hasPurchased,
+    proUntil,
     canDraw,
     canSaveLog,
     recordDraw,
@@ -281,6 +301,6 @@
     openPaywall,
     startCheckout,
     refresh: () => syncWithServer(currentUser()),
-    _pure: Object.freeze({ isProPlan, mergeDraws, isCacheFresh })
+    _pure: Object.freeze({ isProPlan, isProActive, mergeDraws, isCacheFresh })
   });
 })();

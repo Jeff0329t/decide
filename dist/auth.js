@@ -157,6 +157,16 @@
   }
 
   // 設定画面のアカウント欄
+  function planLabel(user) {
+    const ent = window.DECIDE_ENTITLEMENTS;
+    if(ent?.hasPurchased?.(user)) return 'UNLIMITED EDITION（買い切り）';
+    const until = Date.parse(ent?.proUntil?.(user) || '');
+    if(Number.isFinite(until)) {
+      const d = new Date(until);
+      return `UNLIMITED（招待特典・${d.getMonth() + 1}/${d.getDate()}まで）`;
+    }
+    return '無料';
+  }
   function renderSettings(wrap) {
     const section = wrap?.querySelector('[data-account-setting]');
     if(!section) return;
@@ -166,7 +176,7 @@
     section.innerHTML = user
       ? `<div><b id="account-setting-title">アカウント</b>
         <p class="account-email">${escapeHtml(user.email)} でログイン中</p>
-        <p class="account-plan">プラン：${window.DECIDE_ENTITLEMENTS?.hasProAccess?.(user)?'UNLIMITED EDITION（買い切り）':'無料'}</p></div>
+        <p class="account-plan">プラン：${planLabel(user)}</p></div>
         ${window.DECIDE_SYNC?.renderToggle?.() || ''}
         ${window.DECIDE_REFERRAL?.renderSettings?.() || ''}
         <div class="data-actions">

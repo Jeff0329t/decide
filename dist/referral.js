@@ -1,7 +1,7 @@
 // DECIDE. 友だち招待（ログインした人だけ）
 // 招待リンク（?ref=コード）で開いた人がログインすると、サーバーに「だれの招待か」だけを記録する。
 // 送るのは招待コードだけで、決定ログの中身は送らない。
-// TODO: 招待の特典（何を・いつ付けるか）は未定。決まったら claim_referral（SQL）側で付ける。
+// 特典：招待した人・された人の両方に UNLIMITED を7日間（claim_referral（SQL）側で profiles.pro_until を延ばす）。
 (function(){
   const STORE_KEY = 'decide.tarot.referral.v1';
   const CODE_RE = /^[A-Z0-9]{4,16}$/;
@@ -23,7 +23,7 @@
   function sectionHtml(code, url) {
     const c = normalizeCode(code);
     const body = c
-      ? `<p>このリンクから始めた人がログインすると、あなたの招待として記録されます。</p>
+      ? `<p>このリンクから始めた人がログインすると、招待した人・された人どちらにもUNLIMITEDを7日間プレゼントします。</p>
         <p class="referral-code">招待コード <b>${escapeHtml(c)}</b></p>
         <div class="data-actions">
           <button class="button" type="button" data-referral-action="share" data-referral-url="${escapeHtml(url)}">招待リンクを送る</button>
@@ -78,7 +78,10 @@
       const { data, error } = await client.rpc('claim_referral', { code });
       if(error) return; // 通信エラーなどは次回もう一度
       clearPending();
-      if(data === 'ok') notify('招待リンクから始めました');
+      if(data === 'ok') {
+        notify('UNLIMITEDを7日間プレゼントしました');
+        window.DECIDE_ENTITLEMENTS?.refresh?.();
+      }
     } catch(error) {
       // 次回もう一度
     } finally {

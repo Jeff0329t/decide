@@ -2,7 +2,7 @@
 -- referral_codes: 1人1つの招待コード。referrals: 「だれが・だれを招待したか」だけを記録する（ログの中身は持たない）。
 -- 書き込みは下の2つの関数（security definer）からだけ。本人は自分の行を読むことだけできる。
 -- アカウント削除時は auth.users の ON DELETE CASCADE で消える。
--- TODO: 招待の特典（何を・いつ付けるか）は未定。決まったら claim_referral の 'ok' の前で付ける。
+-- 招待の特典は 20261010000000_referral_rewards.sql で付ける。
 
 create table if not exists public.referral_codes (
   user_id uuid primary key references auth.users(id) on delete cascade,
