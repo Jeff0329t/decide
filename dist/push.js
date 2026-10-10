@@ -28,9 +28,9 @@
   function loadState() {
     try {
       const raw = JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {};
-      return { enabled: raw.enabled === true };
+      return { enabled: raw.enabled === true, ownerId: typeof raw.ownerId === 'string' ? raw.ownerId : '' };
     } catch(error) {
-      return { enabled: false };
+      return { enabled: false, ownerId: '' };
     }
   }
   let state = loadState();
@@ -89,7 +89,14 @@
     }
   }
 
-  // ふり返り前の予定をサーバーへ（前回と同じなら送らない・失敗したら60秒待つ）
+  // この端末の通知の宛先（無ければ空文字）
+  async function currentEndpoint() {
+    const reg = await swRegistration();
+    const sub = await reg.pushManager.getSubscription();
+    return sub?.endpoint || '';
+  }
+
+  // ふり返り前の予定をサーバーへ（この端末の宛先の分だけ置きかえる・前回と同じなら送らない・失敗したら60秒待つ）
   let lastSent = '';
   let failedAt = 0;
   let syncing = null;
@@ -100,15 +107,17 @@
     const pending = window.DECIDE_REMINDERS?._pure?.pendingItems;
     if(typeof pending !== 'function') return Promise.resolve();
     const items = sanitizeItems(pending(currentLogs()));
-    const signature = JSON.stringify(items);
-    if(!force && signature === lastSent) return Promise.resolve();
     const client = auth()?.client?.();
-    syncing = Promise.resolve(client.rpc('set_push_reminders', { items }))
-      .then(({ error } = {}) => {
-        if(error) { failedAt = Date.now(); return; }
-        lastSent = signature;
-        failedAt = 0;
-      })
+    syncing = (async () => {
+      const endpoint = await currentEndpoint();
+      if(!endpoint) return;
+      const signature = JSON.stringify([endpoint, items]);
+      if(!force && signature === lastSent) return;
+      const { error } = (await client.rpc('set_push_reminders', { items, endpoint })) || {};
+      if(error) { failedAt = Date.now(); return; }
+      lastSent = signature;
+      failedAt = 0;
+    })()
       .catch(() => { failedAt = Date.now(); })
       .finally(() => { syncing = null; });
     return syncing;
@@ -188,6 +197,7 @@
       if(state.enabled) {
         // OFF は端末側の状態をすぐに切り替え、サーバー側の後片付けは待つだけ
         state.enabled = false;
+        state.ownerId = '';
         saveState();
         await unsubscribe();
         notify('プッシュ通知をOFFにしました');
@@ -210,6 +220,7 @@
         return;
       }
       state.enabled = true;
+      state.ownerId = auth()?.getUser?.()?.id || '';
       saveState();
       lastSent = '';
       await syncReminders(true);
@@ -254,13 +265,45 @@
   }
   window.addEventListener?.('pagehide', () => syncReminders());
 
+  // ログアウトの前に呼ぶ：この端末の宛先をサーバーから消して（予定も一緒に消える）、端末側の購読も止める
+  async function disableForSignOut() {
+    if(!state.enabled) return;
+    state.enabled = false;
+    state.ownerId = '';
+    saveState();
+    lastSent = '';
+    await unsubscribe();
+    refreshSection();
+  }
+
+  // 前と別のアカウントでログインしたら、前の人の宛先で通知が続かないよう、この端末の通知を止める。
+  // サーバー側の古い宛先は、ログイン中の人のものではないので消せない。端末側の購読を止めれば送信時の 404/410 で片付く。
+  // 戻り値: 同期を続けてよいか
+  async function checkOwner(user) {
+    if(!user || !state.enabled) return true;
+    if(!state.ownerId) { state.ownerId = user.id; saveState(); return true; }
+    if(state.ownerId === user.id) return true;
+    state.enabled = false;
+    state.ownerId = '';
+    saveState();
+    lastSent = '';
+    try {
+      const reg = await swRegistration();
+      const sub = await reg.pushManager.getSubscription();
+      await sub?.unsubscribe?.().catch(() => {});
+    } catch(error) {}
+    refreshSection();
+    notify('別のアカウントでログインしたため、この端末のプッシュ通知をOFFにしました。必要なら設定からONにしてください');
+    return false;
+  }
+
   auth()?.onChange?.(user => {
     lastSent = '';
     failedAt = 0;
     refreshSection();
-    if(user) syncReminders();
+    if(user) checkOwner(user).then(ok => { if(ok) syncReminders(); });
   });
-  auth()?.ready?.()?.then?.(user => { if(user) syncReminders(); });
+  auth()?.ready?.()?.then?.(user => { if(user) checkOwner(user).then(ok => { if(ok) syncReminders(); }); });
 
   window.DECIDE_PUSH = Object.freeze({
     isOn,
@@ -268,6 +311,7 @@
     mountSettings,
     syncNow: () => syncReminders(true),
     toggle,
+    disableForSignOut,
     _pure: { urlBase64ToUint8Array, sanitizeItems, settingHtml }
   });
 })();

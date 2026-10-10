@@ -50,6 +50,10 @@ Deno.serve(async (req) => {
   const base = ALLOWED_ORIGINS.has(origin) ? origin : SITE_URL;
   const metadata = { user_id: user.id, product: PRODUCT_KEY };
 
+  // Double-tap / two tabs / back button: hand back the session that is still open instead of creating a second one.
+  const reusable = await findOpenSession(user.id, base);
+  if (reusable) return json({ url: reusable });
+
   try {
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
@@ -73,3 +77,23 @@ Deno.serve(async (req) => {
     return json({ error: 'checkout failed' }, 502);
   }
 });
+
+// An open session of this user for this product, returning to the same site, that will not expire in the next minute.
+// Best effort: if Stripe cannot be listed, the caller just creates a new session.
+async function findOpenSession(userId: string, base: string): Promise<string | null> {
+  const now = Math.floor(Date.now() / 1000);
+  try {
+    const sessions = await stripe.checkout.sessions.list({ status: 'open', created: { gte: now - 86400 }, limit: 100 });
+    const found = sessions.data.find((s) =>
+      s.metadata?.user_id === userId &&
+      s.metadata?.product === PRODUCT_KEY &&
+      (s.success_url ?? '').startsWith(`${base}/`) &&
+      s.expires_at > now + 60 &&
+      s.url
+    );
+    return found?.url ?? null;
+  } catch (error) {
+    console.warn('open session lookup failed', (error as Error).message);
+    return null;
+  }
+}

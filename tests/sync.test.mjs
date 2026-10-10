@@ -16,8 +16,8 @@ function memoryStorage(initial = {}) {
 }
 
 // sync.js を最小限のブラウザ環境で読み込む（自動同期が走らないよう auth は isEnabled=false）
-function load({ user = null, pro = false, cloudSync = false } = {}) {
-  const localStorage = memoryStorage();
+function load({ user = null, pro = false, cloudSync = false, stored = null } = {}) {
+  const localStorage = memoryStorage(stored ? { [STORE_KEY]: JSON.stringify(stored) } : {});
   const settings = { cloudSync };
   const window = {
     DECIDE_AUTH: { isEnabled: () => false, getUser: () => user },
@@ -108,4 +108,23 @@ test('autoEnable: 無料プランや未ログインでは何もしない', async
   const guest = load({ user: null, pro: true });
   assert.equal(await guest.sync.autoEnable(), false);
   assert.equal(guest.settings.cloudSync, false);
+});
+
+test('merge: 古いログでも updatedAt が新しい方を優先する（リマインド変更など）', () => {
+  const local = log('a', '2026-10-01T00:00:00Z', { updatedAt: '2026-10-05T00:00:00Z', remindAt: 'x' });
+  const remote = log('a', '2026-10-01T00:00:00Z', { reviewedAt: '2026-10-03T00:00:00Z' });
+  const r = merge([local], [{ id: 'a', data: remote, deleted: false }], []);
+  assert.equal(r.logs[0].remindAt, 'x');
+  assert.deepEqual(plain(r.upload).map(u => u.id), ['a']);
+});
+
+test('renderToggle: 同期ONのとき最終同期・失敗の状態を表示する', () => {
+  const user = { id: 'u1' };
+  const ok = load({ user, pro: true, cloudSync: true, stored: { lastSyncAt: '2026-10-11T03:04:00Z' } }).sync.renderToggle();
+  assert.match(ok, /最終同期 \d+\/\d+ \d{2}:\d{2}/);
+  const ng = load({ user, pro: true, cloudSync: true, stored: { lastSyncAt: '2026-10-11T03:04:00Z', lastErrorAt: '2026-10-11T04:00:00Z' } }).sync.renderToggle();
+  assert.match(ng, /sync-status is-error/);
+  assert.match(ng, /同期に失敗しました/);
+  const off = load({ user, pro: true, cloudSync: false, stored: { lastErrorAt: '2026-10-11T04:00:00Z' } }).sync.renderToggle();
+  assert.doesNotMatch(off, /sync-status/);
 });

@@ -684,7 +684,6 @@ function pickDrawMode(button, event){
 }
 function startSession(mode) {
   if(window.DECIDE_ENTITLEMENTS && !window.DECIDE_ENTITLEMENTS.canDraw()){ window.DECIDE_ENTITLEMENTS.openPaywall('draw'); return false; }
-  window.DECIDE_ENTITLEMENTS?.recordDraw?.();
   sensoryFeedback('tap');
   const first = randomCard();
   const drawOptions = mode === 'two'
@@ -702,6 +701,10 @@ function genreChips() {
 }
 function optionEditor() {
   return `<div class="option-editor"><label>選択肢A<textarea id="option-1" name="option1" maxlength="30" autocomplete="off" enterkeyhint="done" lang="ja" rows="2" placeholder="例：今の仕事を続ける"></textarea></label><button type="button" class="swap-options" data-action="swap-options" aria-label="選択肢AとBを入れ替える">⇄</button><label>選択肢B<textarea id="option-2" name="option2" maxlength="30" autocomplete="off" enterkeyhint="done" lang="ja" rows="2" placeholder="例：新しい仕事に挑戦する"></textarea></label></div>`;
+}
+function decisionOptionText(value) {
+  if(activeSession?.mode!=='two')return '';
+  return value==='選択肢1' ? decisionDraft.option1 || '' : value==='選択肢2' ? decisionDraft.option2 || '' : '';
 }
 function sessionContext() {
   const values=[decisionDraft.genre, activeSession.mode==='two' && decisionDraft.option1 ? `A：${decisionDraft.option1}` : '', activeSession.mode==='two' && decisionDraft.option2 ? `B：${decisionDraft.option2}` : ''].filter(Boolean);
@@ -791,8 +794,15 @@ function renderDraw() {
   renderTutorialStage();
 }
 
+// 回数はモードを選んだ時ではなく、最初にカードを開いた時に1回だけ数える
+function recordDrawOnce() {
+  if(!activeSession || activeSession.tutorial || activeSession.drawRecorded)return;
+  activeSession.drawRecorded=true;
+  window.DECIDE_ENTITLEMENTS?.recordDraw?.();
+}
 function flipCard(slot) {
   if (!activeSession || activeSession.mode === 'two' || activeSession.revealed.includes(slot)) return;
+  recordDrawOnce();
   sensoryFeedback('reveal');
   activeSession.revealed.push(slot);
   const card = activeSession.drawOptions[slot];
@@ -846,6 +856,7 @@ function nudgeRevealHold(button){
 function flipBoth() {
   if (!activeSession || activeSession.mode !== 'two' || activeSession.revealed.length) return;
   cancelRevealHold();
+  recordDrawOnce();
   sensoryFeedback('reveal');
   const screen=document.querySelector('.draw-screen');
   screen?.classList.remove('is-charging');
@@ -980,7 +991,7 @@ function renderDecision() {
       <button class="text-back" data-action="session">← マップに戻る</button>
       <p class="eyebrow">Decide</p><div class="decide-title"><span class="decide-kicker">THE FINAL CALL</span><h1>今回は、<wbr>どうする？</h1><span class="decide-sub">YOU DECIDE, NOT THE CARDS.</span></div>
       <p class="lead">カードではなく、<wbr>あなたが決めます。<wbr>いちばん納得できるものを<wbr>選んでください。</p>
-      <div class="decision-options">${options.map((o,i) => `<button class="decision-option ${selectedDecision === o ? 'selected' : ''}" data-action="select-decision" data-value="${o}" aria-pressed="${selectedDecision === o}"><b class="decision-index">${(activeSession.mode === 'two' ? ['A','B','HOLD'] : ['GO','PASS','HOLD'])[i]}</b><span>${DECIDE_DECISION.choiceText(o)}</span><i>${selectedDecision === o ? '✓' : ''}</i></button>`).join('')}</div>
+      <div class="decision-options">${options.map((o,i) => `<button class="decision-option ${selectedDecision === o ? 'selected' : ''}" data-action="select-decision" data-value="${o}" aria-pressed="${selectedDecision === o}"><b class="decision-index">${(activeSession.mode === 'two' ? ['A','B','HOLD'] : ['GO','PASS','HOLD'])[i]}</b><span>${DECIDE_DECISION.choiceText(o)}${decisionOptionText(o) ? `<small>${esc(decisionOptionText(o))}</small>` : ''}</span><i>${selectedDecision === o ? '✓' : ''}</i></button>`).join('')}</div>
       <form id="save-form" class="save-form">
         ${selectedDecision ? `<section class="decision-meta" aria-label="決定の補足">
           <div class="form-section"><div class="form-section-head"><b>ジャンル</b><span>任意・1つだけ</span></div><div class="genre-chips">${DECIDE_DECISION.GENRES.map(genre=>`<button type="button" class="meta-chip" data-action="select-genre" data-value="${genre}" aria-pressed="false">${genre}</button>`).join('')}</div></div>
@@ -1068,7 +1079,7 @@ function saveDecision(form) {
   const firstRecord=retry ? pendingSave.firstRecord : logs.length===0;
   const requestPersistence=retry ? pendingSave.requestPersistence : firstRecord && !settings.storagePersistRequested;
   const existing=logs.findIndex(item=>item.id===log.id);
-  if(existing>=0 && 'remindAt' in logs[existing]) log.remindAt=logs[existing].remindAt; else if(existing<0){ const remindAt=window.DECIDE_REMINDERS?.defaultRemindAt?.(log.createdAt); if(remindAt) log.remindAt=remindAt; }
+  if(existing>=0 && 'remindAt' in logs[existing]){ log.remindAt=logs[existing].remindAt; if(logs[existing].remindDays)log.remindDays=logs[existing].remindDays; } else if(existing<0){ const remindAt=window.DECIDE_REMINDERS?.defaultRemindAt?.(log.createdAt); if(remindAt) log.remindAt=remindAt; }
   if(existing<0 && !retry && window.DECIDE_ENTITLEMENTS && !window.DECIDE_ENTITLEMENTS.canSaveLog(logs.length)){ window.DECIDE_ENTITLEMENTS.openPaywall('save'); return; }
   if(existing>=0)logs[existing]=log; else logs.unshift(log);
   if(requestPersistence)settings.storagePersistRequested=true;
@@ -1292,7 +1303,8 @@ function renderDetail() {
 const REMIND_OPTIONS=[[3,'3日後'],[7,'1週間後'],[30,'1か月後'],[0,'決めない']];
 function renderRemindPicker(log) {
   const at=log.remindAt ? new Date(log.remindAt) : null; const valid=at && !Number.isNaN(at.getTime());
-  const chosen=valid ? REMIND_OPTIONS.find(([days])=>days && Math.abs(at-new Date(log.createdAt).getTime()-days*DAY_MS)<DAY_MS/2)?.[0] : null;
+  // 選び直した日数は remindDays に残る。古いログ（remindDays なし）は作成日からの差で判定する
+  const chosen=!valid ? null : REMIND_OPTIONS.some(([days])=>days && days===log.remindDays) ? log.remindDays : REMIND_OPTIONS.find(([days])=>days && Math.abs(at-new Date(log.createdAt).getTime()-days*DAY_MS)<DAY_MS/2)?.[0] ?? null;
   return `<section class="remind-picker" aria-labelledby="remind-title-${esc(log.id)}">
     <p class="remind-kicker">REMIND ME</p>
     <h2 id="remind-title-${esc(log.id)}">いつ頃、結論が出そう？</h2>
@@ -1303,9 +1315,10 @@ function renderRemindPicker(log) {
 function setRemind(id,days) {
   const log=logs.find(item=>item.id===id); if(!log)return;
   sensoryFeedback('tick');
-  const base=new Date(log.createdAt).getTime(); const from=Number.isNaN(base)?Date.now():base;
-  log.remindAt=days>0 ? new Date(Math.max(from+days*DAY_MS,Date.now()+DAY_MS/2)).toISOString() : null;
-  persist(); renderDetail(); toast(days>0 ? `${formatDate(log.remindAt)} ごろにお聞きします` : 'リマインドなしにしました');
+  log.remindAt=days>0 ? new Date(Date.now()+days*DAY_MS).toISOString() : null;
+  log.remindDays=days>0 ? days : null;
+  log.updatedAt=new Date().toISOString();
+  const saved=persist(); renderDetailKeepingDraft(); toast(!saved ? SAVE_FAILED_MESSAGE : days>0 ? `${formatDate(log.remindAt)} ごろにお聞きします` : 'リマインドなしにしました');
 }
 function dueReviewLog() {
   const now=Date.now();
@@ -1378,16 +1391,26 @@ function renderDetailDate(iso) {
   return `<div class="detail-date" aria-hidden="true"><b>${String(date.getDate()).padStart(2,'0')}</b><span><i>${month}</i><small>${date.getFullYear()}</small></span></div>`;
 }
 
+const SAVE_FAILED_MESSAGE='この端末に保存できませんでした。空き容量を確認してください';
+// 振り返りやリマインドを押しても、書きかけのストーリーを消さずに描き直す
+function renderDetailKeepingDraft() {
+  const field=app.querySelector('#story-text'); const draft=field ? field.value : null;
+  renderDetail();
+  const next=app.querySelector('#story-text');
+  if(next && draft!==null && draft!==next.value)next.value=draft;
+}
 function setReview(value) {
   const log = logs.find(l => l.id === detailId); if (!log) return;
   sensoryFeedback('tap');
-  log.review = value; log.reviewedAt = new Date().toISOString(); persist(); renderDetail(); toast('振り返りを保存しました');
+  log.review = value; log.reviewedAt = log.updatedAt = new Date().toISOString();
+  const saved=persist(); renderDetailKeepingDraft(); toast(saved ? '振り返りを保存しました' : SAVE_FAILED_MESSAGE);
 }
 
 function saveStory(id) {
   const log=logs.find(item=>item.id===id); const field=document.querySelector('#story-text'); if(!log || !field)return;
   sensoryFeedback('save');
-  log.story=field.value.trim(); log.storyUpdatedAt=new Date().toISOString(); persist(); renderDetail(); toast('その後のストーリーを保存しました');
+  log.story=field.value.trim(); log.storyUpdatedAt=log.updatedAt=new Date().toISOString();
+  const saved=persist(); renderDetail(); toast(saved ? 'その後のストーリーを保存しました' : SAVE_FAILED_MESSAGE);
 }
 
 function openDeleteConfirm(id) {
@@ -1814,8 +1837,8 @@ document.addEventListener('click', event => {
   else if (action === 'detail') navigate('detail', el.dataset.id);
   else if (action === 'review') setReview(el.dataset.value);
   else if (action === 'set-remind') setRemind(el.dataset.id,Number(el.dataset.days));
-  else if (action === 'due-review-open') { const log=logs.find(item=>item.id===el.dataset.id); closeModal('#due-review-modal'); if(log){ log.remindAt=null; persist(); } completionId=null; detailReturn='history'; navigate('detail',el.dataset.id); }
-  else if (action === 'due-review-later') { const log=logs.find(item=>item.id===el.dataset.id); if(log){ log.remindAt=new Date(Date.now()+3*DAY_MS).toISOString(); persist(); } closeModal('#due-review-modal'); toast('3日後にまたお聞きします'); }
+  else if (action === 'due-review-open') { const log=logs.find(item=>item.id===el.dataset.id); closeModal('#due-review-modal'); if(log){ log.remindAt=null; log.remindDays=null; persist(); } completionId=null; detailReturn='history'; navigate('detail',el.dataset.id); }
+  else if (action === 'due-review-later') { const log=logs.find(item=>item.id===el.dataset.id); if(log){ log.remindAt=new Date(Date.now()+3*DAY_MS).toISOString(); log.remindDays=3; persist(); } closeModal('#due-review-modal'); toast('3日後にまたお聞きします'); }
   else if (action === 'satisfied') openFarewell();
   else if (action === 'farewell-share-instagram') shareFarewellInstagram();
   else if (action === 'farewell-home') { closeFarewell(); activeSession=null; completionId=null; homeStage='quickstart'; navigate('home'); }

@@ -452,6 +452,7 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .backup-format-note { margin: 10px 0 0; color: var(--muted); font-size: .75rem; line-height: 1.65; }
 .backup-status { min-height: 1.2em; margin: 11px 0 0; color: var(--muted); font-size: .75rem; line-height: 1.5; }
 .backup-status.is-error { color: var(--danger); }
+.sync-status.is-error { color: var(--danger); }
 .storage-error { margin: 12px 0 0; padding: 10px 12px; border-radius: 10px; background: var(--danger-surface); color: var(--on-danger); font-size: .78rem; font-weight: 800; }
 .safari-storage-note { margin: 12px 0 0; color: var(--muted); font-size: .76rem; line-height: 1.65; }
 .a2hs-steps { display: grid; gap: 12px; margin: 18px 0 0; padding-left: 1.7em; color: var(--ink); font-size: .9rem; line-height: 1.65; }
@@ -934,6 +935,9 @@ h3,
 .decision-option span {
   font-family: "Hiragino Mincho ProN", "Yu Mincho", Didot, serif;
 }
+/* A/B の判断ボタンに、入力した選択肢の文言を小さく添える */
+.decision-option span { min-width: 0; overflow-wrap: anywhere; }
+.decision-option small { display: block; margin-top: 2px; font-size: .82em; font-weight: 600; opacity: .8; }
 
 h1 { font-weight: 600; line-height: 1.18; letter-spacing: -.055em; }
 .lead { color: #4e4a43; line-height: 1.85; }

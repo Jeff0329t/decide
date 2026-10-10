@@ -74,13 +74,58 @@ async function onCheckoutCompleted(session: Stripe.Checkout.Session) {
     .update({ plan_type: 'lifetime', pro_since: new Date().toISOString() })
     .eq('id', userId).select('id');
   if (error) throw error;
-  if (!data?.length) console.error('checkout ignored: profile not found', session.id, userId); // e.g. account deleted
+  if (!data?.length) {
+    console.error('checkout ignored: profile not found', session.id, userId); // e.g. account deleted
+    return;
+  }
+
+  // A second paid purchase by the same person is almost always a mistake: tell the operator so it can be refunded.
+  const { data: others, error: othersError } = await admin.from('purchases')
+    .select('checkout_session_id').eq('user_id', userId).eq('status', 'paid').neq('checkout_session_id', session.id);
+  if (othersError) throw othersError;
+  if (others?.length) {
+    const text = `[DECIDE] 二重購入の可能性: user=${userId} / 今回=${session.id} / 既存=${others.map((p) => p.checkout_session_id).join(',')} / 返金を検討してください`;
+    console.warn(text);
+    await notify(text);
+  }
+
+  // One row per payment, so a refund can tell which purchase it undoes. Redelivery of the same session is a no-op.
+  const paymentIntent = typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id ?? null;
+  const { error: purchaseError } = await admin.from('purchases').upsert({
+    checkout_session_id: session.id,
+    payment_intent: paymentIntent,
+    user_id: userId,
+    status: 'paid',
+    amount: session.amount_total,
+    currency: session.currency,
+  }, { onConflict: 'checkout_session_id', ignoreDuplicates: true });
+  if (purchaseError) throw purchaseError;
 }
 
 async function onChargeRefunded(charge: Stripe.Charge) {
   if (!charge.refunded || charge.amount_refunded < charge.amount) return; // partial refund: keep access
-  const userId = await findUserId(charge.metadata?.user_id, charge.payment_intent);
+  const paymentIntent = typeof charge.payment_intent === 'string' ? charge.payment_intent : charge.payment_intent?.id ?? null;
+
+  let userId: string | undefined;
+  if (paymentIntent) {
+    const { data, error } = await admin.from('purchases')
+      .update({ status: 'refunded', refunded_at: new Date().toISOString() })
+      .eq('payment_intent', paymentIntent).select('user_id');
+    if (error) throw error;
+    userId = data?.[0]?.user_id;
+  }
+  // Purchases made before the purchases table existed have no row: fall back to Stripe.
+  userId ??= await findUserId(charge.metadata?.user_id, paymentIntent);
   if (!userId) return; // not a DECIDE purchase
+
+  // Refunding one of two purchases (e.g. an accidental double purchase) must not take PRO away.
+  const { count, error: countError } = await admin.from('purchases')
+    .select('checkout_session_id', { count: 'exact', head: true }).eq('user_id', userId).eq('status', 'paid');
+  if (countError) throw countError;
+  if (count) {
+    console.log('refund recorded, PRO kept: another paid purchase remains', userId, paymentIntent);
+    return;
+  }
   const { error } = await admin.from('profiles').update({ plan_type: 'free', pro_since: null }).eq('id', userId);
   if (error) throw error;
 }

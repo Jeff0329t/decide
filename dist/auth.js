@@ -125,6 +125,8 @@
 
   async function signOut() {
     if(!client) return;
+    // セッションが残っているうちに、この端末の通知の宛先をサーバーから外す
+    try { await window.DECIDE_PUSH?.disableForSignOut?.(); } catch(error) {}
     await client.auth.signOut().catch(() => {});
     setUser(null);
     notify('ログアウトしました');
@@ -150,6 +152,7 @@
       notify('アカウントを削除できませんでした');
       return false;
     }
+    try { await window.DECIDE_PUSH?.disableForSignOut?.(); } catch(error) {}
     await client.auth.signOut().catch(() => {});
     setUser(null);
     notify('アカウントを削除しました');
