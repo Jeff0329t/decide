@@ -1656,6 +1656,7 @@ function toggleShareContent(button){
 }
 async function shareNative() { const data=activeShareData || shareData(); if(navigator.share){ try{ const blob=data.cards?.length?await createShareImageBlob(data):null; const file=blob?new File([blob],'decide-result.png',{type:'image/png'}):null; const payload={title:data.title,text:data.text,url:data.url}; if(file&&navigator.canShare?.({files:[file]}))payload.files=[file]; await navigator.share(payload); }catch{} } else { await copyShareLink(); } }
 async function copyShareLink() { const data=activeShareData || shareData(); try{ await navigator.clipboard.writeText(`${data.text}\n${data.url}`); sensoryFeedback('tap'); toast(data.heading === 'DECIDEを共有' ? '共有リンクをコピーしました' : '共有する文章をコピーしました'); }catch{ toast('コピーできませんでした'); } }
+let updateRequested = false;
 function showUpdateBar(registration) {
   if (document.querySelector('.update-bar')) return;
   const bar = document.createElement('div');
@@ -1664,6 +1665,7 @@ function showUpdateBar(registration) {
   const [reload, close] = bar.querySelectorAll('button');
   reload.addEventListener('click', () => {
     // 待機中の新版に切り替えを指示すると controllerchange で1回だけ再読み込みされる。届かなかったときの保険も付ける
+    updateRequested = true;
     const waiting = registration?.waiting;
     if (!waiting) { location.reload(); return; }
     waiting.postMessage({type:'SKIP_WAITING'});
@@ -1867,6 +1869,8 @@ if ('serviceWorker' in navigator) {
   let reloadedForUpdate = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (!hadController || reloadedForUpdate) return;
+    // 新版は自動で切り替わる。操作中に勝手に再読み込みせず、案内バーから更新してもらう
+    if (!updateRequested) { showUpdateBar(null); return; }
     reloadedForUpdate = true;
     location.reload();
   });

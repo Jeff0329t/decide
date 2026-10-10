@@ -26,14 +26,15 @@ test('reveal begins image loading without waiting to show the result',()=>{
   assert.doesNotMatch(app,/await \(activeSession\.imageReady/);
 });
 
-test('worker caches shell and up to 100 card images without skipWaiting',()=>{
+test('worker caches shell and up to 100 card images and activates right away',()=>{
   for(const file of ['index.html','app.js','styles.css','manifest.webmanifest','assets/cards.json'])assert.ok(worker.includes(file));
   assert.match(worker,/const IMAGE_LIMIT = 100/);
   assert.match(worker,/request\.mode === 'navigate'/);
   assert.match(worker,/caches\.match\(new URL\('\.\/', SCOPE\)\.href\)/);
   assert.match(worker,/cacheCardImage\(request, event\)/);
-  // 自動では切り替えない。skipWaiting は案内バーの「更新する」から届くメッセージでだけ呼ぶ
-  assert.equal(worker.match(/skipWaiting\(/g)?.length,1);
+  // iOS で旧版が待機したまま残らないよう、取得後すぐ切り替える。案内バーからのメッセージも受け付ける
+  assert.equal(worker.match(/skipWaiting\(/g)?.length,2);
+  assert.match(worker,/\.then\(\(\) => self\.skipWaiting\(\)\)/);
   assert.match(worker,/event\.data\?\.type === 'SKIP_WAITING'\) self\.skipWaiting\(\)/);
   assert.doesNotMatch(worker,/localStorage/);
 });
@@ -42,4 +43,6 @@ test('page reloads once when an updated worker takes control',()=>{
   assert.match(app,/const hadController = !!navigator\.serviceWorker\.controller/);
   assert.match(app,/addEventListener\('controllerchange'/);
   assert.match(app,/if \(!hadController \|\| reloadedForUpdate\) return;/);
+  // 利用者が「更新する」を押したときだけ再読み込みし、それ以外は案内バーを出す
+  assert.match(app,/if \(!updateRequested\) \{ showUpdateBar\(null\); return; \}/);
 });

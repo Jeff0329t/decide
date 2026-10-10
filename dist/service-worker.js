@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'decide-shell-editorial-v108';
+const SHELL_CACHE = 'decide-shell-editorial-v109';
 const IMAGE_CACHE = 'decide-card-images-p14-v1';
 const IMAGE_LIMIT = 100;
 const CARD_SHELL_FILES = [
@@ -24,7 +24,9 @@ const shellUrls = new Set(SHELL_FILES.map(path => new URL(path, SCOPE).href));
 let imageCacheWrite = Promise.resolve();
 
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(SHELL_CACHE).then(cache => cache.addAll(SHELL_FILES.map(path => new Request(path, {cache: 'reload'})))));
+  // iOS はタブやホーム画面アプリがほぼ閉じられないため、待機させると旧版のまま残り続ける。
+  // 取得し終えたらすぐ切り替え、開いている画面には案内バーで再読み込みを促す
+  event.waitUntil(caches.open(SHELL_CACHE).then(cache => cache.addAll(SHELL_FILES.map(path => new Request(path, {cache: 'reload'})))).then(() => self.skipWaiting()));
 });
 
 // 案内バーの「更新する」から届く。待機をやめて新版に切り替える
