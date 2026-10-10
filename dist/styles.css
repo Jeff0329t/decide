@@ -1657,13 +1657,13 @@ body[data-view="stats"] .app-shell { padding-bottom: 70px; }
 
 body[data-view="home"] .bottom-nav { display: grid !important; }
 body[data-view="home"] .app-shell { padding-bottom: 70px; }
-body[data-view="home"][data-home-stage="quickstart"] .quickstart-screen .choice-grid { bottom: calc(138px + env(safe-area-inset-bottom)); }
-body[data-view="home"][data-home-stage="quickstart"] .quickstart-help { bottom: calc(90px + env(safe-area-inset-bottom)); }
+body[data-view="home"][data-home-stage="quickstart"] .quickstart-screen .choice-grid { bottom: calc(152px + env(safe-area-inset-bottom)); }
+body[data-view="home"][data-home-stage="quickstart"] .quickstart-help { bottom: calc(108px + env(safe-area-inset-bottom)); }
 body[data-view="home"][data-home-stage="splash"] .splash-screen { min-height: calc(100dvh - 70px); }
 body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(40px + env(safe-area-inset-bottom)); }
 @media (max-height: 720px) { body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(24px + env(safe-area-inset-bottom)); } }
 body[data-view="home"][data-home-stage="splash"] .app-shell { padding-bottom: 70px; height: 100dvh; overflow: hidden; }
-body[data-view="home"][data-home-stage="splash"] .cards-index-link { display: none; }
+body[data-view="home"][data-home-stage="quickstart"] .app-shell { padding-bottom: 0; }
 
 /* P36 — one visual language: Japanese typography, celestial backs and reliable contrast. */
 body,
@@ -3920,7 +3920,7 @@ body[data-detail-mode="complete"] .app-shell { padding-bottom: 0; }
 }
 
 /* P41 — settings: bottom close sits after content instead of floating over sections. */
-#settings-modal .sheet-bottom-close { position: static; box-shadow: none; margin-bottom: env(safe-area-inset-bottom); }
+#settings-modal .sheet-bottom-close { position: static; box-shadow: none; margin-bottom: 0; }
 
 /* SNSシェア（Instagramストーリーズ・X） */
 .share-primary{display:grid;gap:10px;margin:14px 0 12px}
@@ -3980,3 +3980,17 @@ a.settings-link{text-decoration:none;color:inherit}
 #paywall-modal .confirm-actions:has(.google-signin:not([hidden])){align-items:center}
 #paywall-modal .confirm-actions .google-signin > div{width:100%}
 #paywall-modal .confirm-actions:has(.google-signin:not([hidden])) .button.secondary{min-height:40px;height:40px;border:1px solid rgba(255,255,255,.32);border-radius:4px;background:transparent;box-shadow:none;color:rgba(255,255,255,.78);font-size:14px;letter-spacing:.08em}
+
+/* Home: quiet link to the 78-card index, between "使い方を見る" and the bottom nav */
+.quickstart-cards { position: absolute; left: 50%; bottom: calc(78px + env(safe-area-inset-bottom)); transform: translateX(-50%); display: inline-flex; align-items: baseline; gap: 8px; padding: 4px 6px; color: #0b0b0b; text-decoration: none; white-space: nowrap; font: 600 .78rem/1 "Hiragino Mincho ProN","Yu Mincho",serif; letter-spacing: .04em; transition: opacity .2s ease; }
+.quickstart-cards b { font: italic 700 .78rem/1 Didot,"Bodoni 72",serif; letter-spacing: .12em; padding-bottom: 2px; border-bottom: 2px solid #f1d527; }
+.quickstart-cards span { border-bottom: 1px solid rgba(11,11,11,.35); padding-bottom: 2px; }
+.quickstart-cards::after { content: "→"; font-family: Didot,"Bodoni 72",serif; font-size: .8rem; }
+.quickstart-screen.is-choosing .quickstart-cards { opacity: 0; pointer-events: none; }
+
+/* Settings: UNLIMITED entry (non-Pro only) and the low-key legal row */
+#settings-modal .settings-link-pro span:first-child { display: grid; gap: 3px; }
+#settings-modal .settings-link-pro small { font: italic 700 .75rem/1 Didot,"Bodoni 72",serif; letter-spacing: .14em; color: #f1d527; }
+.settings-legal { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 4px; margin: 10px 0 env(safe-area-inset-bottom); font-size: .75rem; line-height: 1.4; }
+.settings-legal a { padding: 6px 4px; color: #8a847a; text-decoration: none; }
+.settings-legal a + a::before { content: "·"; margin-right: 8px; color: #5c574f; }
