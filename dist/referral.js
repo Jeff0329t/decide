@@ -21,14 +21,12 @@
     const c = normalizeCode(code);
     return c ? `${origin}${pathname}?ref=${c}` : '';
   }
-  // 招待した人数の表示（count が数値でなければ出さない）
+  // 特典の残り枠の表示（count が数値でない、または上限に達したら出さない）
   function countHtml(count) {
     if(!Number.isInteger(count) || count < 0) return '';
-    const left = Math.max(0, REWARD_CAP - count);
-    const note = left > 0
-      ? `特典はあと <b>${left}人</b> までもらえます`
-      : `特典の上限（${REWARD_CAP}人）に達しました。招待はこれからもできます`;
-    return `<p class="referral-count">招待した人 <b>${count}人</b> ／ ${note}</p>`;
+    const left = REWARD_CAP - count;
+    if(left <= 0) return '';
+    return `<p class="referral-count">特典つきで招待できるのはあと <b>${left}人</b></p>`;
   }
   function sectionHtml(code, url, count) {
     const c = normalizeCode(code);

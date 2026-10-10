@@ -56,12 +56,13 @@ test('sectionHtml: コードがあればボタン、なければ準備中', () =
   assert.doesNotMatch(sectionHtml('', ''), /data-referral-action/);
 });
 
-test('countHtml: 招待人数と残り枠（5人まで）', () => {
+test('countHtml: 残り枠だけ表示し、5人に達したら出さない', () => {
   assert.equal(countHtml(null), '');
-  assert.match(countHtml(0), /招待した人 <b>0人<\/b>.*あと <b>5人<\/b>/);
-  assert.match(countHtml(3), /招待した人 <b>3人<\/b>.*あと <b>2人<\/b>/);
-  assert.match(countHtml(5), /上限（5人）に達しました/);
-  assert.match(countHtml(7), /招待した人 <b>7人<\/b>.*上限/);
+  assert.match(countHtml(0), /あと <b>5人<\/b>/);
+  assert.match(countHtml(3), /あと <b>2人<\/b>/);
+  assert.doesNotMatch(countHtml(3), /招待した人/);
+  assert.equal(countHtml(5), '');
+  assert.equal(countHtml(7), '');
   assert.match(sectionHtml('ABCD2345', 'u', 2), /referral-count/);
   assert.doesNotMatch(sectionHtml('ABCD2345', 'u'), /referral-count/);
 });
