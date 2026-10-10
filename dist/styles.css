@@ -2272,20 +2272,29 @@ body[data-view="history"] .history-screen > .text-back { display: none; }
 #settings-modal .referral-setting { border-color: #4d4841; }
 #settings-modal .referral-setting p { color: #cfc7ba; }
 #settings-modal .referral-code b { color: #f1d527; }
-#settings-modal .deck-presets { gap: 0; border-top: 1px solid #4c4740; }
-#settings-modal .deck-preset {
-  min-height: 70px;
-  padding: 13px 8px;
-  border: 0;
-  border-bottom: 1px solid #4c4740;
-  border-radius: 0;
-  background: transparent;
-  color: #fff;
-}
-#settings-modal .deck-preset.selected { background: #f4efe3; color: #0a0a0a; }
-#settings-modal .deck-preset-subtitle { color: #f1d527; }
-#settings-modal .deck-preset.selected .deck-preset-subtitle { color: #155b8b; }
-#settings-modal .deck-preset-line { display: none; }
+#settings-modal .deck-quad { display: grid; grid-template-columns: 64px repeat(2,minmax(0,1fr)); gap: 8px; align-items: stretch; border: 0; }
+#settings-modal .deck-quad-col { align-self: end; padding: 0 0 2px; color: #f1d527; font-size: .78rem; font-weight: 800; letter-spacing: .04em; text-align: center; }
+#settings-modal .deck-quad-row { display: flex; flex-direction: column; justify-content: center; gap: 2px; color: #f1d527; font-size: .75rem; font-weight: 800; line-height: 1.3; word-break: keep-all; writing-mode: horizontal-tb; }
+#settings-modal .deck-quad-row em { color: #cfc7ba; font-style: normal; font-weight: 600; }
+#settings-modal .deck-preset { position: relative; min-height: 118px; padding: 30px 6px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: 1px solid #4c4740; border-radius: 6px; background: #131313; color: #fff; text-align: center; }
+#settings-modal .deck-preset strong { font-size: 1rem; }
+#settings-modal .deck-preset small { color: #cfc7ba; font-size: .75rem; }
+#settings-modal .deck-preset.selected { border-color: #f1d527; background: #f4efe3; color: #0a0a0a; box-shadow: 0 0 0 2px #f1d527; }
+#settings-modal .deck-preset.selected small { color: #4a453e; }
+#settings-modal .deck-preset-badge { position: absolute; top: 6px; right: 6px; padding: 2px 6px; background: #0a0a0a; color: #f1d527; font-size: .75rem; }
+.deck-preset-visual { display: flex; gap: 10px; justify-content: center; margin-bottom: 4px; }
+.deck-fig { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.deck-fig svg { display: block; overflow: visible; fill: currentColor; }
+.deck-fig .face { fill: none; stroke: currentColor; stroke-width: 1.5; }
+.deck-fig .ghost { fill: none; stroke: currentColor; stroke-width: 1.2; opacity: .35; }
+.deck-fig em { font-style: normal; font-size: .75rem; font-weight: 700; line-height: 1; opacity: .75; }
+.deck-fig.rev em { color: #f1d527; opacity: 1; }
+#settings-modal .deck-preset.selected .deck-fig.rev em { color: #8a6d00; }
+#settings-modal .deck-quad-detail { margin-top: 12px; padding: 12px 14px; border: 1px solid #4d4841; border-radius: 3px; background: #131313; color: #fff; font-size: .84rem; line-height: 1.55; }
+#settings-modal .deck-quad-detail b { margin-right: 8px; color: #f1d527; }
+#settings-modal .deck-quad-detail span { color: #cfc7ba; font-size: .78rem; }
+#settings-modal .deck-quad-detail p { margin: 6px 0 0; }
+#settings-modal .deck-quad-detail em { display: inline-block; margin-right: 6px; color: #f1d527; font-style: normal; font-size: .75rem; font-weight: 800; }
 #settings-modal .deck-advanced,
 #settings-modal .feedback-setting,
 #settings-modal .data-setting { border-color: #4d4841; }
@@ -2302,7 +2311,7 @@ body[data-view="history"] .history-screen > .text-back { display: none; }
 #settings-modal .setting-backs .back-picker { grid-template-columns: 1fr; max-height: none; }
 #settings-modal .back-choice { max-width: 180px; border-color: #5a544b; border-radius: 3px; background: #151515; color: #fff; }
 #settings-modal .back-choice.selected { border-color: #f1d527; background: #151515; }
-#settings-modal .data-actions { grid-template-columns: 1fr; }
+#settings-modal .data-actions { grid-template-columns: repeat(2,minmax(0,1fr)); }
 #settings-modal .data-actions .button { border-color: #5d574f; border-radius: 3px; background: #151515; color: #fff; }
 
 .sheet-bottom-close {
@@ -3364,7 +3373,7 @@ button.stats-pending:focus-visible { transform: translate(-2px,-2px) rotate(.35d
 .tutorial-intro-lines p:nth-child(even){transform:rotate(.7deg)}
 .tutorial-intro-start{border-radius:0;box-shadow:4px 4px 0 #0b0b0b;font-family:"Hiragino Mincho ProN","Yu Mincho",serif;letter-spacing:.08em}
 
-#settings-modal .deck-setting>b#deck-setting-title,#settings-modal .setting-backs>b,#settings-modal .feedback-setting>div>b,#settings-modal .referral-setting>div>b,#settings-modal .data-setting b#data-setting-title,#settings-modal .data-setting b#account-setting-title{display:inline-block;width:auto;padding:3px 10px;background:#f1d527;color:#0b0b0b;font-family:"Hiragino Mincho ProN","Yu Mincho",serif;letter-spacing:.06em;transform:rotate(-1.5deg);box-shadow:3px 3px 0 rgba(244,239,227,.85)}
+#settings-modal .deck-setting>b#deck-setting-title,#settings-modal .setting-backs>b,#settings-modal .feedback-setting>div>b,#settings-modal .referral-setting>div>b,#settings-modal .data-setting b#data-setting-title,#settings-modal .data-setting b#account-setting-title{display:inline-block;width:auto;justify-self:start;align-self:start;margin:0 0 10px;padding:3px 10px;background:#f1d527;color:#0b0b0b;font-family:"Hiragino Mincho ProN","Yu Mincho",serif;letter-spacing:.06em;transform:rotate(-1.5deg);box-shadow:3px 3px 0 rgba(244,239,227,.85)}
 .toggle-button{border-radius:0;background:#0b0b0b;border:1.5px solid #f4efe3;box-shadow:3px 3px 0 rgba(244,239,227,.35);transition:background .2s,box-shadow .2s}
 .toggle-button span{border-radius:0;background:#f4efe3}
 .toggle-button b{color:#f4efe3;font-family:Didot,"Bodoni 72",serif;letter-spacing:.08em}
@@ -3945,3 +3954,29 @@ body[data-view="draw"] .app-shell { padding-bottom: calc(70px + env(safe-area-in
 .update-bar p { flex: 1; margin: 0; }
 .update-bar button { min-height: 44px; min-width: 44px; padding: 0 10px; border: 1px solid #f4efe3; background: transparent; color: inherit; font: inherit; font-weight: 700; cursor: pointer; }
 .update-bar .update-bar-close { border: 0; font-size: 1.1rem; }
+
+
+/* Settings bottom: links list + compact legal row */
+.backup-status:empty { display: none; }
+#settings-modal .data-setting:not(.account-setting) { padding-bottom: 14px; }
+.settings-links { margin-top: 18px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.settings-link { width: 100%; min-height: 50px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border: 0; background: transparent; color: inherit; font: inherit; font-size: .94rem; text-align: left; cursor: pointer; }
+.settings-link + .settings-link { border-top: 1px solid var(--line); }
+.settings-link-chevron { font-size: 1.25rem; line-height: 1; opacity: .55; }
+#settings-modal .settings-links { border-color: #4d4841; border-radius: 3px; background: #131313; }
+#settings-modal .settings-link { color: #fff; }
+#settings-modal .settings-link + .settings-link { border-top-color: #4d4841; }
+#settings-modal .settings-link:hover, #settings-modal .settings-link:focus-visible { background: #1c1c1c; }
+#settings-modal .settings-link-chevron { color: #f1d527; opacity: 1; }
+.paywall-legal { margin: 12px 0 0; font-size: .75rem; color: var(--muted); text-align: center; }
+.paywall-legal a { color: inherit; }
+
+a.settings-link{text-decoration:none;color:inherit}
+#paywall-modal .confirm-actions{grid-template-columns:1.7fr 1fr}
+#paywall-modal .confirm-actions .button{white-space:nowrap;padding-left:10px;padding-right:10px}
+#paywall-modal .confirm-actions .google-signin{grid-column:auto;align-items:center;justify-content:center;min-width:0;overflow:hidden}
+#paywall-modal .confirm-actions [hidden]{display:none}
+#paywall-modal .confirm-actions:has(.google-signin:not([hidden])) .button.secondary{min-height:44px;height:44px;padding-top:0;padding-bottom:0;align-self:center}
+#paywall-modal .confirm-actions:has(.google-signin:not([hidden])){align-items:center}
+#paywall-modal .confirm-actions .google-signin > div{width:100%}
+#paywall-modal .confirm-actions:has(.google-signin:not([hidden])) .button.secondary{min-height:40px;height:40px;border:1px solid rgba(255,255,255,.32);border-radius:4px;background:transparent;box-shadow:none;color:rgba(255,255,255,.78);font-size:14px;letter-spacing:.08em}

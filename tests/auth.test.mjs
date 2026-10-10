@@ -31,15 +31,15 @@ test('Service Worker が config.js と auth.js をキャッシュする', () => 
 
 test('app.js への変更はフックのみ', () => {
   const app = read('app.js');
-  assert.match(app, /window\.DECIDE_AUTH\?\.maybePromptAfterSave\?\.\(/);
+  assert.doesNotMatch(app, /maybePromptAfterSave/);
   assert.match(app, /window\.DECIDE_AUTH\?\.renderSettings\?\.\(wrap\)/);
   assert.match(app, /data-account-setting[^>]*hidden/);
 });
 
 test('ログイン案内とアカウント削除の文言', () => {
   const auth = read('auth.js');
-  assert.match(auth, /Googleでログインして記録を引き継ぐ/);
-  assert.match(auth, /PROMPT_AT_SAVE = 5/);
+  assert.doesNotMatch(auth, /auth-login-modal/);
+  assert.doesNotMatch(auth, /PROMPT_AT_SAVE/);
   assert.match(auth, /この端末に保存された決定ログは削除されません/);
   assert.match(auth, /functions\/v1\/delete-account/);
 });

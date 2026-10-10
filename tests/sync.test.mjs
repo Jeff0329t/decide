@@ -86,7 +86,7 @@ test('renderToggle: 未ログインは表示なし、PROはON表示、無料はP
   assert.match(pro, /ログの同期/);
   assert.match(pro, /aria-pressed="true"/);
   const free = load({ user, pro: false, cloudSync: true }).sync.renderToggle();
-  assert.match(free, /PRO限定/);
+  assert.match(free, /UNLIMITED EDITION限定/);
   assert.match(free, /aria-pressed="false"/);
 });
 

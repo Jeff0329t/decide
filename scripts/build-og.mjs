@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 // SNS シェア用 OGP 画像（1200x630 JPEG）を生成する。
 // 入力: dist/assets/cards.json + scripts/data/worries.json + dist/assets/rider-waite/*.jpg
-// 出力: dist/assets/og/{id}.jpg（78枚）, dist/assets/og/worry-{slug}.jpg
+// 出力: dist/assets/og/{id}.jpg（78枚）, dist/assets/og/worry-{slug}.jpg, dist/assets/og/article-{slug}.jpg
 // 仕組み: 一時HTMLを書き出し、ローカルの Google Chrome（headless）でPNGを撮影し、sips で JPEG（品質80）に変換する。
-// 使い方: node scripts/build-og.mjs [--only=ar00,worry-tenshoku]
+// 使い方: node scripts/build-og.mjs [--only=ar00,worry-tenshoku,article-xxx] [--drafts]
 import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync, existsSync, statSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { loadArticles } from './lib/markdown.mjs';
 
 const DIST = fileURLToPath(new URL('../dist/', import.meta.url));
 const DATA = fileURLToPath(new URL('./data/', import.meta.url));
@@ -21,6 +22,11 @@ if (!existsSync(CHROME)) throw new Error(`Chrome not found: ${CHROME}（環境�
 
 const deck = JSON.parse(readFileSync(DIST + 'assets/cards.json', 'utf8'));
 const worries = JSON.parse(readFileSync(DATA + 'worries.json', 'utf8'));
+const articles = loadArticles(DATA + 'articles/', {
+  drafts: process.argv.includes('--drafts'),
+  worrySlugs: worries.map((w) => w.slug),
+  cardIds: deck.cards.map((c) => c.id),
+});
 const only = (process.argv.find((a) => a.startsWith('--only=')) || '').slice(7).split(',').filter(Boolean);
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
@@ -92,9 +98,28 @@ ${fan.map((f) => `<img class="card" src="${img(f.id)}" style="right:${f.right}px
 <div class="brand"><b>DECIDE.</b><span>心から納得いく決断を。</span></div>`);
 }
 
+function articleHtml(a) {
+  // 記事タイトルは長いので折り返し可。文字数に応じてフォントを縮める
+  const len = a.h1.length;
+  const size = len <= 14 ? 64 : len <= 22 ? 54 : len <= 30 ? 46 : 40;
+  return page(`
+<div class="slab" style="right:0;top:0;width:430px;height:${H}px"></div>
+<div class="sun" style="right:330px;top:420px;width:110px;height:110px"></div>
+<div class="frame"></div>
+<img class="card" src="${img(a.primary)}" style="right:110px;top:70px;height:470px;transform:rotate(6deg)">
+<div style="position:absolute;left:72px;top:70px;width:640px">
+  <p class="tag">TAROT × THINKING × YOU</p>
+  <p style="margin-top:36px;display:inline-block;background:#111;color:#f2efe7;font-size:22px;font-weight:700;letter-spacing:.14em;padding:6px 16px">読みもの</p>
+  <h1 style="margin-top:22px;font-family:'Hiragino Mincho ProN',serif;font-weight:600;font-size:${size}px;line-height:1.3;white-space:normal;max-height:260px;overflow:hidden">${esc(a.h1)}</h1>
+</div>
+<div class="rule"></div>
+<div class="brand"><b>DECIDE.</b><span>心から納得いく決断を。</span></div>`);
+}
+
 const jobs = [
   ...deck.cards.map((c) => ({ name: c.id, html: () => cardHtml(c) })),
   ...worries.map((w) => ({ name: `worry-${w.slug}`, html: () => worryHtml(w) })),
+  ...articles.map((a) => ({ name: `article-${a.slug}`, html: () => articleHtml(a) })),
 ].filter((j) => !only.length || only.includes(j.name));
 
 // Chrome は撮影後も終了しないことがあるため、PNG のサイズが安定した時点で kill する

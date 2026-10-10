@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'decide-shell-editorial-v89';
+const SHELL_CACHE = 'decide-shell-editorial-v105';
 const IMAGE_CACHE = 'decide-card-images-p14-v1';
 const IMAGE_LIMIT = 100;
 const CARD_SHELL_FILES = [
@@ -71,7 +71,7 @@ self.addEventListener('fetch', event => {
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
   if (url.origin !== SCOPE.origin) return;
-  if (url.pathname.includes('/cards/') || url.pathname.endsWith('/sitemap.xml') || url.pathname.endsWith('/robots.txt')) return;
+  if (url.pathname.includes('/cards/') || url.pathname.includes('/articles/') || url.pathname.endsWith('/sitemap.xml') || url.pathname.endsWith('/robots.txt')) return;
   if (request.mode === 'navigate') {
     // Standalone pages such as privacy.html must not be answered with the app shell.
     if (/\.html$/.test(url.pathname) && !url.pathname.endsWith('/index.html')) return;

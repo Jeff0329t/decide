@@ -3,11 +3,14 @@
 // 入力: dist/assets/cards.json + scripts/data/cards-extra-*.json
 // 出力: dist/cards/index.html, dist/cards/{major,wands,cups,swords,pentacles}.html,
 //       dist/cards/{id}.html, dist/cards/worries.html, dist/cards/worry-{slug}.html,
+//       dist/articles/index.html, dist/articles/{slug}.html（記事が1本以上あるとき）,
 //       dist/sitemap.xml, dist/robots.txt
-// 悩み別ページの文章: scripts/data/worries.json
-// 使い方: node scripts/build-cards.mjs
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+// 悩み別ページの文章: scripts/data/worries.json / 記事: scripts/data/articles/*.md
+// 使い方: node scripts/build-cards.mjs [--drafts]
+//   --drafts: draft: true の記事も noindex 付きで出力する（確認用。sitemap には入れない）
+import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { loadArticles } from './lib/markdown.mjs';
 
 const DIST = fileURLToPath(new URL('../dist/', import.meta.url));
 const DATA = fileURLToPath(new URL('./data/', import.meta.url));
@@ -16,6 +19,8 @@ const MIN_CHARS = 800;
 const CTA_TEXT = '今抱えている迷いを、このカードの視点から考えてみる';
 const CREDIT = 'images: sixseeds/tarot-api, public domain';
 const TODAY = new Date().toISOString().slice(0, 10);
+const DRAFTS = process.argv.includes('--drafts');
+const ARTICLE_MIN_CHARS = 1500;
 
 const deck = JSON.parse(readFileSync(DIST + 'assets/cards.json', 'utf8'));
 const extra = {};
@@ -32,6 +37,9 @@ for (const w of worries) {
     if (!byId.has(id)) throw new Error(`unknown card in worry ${w.slug}: ${id}`);
   }
 }
+const articles = loadArticles(DATA + 'articles/', { drafts: DRAFTS, worrySlugs: worries.map((w) => w.slug), cardIds: cards.map((c) => c.id) });
+const published = articles.filter((a) => !a.draft);
+const worryBySlug = new Map(worries.map((w) => [w.slug, w]));
 const worryText = (w) => [w.lead, ...w.sections.flatMap((s) => [s.h2, s.p])].join('');
 const THEMES = deck.themes;
 const LEVELS = deck.scoring.levels;
@@ -161,11 +169,18 @@ dl.themes dd{margin:0}
 .wcards p{margin:0 0 4px}
 .cats{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;padding:0;list-style:none;font-size:.88rem}
 .cats a{display:inline-block;padding:2px 12px;border:1.5px solid var(--line);border-radius:999px;text-decoration:none}
+.dateline{font-size:.82rem;color:var(--muted);margin:0 0 16px}
+.draft{margin:0 0 16px;padding:8px 12px;border:2px dashed #d8402f;color:#d8402f;font-weight:700;font-size:.85rem}
+blockquote{margin:16px 0;padding:4px 16px;border-left:3px solid var(--accent);color:var(--muted)}
+.alist{margin:12px 0 0;padding:0;list-style:none}
+.alist li{padding:12px 0;border-bottom:1px dashed var(--line)}
+.alist h3{margin:0 0 4px}
+.alist p{margin:0}
 .cats [aria-current]{border:1.5px solid #111;background:var(--accent);color:#111;padding:2px 12px;border-radius:999px;font-weight:600}
 footer{max-width:720px;margin:0 auto;padding:16px 16px 48px;border-top:1px solid var(--line);font-size:.8rem;color:var(--muted)}
 footer p{margin:4px 0}`;
 
-function layout({ title, description, path, ogImage, ogType = 'article', ld, body }) {
+function layout({ title, description, path, ogImage, ogType = 'article', ld, body, noindex = false }) {
   const url = ORIGIN + path;
   return `<!doctype html>
 <html lang="ja">
@@ -174,7 +189,7 @@ function layout({ title, description, path, ogImage, ogType = 'article', ld, bod
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
-<link rel="canonical" href="${url}">
+<link rel="canonical" href="${url}">${noindex ? '\n<meta name="robots" content="noindex">' : ''}
 <meta name="theme-color" content="#111010">
 <meta property="og:type" content="${ogType}">
 <meta property="og:site_name" content="DECIDE">
@@ -336,6 +351,11 @@ ${crumbsHtml(crumbs)}
 <p class="note">転職・別れ・引っ越しなど、よくある迷いごとに考え方と関係するカードをまとめています。</p>
 ${worriesNav()}
 </section>
+${published.length ? `<section>
+<h2 id="articles"><a href="../articles/">読みもの</a></h2>
+<p class="note">迷いや決断について、もう少し踏み込んで考えるための記事です。</p>
+<ul class="cats">${published.slice(0, 5).map((a) => `<li><a href="../articles/${a.slug}.html">${esc(a.h1)}</a></li>`).join('')}<li><a href="../articles/">記事の一覧</a></li></ul>
+</section>` : ''}
 ${groups}
 </main>`;
   return layout({
@@ -481,6 +501,87 @@ ${rows}
   return layout({ title, description, path, ogType: 'website', ogImage: `${ORIGIN}/og-image-v3.png`, ld: [itemList, crumbsLd(crumbs)], body });
 }
 
+// ---- 記事 ----
+const fmtDate = (d) => { const [y, m, dd] = d.split('-').map(Number); return `${y}年${m}月${dd}日`; };
+
+function articlePage(a) {
+  const path = `/articles/${a.slug}.html`;
+  const primary = byId.get(a.primary);
+  const ogImage = `${ORIGIN}/assets/og/article-${a.slug}.jpg`;
+  const crumbs = [
+    { name: 'DECIDE', href: '../', path: '/' },
+    { name: '読みもの', href: './', path: '/articles/' },
+    { name: a.h1, path },
+  ];
+  const ld = {
+    '@context': 'https://schema.org', '@type': 'Article',
+    headline: a.h1, description: a.description, image: ogImage, inLanguage: 'ja',
+    mainEntityOfPage: ORIGIN + path, datePublished: a.date, dateModified: a.updated || a.date,
+    author: { '@type': 'Organization', name: 'DECIDE' },
+    publisher: { '@type': 'Organization', name: 'DECIDE', url: ORIGIN + '/' },
+  };
+  const cta = (msg) => `<aside class="cta" aria-label="DECIDE で考える">
+<p>${msg}</p>
+<a href="../?from=${a.primary}">${CTA_TEXT}</a>
+</aside>`;
+  // 中間CTA: 真ん中あたりの h2 の直前（h2 が2つ未満なら本文の後ろの CTA だけ）
+  const h2s = a.blocks.map((b, i) => (b.type === 'h2' ? i : -1)).filter((i) => i >= 0);
+  const midAt = h2s.length >= 2 ? h2s[Math.floor(h2s.length / 2)] : -1;
+  const mid = cta(`${esc(primary.name)}の視点から、あなた自身の二つの選択肢を並べてみませんか。`);
+  const bodyHtml = a.blocks.map((b, i) => (i === midAt ? mid + '\n' : '') + b.html).join('\n');
+  const relWorries = a.worries.map((s) => worryBySlug.get(s));
+  const relCards = [...new Set([a.primary, ...a.cards])].map((id) => byId.get(id));
+  const others = published.filter((o) => o.slug !== a.slug).slice(0, 5);
+  const body = `<main>
+${crumbsHtml(crumbs)}
+<article>
+${a.draft ? '<p class="draft">下書き（未公開）— このページは確認用です。公開するには draft: false にして再ビルドします。</p>' : ''}
+<h1>${esc(a.h1)}</h1>
+<p class="dateline"><time datetime="${a.date}">${fmtDate(a.date)}</time>${a.updated ? `（更新 <time datetime="${a.updated}">${fmtDate(a.updated)}</time>）` : ''} ・ DECIDE 編集部</p>
+${bodyHtml}
+${cta('二つの選択肢を並べて、カードと一緒に整理できます。')}
+${relWorries.length ? `<section>
+<h2>関係する悩み別ガイド</h2>
+<ul class="cats">${relWorries.map((w) => `<li><a href="../cards/worry-${w.slug}.html">${esc(w.h1)}</a></li>`).join('')}<li><a href="../cards/worries.html">悩み別の一覧</a></li></ul>
+</section>` : ''}
+<section>
+<h2>この記事に関係するカード</h2>
+<ul class="grid">${relCards.map((c) => `<li><a href="../cards/${c.id}.html">${picture(c, { sizes: '120px' })}${esc(c.name)}</a></li>`).join('')}</ul>
+<p class="note"><a href="../cards/">78枚すべてのカード解説を見る</a></p>
+</section>
+${others.length ? `<section>
+<h2>ほかの読みもの</h2>
+<ul>${others.map((o) => `<li><a href="./${o.slug}.html">${esc(o.h1)}</a></li>`).join('')}</ul>
+<p class="note"><a href="./">記事の一覧</a></p>
+</section>` : ''}
+</article>
+</main>`;
+  return layout({ title: a.title, description: a.description, path, ogImage, ld: [ld, crumbsLd(crumbs)], body, noindex: a.draft });
+}
+
+function articlesIndex(list) {
+  const path = '/articles/';
+  const title = '読みもの｜迷いと決断について考える記事 - DECIDE';
+  const description = '転職、別れ、副業、決められない疲れ。迷いや決断について、タロットの視点も借りながら考えを整理するための記事をまとめています。';
+  const crumbs = [{ name: 'DECIDE', href: '../', path: '/' }, { name: '読みもの', path }];
+  const itemList = {
+    '@context': 'https://schema.org', '@type': 'ItemList', name: 'DECIDE の読みもの',
+    itemListElement: list.map((a, i) => ({ '@type': 'ListItem', position: i + 1, url: `${ORIGIN}/articles/${a.slug}.html`, name: a.h1 })),
+  };
+  const rows = list.map((a) => `<li><h3><a href="./${a.slug}.html">${esc(a.h1)}</a>${a.draft ? '（下書き）' : ''}</h3><p class="dateline"><time datetime="${a.date}">${fmtDate(a.date)}</time></p><p>${esc(a.description)}</p></li>`).join('\n');
+  const body = `<main>
+${crumbsHtml(crumbs)}
+<h1>読みもの</h1>
+<p>大きな決断の前で立ち止まったときに、考えを整理するための記事です。カードは未来を言い当てるものではなく、見落としていた気持ちや条件に気づくための問いかけとして紹介しています。</p>
+<ul class="alist">
+${rows}
+</ul>
+<div class="cta"><p>カードを引いて、いまの迷いを整理する</p><a href="../">${CTA_TEXT}</a></div>
+<p class="note"><a href="../cards/worries.html">悩み別に読む</a> ／ <a href="../cards/">78枚のカード解説</a></p>
+</main>`;
+  return layout({ title, description, path, ogType: 'website', ogImage: `${ORIGIN}/og-image-v3.png`, ld: [itemList, crumbsLd(crumbs)], body, noindex: !list.some((a) => !a.draft) });
+}
+
 // ---- 生成 ----
 mkdirSync(DIST + 'cards', { recursive: true });
 const thin = [];
@@ -507,12 +608,24 @@ for (const w of worries) {
   writeFileSync(DIST + 'cards/worries.html', worriesIndex());
 }
 
+rmSync(DIST + 'articles', { recursive: true, force: true });
+if (articles.length) {
+  mkdirSync(DIST + 'articles', { recursive: true });
+  for (const a of articles) {
+    const n = countChars(a.text);
+    if (n < ARTICLE_MIN_CHARS) thin.push({ id: `article-${a.slug}`, name: a.h1, chars: n });
+    writeFileSync(`${DIST}articles/${a.slug}.html`, articlePage(a));
+  }
+  writeFileSync(DIST + 'articles/index.html', articlesIndex(articles));
+}
+
 const urls = [
   ['/', '1.0'], ['/cards/', '0.8'],
   ...ARCANA_ORDER.map((a) => [`/cards/${CATEGORY[a].slug}.html`, '0.7']),
   ['/cards/worries.html', '0.7'],
   ...worries.map((w) => [`/cards/worry-${w.slug}.html`, '0.7']),
   ...cards.map((c) => [`/cards/${c.id}.html`, '0.6']),
+  ...(published.length ? [['/articles/', '0.7'], ...published.map((a) => [`/articles/${a.slug}.html`, '0.6'])] : []),
   ['/privacy.html', '0.2'], ['/terms.html', '0.2'], ['/tokushoho.html', '0.2'],
 ];
 writeFileSync(DIST + 'sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
@@ -529,6 +642,7 @@ Sitemap: ${ORIGIN}/sitemap.xml
 const counts = cards.map((c) => countChars(cardText(c)));
 console.log(`cards: ${cards.length} pages + index + ${ARCANA_ORDER.length} categories + ${worries.length} worries + worries index, sitemap ${urls.length} URLs`);
 const wcounts = worries.map((w) => countChars(worryText(w)));
+console.log(`articles: ${published.length} published${DRAFTS ? ` + ${articles.length - published.length} drafts (noindex, not in sitemap)` : ''}`);
 console.log(`worry chars: min ${Math.min(...wcounts)} / max ${Math.max(...wcounts)}`);
 console.log(`card-specific chars: min ${Math.min(...counts)} / max ${Math.max(...counts)} (threshold ${MIN_CHARS})`);
 if (thin.length) {

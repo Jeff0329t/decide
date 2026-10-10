@@ -72,7 +72,7 @@ test('settingHtml: ON/OFF ボタンを出す', () => {
   const off = settingHtml(false, 'ready');
   assert.match(off, /data-push-action="toggle" aria-pressed="false"/);
   assert.match(off, /<b>OFF<\/b>/);
-  assert.match(off, /決定から3日後/);
+  assert.match(off, /決定ごとに選んだ日/);
   const on = settingHtml(true, 'ready');
   assert.match(on, /class="toggle-button on"/);
   assert.match(on, /aria-pressed="true"/);

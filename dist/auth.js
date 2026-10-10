@@ -3,7 +3,6 @@
 // 決定ログ本文は、PROで「ログの同期」をONにした場合だけ送信する（sync.js）。それ以外でSupabaseに渡るのはメール等のアカウント情報のみ。
 (function(){
   const config = window.DECIDE_CONFIG || {};
-  const PROMPT_AT_SAVE = 5;
   const listeners = new Set();
   let client = null;
   let currentUser = null;
@@ -96,15 +95,18 @@
         callback: async response => {
           const { error } = await client.auth.signInWithIdToken({ provider: 'google', token: response.credential, nonce });
           if(error) { notify('ログインできませんでした'); return; }
-          if(document.querySelector('#auth-login-modal')) closeSheet('auth-login-modal');
+          if(document.querySelector('#paywall-modal')) closeSheet('paywall-modal');
           notify('ログインしました');
         }
       });
-      gis.renderButton(container, { type: 'standard', theme: 'outline', size: 'large', text: 'signin_with', locale: 'ja' });
+      // 置き場所の幅いっぱいに描画して、隣のボタンと端をそろえる（GISの上限は400px）
+      container.hidden = false;
+      const width = Math.min(400, Math.floor(container.clientWidth));
+      gis.renderButton(container, { type: 'standard', theme: 'outline', size: 'large', text: 'signin_with', locale: 'ja', ...(width >= 200 ? { width } : {}) });
     } catch(error) {
+      container.hidden = true;
       return false;
     }
-    container.hidden = false;
     container.parentElement?.querySelectorAll('[data-auth-action="login"]').forEach(button => { button.hidden = true; });
     return true;
   }
@@ -115,10 +117,9 @@
     if(error) notify('ログインを開始できませんでした');
   }
 
-  // GISが使えるときはボタン入りのシートを開く。使えなければリダイレクト
+  // GISボタンが出せない場面のログイン（リダイレクト）
   async function signInWithGoogle() {
     if(!client) { notify('ログインは準備中です'); return; }
-    if(googleClientId() && !document.querySelector('#auth-login-modal')) { openLoginPrompt(); return; }
     await signInWithRedirect();
   }
 
@@ -165,7 +166,7 @@
     section.innerHTML = user
       ? `<div><b id="account-setting-title">アカウント</b>
         <p class="account-email">${escapeHtml(user.email)} でログイン中</p>
-        <p class="account-plan">プラン：${window.DECIDE_ENTITLEMENTS?.hasProAccess?.(user)?'PRO（買い切り）':'無料'}</p></div>
+        <p class="account-plan">プラン：${window.DECIDE_ENTITLEMENTS?.hasProAccess?.(user)?'UNLIMITED EDITION（買い切り）':'無料'}</p></div>
         ${window.DECIDE_SYNC?.renderToggle?.() || ''}
         ${window.DECIDE_REFERRAL?.renderSettings?.() || ''}
         <div class="data-actions">
@@ -173,7 +174,7 @@
           <button class="button secondary danger" type="button" data-auth-action="delete-confirm">アカウント削除</button>
         </div>`
       : `<div><b id="account-setting-title">アカウント</b>
-        <p>Googleでログインすると、PRO（購入済みの状態）を別の端末でも使えます。決定ログの本文は、PROで同期をONにしない限り送信されず、この端末に残ります。</p></div>
+        <p>Googleでログインすると、UNLIMITED EDITION（購入済みの状態）を別の端末でも使えます。決定ログの本文は、UNLIMITED EDITIONで同期をONにしない限り送信されず、この端末に残ります。</p></div>
         <div class="data-actions">
           <div class="google-signin" data-google-button hidden></div>
           <button class="button" type="button" data-auth-action="login">ログイン</button>
@@ -207,26 +208,10 @@
     else document.querySelector(`#${id}`)?.remove();
   }
 
-  // 5件目の保存でログインを案内（閉じられる・ブロックしない）
-  function maybePromptAfterSave(count, isNew) {
-    if(!client || currentUser || !isNew || count !== PROMPT_AT_SAVE) return;
-    openLoginPrompt();
-  }
-
-  function openLoginPrompt(message) {
-    if(!client) { notify('ログインは準備中です'); return; }
-    openSheet('auth-login-modal', 'Googleでログインして記録を引き継ぐ',
-      `<p>${escapeHtml(message || 'ログインしておくと、PROの購入状態を別の端末でも引き継げます。決定ログの本文は、PROで同期をONにしない限り送信されず、この端末に保存されたままです。')}</p>`,
-      `<div class="google-signin" data-google-button hidden></div>
-       <button class="button" type="button" data-auth-action="login">Googleでログイン</button>
-       <button class="button secondary" type="button" data-auth-action="close">あとで</button>`);
-    renderGoogleButton(document.querySelector('#auth-login-modal [data-google-button]'));
-  }
-
   function openDeleteConfirm() {
     if(typeof closeModal === 'function') closeModal('#settings-modal');
     setTimeout(() => openSheet('auth-delete-modal', 'アカウントを削除しますか？',
-      `<p>ログイン情報・PROの購入状態・同期した決定ログをサーバーから削除します。この操作は取り消せません。</p>
+      `<p>ログイン情報・UNLIMITED EDITIONの購入状態・同期した決定ログをサーバーから削除します。この操作は取り消せません。</p>
        <p>この端末に保存された決定ログは削除されません（不要な場合は、ブラウザの設定からこのサイトのデータを削除してください）。</p>`,
       `<button class="button danger" type="button" data-auth-action="delete">削除する</button>
        <button class="button secondary" type="button" data-auth-action="close">やめる</button>`), 200);
@@ -261,8 +246,7 @@
     accessToken,
     deleteAccount,
     renderSettings,
-    maybePromptAfterSave,
-    openLoginPrompt,
+    renderGoogleButton,
     client: () => client
   });
 })();

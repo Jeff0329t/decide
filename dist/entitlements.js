@@ -1,4 +1,4 @@
-// DECIDE. 無料枠とPRO判定
+// DECIDE. 無料枠とUNLIMITED EDITION判定
 // 無料枠：ドロー累計10回・ログ保存10件（別カウンタ）。ドロー回数はログを消しても戻らない。
 // 無料枠は端末内判定（回避可能なのは既知の制約として許容）。サーバーで守るのはPRO判定（profiles.plan_type）のみ。
 (function(){
@@ -124,33 +124,44 @@
     const user = currentUser();
     const title = reason === 'save' ? '保存できる上限に達しました'
       : reason === 'draw' ? '無料で引ける回数を使い切りました'
-      : 'PROで、もっと自由に';
+      : '本1冊分で、迷いに強くなる';
     const lead = reason === 'save'
       ? `無料で保存できる決定ログは${FREE_SAVES}件までです。`
       : reason === 'draw'
         ? `無料で引けるのは累計${FREE_DRAWS}回までです。`
         : `無料プランはドロー${FREE_DRAWS}回・ログ保存${FREE_SAVES}件までです。`;
+    const pitch = '本1冊分の¥980で、この先ずっと引き放題・残し放題。月額ではないので、迷う夜が何度来ても追加料金はかかりません。読み終わる本とちがって、あなたの答えは何度でも引き出せます。';
     const next = user
-      ? 'PRO（買い切り ¥980）で、ドローもログ保存も無制限になります。'
-      : 'PRO（買い切り ¥980）で、ドローもログ保存も無制限になります。購入にはGoogleでのログインが必要です（ログイン後に購入へ進みます）。';
+      ? pitch
+      : `${pitch}<br><small>購入にはGoogleでのログインが必要です（ログイン後に購入へ進みます）。</small>`;
     const primary = user
-      ? `<button class="button" type="button" data-ent-action="checkout">PROを購入（¥980）</button>`
-      : `<button class="button" type="button" data-ent-action="login">Googleでログイン</button>`;
+      ? `<button class="button" type="button" data-ent-action="checkout">¥980で手に入れる</button>`
+      : `<div class="google-signin" data-google-button hidden></div>
+         <button class="button" type="button" data-ent-action="login">Googleでログイン</button>`;
     const wrap = document.createElement('div');
     wrap.className = 'modal-wrap';
     wrap.id = id;
     wrap.innerHTML = `<button class="modal-shade" type="button" data-ent-action="close" aria-label="閉じる"></button>
       <section class="settings-sheet confirm-sheet" role="dialog" aria-modal="true" aria-labelledby="${id}-title">
         <div class="sheet-handle" aria-hidden="true"></div>
-        <p class="eyebrow">DECIDE. PRO</p>
+        <p class="eyebrow">UNLIMITED EDITION</p>
         <h2 id="${id}-title">${title}</h2>
         <p>${lead}</p>
         <p>${next}</p>
         <div class="confirm-actions">${primary}
           <button class="button secondary" type="button" data-ent-action="close">閉じる</button></div>
+        <p class="paywall-legal"><a href="./tokushoho.html" target="_blank" rel="noopener">特定商取引法に基づく表記</a> · <a href="./terms.html" target="_blank" rel="noopener">利用規約</a></p>
       </section>`;
     if(typeof mountModal === 'function') mountModal(wrap, '.confirm-actions button');
     else document.body.appendChild(wrap);
+    // 未ログイン：Googleボタンをこの画面に直接出す（出せなければ従来ボタンでリダイレクト）
+    if(!user && auth()?.renderGoogleButton) {
+      setPendingCheckout(true);
+      Promise.resolve(auth().renderGoogleButton(wrap.querySelector('[data-google-button]'))).then(ok => {
+        const fallback = wrap.querySelector('[data-ent-action="login"]');
+        if(ok && fallback) fallback.hidden = true;
+      }).catch(() => {});
+    }
   }
 
   function setPendingCheckout(on) {
@@ -176,7 +187,7 @@
   }
   async function startCheckout() {
     if(!currentUser()) { openPaywall('login'); return; }
-    if(hasProAccess()) { notify('すでにPROです'); return; }
+    if(hasProAccess()) { notify('すでに購入済みです'); return; }
     if(checkoutBusy) return;
     const endpoint = checkoutEndpoint();
     if(typeof fetch !== 'function' || !endpoint || !auth()?.isEnabled?.()) { notify('購入は準備中です'); return; }
@@ -193,7 +204,7 @@
         body: '{}'
       });
       if(res.status === 409) {
-        notify('すでにPROです');
+        notify('すでに購入済みです');
         await syncWithServer(currentUser());
         return;
       }

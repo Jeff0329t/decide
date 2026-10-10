@@ -151,7 +151,7 @@
     const on = pro && isOn();
     const note = pro
       ? 'ONにすると、決定ログをサーバーに保存し、同じアカウントでログインした別の端末でも見られます。OFFに戻すと同期を止めます（サーバーの内容はアカウント削除で消えます）。'
-      : '別の端末と決定ログを同期できます（PRO限定）。';
+      : '別の端末と決定ログを同期できます（UNLIMITED EDITION限定）。';
     return `<div class="feedback-setting sync-setting"><div><b>ログの同期</b><p>${note}</p></div>
       <button class="toggle-button ${on ? 'on' : ''}" type="button" data-sync-action="toggle" aria-pressed="${on}"><span></span><b>${on ? 'ON' : 'OFF'}</b></button></div>`;
   }

@@ -26,10 +26,39 @@ node scripts/build-cards.mjs
 
 ### 注意
 
-- カードページはJS不要の静的HTML。Service Worker は `/cards/`・`sitemap.xml`・`robots.txt` をキャッシュしません。
+- カードページはJS不要の静的HTML。Service Worker は `/cards/`・`/articles/`・`sitemap.xml`・`robots.txt` をキャッシュしません。
 - ドメインは `https://decisionprocess.net` 固定（canonical / OGP / sitemap）。変更時はスクリプト冒頭の定数を変更して再ビルド。
 - CTAは `../?from={id}`（分類ページは `../?from={slug}`、悩み別ページは `../?from={代表カードid}`）へリンク。アプリ側は `dist/card-entry.js` が読み取り「◯◯の視点で考える」ガイドを表示し、URLから `from` を消します（localStorageは使いません）。
 - 画像クレジット: images: sixseeds/tarot-api, public domain
+
+## 読みもの（記事）— `scripts/data/articles/*.md`
+
+`build-cards.mjs` が記事も生成します: `dist/articles/{slug}.html` と一覧 `dist/articles/index.html`（公開記事が1本以上あるときだけサイトマップ・カード一覧からリンク）。
+
+front matter（`---` で囲む）:
+
+```
+slug: tenshoku-mayou-30dai        # URL（英小文字・数字・ハイフン）
+title: <title>（32字前後）
+h1: ページの見出し
+description: 検索結果の説明文（80〜120字）
+date: 2026-10-08
+updated: 2026-10-20               # 任意
+keyword: 狙うキーワード（1記事1つ）
+primary: cu08                     # CTA ?from= と OGP に使う代表カード
+worries: [tenshoku]               # 任意・関連する悩み別ページ
+cards: [cu08, ar00]               # 任意・関連カード
+draft: true                       # true の間は公開されない
+```
+
+本文は Markdown（`##`/`###` 見出し・段落・リスト・`>` 引用・`**太字**`・`[文字](/cards/worry-tenshoku.html)`）。生HTMLはエスケープされます。`<!-- -->` は出力されないメモ欄です。`##` を2つ以上入れると中間と末尾の2か所にCTAが入ります。本文1500字未満は警告。
+
+- 下書き確認: `node scripts/build-cards.mjs --drafts`（noindex＋「下書き」帯つき、サイトマップには載らない）
+- 公開手順:
+  1. `draft: false` にする
+  2. `node scripts/build-cards.mjs`（**`--drafts` なしで**。下書きページは削除されます）
+  3. `node scripts/build-og.mjs --only=article-{slug}`
+  4. `node --test tests/*.test.mjs`
 
 ## build-og.mjs — OGP画像の生成
 

@@ -120,13 +120,13 @@ test('すでにPRO（キャッシュ）なら決済APIを呼ばない', async ()
   });
   await env.ent.startCheckout();
   assert.equal(env.fetchCalls.length, 0);
-  assert.deepEqual(env.toasts, ['すでにPROです']);
+  assert.deepEqual(env.toasts, ['すでに購入済みです']);
 });
 
-test('サーバーが 409 を返したら「すでにPROです」と表示し遷移しない', async () => {
+test('サーバーが 409 を返したら「すでに購入済みです」と表示し遷移しない', async () => {
   const env = loadEntitlements({ user: USER, fetchImpl: () => jsonResponse(409, { error: 'already_pro' }) });
   await env.ent.startCheckout();
-  assert.deepEqual(env.toasts, ['すでにPROです']);
+  assert.deepEqual(env.toasts, ['すでに購入済みです']);
   assert.equal(env.location.href, 'https://decisionprocess.net/');
   assert.ok(env.buttons.every(button => !button.disabled));
 });

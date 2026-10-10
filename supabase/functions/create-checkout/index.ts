@@ -4,8 +4,10 @@
 import Stripe from 'npm:stripe@17';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
-const PRODUCT_NAME = 'DECIDE. PRO（リリース記念・永久利用プラン）';
+const PRODUCT_NAME = 'DECIDE. UNLIMITED EDITION（買い切り）';
 const PRICE_JPY = 980;
+// Marks sessions as a DECIDE. PRO purchase; stripe-webhook grants PRO based on this, not on the amount.
+const PRODUCT_KEY = 'decide_pro_lifetime';
 
 const SITE_URL = (Deno.env.get('SITE_URL') ?? 'https://decisionprocess.net').replace(/\/$/, '');
 const ALLOWED_ORIGINS = new Set(
@@ -46,11 +48,13 @@ Deno.serve(async (req) => {
   // Return to the origin the purchase started from (localhost in dev), otherwise SITE_URL.
   const origin = req.headers.get('Origin')?.replace(/\/$/, '') ?? '';
   const base = ALLOWED_ORIGINS.has(origin) ? origin : SITE_URL;
-  const metadata = { user_id: user.id };
+  const metadata = { user_id: user.id, product: PRODUCT_KEY };
 
   try {
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
+      // Card only (Apple Pay / Google Pay included) so PRO is granted instantly; no delayed methods like konbini.
+      payment_method_types: ['card'],
       locale: 'ja',
       line_items: [{
         quantity: 1,

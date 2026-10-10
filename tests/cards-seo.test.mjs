@@ -42,6 +42,7 @@ test('service worker bypasses /cards/ and is bumped', () => {
   const sw = read('dist/service-worker.js');
   assert.ok(Number((sw.match(/decide-shell-editorial-v(\d+)/) || [])[1]) >= 85, "shell cache must be bumped to >= v85");
   assert.match(sw, /url\.pathname\.includes\('\/cards\/'\)/);
+  assert.match(sw, /url\.pathname\.includes\('\/articles\/'\)/);
 });
 
 test('sitemap and robots', () => {
@@ -101,7 +102,7 @@ test('card-entry.js validates from and is loaded/cached by the app', async () =>
   assert.equal(cardEntryLabel({ type: 'category', id: 'wands' }, []), 'ワンド');
   const src = read('dist/card-entry.js');
   assert.doesNotMatch(src, /localStorage|innerHTML/);
-  assert.match(read('dist/index.html'), /<script src="\.\/app\.js"><\/script>\s*<script src="\.\/card-entry\.js"><\/script>/);
+  assert.match(read('dist/index.html'), /<script src="\.\/app\.js" defer><\/script>\s*<script src="\.\/card-entry\.js" defer><\/script>/);
   assert.match(read('dist/service-worker.js'), /'\.\/card-entry\.js'/);
 });
 

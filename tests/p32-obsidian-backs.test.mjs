@@ -27,12 +27,12 @@ test('Obsidian note is readable and reimports every log field exactly',()=>{
   assert.throws(()=>backup.parse(markdown.replace(/<!-- DECIDE-BACKUP-V1[\s\S]*$/, '<!-- DECIDE-BACKUP-V1\ninvalid\nEND-DECIDE-BACKUP-V1 -->')),/バックアップデータを読み取れませんでした/);
 });
 
-test('existing JSON path stays and Markdown shares the same import validation',()=>{
+test('old JSON backups still import and Markdown shares the same import validation',()=>{
   assert.match(app,/function prepareImport\(payload\)/);
   assert.match(app,/pendingImport=prepareImport\(payload\)/);
   assert.match(app,/if\(!safeSetItem\(STORAGE_KEY,JSON\.stringify\(mergedLogs\)\)\)/);
   assert.match(app,/markdown\?DECIDE_BACKUP_FORMAT\.parse\(content\):JSON\.parse\(content\)/);
-  assert.match(app,/format='json'/);
+  assert.match(app,/format='markdown'/);
   assert.match(app,/data-action="export-markdown"/);
   assert.match(app,/data-action="import-markdown"/);
   assert.match(html,/\.\/backup-format\.js/);

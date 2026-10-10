@@ -1,5 +1,5 @@
 // DECIDE. ふり返りの通知（設定でONにした人だけ）
-// ONのとき、新しい決定ログに「3日後にふり返る」予定（remindAt）を付ける。
+// ONのとき、新しい決定ログに「3日後にふり返る」予定（remindAt）を付ける。いつ聞くかは決定ごとに履歴の詳細から変えられる。
 // ふり返り前のログの {id, remindAt} だけを IndexedDB にコピーし、Service Worker が定期バックグラウンド同期で通知する。
 // 通知の文面は決まった一文だけで、ログの中身（悩みや選択肢）は通知に出さない。
 (function(){
@@ -133,7 +133,7 @@
     const on = state.enabled;
     const supported = hasNotification();
     const note = supported
-      ? 'ONにすると、決定から3日後に「あの決断、どうなった？」と通知します。通知に決定の内容は出ません。ホーム画面に追加したアプリ（Chrome・Android）で届きやすくなります。'
+      ? `ONにすると、決定ごとに選んだ日に「あの決断、どうなった？」と通知します。通知に決定の内容は出ません。アプリを閉じている間も届けるには、iPhoneはSafariの共有ボタンから「ホーム画面に追加」したアプリで開いてください（iOS 16.4以降）。`
       : 'この端末・ブラウザは通知に対応していません。アプリを開いたときのお知らせは、これまで通り表示されます。';
     return `<div class="feedback-setting remind-setting" data-remind-setting><div><b>ふり返りの通知</b><p>${note}</p></div>
       <button class="toggle-button ${on ? 'on' : ''}" type="button" data-remind-action="toggle" aria-pressed="${on}"><span></span><b>${on ? 'ON' : 'OFF'}</b></button></div>`;
@@ -149,7 +149,7 @@
 
   function refreshSettings() {
     const wrap = typeof document !== 'undefined' ? document.querySelector('#settings-modal') : null;
-    if(wrap) mountSettings(wrap);
+    if(wrap) { mountSettings(wrap); window.DECIDE_PUSH?.mountSettings?.(wrap); }
   }
 
   async function toggle() {

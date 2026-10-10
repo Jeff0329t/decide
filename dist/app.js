@@ -138,7 +138,7 @@ function setBackupStatus(message, isError=false) { const status=document.querySe
 function markBackupComplete(exportedAt) { settings.lastBackupAt=exportedAt; settings.backupReminderDismissedUntil=Date.now()+14*DAY_MS; persist(); const date=document.querySelector('[data-backup-date]'); if(date)date.textContent=backupDateLabel(exportedAt); document.querySelector('[data-backup-reminder]')?.remove(); }
 function showBackupText(content) { const output=document.querySelector('[data-backup-output]'); const field=output?.querySelector('textarea'); if(!output || !field)return; field.value=content; output.hidden=false; setBackupStatus('ファイルとして保存できなかったため、内容をコピーできます。'); }
 async function copyBackupText() { const field=document.querySelector('[data-backup-output] textarea'); if(!field)return; try { await navigator.clipboard.writeText(field.value); toast('バックアップ内容をコピーしました'); } catch { field.select(); document.execCommand('copy'); toast('バックアップ内容をコピーしました'); } }
-async function exportLogs(records=logs, markComplete=true, format='json') {
+async function exportLogs(records=logs, markComplete=true, format='markdown') {
   const payload=backupPayloadFor(records); const exportedAt=payload.exportedAt;
   const markdown=format==='markdown';
   const content=markdown ? DECIDE_BACKUP_FORMAT.render(payload) : JSON.stringify(payload,null,2);
@@ -171,10 +171,10 @@ function prepareImport(payload) {
   const dateValue=log=>Date.parse(log.createdAt || '') || 0;
   return { additions, duplicates, reviewedUpdates, mergedLogs:[...updated,...additions].sort((a,b)=>dateValue(b)-dateValue(a)) };
 }
-function openImportPicker(format='json') { const input=document.querySelector(format==='markdown'?'#import-markdown-file':'#import-file'); input?.click(); }
+function openImportPicker() { document.querySelector('#import-file')?.click(); }
 async function readImportFile(file) {
   if(!file)return;
-  const markdown=/\.md$/i.test(file.name) || file.type==='text/markdown';
+  const markdown=!(/\.json$/i.test(file.name) || file.type==='application/json');
   const limit=markdown?MARKDOWN_IMPORT_LIMIT_BYTES:IMPORT_LIMIT_BYTES;
   if(file.size>limit) { setBackupStatus(`ファイルは${markdown?'16':'5'}MB以下にしてください。`,true); return; }
   try {
@@ -1075,14 +1075,13 @@ function saveDecision(form) {
   activeSession = null; selectedDecision = ''; detailId = log.id;
   decisionDraft = {genre:'',option1:'',option2:'',title:'',memo:''};
   completionId=log.id; currentView = 'detail'; render(); toast('決定を記録しました');
-  window.DECIDE_AUTH?.maybePromptAfterSave?.(logs.length, existing<0);
 }
 
 function openSaveFailure(log) {
   storageEvent('saveFailed');
   document.querySelector('#save-failed-modal')?.remove();
   const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='save-failed-modal'; wrap.failedLog=log;
-  wrap.innerHTML=`<button class="modal-shade" data-action="close-save-failed" aria-label="保存エラーを閉じる"></button><section class="settings-sheet confirm-sheet" role="dialog" aria-modal="true" aria-labelledby="save-failed-title"><div class="sheet-handle"></div><div class="sheet-head"><h2 id="save-failed-title">保存できませんでした</h2><button data-action="close-save-failed" aria-label="閉じる">×</button></div><p>この端末では、記録を保存できない状態です（保存領域がいっぱい、またはブラウザの設定で制限されています）。いま入力した内容は、書き出してお手元に残せます。</p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップJSON"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div><div class="confirm-actions"><button class="button" data-action="export-failed-log">この記録を書き出す</button><button class="button secondary" data-action="close-save-failed">閉じる</button></div></section>`;
+  wrap.innerHTML=`<button class="modal-shade" data-action="close-save-failed" aria-label="保存エラーを閉じる"></button><section class="settings-sheet confirm-sheet" role="dialog" aria-modal="true" aria-labelledby="save-failed-title"><div class="sheet-handle"></div><div class="sheet-head"><h2 id="save-failed-title">保存できませんでした</h2><button data-action="close-save-failed" aria-label="閉じる">×</button></div><p>この端末では、記録を保存できない状態です（保存領域がいっぱい、またはブラウザの設定で制限されています）。いま入力した内容は、書き出してお手元に残せます。</p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップ内容"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div><div class="confirm-actions"><button class="button" data-action="export-failed-log">この記録を書き出す</button><button class="button secondary" data-action="close-save-failed">閉じる</button></div></section>`;
   mountModal(wrap,'[data-action="export-failed-log"]');
 }
 
@@ -1103,7 +1102,7 @@ function renderHistory() {
     <div class="history-head"><div><p class="eyebrow">Decision log</p><h1>決めたこと。</h1></div>
       <div class="view-switch" aria-label="履歴の表示形式"><button class="${historyMode === 'list' ? 'selected' : ''}" data-action="history-mode" data-value="list">リスト</button><button class="${historyMode === 'calendar' ? 'selected' : ''}" data-action="history-mode" data-value="calendar">カレンダー</button></div>
     </div>
-    ${shouldShowBackupReminder() ? '<aside class="storage-banner backup-reminder" data-backup-reminder><button class="banner-close" data-action="dismiss-backup-reminder" aria-label="バックアップ案内を閉じる">×</button><b>バックアップしておきませんか</b><p>記録を書き出して、端末の外にも残しておけます。</p><button class="button secondary" data-action="export-logs">履歴を書き出す</button></aside>' : ''}
+    ${shouldShowBackupReminder() ? '<aside class="storage-banner backup-reminder" data-backup-reminder><button class="banner-close" data-action="dismiss-backup-reminder" aria-label="バックアップ案内を閉じる">×</button><b>バックアップしておきませんか</b><p>記録を書き出して、端末の外にも残しておけます。</p><button class="button secondary" data-action="export-markdown">履歴を書き出す</button></aside>' : ''}
     ${logs.length ? `<label class="history-search"><span aria-hidden="true">⌕</span><input id="history-search" type="search" value="${esc(historyQuery)}" placeholder="題名、カード、意味、ストーリーを検索" aria-label="履歴を検索"><small>${historyQuery ? `${results.length}件` : ''}</small></label>${historyMode === 'list' ? '<p class="swipe-hint">履歴を左へスワイプすると削除できます</p>' : ''}<div data-history-results>${renderHistoryResults(results)}</div>` : `<div class="empty-state"><h2>まだ履歴はありません</h2><p>最初のカードを引いて、ひとつ決めてみましょう。</p><button class="button" data-action="home">カードを引く</button></div>`}
   </section>`;
 }
@@ -1530,42 +1529,48 @@ function wrapCanvasText(ctx,text,x,y,maxWidth,lineHeight,maxLines=3){ let line='
 function loadShareImage(src){return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=reject;image.src=src;});}
 async function downloadShareImage(){ if(!activeShareData?.cards?.length)return; try { const blob=await createShareImageBlob(activeShareData); if(!blob){toast('画像を保存できませんでした');return;} const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download='decide-result.png';link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000);toast('共有画像を保存しました'); } catch { toast('画像を保存できませんでした'); } }
 
-function renderDeckPresets() {
-  return DECK_PRESETS.map(preset => {
-    const selected=settings.deckMode===preset.mode;
-    return `<button type="button" class="deck-preset ${selected?'selected':''}" role="radio" aria-checked="${selected}" tabindex="${selected?'0':'-1'}" data-action="deck-preset" data-value="${preset.mode}">
-      <span class="deck-preset-head"><strong>${preset.name}</strong><span class="deck-preset-badge" ${selected?'':'hidden'}>使用中</span></span>
-      <span class="deck-preset-subtitle">${preset.subtitle}</span>
-      <span class="deck-preset-line"><b>ひとこと：</b>${preset.one}</span>
-      <span class="deck-preset-line"><b>メリット：</b>${preset.benefit}</span>
-      <span class="deck-preset-line"><b>デメリット：</b>${preset.drawback}</span>
-      <span class="deck-preset-line"><b>向いている場面：</b>${preset.scene}</span>
+const DECK_VARIATIONS={'major-upright':'22通り','major-reversed':'44通り','all-upright':'78通り','all-reversed':'156通り'};
+function deckPresetVisual(many,reversed) {
+  const card=flip=>{ const ghosts=many?'<rect x="7" y="1" width="22" height="32" rx="3" class="ghost"/><rect x="5" y="2.5" width="22" height="32" rx="3" class="ghost"/>':'';
+    return `<svg viewBox="0 0 30 37" width="30" height="37">${ghosts}<g${flip?' transform="rotate(180 14 20.5)"':''}><rect x="3" y="4.5" width="22" height="32" rx="3" class="face"/><circle cx="14" cy="13.5" r="3.4"/><path d="M8.5 29.5h11l-2.6-10h-5.8z"/><path d="M14 6.3l-2.2 2.6h4.4z"/></g></svg>`; };
+  const fig=(flip,label)=>`<span class="deck-fig ${flip?'rev':''}">${card(flip)}<em>${label}</em></span>`;
+  return `<span class="deck-preset-visual" aria-hidden="true">${fig(false,'正')}${reversed?fig(true,'逆'):''}</span>`;
+}
+function deckPresetCell(preset) {
+  const selected=settings.deckMode===preset.mode; const reversed=preset.mode.endsWith('reversed');
+  return `<button type="button" class="deck-preset ${selected?'selected':''}" role="radio" aria-checked="${selected}" tabindex="${selected?'0':'-1'}" data-action="deck-preset" data-value="${preset.mode}" aria-label="${preset.name}（${preset.subtitle}）">
+      ${deckPresetVisual(preset.mode.startsWith('all'),reversed)}
+      <strong>${preset.name}</strong><small>${DECK_VARIATIONS[preset.mode]}</small>
+      <span class="deck-preset-badge" ${selected?'':'hidden'}>使用中</span>
     </button>`;
-  }).join('');
+}
+function renderDeckPresets() {
+  const [majorUp,majorRev,allUp,allRev]=DECK_PRESETS;
+  return `<span class="deck-quad-corner" aria-hidden="true"></span><span class="deck-quad-col" aria-hidden="true">正位置のみ</span><span class="deck-quad-col" aria-hidden="true">正逆あり</span>
+    <span class="deck-quad-row" aria-hidden="true">大アルカナ<em>22枚</em></span>${deckPresetCell(majorUp)}${deckPresetCell(majorRev)}
+    <span class="deck-quad-row" aria-hidden="true">全カード<em>78枚</em></span>${deckPresetCell(allUp)}${deckPresetCell(allRev)}`;
+}
+function deckDetailHtml() {
+  const preset=DECK_PRESETS.find(item=>item.mode===settings.deckMode)||DECK_PRESETS[3];
+  return `<b>${preset.name}</b><span>${preset.subtitle}</span><p>${preset.one}</p><p><em>向いている場面</em>${preset.scene}</p>`;
 }
 function openSettings() {
   const wrap = document.createElement('div'); wrap.className='modal-wrap'; wrap.id='settings-modal';
   wrap.innerHTML = `<button class="modal-shade" data-action="close-settings" aria-label="設定を閉じる"></button><section class="settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title">
     <div class="sheet-handle"></div><div class="sheet-head"><h2 id="settings-title">設定</h2><button data-action="close-settings" aria-label="閉じる">×</button></div>
-    <div class="deck-setting"><b id="deck-setting-title">使うカード</b><p>引くカードの種類と、逆位置の有無を選べます。あとから、いつでも変えられます。</p>
-      <div class="deck-presets" role="radiogroup" aria-labelledby="deck-setting-title">${renderDeckPresets()}</div>
-      <div class="deck-preset-notes"><p>選ぶと、次に引くカードから変わります。これまでの履歴は変わりません。</p><p>逆位置ありでは、引いたカードの約3割が逆位置になります。</p></div>
-      <details class="deck-advanced"><summary>詳しく設定する</summary>
-      <div class="setting-switch-row"><span><b>カード範囲</b><small data-deck-count>${settings.deckMode.startsWith('major') ? '22枚' : '78枚'}</small></span><div class="segmented-switch" aria-label="使うカードの範囲"><button class="${settings.deckMode.startsWith('major') ? 'selected' : ''}" data-action="deck-scope" data-value="major">大アルカナ</button><button class="${settings.deckMode.startsWith('all') ? 'selected' : ''}" data-action="deck-scope" data-value="all">全カード</button></div></div>
-      <div class="setting-switch-row"><span><b>カードの向き</b><small data-orientation-note>${settings.deckMode.endsWith('reversed') ? '逆位置を含む' : '正位置だけ'}</small></span><div class="segmented-switch" aria-label="カードの向き"><button class="${settings.deckMode.endsWith('upright') ? 'selected' : ''}" data-action="deck-orientation" data-value="upright">正位置のみ</button><button class="${settings.deckMode.endsWith('reversed') ? 'selected' : ''}" data-action="deck-orientation" data-value="reversed">正逆あり</button></div></div>
-      <div class="deck-summary"><span>現在</span><strong data-deck-summary>${settings.deckMode.startsWith('major') ? '大アルカナ22枚' : '全78枚'}・${settings.deckMode.endsWith('reversed') ? '正位置／逆位置' : '正位置のみ'}</strong></div>
-      </details>
+    <div class="deck-setting"><b id="deck-setting-title">使うカード</b><p>カードの枚数（縦）と、逆位置の有無（横）の組み合わせから選べます。</p>
+      <div class="deck-presets deck-quad" role="radiogroup" aria-labelledby="deck-setting-title">${renderDeckPresets()}</div>
+      <div class="deck-quad-detail" data-deck-detail aria-live="polite">${deckDetailHtml()}</div>
+      <div class="deck-preset-notes"><p>選ぶと、次に引くカードから変わります。これまでの履歴は変わりません。逆位置ありでは、引いたカードの約3割が逆位置になります。</p></div>
     </div>
-    <div class="setting-backs"><b>カードの裏面</b>${backPicker()}</div>
     <div class="feedback-setting"><div><b>操作音・振動</b><p>カードを開く時や決定を保存する時に、控えめな反応を返します。</p></div><button class="toggle-button ${settings.feedback ? 'on' : ''}" data-action="toggle-feedback" aria-pressed="${settings.feedback}"><span></span><b>${settings.feedback ? 'ON' : 'OFF'}</b></button></div>
-    <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">データ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}${isIOS() && !isStandalone() ? '<p class="safari-storage-note">Safariでは、記録は端末内に保存されます。しばらく開かないと消えることがあるため、ホーム画面への追加と、書き出しをおすすめします。</p>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-logs">履歴を書き出す（JSON）</button><button class="button secondary" data-action="import-logs">履歴を読み込む（JSON）</button><button class="button secondary" data-action="export-markdown">Obsidian用に書き出す（MD）</button><button class="button secondary" data-action="import-markdown">Obsidianから読み込む（MD）</button></div><p class="backup-format-note">MDはObsidianで読める1つのノートとして保存します。保管庫へはご自身で移してください。題名・メモ・ストーリーを含み、読み込みには末尾のバックアップデータを使います。表示部分の編集は反映されません。</p><input id="import-file" type="file" accept="application/json,.json" hidden><input id="import-markdown-file" type="file" accept="text/markdown,.md" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップ内容"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
+    <div class="setting-backs"><b>カードの裏面</b>${backPicker()}</div>
+    <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">データ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}${isIOS() && !isStandalone() ? '<p class="safari-storage-note">Safariでは、記録は端末内に保存されます。しばらく開かないと消えることがあるため、ホーム画面への追加と、書き出しをおすすめします。</p>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-markdown">履歴を書き出す</button><button class="button secondary" data-action="import-markdown">履歴を読み込む</button></div><p class="backup-format-note">メモ帳やObsidianでそのまま読めるファイル（.md）で保存します。読み込むと、書き出したときの履歴に戻せます。</p><input id="import-file" type="file" accept="text/markdown,.md,text/plain,application/json,.json" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップ内容"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
      <section class="data-setting account-setting" data-account-setting aria-labelledby="account-setting-title" hidden></section>
-     <div class="setting-note"><b>カードと深掘り提案</b><p>表面はパメラ・コールマン・スミスによる1909年のライダー＝ウェイト＝スミス版（パブリックドメイン）です。決定ログはこのブラウザ内に保存されます（PROで同期をONにした場合のみサーバーにも保存）。</p><p><a href="./privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a></p></div>
-     <button class="learn-entry" data-action="open-learn"><span aria-hidden="true">▣</span><span>タロットを学ぶ（カード図鑑）</span><span aria-hidden="true">→</span></button>
-     <button class="tutorial-replay" data-action="tutorial-replay"></button>
+     <nav class="settings-links" aria-label="その他"><button class="settings-link" data-action="open-learn"><span>カード図鑑</span><span class="settings-link-chevron" aria-hidden="true">›</span></button><button class="settings-link" data-action="tutorial-replay"><span data-tutorial-label>使い方をもう一度見る</span><span class="settings-link-chevron" aria-hidden="true">›</span></button><a class="settings-link" href="./cards/worries.html" target="_blank" rel="noopener"><span>記事を読む</span><span class="settings-link-chevron" aria-hidden="true">›</span></a><a class="settings-link" href="./privacy.html" target="_blank" rel="noopener"><span>プライバシーポリシー</span><span class="settings-link-chevron" aria-hidden="true">›</span></a><a class="settings-link" href="./terms.html" target="_blank" rel="noopener"><span>利用規約</span><span class="settings-link-chevron" aria-hidden="true">›</span></a><a class="settings-link" href="./tokushoho.html" target="_blank" rel="noopener"><span>特定商取引法に基づく表記</span><span class="settings-link-chevron" aria-hidden="true">›</span></a><a class="settings-link" href="mailto:twaziki@yahoo.co.jp"><span>お問い合わせ</span><span class="settings-link-chevron" aria-hidden="true">›</span></a></nav>
      <button class="sheet-bottom-close" data-action="close-settings">設定を閉じる</button>
+     
   </section>`;
-  wrap.querySelector('[data-action="tutorial-replay"]').textContent='使い方をもう一度見る';
   window.DECIDE_AUTH?.renderSettings?.(wrap);
   window.DECIDE_REMINDERS?.mountSettings?.(wrap);
   window.DECIDE_PUSH?.mountSettings?.(wrap);
@@ -1674,7 +1679,6 @@ function selectDeckMode(mode) {
 }
 function updateDeckSettingUI() {
   const modal=document.querySelector('#settings-modal'); if(!modal)return;
-  const major=settings.deckMode.startsWith('major'); const reversed=settings.deckMode.endsWith('reversed');
   modal.querySelectorAll('[data-action="deck-preset"]').forEach(item=>{
     const selected=item.dataset.value===settings.deckMode;
     item.classList.toggle('selected',selected);
@@ -1682,11 +1686,7 @@ function updateDeckSettingUI() {
     item.tabIndex=selected?0:-1;
     item.querySelector('.deck-preset-badge').hidden=!selected;
   });
-  modal.querySelectorAll('[data-action="deck-scope"]').forEach(item=>item.classList.toggle('selected',item.dataset.value===(major?'major':'all')));
-  modal.querySelectorAll('[data-action="deck-orientation"]').forEach(item=>item.classList.toggle('selected',item.dataset.value===(reversed?'reversed':'upright')));
-  modal.querySelector('[data-deck-count]').textContent=major?'22枚':'78枚';
-  modal.querySelector('[data-orientation-note]').textContent=reversed?'逆位置を含む':'正位置だけ';
-  modal.querySelector('[data-deck-summary]').textContent=`${major?'大アルカナ22枚':'全78枚'}・${reversed?'正位置／逆位置':'正位置のみ'}`;
+  const detail=modal.querySelector('[data-deck-detail]'); if(detail)detail.innerHTML=deckDetailHtml();
 }
 
 document.addEventListener('click', event => {
@@ -1749,7 +1749,7 @@ document.addEventListener('click', event => {
   else if (action === 'dismiss-a2hs') dismissA2HS();
   else if (action === 'dismiss-backup-reminder') { settings.backupReminderDismissedUntil=Date.now()+14*DAY_MS; persist(); document.querySelector('[data-backup-reminder]')?.remove(); }
   else if (action === 'import-logs') openImportPicker();
-  else if (action === 'import-markdown') openImportPicker('markdown');
+  else if (action === 'import-markdown') openImportPicker();
   else if (action === 'copy-backup-text') copyBackupText();
   else if (action === 'close-import') closeImport();
   else if (action === 'confirm-import') confirmImport();

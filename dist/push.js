@@ -65,7 +65,7 @@
     if(mode === 'ios-home') {
       return `<div class="feedback-setting push-setting" data-push-setting><div><b>アプリを閉じていても通知</b><p>Safariの共有ボタン→「ホーム画面に追加」してから開くと、通知を受け取れます（iOS 16.4以降）。</p></div></div>`;
     }
-    return `<div class="feedback-setting push-setting" data-push-setting><div><b>アプリを閉じていても通知</b><p>ONにすると、アプリを閉じていても決定から3日後に「あの決断、どうなった？」と届きます。サーバーに送るのは通知の予定日時だけで、決定の内容は送りません。</p></div>
+    return `<div class="feedback-setting push-setting" data-push-setting><div><b>アプリを閉じていても通知</b><p>ONにすると、アプリを閉じていても決定ごとに選んだ日に「あの決断、どうなった？」と届きます。サーバーに送るのは通知の予定日時だけで、決定の内容は送りません。</p></div>
       <button class="toggle-button ${on ? 'on' : ''}" type="button" data-push-action="toggle" aria-pressed="${on}"><span></span><b>${on ? 'ON' : 'OFF'}</b></button></div>`;
   }
 

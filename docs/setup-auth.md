@@ -102,12 +102,12 @@ window.DECIDE_CONFIG = Object.freeze({
 
 変更したら `dist/service-worker.js` の `SHELL_CACHE` を1つ上げてからデプロイしてください。
 
-## 8. 無料枠と PRO 判定（Phase 2）
+## 8. 無料枠と UNLIMITED EDITION 判定（Phase 2）
 
 - 無料枠: ドロー累計 **10回**、ログ保存 **10件**（SOLO・DUEL 共通）。判定は `dist/entitlements.js` の `canDraw()` / `canSaveLog(件数)` / `hasProAccess(user)`。
 - ドロー回数は端末内（`decide.tarot.entitlements.v1`）でカウントし、ログイン済みなら `profiles.draw_count` にも反映します（RPC `record_draw`）。ログイン時は端末内とDBの **大きい方** を採用します（RPC `merge_local_draws`、加算はしません）。
 - ログを削除してもドロー回数は戻りません。ログ件数は「現在の保存件数」で数えます。10件を超える既存ログは閲覧でき、新規保存のみ制限されます。
-- PRO 判定は `profiles.plan_type` が `'free'` 以外であること。ログイン時にサーバーから取得して `decide.tarot.entitlements.v1` にキャッシュし、オフライン時は直近のキャッシュ値を使います（キャッシュは同じユーザーIDの場合のみ有効）。
-- 11回目のドロー / 11件目の保存の直前に PRO 案内モーダルを表示して操作をブロックします。未ログインなら先に Google ログイン → ログイン後に購入へ進みます（購入ボタンは Phase 3 で Stripe に接続）。
-- **既知の制約**: 無料枠のドロー回数・ログ件数は端末内判定のため、技術に詳しい人は回避可能です（許容）。サーバーで確実に守るのは PRO 判定のみです。
+- UNLIMITED EDITION 判定は `profiles.plan_type` が `'free'` 以外であること。ログイン時にサーバーから取得して `decide.tarot.entitlements.v1` にキャッシュし、オフライン時は直近のキャッシュ値を使います（キャッシュは同じユーザーIDの場合のみ有効）。
+- 11回目のドロー / 11件目の保存の直前に 購入案内モーダル（UNLIMITED EDITION）を表示して操作をブロックします。未ログインなら先に Google ログイン → ログイン後に購入へ進みます（購入ボタンは Phase 3 で Stripe に接続）。
+- **既知の制約**: 無料枠のドロー回数・ログ件数は端末内判定のため、技術に詳しい人は回避可能です（許容）。サーバーで確実に守るのは UNLIMITED EDITION 判定のみです。
 - 動作確認時に無料枠をリセットしたい場合は、ブラウザのコンソールで `localStorage.removeItem('decide.tarot.entitlements.v1')` を実行します（ログイン中は DB の `draw_count` も Supabase の Table Editor で戻してください）。

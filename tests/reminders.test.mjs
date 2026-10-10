@@ -63,7 +63,7 @@ test('renderToggle: 保存した状態でON/OFF、通知に対応していない
   const off = load({ notification: true });
   assert.equal(off.isOn(), false);
   assert.match(off.renderToggle(), /aria-pressed="false"/);
-  assert.match(off.renderToggle(), /決定から3日後/);
+  assert.match(off.renderToggle(), /決定ごとに選んだ日/);
   assert.equal(off.defaultRemindAt('2026-10-01T00:00:00Z'), null);
 
   const on = load({ stored: '{"enabled":true}', notification: true });
@@ -73,3 +73,4 @@ test('renderToggle: 保存した状態でON/OFF、通知に対応していない
 
   assert.match(load().renderToggle(), /通知に対応していません/);
 });
+
