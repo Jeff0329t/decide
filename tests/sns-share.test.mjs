@@ -13,5 +13,6 @@ test('SNSシェア：Instagram → X → LINE → Facebook の順に縦に並ぶ
   assert.ok(insta < x && x < line && line < fb);
   assert.match(app, /async function createStoryImageBlob/);
   assert.match(app, /decisionprocess\.net/);
-  assert.match(app, /SNSでシェア ↗/);
+  // Decided画面の「SNSでシェア ↗」ボタンは要望により削除
+  assert.doesNotMatch(app, /SNSでシェア ↗/);
 });

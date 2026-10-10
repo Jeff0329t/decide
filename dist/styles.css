@@ -3531,6 +3531,10 @@ button.stats-pending:focus-visible { transform: translate(-2px,-2px) rotate(.35d
 .farewell-note { margin: 0; color: #bdb5a6; font-size: .8rem; letter-spacing: .06em; }
 .button.farewell-home { min-width: 180px; min-height: 48px; border: 2px solid #f4efe3; border-radius: 0; background: transparent; color: #f4efe3; box-shadow: 4px 4px 0 #f1d527; font-family: "Hiragino Mincho ProN","Yu Mincho",serif; font-weight: 800; }
 .button.farewell-home:active { transform: translate(3px,3px); box-shadow: 1px 1px 0 #f1d527; }
+.farewell-share { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 180px; min-height: 44px; margin-top: 2px; padding: 0 18px; border: 0; border-radius: 0; background: #f1d527; color: #0b0b0b; box-shadow: 4px 4px 0 #f4efe3; font-family: "Hiragino Mincho ProN","Yu Mincho",serif; font-size: .9rem; font-weight: 800; cursor: pointer; }
+.farewell-share b { font-size: 1.05rem; line-height: 1; }
+.farewell-share:active { transform: translate(3px,3px); box-shadow: 1px 1px 0 #f4efe3; }
+.farewell.is-open .farewell-inner > *:nth-child(8) { animation-delay: .78s; }
 @media (prefers-reduced-motion: reduce) { .farewell, .farewell.is-open .farewell-inner > * { transition: none; animation: none; } }
 @media (max-height: 700px) { .screen.completion-screen .completion-script { display: none; } .completion-dock .completion-copy p { margin: 3px 0 6px; } }
 
@@ -3996,3 +4000,83 @@ a.settings-link{text-decoration:none;color:inherit}
 .settings-legal { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 4px; margin: 10px 0 env(safe-area-inset-bottom); font-size: .75rem; line-height: 1.4; }
 .settings-legal a { padding: 6px 4px; color: #8a847a; text-decoration: none; }
 .settings-legal a + a::before { content: "·"; margin-right: 8px; color: #5c574f; }
+
+/* 2026-10-10 — splash hit area, prepare paper background, learn editorial restyle. */
+.splash-screen { position: relative; }
+.splash-hit { position: absolute; left: 0; right: 0; bottom: 0; height: 42%; z-index: 4; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.splash-start { cursor: pointer; }
+.splash-screen.peeling .splash-hit { display: none; }
+
+.prepare-screen {
+  position: relative; isolation: isolate;
+  background:
+    radial-gradient(rgba(11,11,11,.09) 1px, transparent 1.4px) 0 0 / 14px 14px,
+    #f4efe3 !important;
+}
+.prepare-screen::before {
+  content: ""; position: absolute; z-index: -1; left: 0; right: 0; bottom: 0; height: 46%;
+  background: url("./assets/editorial/choice-collage.webp") center bottom / cover no-repeat;
+  opacity: .14; filter: grayscale(.35) contrast(1.05); pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 40%); mask-image: linear-gradient(to bottom, transparent, #000 40%);
+}
+.prepare-screen::after {
+  content: "" !important; display: block !important; position: absolute; z-index: -1; top: 0; left: 0; right: 0; height: 8px;
+  background: repeating-linear-gradient(-45deg, #0b0b0b 0 10px, #f1d527 10px 20px); pointer-events: none;
+}
+.prepare-screen > * { position: relative; z-index: 1; }
+
+body.learn-active, body.learn-active .app-shell {
+  background:
+    radial-gradient(rgba(11,11,11,.07) 1px, transparent 1.4px) 0 0 / 14px 14px,
+    #f4efe3 !important;
+}
+body.learn-active .learn-screen { background: transparent !important; color: #0b0b0b; }
+.learn-header { position: relative; padding-top: 8px; }
+.learn-back {
+  display: inline-flex; align-items: center; min-height: 40px; padding: 8px 14px; margin-bottom: 14px;
+  border: 2px solid #0b0b0b; border-radius: 0; background: #0b0b0b; color: #f1d527;
+  box-shadow: 3px 3px 0 #f1d527, 3px 3px 0 1px #0b0b0b;
+  font: 700 .95rem/1 "Hiragino Mincho ProN","Yu Mincho",serif; letter-spacing: .06em; cursor: pointer;
+}
+.learn-back:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 #f1d527; }
+.learn-kicker {
+  display: inline-block; margin: 0 0 8px; padding: 4px 9px 3px; background: #f1d527; color: #0b0b0b;
+  box-shadow: 2px 2px 0 #0b0b0b; font: italic 700 .78rem/1 Didot,"Bodoni 72",serif; letter-spacing: .18em;
+}
+.learn-header h1 { margin: 4px 0 6px; color: #0b0b0b; font-family: "Hiragino Mincho ProN","Yu Mincho",serif; font-weight: 800; letter-spacing: .04em; }
+.learn-screen p, .learn-screen li { color: #2a2620; line-height: 1.85; }
+.learn-tabs { gap: 8px; }
+.learn-tab, .learn-filter, .learn-direction button, .learn-direction > * {
+  border: 2px solid #0b0b0b !important; border-radius: 0 !important; background: #fffdf6 !important; color: #0b0b0b !important;
+  box-shadow: 3px 3px 0 #0b0b0b; font-family: "Hiragino Mincho ProN","Yu Mincho",serif; font-weight: 700;
+}
+.learn-tab[aria-selected="true"], .learn-tab.active, .learn-tab.selected,
+.learn-filter[aria-pressed="true"], .learn-filter.active, .learn-filter.selected,
+.learn-direction .active, .learn-direction [aria-pressed="true"] {
+  background: #0b0b0b !important; color: #f1d527 !important; box-shadow: 3px 3px 0 #f1d527, 3px 3px 0 1px #0b0b0b;
+}
+.learn-search, .learn-search input {
+  border-radius: 0 !important; border: 2px solid #0b0b0b; background: #fffdf6; color: #0b0b0b; box-shadow: 3px 3px 0 #0b0b0b;
+}
+.learn-search input { border: 0; box-shadow: none; }
+.learn-tile, .learn-lesson-item, .learn-journey-step, .learn-points, .learn-suit-cards > *, .learn-related-link, .learn-progress, .learn-complete, .learn-empty, .learn-rank-table {
+  border: 2px solid #0b0b0b !important; border-radius: 0 !important; background: #fffdf6 !important; color: #0b0b0b;
+  box-shadow: 4px 4px 0 #0b0b0b !important;
+}
+.learn-tile:active, .learn-related-link:active, .learn-lesson-item:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 #0b0b0b !important; }
+.learn-thumb { border-radius: 0 !important; }
+.learn-tile-number, .learn-card-type { font-family: Didot,"Bodoni 72",serif; font-style: italic; letter-spacing: .1em; color: #6f6656; }
+.learn-tile-name { font-family: "Hiragino Mincho ProN","Yu Mincho",serif; font-weight: 800; color: #0b0b0b; }
+.learn-lesson-back { border: 2px solid #0b0b0b; border-radius: 0; background: #0b0b0b; color: #f1d527; box-shadow: 3px 3px 0 #f1d527; }
+
+/* Lesson reading view: plain article text, single plates. */
+.learn-lessons > h2 { margin: 6px 0 4px; font-family: "Hiragino Mincho ProN","Yu Mincho",serif; font-weight: 800; font-size: 1.6rem; line-height: 1.35; color: #0b0b0b; border-left: 8px solid #f1d527; padding-left: 12px; }
+.learn-lessons > p:not(.learn-kicker):not(.learn-minutes) { margin: 0 0 1.1em; padding: 0 2px; font-size: 1.02rem; line-height: 1.95; color: #1e1b16; max-width: 38em; }
+.learn-minutes { margin: 0 0 18px; font-size: .82rem; color: #6f6656; letter-spacing: .08em; }
+.learn-lesson-back { display: inline-block; margin: 4px 0 14px; padding: 8px 14px; font-weight: 800; letter-spacing: .04em; }
+.learn-points { padding: 16px 18px !important; margin: 20px 0 22px; }
+.learn-points h3 { margin: 0 0 8px; display: inline-block; background: #0b0b0b; color: #f1d527; padding: 3px 10px; font-size: .9rem; letter-spacing: .12em; }
+.learn-points ul { margin: 0; padding-left: 1.2em; }
+.learn-points li { margin: 6px 0; line-height: 1.8; }
+.learn-lesson-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; }
+.learn-read { flex: none; white-space: nowrap; padding: 4px 10px; background: #0b0b0b; color: #f1d527; font-size: .8rem; font-weight: 800; letter-spacing: .06em; }

@@ -124,9 +124,8 @@ function picture(c, { eager = false, sizes = '(max-width: 600px) 60vw, 280px', w
 }
 
 const CSS = `:root{--ink:#1e2430;--soft:#f2efe7;--muted:#5b6270;--line:#d9d4c7;--card:#fffdf8;--accent:#f1d625}
-@media (prefers-color-scheme: dark){:root{--ink:#e8e6e1;--soft:#111010;--muted:#a3a8b3;--line:#2e2c2a;--card:#1a1918}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--soft);color:var(--ink);font-family:Inter,"Hiragino Sans","Yu Gothic UI","Yu Gothic",sans-serif;line-height:1.8}
+body{margin:0;background:var(--soft);color:var(--ink);font-family:Inter,"Hiragino Sans","Yu Gothic UI","Yu Gothic",sans-serif;font-size:16.5px;line-height:1.9;-webkit-text-size-adjust:100%}
 a{color:inherit}
 main{max-width:720px;margin:0 auto;padding:24px 16px 64px}
 h1,h2,.serif{font-family:Didot,"Bodoni 72","Hiragino Mincho ProN","Yu Mincho",serif}
@@ -178,7 +177,32 @@ blockquote{margin:16px 0;padding:4px 16px;border-left:3px solid var(--accent);co
 .alist p{margin:0}
 .cats [aria-current]{border:1.5px solid #111;background:var(--accent);color:#111;padding:2px 12px;border-radius:999px;font-weight:600}
 footer{max-width:720px;margin:0 auto;padding:16px 16px 48px;border-top:1px solid var(--line);font-size:.8rem;color:var(--muted)}
-footer p{margin:4px 0}`;
+footer p{margin:4px 0}
+.topbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.back{display:inline-flex;align-items:center;gap:6px;flex:none;padding:6px 14px 6px 10px;border:1.5px solid #111;border-radius:999px;background:var(--card);color:#111;font-size:.85rem;font-weight:700;text-decoration:none;box-shadow:2px 2px 0 #111;line-height:1.4}
+.back:active{transform:translate(1px,1px);box-shadow:1px 1px 0 #111}
+.topbar .crumbs{flex:1;min-width:0}
+main p{margin:0 0 1em}
+.lede{font-size:1.02rem}
+.steps{counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:12px 0 0;padding:0;list-style:none}
+.steps li{position:relative;padding:14px 14px 12px 52px;background:var(--card);border:1.5px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.7}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--accent);border:1.5px solid #111;color:#111;font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+.steps b{display:block;margin-bottom:2px}
+.wjump{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0;padding:0;list-style:none}
+.wjump a{display:inline-block;padding:4px 14px;border:1.5px solid #111;border-radius:999px;background:var(--card);text-decoration:none;font-size:.85rem;font-weight:600}
+.wgroup-lead{color:var(--muted);font-size:.92rem;margin:0 0 4px}
+.wtiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:12px 0 0;padding:0;list-style:none}
+.wtile{display:flex;flex-direction:column;background:var(--card);border:1.5px solid #111;border-radius:12px;box-shadow:3px 3px 0 #111;overflow:hidden}
+.wtile-head{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center;padding:14px 14px 10px;text-decoration:none}
+.wtile-head img{width:100%;height:auto;display:block;border:1.5px solid #111;border-radius:4px;background:#111}
+.wtile-head h3{margin:0;font-size:1.05rem;line-height:1.45}
+.wtile-head small{display:block;color:var(--muted);font-size:.78rem;font-weight:400;margin-top:2px}
+.wtile-body{padding:0 14px 12px;font-size:.9rem;line-height:1.75;flex:1}
+.wtile-body p{margin:0 0 8px}
+.wtile-q{margin:0;padding:8px 12px;background:var(--soft);border-radius:8px;font-size:.86rem}
+.wtile-cards{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
+.wtile-cards a{display:inline-block;padding:1px 10px;border:1px solid var(--line);border-radius:999px;font-size:.78rem;text-decoration:none;background:var(--soft)}
+.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}`;
 
 function layout({ title, description, path, ogImage, ogType = 'article', ld, body, noindex = false }) {
   const url = ORIGIN + path;
@@ -190,7 +214,7 @@ function layout({ title, description, path, ogImage, ogType = 'article', ld, bod
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${url}">${noindex ? '\n<meta name="robots" content="noindex">' : ''}
-<meta name="theme-color" content="#111010">
+<meta name="theme-color" content="#f2efe7">
 <meta property="og:type" content="${ogType}">
 <meta property="og:site_name" content="DECIDE">
 <meta property="og:locale" content="ja_JP">
@@ -221,9 +245,11 @@ ${body}
 }
 
 function crumbsHtml(items) {
-  return `<nav class="crumbs" aria-label="パンくずリスト"><ol>${items.map((it, i) =>
+  const parent = [...items.slice(0, -1)].reverse().find((it) => it.href);
+  const back = parent ? `<a class="back" href="${parent.href}" aria-label="${esc(parent.name)}に戻る">← 戻る</a>` : '';
+  return `<div class="topbar">${back}<nav class="crumbs" aria-label="パンくずリスト"><ol>${items.map((it, i) =>
     i === items.length - 1 ? `<li aria-current="page">${esc(it.name)}</li>` : `<li><a href="${it.href}">${esc(it.name)}</a></li>`
-  ).join('')}</ol></nav>`;
+  ).join('')}</ol></nav></div>`;
 }
 const crumbsLd = (items) => ({
   '@context': 'https://schema.org', '@type': 'BreadcrumbList',
@@ -465,15 +491,32 @@ ${worriesNav(w.slug)}
 }
 
 const WORRIES_INTRO = [
-  '大きな決断ほど、ひとりで考えていると同じところをぐるぐる回ってしまいがちです。転職、別れ、引っ越し、結婚、学び直し、独立、人間関係、お金の使い方。どれも正解がひとつに決まらず、どちらを選んでも何かを手放すことになる種類の迷いです。',
+  '大きな決断ほど、ひとりで考えていると同じところをぐるぐる回ってしまいがちです。転職、就活、副業、独立、学び直し、お金の使い方、恋愛、結婚、別れ、介護、引っ越し、人間関係。どれも正解がひとつに決まらず、どちらを選んでも何かを手放すことになる種類の迷いです。',
   'このページでは、よくある迷いごとに「何が判断を難しくしているのか」「どんな順番で考えると整理しやすいか」をまとめ、その場面で視点を貸してくれるタロットカードを紹介しています。カードは未来を言い当てるためのものではなく、見落としていた気持ちや条件に気づくための問いかけとして使ってください。',
   '各ページでは、迷いの中身を分解する考え方を四つの観点から説明したうえで、関係するカードがなぜその場面で役立つのかを一枚ずつ解説しています。気になるテーマから読み始め、最後にDECIDEで実際の二つの選択肢を並べてみると、頭の中だけで考えていたときよりも、自分が本当に大切にしたいものが見えやすくなるはずです。',
 ];
 
+const WORRY_GROUPS = [
+  { id: 'work', name: '仕事・キャリア', lead: '働き方や収入にかかわる迷い。条件の比較だけでは決めきれないときに。', slugs: ['tenshoku', 'shukatsu', 'fukugyo', 'dokuritsu', 'manabi'] },
+  { id: 'love', name: '恋愛・家族', lead: '大切な人との関係にかかわる迷い。気持ちと現実のあいだで揺れるときに。', slugs: ['renai', 'kekkon', 'wakare', 'kaigo'] },
+  { id: 'life', name: '暮らし・お金・人づきあい', lead: '毎日の土台にかかわる迷い。小さく見えて、あとから効いてくる選択に。', slugs: ['hikkoshi', 'okane', 'ningen'] },
+];
+
+function firstSentence(text) {
+  const i = text.indexOf('。');
+  return i === -1 ? text : text.slice(0, i + 1);
+}
+
+// 「自分への問いかけ」は導入文で始まるため、最初の実際の問い（「か。」で終わる文）を拾う
+function firstQuestion(text) {
+  const q = text.match(/[^。]*?か。/);
+  return q ? q[0].trim().replace(/か。$/, 'か？') : firstSentence(text);
+}
+
 function worriesIndex() {
   const path = '/cards/worries.html';
-  const title = '悩み別に読むタロット｜転職・別れ・引っ越しなど決断の考え方 - DECIDE';
-  const description = '転職、別れ、引っ越し、結婚、学び直し、独立、人間関係、お金。よくある8つの迷いについて、考え方の整理のしかたと視点を貸してくれるタロットカードを紹介します。';
+  const title = '悩み別に読むタロット｜転職・恋愛・引っ越しなど決断の考え方 - DECIDE';
+  const description = `転職、就活、副業、恋愛、結婚、別れ、介護、引っ越し、お金など、よくある${worries.length}の迷いについて、考え方の整理のしかたと視点を貸してくれるタロットカードを紹介します。`;
   const crumbs = [
     { name: 'DECIDE', href: '../', path: '/' },
     { name: 'カード解説', href: './', path: '/cards/' },
@@ -483,18 +526,41 @@ function worriesIndex() {
     '@context': 'https://schema.org', '@type': 'ItemList', name: '悩み別のタロット解説',
     itemListElement: worries.map((w, i) => ({ '@type': 'ListItem', position: i + 1, url: `${ORIGIN}/cards/worry-${w.slug}.html`, name: w.h1 })),
   };
-  const rows = worries.map((w) => {
+  const bySlug = new Map(worries.map((w) => [w.slug, w]));
+  const grouped = new Set(WORRY_GROUPS.flatMap((g) => g.slugs));
+  const groups = WORRY_GROUPS.map((g) => ({ ...g, items: g.slugs.map((x) => bySlug.get(x)).filter(Boolean) }));
+  const rest = worries.filter((w) => !grouped.has(w.slug));
+  if (rest.length) groups.push({ id: 'other', name: 'そのほかの迷い', lead: '', items: rest });
+  const tile = (w) => {
     const c = byId.get(w.primary);
-    return `<li><a href="./worry-${w.slug}.html">${picture(c, { sizes: '96px' })}</a><div><h3><a href="./worry-${w.slug}.html">${esc(w.h1)}</a></h3><p>${esc(w.description)}</p><p class="note">関係するカード：${w.cards.map((x) => `<a href="./${x.id}.html">${esc(byId.get(x.id).name)}</a>`).join('、')}</p></div></li>`;
-  }).join('\n');
+    const ask = w.sections.find((x) => x.h2 === '自分への問いかけ');
+    return `<li class="wtile"><a class="wtile-head" href="./worry-${w.slug}.html">${picture(c, { sizes: '64px' })}<h3>${esc(w.h1)}<small>鍵になるカード：${esc(c.name)}</small></h3></a>
+<div class="wtile-body"><p>${esc(w.description)}</p>${ask ? `<p class="wtile-q">${esc(firstQuestion(ask.p))}</p>` : ''}
+<ul class="wtile-cards" aria-label="関係するカード">${w.cards.map((x) => `<li><a href="./${x.id}.html">${esc(byId.get(x.id).name)}</a></li>`).join('')}</ul></div>
+<a class="wtile-more" href="./worry-${w.slug}.html" aria-label="${esc(w.h1)}を読む">考え方を読む →</a></li>`;
+  };
+  const sections = groups.map((g) => `<section id="${g.id}">
+<h2>${esc(g.name)}</h2>
+${g.lead ? `<p class="wgroup-lead">${esc(g.lead)}</p>` : ''}
+<ul class="wtiles">
+${g.items.map(tile).join('\n')}
+</ul>
+</section>`).join('\n');
   const body = `<main>
 ${crumbsHtml(crumbs)}
 <h1>悩み別に読むタロット</h1>
-${WORRIES_INTRO.map((p) => `<p>${esc(p)}</p>`).join('\n')}
-<h2>迷いのテーマ一覧</h2>
-<ul class="wcards">
-${rows}
-</ul>
+${WORRIES_INTRO.map((p, i) => `<p${i === 0 ? ' class="lede"' : ''}>${esc(p)}</p>`).join('\n')}
+<h2>このページの使い方</h2>
+<ol class="steps">
+<li><b>近いテーマを選ぶ</b>いまの迷いにいちばん近いものを開きます。ぴったりでなくても大丈夫です。</li>
+<li><b>迷いをほどく</b>「迷いの正体」と「整理の視点」で、何に引っかかっているのかを言葉にします。</li>
+<li><b>カードの視点を借りる</b>関係するカードの意味を読み、見落としていた気持ちや条件を探します。</li>
+<li><b>実際に引いてみる</b>二つの選択肢を思い浮かべて、DECIDEでカードを引きます。</li>
+</ol>
+<nav aria-label="テーマから探す"><ul class="wjump">
+${worries.map((w) => `<li><a href="./worry-${w.slug}.html">${esc(w.h1.replace(/(で|を|に)?(迷う|決められない|踏み切れない|始めるか迷う)とき$/, '').replace(/するか$/, '').replace(/るか$/, 'る'))}</a></li>`).join('\n')}
+</ul></nav>
+${sections}
 <div class="cta"><p>カードを引いて、いまの迷いを整理する</p><a href="../">${CTA_TEXT}</a></div>
 <p class="note"><a href="./">78枚すべてのカード解説を見る</a></p>
 </main>`;
