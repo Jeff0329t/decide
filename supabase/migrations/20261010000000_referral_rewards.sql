@@ -15,7 +15,7 @@ declare
   uid uuid := auth.uid();
   wanted text := upper(btrim(coalesce(claim_referral.code, '')));
   -- 特典の期間
-  reward constant interval := interval '7 days';
+  reward constant interval := interval '3 days';
   -- 招待した側が特典をもらえる人数の上限（それ以降も招待の記録は残る）
   referrer_cap constant int := 5;
   referrer uuid;

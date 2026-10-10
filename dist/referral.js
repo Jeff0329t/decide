@@ -1,7 +1,7 @@
 // DECIDE. 友だち招待（ログインした人だけ）
 // 招待リンク（?ref=コード）で開いた人がログインすると、サーバーに「だれの招待か」だけを記録する。
 // 送るのは招待コードだけで、決定ログの中身は送らない。
-// 特典：招待した人・された人の両方に UNLIMITED を7日間（claim_referral（SQL）側で profiles.pro_until を延ばす）。
+// 特典：招待した人・された人の両方に UNLIMITED を3日間（claim_referral（SQL）側で profiles.pro_until を延ばす）。
 (function(){
   const STORE_KEY = 'decide.tarot.referral.v1';
   const CODE_RE = /^[A-Z0-9]{4,16}$/;
@@ -23,7 +23,7 @@
   function sectionHtml(code, url) {
     const c = normalizeCode(code);
     const body = c
-      ? `<p>このリンクから始めた人がログインすると、招待した人・された人どちらにもUNLIMITEDを7日間プレゼントします。</p>
+      ? `<p>このリンクから始めた人がログインすると、招待した人・された人どちらにもUNLIMITEDを3日間プレゼントします。</p>
         <p class="referral-code">招待コード <b>${escapeHtml(c)}</b></p>
         <div class="data-actions">
           <button class="button" type="button" data-referral-action="share" data-referral-url="${escapeHtml(url)}">招待リンクを送る</button>
@@ -79,7 +79,7 @@
       if(error) return; // 通信エラーなどは次回もう一度
       clearPending();
       if(data === 'ok') {
-        notify('UNLIMITEDを7日間プレゼントしました');
+        notify('UNLIMITEDを3日間プレゼントしました');
         window.DECIDE_ENTITLEMENTS?.refresh?.();
       }
     } catch(error) {
