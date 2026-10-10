@@ -1849,6 +1849,17 @@ function registerWebMcp() {
   tools.forEach(tool => { try { Promise.resolve(context.registerTool(tool)).catch(()=>{}); } catch {} });
 }
 
+// SNS のリンク（utm_* や Instagram の fbclid など）で開いたとき、計測用パラメータをアドレスバーから外す。
+// ブックマークやホーム画面追加に長い URL が残らないようにするため。ref などアプリが使う値は残す
+(function stripTrackingParams(){
+  try {
+    const url=new URL(location.href);
+    const keys=[...url.searchParams.keys()].filter(key=>/^utm_/i.test(key)||['fbclid','gclid','igshid','mc_cid','mc_eid'].includes(key));
+    if(!keys.length) return;
+    keys.forEach(key=>url.searchParams.delete(key));
+    history.replaceState(history.state,'',url.pathname+url.search+url.hash);
+  } catch {}
+})();
 registerWebMcp();
 if ('serviceWorker' in navigator) {
   // 新しい SW が制御を引き継いだとき、既に制御下にあったページだけ1回再読み込みして新旧の混在を防ぐ
