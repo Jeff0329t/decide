@@ -67,6 +67,7 @@
       'ios-home': 'ホーム画面への追加が必要',
       unsupported: 'この端末は非対応',
       denied: '通知がブロックされています',
+      pending: 'OS許可待ち',
       failed: '登録失敗',
       registered: '登録済み',
       off: 'OFF'
@@ -98,13 +99,16 @@
   const isOn = () => state.enabled && loggedIn() && hasPush() && !!vapidKey();
 
   let lastError = '';
+  let requesting = false;
   function status() {
     if(!vapidKey()) return '';
     if(!loggedIn()) return 'login';
     if(!hasPush()) return isIOSDevice() && !standalone() ? 'ios-home' : 'unsupported';
     if(typeof Notification !== 'undefined' && Notification.permission === 'denied') return 'denied';
     if(lastError) return 'failed';
-    return isOn() ? 'registered' : 'off';
+    if(isOn()) return 'registered';
+    if(requesting) return 'pending';
+    return 'off';
   }
 
   function currentLogs() {
@@ -129,26 +133,28 @@
   let lastSent = '';
   let failedAt = 0;
   let syncing = null;
+  // 戻り値：予定を登録できた（または変更なし）なら true、できなかったら false
   function syncReminders(force = false) {
-    if(!isOn()) return Promise.resolve();
+    if(!isOn()) return Promise.resolve(false);
     if(syncing) return syncing;
-    if(!force && failedAt && Date.now() - failedAt < 60000) return Promise.resolve();
+    if(!force && failedAt && Date.now() - failedAt < 60000) return Promise.resolve(false);
     const pending = window.DECIDE_REMINDERS?._pure?.pendingItems;
-    if(typeof pending !== 'function') return Promise.resolve();
+    if(typeof pending !== 'function') return Promise.resolve(false);
     const items = sanitizeItems(pending(currentLogs()));
     const client = auth()?.client?.();
     syncing = (async () => {
       const endpoint = await currentEndpoint();
-      if(!endpoint) return;
+      if(!endpoint) return false;
       const signature = JSON.stringify([endpoint, items]);
-      if(!force && signature === lastSent) return;
+      if(!force && signature === lastSent) return true;
       const { error } = (await client.rpc('set_push_reminders', { items, endpoint })) || {};
-      if(error) { failedAt = Date.now(); lastError = 'failed'; return; }
+      if(error) { failedAt = Date.now(); lastError = 'failed'; return false; }
       lastSent = signature;
       failedAt = 0;
       lastError = '';
+      return true;
     })()
-      .catch(() => { failedAt = Date.now(); lastError = 'failed'; })
+      .catch(() => { failedAt = Date.now(); lastError = 'failed'; return false; })
       .finally(() => { syncing = null; });
     return syncing;
   }
@@ -237,9 +243,16 @@
       if(Notification.permission === 'denied') { notify(deniedMessage()); return; }
       let permission = Notification.permission;
       try {
-        if(permission !== 'granted') permission = await Notification.requestPermission();
+        if(permission !== 'granted') {
+          // OSの許可ダイアログが出ている間は「OS許可待ち」と表示する
+          requesting = true;
+          refreshSection();
+          permission = await Notification.requestPermission();
+        }
       } catch(error) {
         permission = 'denied';
+      } finally {
+        requesting = false;
       }
       if(permission !== 'granted') { notify(permission === 'denied' ? deniedMessage() : '通知が許可されませんでした'); return; }
       try {
@@ -256,8 +269,10 @@
       state.ownerId = auth()?.getUser?.()?.id || '';
       saveState();
       lastSent = '';
-      await syncReminders(true);
-      notify('プッシュ通知をONにしました');
+      const synced = await syncReminders(true);
+      notify(synced
+        ? 'プッシュ通知をONにしました（通知の予定も登録しました）'
+        : 'プッシュ通知はONにしましたが、通知の予定を登録できませんでした。時間をおいて開き直すと再登録します');
     } finally {
       busy = false;
       setBusy(false);

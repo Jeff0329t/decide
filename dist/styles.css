@@ -1527,9 +1527,7 @@ body[data-view="stats"] .app-shell { padding-bottom: 70px; }
 .two-result .verdict-reason,
 .two-result .verdict-note,
 .two-result .verdict-closing { margin-top: 7px; }
-.two-result .score-lines,
-.two-result .verdict-reason,
-.two-result .verdict-closing { display: none; }
+.two-result .score-lines { display: none; }
 .two-result > .reflection-card { padding: 0; border: 0; background: transparent; box-shadow: none; }
 .two-result > .reflection-card > h3 { display: none; }
 .two-result > .reflection-card .reflection-actions { grid-template-columns: 1fr 1fr; }
@@ -4175,6 +4173,9 @@ body[data-view="decide"] .decide-screen .pair-chip.selected { background: #0b0b0
 /* #16 通知グループ（アプリ内のお知らせ／閉じていても通知） */
 #settings-modal .notify-group-title{margin:28px 0 0;font-size:.9rem;font-weight:800;color:#f1d527;letter-spacing:.06em}
 #settings-modal .notify-group-title+.feedback-setting{margin-top:10px}
+#settings-modal .settings-group-title{margin:28px 0 0;font-size:.9rem;font-weight:800;color:#f1d527;letter-spacing:.06em}
+#settings-modal .sheet-head+.settings-group-title{margin-top:8px}
+#settings-modal .settings-group-title+*{margin-top:10px}
 #settings-modal .remind-setting+.push-setting{margin-top:0;border-top:0}
 #settings-modal .push-status{margin-top:8px;font-size:.75rem;color:#cfc7ba}
 

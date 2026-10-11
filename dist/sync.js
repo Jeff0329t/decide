@@ -184,15 +184,15 @@
     const on = pro && isOn();
     const note = pro
       ? (on
-        ? '決定ログをサーバーに保存し、同じアカウントでログインした別の端末でも見られます。OFFにすると以後の同期を止めます（サーバーの内容はアカウント削除で消えます）。'
-        : 'ONにすると、決定ログをサーバーに保存し、同じアカウントでログインした別の端末でも見られます。OFFのあいだ、ログはこの端末の中だけに保存されます。')
+        ? '決定ログをサーバーに保存し、同じアカウントでログインした別の端末でも見られます。OFFにすると以後の同期を止めます。OFFにしてもサーバーの内容は残ります（アカウント削除で消えます）。OFFのあいだにこの端末で消した記録は、またONにするとサーバーから戻ります。'
+        : 'ONにすると、決定ログをサーバーに保存し、同じアカウントでログインした別の端末でも見られます。OFFのあいだ、ログはこの端末の中だけに保存されます。以前に同期した内容はサーバーに残っていて、OFFのあいだにこの端末で消した記録も、ONにするとサーバーから戻ります。')
       : '別の端末と決定ログを同期できます（UNLIMITED EDITION限定）。ログはこの端末の中に保存されています。';
     const status = on ? syncStatus() : '';
     const actions = on
       ? `<div class="sync-actions"><button class="sync-action-button" type="button" data-sync-action="now"${running ? ' disabled' : ''}>今すぐ同期</button><button class="sync-action-button" type="button" data-action="export-markdown">バックアップを書き出す</button></div>`
       : '';
     return `<div class="feedback-setting sync-setting"><div><b>ログの同期</b><p>${note}</p>${status}${actions}</div>
-      <button class="toggle-button ${on ? 'on' : ''}" type="button" aria-label="ログの同期" data-sync-action="toggle" aria-pressed="${on}"><span></span><b>${on ? 'ON' : 'OFF'}</b></button></div>`;
+      <button class="toggle-button ${on ? 'on' : ''}" type="button" aria-label="ログの同期（別の端末と決定ログを共有）" data-sync-action="toggle" aria-pressed="${on}"><span></span><b>${on ? 'ON' : 'OFF'}</b></button></div>`;
   }
 
   function syncStatus() {

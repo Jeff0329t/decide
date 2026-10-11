@@ -58,8 +58,18 @@
     return String(config.GOOGLE_CLIENT_ID || '').trim();
   }
 
-  // GISスクリプトは async 読み込みなので、少し待ってから使う
-  function waitForGis(timeout = 3000) {
+  // GISスクリプトはログインを選んだときだけ読み込む（それまでGoogleには接続しない）
+  const GIS_SRC = 'https://accounts.google.com/gsi/client';
+  function loadGis() {
+    if(window.google?.accounts?.id || document.querySelector(`script[src="${GIS_SRC}"]`)) return;
+    const script = document.createElement('script');
+    script.src = GIS_SRC;
+    script.async = true;
+    document.head.appendChild(script);
+  }
+
+  function waitForGis(timeout = 5000) {
+    loadGis();
     return new Promise(resolve => {
       const started = Date.now();
       (function check() {

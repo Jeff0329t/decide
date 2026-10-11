@@ -158,11 +158,20 @@ async function exportLogs(records=logs, markComplete=true, format='markdown') {
 function isImportCard(card) { return Boolean(card) && typeof card==='object' && typeof card.id==='string' && card.id && typeof card.name==='string' && ['upright','reversed'].includes(card.orientation); }
 function isImportLog(value) { return Boolean(value) && typeof value==='object' && typeof value.id==='string' && Boolean(value.id) && Array.isArray(value.nodes) && value.nodes.every(node=>node && typeof node==='object' && isImportCard(node.card)) && !Number.isNaN(Date.parse(value.createdAt || '')); }
 function reviewedAtTime(log) { const value=Date.parse(log?.reviewedAt || ''); return Number.isNaN(value) ? 0 : value; }
+// 取り込みで変わる項目を数える（確認画面で「何が更新されるか」を見せる）
+function countImportFields(before,after,fields) {
+  const diff=key=>JSON.stringify(before?.[key] ?? null)!==JSON.stringify(after?.[key] ?? null);
+  let hit=false;
+  if(diff('review') || diff('reviewedAt')) { fields.review++; hit=true; }
+  if(diff('story') || diff('storyUpdatedAt')) { fields.story++; hit=true; }
+  if(diff('remindAt')) { fields.remind++; hit=true; }
+  if(!hit)fields.other++;
+}
 function prepareImport(payload) {
   if(!payload || payload.app!=='DECIDE' || payload.schema!==BACKUP_SCHEMA || !Array.isArray(payload.logs))throw new Error('DECIDEのバックアップファイルではありません。');
   if(!payload.logs.every(isImportLog))throw new Error('履歴データの形式が正しくありません。');
   const ids=payload.logs.map(log=>log.id); if(new Set(ids).size!==ids.length)throw new Error('同じ履歴IDが重複しています。');
-  const existing=new Map(logs.map(log=>[log.id,log])); const additions=[]; let updated=0; let same=0; let conflicts=0;
+  const existing=new Map(logs.map(log=>[log.id,log])); const additions=[]; let updated=0; let same=0; let conflicts=0; const fields={review:0,story:0,remind:0,other:0};
   const mergeLog=globalThis.DECIDE_MERGE_LOG;
   for(const incoming of payload.logs) {
     const current=existing.get(incoming.id);
@@ -170,14 +179,14 @@ function prepareImport(payload) {
     if(typeof mergeLog==='function') {
       // 項目ごとに新しい方を採用し、空の項目は相手側で埋める（同期と同じ規則）
       const result=mergeLog(current,incoming);
-      if(result.changed) { existing.set(incoming.id,result.log); updated++; if(result.conflict)conflicts++; } else same++;
+      if(result.changed) { existing.set(incoming.id,result.log); updated++; if(result.conflict)conflicts++; countImportFields(current,result.log,fields); } else same++;
       continue;
     }
-    if(reviewedAtTime(incoming)>reviewedAtTime(current)) { existing.set(incoming.id,{...current,review:incoming.review ?? current.review,reviewedAt:incoming.reviewedAt}); updated++; } else same++;
+    if(reviewedAtTime(incoming)>reviewedAtTime(current)) { existing.set(incoming.id,{...current,review:incoming.review ?? current.review,reviewedAt:incoming.reviewedAt}); updated++; fields.review++; } else same++;
   }
   const merged=logs.map(log=>existing.get(log.id));
   const dateValue=log=>Date.parse(log.createdAt || '') || 0;
-  return { additions, updated, same, conflicts, mergedLogs:[...merged,...additions].sort((a,b)=>dateValue(b)-dateValue(a)) };
+  return { additions, updated, same, conflicts, fields, mergedLogs:[...merged,...additions].sort((a,b)=>dateValue(b)-dateValue(a)) };
 }
 function openImportPicker() { document.querySelector('#import-file')?.click(); }
 async function readImportFile(file) {
@@ -194,9 +203,10 @@ async function readImportFile(file) {
 }
 function openImportConfirm() {
   if(!pendingImport)return;
-  const {additions,updated,same,conflicts}=pendingImport;
+  const {additions,updated,same,conflicts,fields={}}=pendingImport;
+  const fieldList=[['review','ふり返り'],['story','ストーリー'],['remind','リマインド'],['other','そのほかの項目']].filter(([key])=>fields[key]).map(([key,label])=>`${label} ${fields[key]}件`).join('・');
   const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='import-modal';
-  wrap.innerHTML=`<button class="modal-shade" data-action="close-import" aria-label="読み込み確認を閉じる"></button><section class="settings-sheet confirm-sheet import-sheet" role="dialog" aria-modal="true" aria-labelledby="import-title"><div class="sheet-handle"></div><p class="eyebrow">Import backup</p><h2 id="import-title">履歴を読み込みますか？</h2><p>今の履歴は残したまま、新しい内容だけを反映します。</p><dl class="import-summary"><div><dt>追加</dt><dd>${additions.length}件</dd></div><div><dt>更新</dt><dd>${updated}件</dd></div><div><dt>同じ内容</dt><dd>${same}件</dd></div>${conflicts ? `<div><dt>両方で変更</dt><dd>${conflicts}件</dd></div>` : ''}</dl><p class="import-note">同じ決定が両方にあるときは、項目ごとに新しく書かれた方を残し、空いている項目はもう一方の内容で埋めます。消える内容はありません。</p><p class="storage-error" data-import-error role="alert" hidden></p><div class="confirm-actions"><button class="button secondary" data-action="close-import">キャンセル</button><button class="button" data-action="confirm-import">取り込む</button></div></section>`;
+  wrap.innerHTML=`<button class="modal-shade" data-action="close-import" aria-label="読み込み確認を閉じる"></button><section class="settings-sheet confirm-sheet import-sheet" role="dialog" aria-modal="true" aria-labelledby="import-title"><div class="sheet-handle"></div><p class="eyebrow">Import backup</p><h2 id="import-title">履歴を追加で取り込みますか？</h2><p>これは「追加取り込み」です。今の履歴は残したまま、バックアップにある新しい決定と、新しく書かれた項目だけを反映します。書き出したときの状態へ丸ごと戻す「完全復元」ではありません。</p><dl class="import-summary"><div><dt>追加</dt><dd>${additions.length}件</dd></div><div><dt>更新</dt><dd>${updated}件${fieldList ? `<small class="import-fields">（${fieldList}）</small>` : ''}</dd></div><div><dt>同じ内容</dt><dd>${same}件</dd></div>${conflicts ? `<div><dt>競合（両方で変更）</dt><dd>${conflicts}件</dd></div>` : ''}</dl><p class="import-note">同じ決定が両方にあるときは、項目ごとに新しく書かれた方を残し、空いている項目はもう一方の内容で埋めます。消える内容はありません。</p><p class="storage-error" data-import-error role="alert" hidden></p><div class="confirm-actions"><button class="button secondary" data-action="close-import">キャンセル</button><button class="button" data-action="confirm-import">取り込む</button></div></section>`;
   mountModal(wrap,'.settings-sheet [data-action="close-import"]');
 }
 function closeImport() { pendingImport=null; closeModal('#import-modal'); }
@@ -777,8 +787,9 @@ function drawCardButton(card, slot, label='') {
   const fanStyle=activeSession.mode === 'one' ? ` style="--tilt:${(((slot-center)/Math.max(center,1))*9).toFixed(2)}deg;--drop:${(Math.abs(slot-center)/Math.max(center,1)*18).toFixed(1)}px"` : '';
   const hiddenLabel=activeSession.mode === 'two' ? `選択肢${'AB'[slot]}のカード（伏せてある）` : `伏せたカード ${slot + 1}枚目`;
   const tabIndex=activeSession.mode === 'one' ? ` tabindex="${slot === Math.floor(center) ? '0' : '-1'}"` : '';
+  const ariaHidden=activeSession.mode === 'one' && slot !== Math.floor(center) && !revealed ? ' aria-hidden="true"' : '';
   const front=revealed ? `<span class="flip-face flip-front" aria-hidden="false">${cardPicture(card,{className:card.orientation === 'reversed' ? 'reversed-image' : ''})}<em>${esc(card.name)}</em></span>` : '';
-  return `<${tag} class="flip-card ${activeSession.mode === 'two' ? 'pair-card' : ''} ${revealed ? 'flipped chosen' : ''}"${action} data-slot="${slot}"${fanStyle}${tabIndex} ${locked ? 'disabled' : ''} aria-label="${revealed ? `${card.name}を選びました` : hiddenLabel}">
+  return `<${tag} class="flip-card ${activeSession.mode === 'two' ? 'pair-card' : ''} ${revealed ? 'flipped chosen' : ''}"${action} data-slot="${slot}"${fanStyle}${tabIndex}${ariaHidden} ${locked ? 'disabled' : ''} aria-label="${revealed ? `${card.name}を選びました` : hiddenLabel}">
     ${label ? (activeSession.mode === 'two' ? `<b class="draw-label draw-plate" aria-hidden="true"><small>OPTION</small><span>${esc(label)}</span></b>` : `<b class="draw-label">${label}</b>`) : ''}
     <span class="flip-inner">
       <span class="flip-face flip-back card-back back-${settings.back}"><i aria-hidden="true"></i></span>
@@ -836,6 +847,7 @@ function flipCard(slot) {
   const button = document.querySelector(`.flip-card[data-slot="${slot}"]`);
   if (button) {
     button.querySelector('.flip-inner')?.insertAdjacentHTML('beforeend',`<span class="flip-face flip-front" aria-hidden="false">${cardPicture(card,{className:card.orientation === 'reversed' ? 'reversed-image' : ''})}<em>${esc(card.name)}</em></span>`);
+    button.removeAttribute('aria-hidden');
     button.classList.add('flipped','chosen');
     button.setAttribute('aria-label',`${card.name}を選びました`);
     const front = button.querySelector('.flip-front');
@@ -1747,14 +1759,16 @@ function openSettings() {
   const wrap = document.createElement('div'); wrap.className='modal-wrap'; wrap.id='settings-modal';
   wrap.innerHTML = `<button class="modal-shade" data-action="close-settings" aria-label="設定を閉じる"></button><section class="settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title">
     <div class="sheet-handle"></div><div class="sheet-head"><h2 id="settings-title">設定</h2><button data-action="close-settings" aria-label="閉じる">×</button></div>
+    <h3 class="settings-group-title" data-settings-group="card">カードと操作</h3>
     <div class="deck-setting"><b id="deck-setting-title">使うカード</b><p>カードの枚数（縦）と、逆位置の有無（横）の組み合わせから選べます。</p>
       <div class="deck-presets deck-quad" role="radiogroup" aria-labelledby="deck-setting-title">${renderDeckPresets()}</div>
       <div class="deck-quad-detail" data-deck-detail aria-live="polite">${deckDetailHtml()}</div>
       <div class="deck-preset-notes"><p>選ぶと、次に引くカードから変わります。これまでの履歴は変わりません。逆位置ありでは、引いたカードの約3割が逆位置になります。</p></div>
     </div>
-    <div class="feedback-setting"><div><b>操作音・振動</b><p>カードを開く時や決定を保存する時に、控えめな反応を返します。</p></div><button class="toggle-button ${settings.feedback ? 'on' : ''}" data-action="toggle-feedback" aria-label="操作音・振動" aria-pressed="${settings.feedback}"><span></span><b>${settings.feedback ? 'ON' : 'OFF'}</b></button></div>
     <div class="setting-backs"><b>カードの裏面</b>${backPicker()}</div>
-    <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">データ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}${isIOS() && !isStandalone() ? '<p class="safari-storage-note">Safariでは、記録は端末内に保存されます。しばらく開かないと消えることがあるため、ホーム画面への追加と、書き出しをおすすめします。</p>' : ''}${canInstallPrompt() && !isStandalone() ? '<div class="a2hs-settings" data-a2hs-settings><p>ホーム画面に追加すると、アプリのようにすぐ開けます。</p><button class="button" data-action="a2hs-install">ホーム画面に追加</button></div>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-markdown">履歴を書き出す</button><button class="button secondary" data-action="import-markdown">履歴を読み込む</button></div><p class="backup-format-note">メモ帳やObsidianでそのまま読めるファイル（.md）で保存します。読み込むと、今の履歴と合わせて新しい内容を反映します。</p><input id="import-file" type="file" accept="text/markdown,.md,text/plain,application/json,.json" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップ内容"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
+    <div class="feedback-setting"><div><b>操作音・振動</b><p>カードを開く時や決定を保存する時に、控えめな反応を返します。</p></div><button class="toggle-button ${settings.feedback ? 'on' : ''}" data-action="toggle-feedback" aria-label="操作音・振動" aria-pressed="${settings.feedback}"><span></span><b>${settings.feedback ? 'ON' : 'OFF'}</b></button></div>
+    <h3 class="settings-group-title" data-settings-group="data">データとアカウント</h3>
+    <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">データ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}${isIOS() && !isStandalone() ? '<p class="safari-storage-note">Safariでは、記録は端末内に保存されます。しばらく開かないと消えることがあるため、ホーム画面への追加と、書き出しをおすすめします。</p>' : ''}${canInstallPrompt() && !isStandalone() ? '<div class="a2hs-settings" data-a2hs-settings><p>ホーム画面に追加すると、アプリのようにすぐ開けます。</p><button class="button" data-action="a2hs-install">ホーム画面に追加</button></div>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-markdown">履歴を書き出す</button><button class="button secondary" data-action="import-markdown">履歴を読み込む</button></div><p class="backup-format-note">メモ帳やObsidianでそのまま読めるファイル（.md）で保存します。読み込みは「追加取り込み」です。今の履歴は消さずに、新しい決定と新しく書かれた項目だけを反映します（書き出した時点へ丸ごと戻す完全復元ではありません）。</p><input id="import-file" type="file" accept="text/markdown,.md,text/plain,application/json,.json" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップ内容"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
      <section class="data-setting account-setting" data-account-setting aria-labelledby="account-setting-title" hidden></section>
      <nav class="settings-links" aria-label="その他">${window.DECIDE_ENTITLEMENTS?.hasPurchased?.() ? '' : '<button class="settings-link settings-link-pro" data-action="open-paywall"><span><small>UNLIMITED EDITION</small>引き放題・残し放題にする</span><span class="settings-link-chevron" aria-hidden="true">›</span></button>'}<button class="settings-link" data-action="open-learn"><span>カード図鑑</span><span class="settings-link-chevron" aria-hidden="true">›</span></button><button class="settings-link" data-action="tutorial-replay"><span data-tutorial-label>使い方をもう一度見る</span><span class="settings-link-chevron" aria-hidden="true">›</span></button><a class="settings-link" href="./cards/worries.html" target="_blank" rel="noopener"><span>記事を読む</span><span class="settings-link-chevron" aria-hidden="true">›</span></a></nav>
      <button class="sheet-bottom-close" data-action="close-settings">設定を閉じる</button>
@@ -1796,7 +1810,7 @@ function openShare(type='app', id=null) {
   wrap.innerHTML=`<button class="modal-shade" data-action="close-share" aria-label="共有画面を閉じる"></button><section class="settings-sheet share-sheet${type==='story'?' story-share':''}" role="dialog" aria-modal="true" aria-labelledby="share-title">
     <div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">${type==='story'?'After Story':'Share'}</p><h2 id="share-title">${esc(heading)}</h2></div><button data-action="close-share" aria-label="閉じる">×</button></div>
     <p class="share-lead" data-share-lead>${esc(lead)}</p>
-    ${type === 'story' ? `<div class="feedback-setting share-content-setting"><div><b>タイトルと本文を含める</b><p>ONにすると、相談のタイトルとその後の本文が投稿文・リンク・画像に入ります。</p></div><button class="toggle-button" data-action="toggle-share-content" aria-pressed="false"><span></span><b>OFF</b></button></div>` : ''}
+    ${type === 'story' ? `<div class="feedback-setting share-content-setting"><div><b>タイトルと本文を含める</b><p>ONにすると、相談のタイトルとその後の本文が投稿文・リンク・画像に入ります。</p></div><button class="toggle-button" data-action="toggle-share-content" aria-label="タイトルと本文を含める" aria-pressed="false"><span></span><b>OFF</b></button></div>` : ''}
     ${type === 'story' ? `<div class="share-card-preview story-share-preview" data-story-preview>${storySharePreviewHtml(activeShareData)}</div>` : type !== 'app' ? `<div class="share-card-preview"><div class="share-preview-images">${activeShareData.cards.map(card=>cardPicture(card,{className:card.orientation==='reversed'?'reversed-image':'',sizes:'82px'})).join('')}</div><div class="share-preview" data-share-preview></div></div>` : ''}
     ${type !== 'app' ? (window.DECIDE_SHARE_THEMES?.renderPicker?.()||'') : ''}
     <div class="share-primary">
@@ -2012,7 +2026,7 @@ document.addEventListener('keydown', event => {
   if(event.key==='Enter') { card.click(); return; }
   const cards=[...card.closest('.fan-deck').querySelectorAll('.flip-card:not(:disabled)')];
   const next=Math.max(0,Math.min(cards.length-1,cards.indexOf(card)+(event.key==='ArrowRight'?1:-1)));
-  cards.forEach((item,index)=>item.tabIndex=index===next?0:-1);
+  cards.forEach((item,index)=>{ item.tabIndex=index===next?0:-1; if(index===next)item.removeAttribute('aria-hidden'); else item.setAttribute('aria-hidden','true'); });
   cards[next]?.focus({preventScroll:true}); cards[next]?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
 });
 

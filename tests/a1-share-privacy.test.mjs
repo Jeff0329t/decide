@@ -26,7 +26,7 @@ test('A-1: opting in warns that title and body are shown', () => {
 });
 
 test('A-1: story share modal has an OFF-by-default opt-in toggle wired up', () => {
-  assert.match(appSource, /data-action="toggle-share-content" aria-pressed="false"><span><\/span><b>OFF<\/b>/);
+  assert.match(appSource, /data-action="toggle-share-content" aria-label="タイトルと本文を含める" aria-pressed="false"><span><\/span><b>OFF<\/b>/);
   assert.match(appSource, /action === 'toggle-share-content'\) toggleShareContent\(el\)/);
   assert.match(appSource, /function toggleShareContent\(button\)/);
   for (const attr of ['data-share-lead', 'data-share-x', 'data-share-line', 'data-share-facebook']) assert.ok(appSource.includes(attr), attr);

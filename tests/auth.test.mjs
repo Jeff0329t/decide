@@ -60,10 +60,12 @@ test('プライバシーポリシーがログインと Supabase に触れてい�
 });
 
 test('Google ログインは GIS → signInWithIdToken（nonce は SHA-256 ハッシュを Google へ）', () => {
+  // GIS はログイン操作時に auth.js が動的に読み込む（静的な script タグは置かない）
   for(const name of ['index.html', 'success.html']) {
-    assert.match(read(name), /<script src="https:\/\/accounts\.google\.com\/gsi\/client" async defer><\/script>/, name);
+    assert.doesNotMatch(read(name), /accounts\.google\.com\/gsi\/client/, name);
   }
   const auth = read('auth.js');
+  assert.match(auth, /GIS_SRC = 'https:\/\/accounts\.google\.com\/gsi\/client'/);
   assert.match(auth, /signInWithIdToken\(\{ provider: 'google', token: response\.credential, nonce \}\)/);
   assert.match(auth, /crypto\.subtle\.digest\('SHA-256'/);
   assert.match(auth, /nonce: hashedNonce/);
