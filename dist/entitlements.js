@@ -47,21 +47,39 @@
     return auth()?.getUser?.() || null;
   }
 
-  // PRO判定：ログイン中ユーザーのキャッシュ済み plan_type が 'free' 以外（または招待特典が期限内）、かつキャッシュが期限内
-  function isCachedFor(user) {
-    return !!user?.id && state.userId === user.id && isCacheFresh(state.checkedAt);
+  // PRO判定の本体。オフラインで7日を過ぎても購入済みの人を無料扱いに落とさない（needsOnline で再確認を促すだけ）。
+  // 招待特典は pro_until の期限だけで判定する。ログイン中ユーザーとキャッシュの持ち主が違えば何も認めない。
+  function resolveAccess({ plan, proUntil, userMatch, fresh, now = Date.now() } = {}) {
+    if(!userMatch) return { pro: false, purchased: false, needsOnline: false };
+    const purchased = isProPlan(plan);
+    const t = Date.parse(proUntil);
+    const inviteActive = Number.isFinite(t) && t > now;
+    return { pro: purchased || inviteActive, purchased, needsOnline: purchased && !fresh };
+  }
+
+  let onlineNoticeShown = false;
+  function accessFor(user) {
+    const access = resolveAccess({ plan: state.plan, proUntil: state.proUntil,
+      userMatch: !!user?.id && state.userId === user.id, fresh: isCacheFresh(state.checkedAt) });
+    if(access.needsOnline && !onlineNoticeShown) {
+      onlineNoticeShown = true;
+      const online = typeof navigator === 'undefined' || navigator.onLine !== false;
+      if(online) setTimeout(() => syncWithServer(user), 0);
+      else setTimeout(() => notify('購入状態を確認するため、一度オンラインにしてください'), 0);
+    }
+    return access;
   }
   function hasProAccess(user = currentUser()) {
-    return isCachedFor(user) && isProActive(state.plan, state.proUntil);
+    return accessFor(user).pro;
   }
   // 買い切り購入済みか（招待特典だけの人は購入できるように区別する）
   function hasPurchased(user = currentUser()) {
-    return isCachedFor(user) && isProPlan(state.plan);
+    return accessFor(user).purchased;
   }
   // 招待特典の期限（購入済み・特典なし・期限切れなら null）
   function proUntil(user = currentUser()) {
-    if(!isCachedFor(user) || isProPlan(state.plan)) return null;
-    return isProActive(state.plan, state.proUntil) ? state.proUntil : null;
+    const access = accessFor(user);
+    return access.pro && !access.purchased ? state.proUntil : null;
   }
   function canDraw() {
     return hasProAccess() || state.draws < FREE_DRAWS;
@@ -301,6 +319,6 @@
     openPaywall,
     startCheckout,
     refresh: () => syncWithServer(currentUser()),
-    _pure: Object.freeze({ isProPlan, isProActive, mergeDraws, isCacheFresh })
+    _pure: Object.freeze({ isProPlan, isProActive, mergeDraws, isCacheFresh, resolveAccess })
   });
 })();

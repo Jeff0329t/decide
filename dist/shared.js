@@ -71,5 +71,35 @@
     return `<article><img class="${card.orientation==='reversed'?'reversed-image':''}" src="${esc(card.image)}" alt="${esc(card.name)}"><div><span>${card.orientation==='reversed'?'逆位置':'正位置'}</span><h2>${esc(card.name)}</h2>${keywords}${meaning}${background}</div></article>`;
   }
 
+
+  // 同じIDの履歴を項目ごとに合わせる（読み込みと同期で同じルール）。a が手元側。
+  function canonicalJson(value){
+    if(Array.isArray(value))return `[${value.map(canonicalJson).join(',')}]`;
+    if(value && typeof value==='object')return `{${Object.keys(value).filter(key=>value[key]!==undefined).sort().map(key=>`${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(',')}}`;
+    return JSON.stringify(value===undefined?null:value);
+  }
+  function mergeLog(a,b){
+    const time=value=>{const t=Date.parse(value||'');return Number.isFinite(t)?t:0;};
+    const stamp=log=>Math.max(time(log?.updatedAt),time(log?.reviewedAt),time(log?.storyUpdatedAt),time(log?.createdAt));
+    if(!b || typeof b!=='object')return {log:a,changed:false,conflict:false};
+    if(!a || typeof a!=='object')return {log:b,changed:true,conflict:false};
+    const base=stamp(b)>stamp(a)?b:a; const other=base===a?b:a;
+    const log={...base};
+    const empty=value=>value===undefined||value===null||value==='';
+    for(const key of Object.keys(other))if(empty(log[key]) && !empty(other[key]))log[key]=other[key];
+    const pick=(stampKey,fields)=>{
+      const src=time(b[stampKey])>time(a[stampKey])?b:(time(a[stampKey])>time(b[stampKey])?a:null);
+      if(!src)return;
+      for(const key of fields){ if(src[key]===undefined)delete log[key]; else log[key]=src[key]; }
+    };
+    pick('reviewedAt',['review','reviewedAt']);
+    pick('storyUpdatedAt',['story','storyUpdatedAt']);
+    const result=canonicalJson(log);
+    const changed=result!==canonicalJson(a);
+    return {log,changed,conflict:changed && result!==canonicalJson(b)};
+  }
+  root.DECIDE_MERGE_LOG=mergeLog;
+  root.DECIDE_CANONICAL_JSON=canonicalJson;
+
   root.DECIDE_SHARED={validSharedPayload,readSharedHash,normalizeSharedPayload,renderSharedCard,sharedOutcomeText};
 })(globalThis);

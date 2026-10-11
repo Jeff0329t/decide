@@ -16,7 +16,7 @@ test('#15 引いた回数はカードを実際にめくったときだけ数え�
 test('#12 A/B の判断ボタンに入力した選択肢を表示する', () => {
   const app = read('dist/app.js');
   assert.match(app, /function decisionOptionText\(value\)/);
-  assert.match(app, /<small>\$\{esc\(decisionOptionText\(o\)\)\}<\/small>/);
+  assert.match(app, /<small[^>]*>\$\{esc\(decisionOptionText\(o\)\)\}<\/small>/);
   assert.match(read('dist/styles.css'), /\.decision-option small\s*\{/);
 });
 

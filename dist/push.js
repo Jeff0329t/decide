@@ -60,23 +60,52 @@
       .slice(0, MAX_ITEMS);
   }
 
-  // mode: 'ready'（ON/OFFできる）/ 'ios-home'（ホーム画面に追加してから）
-  function settingHtml(on, mode) {
+  // 状態の表示名（設定画面の「状態：」）
+  function statusLabel(status) {
+    return ({
+      login: 'ログインが必要',
+      'ios-home': 'ホーム画面への追加が必要',
+      unsupported: 'この端末は非対応',
+      denied: '通知がブロックされています',
+      failed: '登録失敗',
+      registered: '登録済み',
+      off: 'OFF'
+    })[status] || 'OFF';
+  }
+
+  // mode: 'ready'（ON/OFFできる）/ 'ios-home'（ホーム画面に追加してから）/ 'login'（ログインしてから）
+  function settingHtml(on, mode, status = on ? 'registered' : 'off') {
+    const title = '<b>閉じていても通知</b>';
+    const state = `<p class="push-status" data-push-status>状態：${statusLabel(status)}</p>`;
     if(mode === 'ios-home') {
-      return `<div class="feedback-setting push-setting" data-push-setting><div><b>アプリを閉じていても通知</b><p>Safariの共有ボタン→「ホーム画面に追加」してから開くと、通知を受け取れます（iOS 16.4以降）。</p></div></div>`;
+      return `<div class="feedback-setting push-setting" data-push-setting><div>${title}<p>Safariの共有ボタン→「ホーム画面に追加」してから開くと、通知を受け取れます（iOS 16.4以降）。</p>${state}</div></div>`;
     }
-    return `<div class="feedback-setting push-setting" data-push-setting><div><b>アプリを閉じていても通知</b><p>ONにすると、アプリを閉じていても決定ごとに選んだ日に「あの決断、どうなった？」と届きます。サーバーに送るのは通知の予定日時だけで、決定の内容は送りません。</p></div>
-      <button class="toggle-button ${on ? 'on' : ''}" type="button" data-push-action="toggle" aria-pressed="${on}"><span></span><b>${on ? 'ON' : 'OFF'}</b></button></div>`;
+    if(mode === 'login') {
+      return `<div class="feedback-setting push-setting" data-push-setting><div>${title}<p>アプリを閉じていても通知を受け取るには、ログインが必要です。</p>${state}</div></div>`;
+    }
+    return `<div class="feedback-setting push-setting" data-push-setting><div>${title}<p>アプリを閉じていても、決定ごとに選んだ日に届きます。サーバーに送るのは通知の予定日時だけで、決定の内容は送りません。</p>${state}</div>
+      <button class="toggle-button ${on ? 'on' : ''}" type="button" aria-label="ふり返りの通知（アプリを閉じていても届く）" data-push-action="toggle" aria-pressed="${on}"><span></span><b>${on ? 'ON' : 'OFF'}</b></button></div>`;
   }
 
   function mode() {
-    if(!loggedIn() || !vapidKey()) return '';
+    if(!vapidKey()) return '';
+    if(!loggedIn()) return 'login';
     if(hasPush()) return 'ready';
     if(isIOSDevice() && !standalone()) return 'ios-home';
     return '';
   }
 
   const isOn = () => state.enabled && loggedIn() && hasPush() && !!vapidKey();
+
+  let lastError = '';
+  function status() {
+    if(!vapidKey()) return '';
+    if(!loggedIn()) return 'login';
+    if(!hasPush()) return isIOSDevice() && !standalone() ? 'ios-home' : 'unsupported';
+    if(typeof Notification !== 'undefined' && Notification.permission === 'denied') return 'denied';
+    if(lastError) return 'failed';
+    return isOn() ? 'registered' : 'off';
+  }
 
   function currentLogs() {
     const fromApp = app()?.getLogs?.();
@@ -114,11 +143,12 @@
       const signature = JSON.stringify([endpoint, items]);
       if(!force && signature === lastSent) return;
       const { error } = (await client.rpc('set_push_reminders', { items, endpoint })) || {};
-      if(error) { failedAt = Date.now(); return; }
+      if(error) { failedAt = Date.now(); lastError = 'failed'; return; }
       lastSent = signature;
       failedAt = 0;
+      lastError = '';
     })()
-      .catch(() => { failedAt = Date.now(); })
+      .catch(() => { failedAt = Date.now(); lastError = 'failed'; })
       .finally(() => { syncing = null; });
     return syncing;
   }
@@ -199,6 +229,7 @@
         state.enabled = false;
         state.ownerId = '';
         saveState();
+        lastError = '';
         await unsubscribe();
         notify('プッシュ通知をOFFにしました');
         return;
@@ -214,11 +245,13 @@
       try {
         await subscribe();
       } catch(error) {
+        lastError = 'failed';
         notify(error?.message === 'sw-unavailable'
           ? '通知の準備ができていません。アプリを一度閉じて開き直してから試してください'
           : '通知の登録ができませんでした。通信状態を確かめて、時間をおいて試してください');
         return;
       }
+      lastError = '';
       state.enabled = true;
       state.ownerId = auth()?.getUser?.()?.id || '';
       saveState();
@@ -235,7 +268,7 @@
   // 設定画面
   function renderSettings() {
     const m = mode();
-    return m ? settingHtml(isOn(), m) : '';
+    return m ? settingHtml(isOn(), m, status()) : '';
   }
 
   function mountSettings(wrap) {
@@ -300,6 +333,7 @@
   auth()?.onChange?.(user => {
     lastSent = '';
     failedAt = 0;
+    lastError = '';
     refreshSection();
     if(user) checkOwner(user).then(ok => { if(ok) syncReminders(); });
   });
@@ -312,6 +346,6 @@
     syncNow: () => syncReminders(true),
     toggle,
     disableForSignOut,
-    _pure: { urlBase64ToUint8Array, sanitizeItems, settingHtml }
+    _pure: { urlBase64ToUint8Array, sanitizeItems, settingHtml, statusLabel }
   });
 })();

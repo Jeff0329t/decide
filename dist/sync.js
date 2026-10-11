@@ -33,6 +33,9 @@
   const stampOf = log => Math.max(0, ...['updatedAt', 'reviewedAt', 'storyUpdatedAt', 'createdAt']
     .map(key => Date.parse(log?.[key] || '')).filter(Number.isFinite));
   const byNewest = (a, b) => (Date.parse(b.createdAt || '') || 0) - (Date.parse(a.createdAt || '') || 0);
+  // 同じIDが両方にあるときは項目ごとに合わせる（shared.js の DECIDE_MERGE_LOG。読めないときは新しい方を丸ごと採用）
+  const mergeLog = (a, b) => (globalThis.DECIDE_MERGE_LOG || ((x, y) => ({ log: stampOf(y) > stampOf(x) ? y : x })))(a, b);
+  const canonical = value => (globalThis.DECIDE_CANONICAL_JSON || JSON.stringify)(value);
 
   // local: 端末のログ配列 / remote: サーバーの行 [{id,data,deleted}] / tombstones: 端末で消したID
   // 戻り値 { logs: 端末に残すログ, upload: サーバーへ送る行 [{id,data,deleted}] }
@@ -57,9 +60,9 @@
         continue;
       }
       if(!mine) { result.set(id, row.data); continue; }
-      const winner = stampOf(row.data) > stampOf(mine) ? row.data : mine;
-      result.set(id, winner);
-      if(winner === mine && JSON.stringify(mine) !== JSON.stringify(row.data)) upload.push({ id, data: mine, deleted: false });
+      const merged = mergeLog(mine, row.data).log;
+      result.set(id, merged);
+      if(canonical(merged) !== canonical(row.data)) upload.push({ id, data: merged, deleted: false });
     }
     for(const [id, log] of localMap) {
       if(result.has(id) || remoteMap.has(id)) continue;
@@ -165,24 +168,41 @@
     saveState();
   }
 
+  // まだサーバーに送っていない件数（削除の印＋最終同期より後に変わったログ。一度も同期していなければ全件）
+  function unsyncedCount(logs, st) {
+    const list = Array.isArray(logs) ? logs.filter(isValidLog) : [];
+    const tomb = Array.isArray(st?.tombstones) ? st.tombstones.length : 0;
+    const last = Date.parse(st?.lastSyncAt || '');
+    if(!Number.isFinite(last)) return list.length + tomb;
+    return list.filter(log => { const t = Date.parse(stampOf(log) || ''); return Number.isFinite(t) && t > last; }).length + tomb;
+  }
+
   // 設定画面（ログイン中のアカウント欄）に出すスイッチ
   function renderToggle() {
     if(!auth()?.getUser?.()) return '';
     const pro = !!ent()?.hasProAccess?.();
     const on = pro && isOn();
     const note = pro
-      ? 'ONにすると、決定ログをサーバーに保存し、同じアカウントでログインした別の端末でも見られます。OFFに戻すと同期を止めます（サーバーの内容はアカウント削除で消えます）。'
-      : '別の端末と決定ログを同期できます（UNLIMITED EDITION限定）。';
+      ? (on
+        ? '決定ログをサーバーに保存し、同じアカウントでログインした別の端末でも見られます。OFFにすると以後の同期を止めます（サーバーの内容はアカウント削除で消えます）。'
+        : 'ONにすると、決定ログをサーバーに保存し、同じアカウントでログインした別の端末でも見られます。OFFのあいだ、ログはこの端末の中だけに保存されます。')
+      : '別の端末と決定ログを同期できます（UNLIMITED EDITION限定）。ログはこの端末の中に保存されています。';
     const status = on ? syncStatus() : '';
-    return `<div class="feedback-setting sync-setting"><div><b>ログの同期</b><p>${note}</p>${status}</div>
-      <button class="toggle-button ${on ? 'on' : ''}" type="button" data-sync-action="toggle" aria-pressed="${on}"><span></span><b>${on ? 'ON' : 'OFF'}</b></button></div>`;
+    const actions = on
+      ? `<div class="sync-actions"><button class="sync-action-button" type="button" data-sync-action="now"${running ? ' disabled' : ''}>今すぐ同期</button><button class="sync-action-button" type="button" data-action="export-markdown">バックアップを書き出す</button></div>`
+      : '';
+    return `<div class="feedback-setting sync-setting"><div><b>ログの同期</b><p>${note}</p>${status}${actions}</div>
+      <button class="toggle-button ${on ? 'on' : ''}" type="button" aria-label="ログの同期" data-sync-action="toggle" aria-pressed="${on}"><span></span><b>${on ? 'ON' : 'OFF'}</b></button></div>`;
   }
 
   function syncStatus() {
     const fmt = iso => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? '' : `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
-    if(state.lastErrorAt) return `<p class="sync-status is-error">${fmt(state.lastErrorAt)} の同期に失敗しました。通信が戻ると自動でやり直します。</p>`;
-    if(state.lastSyncAt) return `<p class="sync-status">最終同期 ${fmt(state.lastSyncAt)}</p>`;
-    return '';
+    if(running) return '<p class="sync-status is-busy" role="status">同期中…</p>';
+    const pending = unsyncedCount(app()?.getLogs?.(), state);
+    const rest = pending > 0 ? `・未同期 ${pending}件` : '';
+    if(state.lastErrorAt) return `<p class="sync-status is-error" role="status">${fmt(state.lastErrorAt)} の同期に失敗しました。通信が戻ると自動でやり直します。${pending > 0 ? `（未同期 ${pending}件）` : ''}</p>`;
+    if(state.lastSyncAt) return `<p class="sync-status" role="status">最終同期 ${fmt(state.lastSyncAt)}${rest}</p>`;
+    return `<p class="sync-status" role="status">まだ同期していません${pending > 0 ? `（未同期 ${pending}件）` : ''}</p>`;
   }
 
   function refreshSettings() {
@@ -304,6 +324,7 @@
     const action = el.dataset.syncAction;
     if(action === 'toggle') { if(paused) openAccountConfirm(auth()?.getUser?.() || {}); else toggle(); }
     // 閉じただけのときは決めていないので、同期は止めたまま（次に開いたときにまた聞く）
+    else if(action === 'now') { if(!running) { const job = syncNow({ quiet: false }); refreshSettings(); Promise.resolve(job).finally(refreshSettings); } }
     else if(action === 'close') closeAccountConfirm();
     else if(action === 'account-merge') resolveAccount(true);
     else if(action === 'account-keep') resolveAccount(false);
@@ -329,6 +350,6 @@
     renderToggle,
     isOn,
     autoEnable,
-    _pure: { merge, isValidLog, stampOf }
+    _pure: { merge, mergeLog, isValidLog, stampOf, unsyncedCount }
   });
 })();

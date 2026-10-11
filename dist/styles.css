@@ -453,6 +453,10 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .backup-status { min-height: 1.2em; margin: 11px 0 0; color: var(--muted); font-size: .75rem; line-height: 1.5; }
 .backup-status.is-error { color: var(--danger); }
 .sync-status.is-error { color: var(--danger); }
+.sync-status.is-busy { opacity: .85; }
+.sync-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.sync-action-button { min-height: 40px; padding: 8px 14px; border: 1px solid color-mix(in srgb, currentColor 35%, transparent); border-radius: 999px; background: transparent; color: inherit; font: inherit; font-size: .76rem; font-weight: 800; cursor: pointer; }
+.sync-action-button:disabled { opacity: .5; cursor: default; }
 .storage-error { margin: 12px 0 0; padding: 10px 12px; border-radius: 10px; background: var(--danger-surface); color: var(--on-danger); font-size: .78rem; font-weight: 800; }
 .safari-storage-note { margin: 12px 0 0; color: var(--muted); font-size: .76rem; line-height: 1.65; }
 .a2hs-steps { display: grid; gap: 12px; margin: 18px 0 0; padding-left: 1.7em; color: var(--ink); font-size: .9rem; line-height: 1.65; }
@@ -578,6 +582,11 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .setting-backs > b { font-size: .9rem; }
 .setting-backs .back-picker { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; max-height: min(44dvh,390px); overflow-y: auto; padding: 12px 2px 4px; }
 .setting-backs .back-choice { width: 100%; }
+.back-single { display: flex; align-items: center; gap: 12px; padding: 12px 2px 4px; }
+.back-single .card-back { width: 34px; height: 52px; flex: 0 0 auto; border-radius: 4px; }
+.back-single p { display: grid; gap: 2px; margin: 0; }
+.back-single b { font-size: .86rem; }
+.back-single small { color: var(--muted); font-size: .78rem; line-height: 1.5; }
 @keyframes reveal-card { from { opacity: 0; transform: translateY(10px) scale(.97); } }
 
 @media (min-width: 680px) {
@@ -1521,7 +1530,6 @@ body[data-view="stats"] .app-shell { padding-bottom: 70px; }
 .two-result .score-lines,
 .two-result .verdict-reason,
 .two-result .verdict-closing { display: none; }
-.two-result .score-help { display: none; }
 .two-result > .reflection-card { padding: 0; border: 0; background: transparent; box-shadow: none; }
 .two-result > .reflection-card > h3 { display: none; }
 .two-result > .reflection-card .reflection-actions { grid-template-columns: 1fr 1fr; }
@@ -4086,15 +4094,14 @@ body.learn-active .learn-screen { background: transparent !important; color: #0b
 .learn-lesson-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; }
 .learn-read { flex: none; white-space: nowrap; padding: 4px 10px; background: #0b0b0b; color: #f1d527; font-size: .8rem; font-weight: 800; letter-spacing: .06em; }
 
-/* 縦向き固定：スマホを横にしたときは案内を全面に出す（manifest の orientation が効かない Safari 向け） */
+/* 横向きの案内：スマホを横にしたときは下に小さく「縦向きがおすすめ」と出すだけで、操作は止めない */
 .rotate-lock { display: none; }
 @media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
-  .rotate-lock { display: grid; place-items: center; position: fixed; inset: 0; z-index: 9999; background: #0b0b0b; padding: 16px; }
-  .rotate-lock-card { background: #f4efe3; color: #0b0b0b; border: 3px solid #0b0b0b; box-shadow: 8px 8px 0 #f1d527; padding: 22px 28px; text-align: center; max-width: 420px; }
-  .rotate-lock-icon { display: inline-grid; place-items: center; width: 48px; height: 48px; background: #f1d527; border: 2px solid #0b0b0b; font-size: 1.6rem; font-weight: 900; margin-bottom: 10px; }
-  .rotate-lock-card p { margin: 0 0 6px; font-family: var(--serif, serif); font-size: 1.25rem; font-weight: 800; letter-spacing: .08em; }
-  .rotate-lock-card small { font-size: .8rem; letter-spacing: .06em; opacity: .75; }
-  .app-shell { visibility: hidden; }
+  .rotate-lock { display: block; position: fixed; left: 12px; right: 12px; bottom: max(10px, env(safe-area-inset-bottom)); z-index: 9999; pointer-events: none; }
+  .rotate-lock-card { display: flex; align-items: center; gap: 10px; margin: 0 auto; max-width: 420px; background: #f4efe3; color: #0b0b0b; border: 2px solid #0b0b0b; box-shadow: 4px 4px 0 #f1d527; padding: 8px 14px; }
+  .rotate-lock-icon { display: inline-grid; place-items: center; flex: none; width: 28px; height: 28px; background: #f1d527; border: 2px solid #0b0b0b; font-size: 1rem; font-weight: 900; }
+  .rotate-lock-card p { margin: 0; font-family: var(--serif, serif); font-size: .9rem; font-weight: 800; letter-spacing: .06em; }
+  .rotate-lock-card small { font-size: .78rem; letter-spacing: .04em; opacity: .75; }
 }
 
 /* 削除ボタン：赤い目立つボタン */
@@ -4138,3 +4145,45 @@ body.learn-active .learn-screen { background: transparent !important; color: #0b
 .a2hs-settings { margin: 14px 0; padding: 14px; border: 2px solid #0b0b0b; background: #f4efe3; color: #0b0b0b; box-shadow: 4px 4px 0 #0b0b0b; }
 .a2hs-settings p { margin: 0 0 10px; line-height: 1.6; }
 .a2hs-settings .button { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; border: 2px solid #0b0b0b; background: #f1d527; color: #0b0b0b; font-weight: 800; }
+
+/* #13 決定画面：要約＋「変更する」で保存ボタンを押し下げない */
+.decision-summary { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.decision-summary-values { display: flex; flex-wrap: wrap; gap: 6px 14px; min-width: 0; font-size: .82rem; line-height: 1.5; overflow-wrap: anywhere; }
+.decision-summary-values span b { margin-right: 6px; padding: 0 5px; background: #0b0b0b; color: #f1d527; font-size: .75rem; letter-spacing: .06em; }
+.decision-summary-empty { color: #6b6458; }
+.decision-meta-toggle { flex: none; min-height: 44px; padding: 6px 12px; border: 2px solid #0b0b0b; background: #fffdf6; color: #0b0b0b; box-shadow: 3px 3px 0 #0b0b0b; font-weight: 800; font-size: .8rem; cursor: pointer; }
+.decision-meta-toggle[aria-expanded="true"] { background: #f1d527; }
+.decision-meta-toggle:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 #0b0b0b; }
+.decision-meta-editor { display: grid; gap: 22px; padding-top: 14px; }
+.decision-meta-editor[hidden] { display: none; }
+body[data-view="decide"] .decide-screen .decision-meta { display: grid; gap: 0; padding-top: 16px; border-top: 2px dashed #0b0b0b; border-bottom: 0; }
+.decision-options small[hidden] { display: none; }
+
+/* #14 準備画面：A/B と組合せ候補、同一内容ヒント */
+.same-option-hint { margin: 0; padding: 8px 10px; border-left: 4px solid #f1d527; background: #fff6cf; color: #0b0b0b; font-size: .8rem; line-height: 1.5; }
+.same-option-hint[hidden] { display: none; }
+.prepare-candidates { margin-top: 22px; padding-top: 16px; border-top: 2px dashed #0b0b0b; }
+.prepare-screen .pair-chip { border: 2px solid #0b0b0b; border-radius: 0; background: #fffdf6; color: #0b0b0b; box-shadow: 3px 3px 0 #0b0b0b; }
+.pair-chip.selected, .pair-chip[aria-pressed="true"],
+body[data-view="decide"] .decide-screen .pair-chip.selected { background: #0b0b0b; color: #f1d527; box-shadow: 3px 3px 0 #f1d527, 3px 3px 0 1px #0b0b0b; }
+
+/* #15 無料ドローの残り回数 */
+.quickstart-quota{margin:14px auto 0;max-width:340px;text-align:center;font-size:12px;line-height:1.6;color:var(--muted,#6b6257)}
+.quickstart-quota b{font-weight:700;color:var(--ink,#1f1a14)}
+.quickstart-quota span{display:block}
+
+/* #16 通知グループ（アプリ内のお知らせ／閉じていても通知） */
+#settings-modal .notify-group-title{margin:28px 0 0;font-size:.9rem;font-weight:800;color:#f1d527;letter-spacing:.06em}
+#settings-modal .notify-group-title+.feedback-setting{margin-top:10px}
+#settings-modal .remind-setting+.push-setting{margin-top:0;border-top:0}
+#settings-modal .push-status{margin-top:8px;font-size:.75rem;color:#cfc7ba}
+
+/* #17 リマインド候補の日付 */
+.remind-options button small{display:block;font-size:.75rem;font-family:inherit;opacity:.78;margin-top:2px;letter-spacing:.02em}
+.verdict-basis{margin:4px 0 0;font-size:.75rem;line-height:1.6;color:#5b5348}
+.verdict-questions{margin:10px 0 0;padding:9px 12px 9px 26px;border-radius:10px;background:rgba(255,255,255,.55);text-align:left;font-size:.8125rem;line-height:1.65;color:#29251e}
+.verdict-questions li+li{margin-top:4px}
+.two-result .score-help summary{margin:0 auto}
+
+#settings-modal .back-single b { color: #f4efe3; background: none; transform: none; box-shadow: none; padding: 0; margin: 0; }
+#settings-modal .back-single small { color: #cfc7ba; }

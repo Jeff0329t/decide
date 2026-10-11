@@ -78,11 +78,25 @@ test('settingHtml: ON/OFF ボタンを出す', () => {
   assert.match(on, /aria-pressed="true"/);
 });
 
-test('renderSettings: 未ログイン・公開鍵なしでは何も出さない', () => {
+test('renderSettings: 公開鍵なしでは何も出さない・未ログインならログインの案内', () => {
   const user = { getUser: () => ({ id: 'u' }), client: () => ({}) };
   assert.equal(load().push.renderSettings(), '');
-  assert.equal(load({ config: { VAPID_PUBLIC_KEY: 'AQID' } }).push.renderSettings(), '');
+  const loggedOut = load({ config: { VAPID_PUBLIC_KEY: 'AQID' } }).push.renderSettings();
+  assert.match(loggedOut, /data-push-setting/);
+  assert.match(loggedOut, /ログインが必要/);
+  assert.doesNotMatch(loggedOut, /data-push-action/);
   assert.equal(load({ auth: user, config: { VAPID_PUBLIC_KEY: '' } }).push.renderSettings(), '');
+});
+
+test('statusLabel: 状態ごとの表示', () => {
+  const { statusLabel } = load().push._pure;
+  assert.equal(statusLabel('login'), 'ログインが必要');
+  assert.equal(statusLabel('ios-home'), 'ホーム画面への追加が必要');
+  assert.equal(statusLabel('unsupported'), 'この端末は非対応');
+  assert.equal(statusLabel('denied'), '通知がブロックされています');
+  assert.equal(statusLabel('failed'), '登録失敗');
+  assert.equal(statusLabel('registered'), '登録済み');
+  assert.equal(statusLabel('off'), 'OFF');
 });
 
 test('isOn: はじめは OFF', () => {

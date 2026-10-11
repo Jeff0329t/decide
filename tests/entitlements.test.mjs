@@ -112,13 +112,25 @@ test('未ログインなら PRO キャッシュがあっても無料扱い', () 
   assert.equal(ent.canDraw(), false);
 });
 
-test('PRO キャッシュは期限（7日）を過ぎると無料扱い', () => {
+test('PRO キャッシュが7日を過ぎても購入済みは無料扱いに落とさない（needsOnline で再確認を促す）', () => {
   const pro = { draws: 50, plan: 'pro', userId: USER.id };
   const at = ms => new Date(Date.now() - ms).toISOString();
   assert.equal(load({ stored: { ...pro, checkedAt: at(6 * DAY) }, user: USER }).ent.hasProAccess(USER), true);
-  assert.equal(load({ stored: { ...pro, checkedAt: at(8 * DAY) }, user: USER }).ent.hasProAccess(USER), false);
-  assert.equal(load({ stored: pro, user: USER }).ent.hasProAccess(USER), false);
-  assert.equal(load({ stored: { ...pro, checkedAt: 'broken' }, user: USER }).ent.hasProAccess(USER), false);
+  assert.equal(load({ stored: { ...pro, checkedAt: at(8 * DAY) }, user: USER }).ent.hasProAccess(USER), true);
+  assert.equal(load({ stored: pro, user: USER }).ent.hasProAccess(USER), true);
+  assert.equal(load({ stored: { ...pro, checkedAt: 'broken' }, user: USER }).ent.hasProAccess(USER), true);
+
+  const { resolveAccess } = load().ent._pure;
+  assert.deepEqual({ ...resolveAccess({ plan: 'pro', userMatch: true, fresh: false }) },
+    { pro: true, purchased: true, needsOnline: true });
+  assert.equal(resolveAccess({ plan: 'pro', userMatch: true, fresh: true }).needsOnline, false);
+  assert.deepEqual({ ...resolveAccess({ plan: 'pro', userMatch: false, fresh: true }) },
+    { pro: false, purchased: false, needsOnline: false });
+  // 招待特典だけの人はキャッシュの鮮度ではなく pro_until で判定し、再確認も求めない
+  const now = Date.now();
+  const invite = resolveAccess({ plan: 'free', proUntil: new Date(now + DAY).toISOString(), userMatch: true, fresh: false, now });
+  assert.deepEqual({ ...invite }, { pro: true, purchased: false, needsOnline: false });
+  assert.equal(resolveAccess({ plan: 'free', proUntil: new Date(now - DAY).toISOString(), userMatch: true, fresh: false, now }).pro, false);
 });
 
 test('フォアグラウンド復帰で plan_type を取り直し、返金済みなら free に戻る', async () => {
@@ -191,7 +203,9 @@ test('app.js のフックは最小限', () => {
   const app = read('app.js');
   assert.match(app, /DECIDE_ENTITLEMENTS\.canDraw\(\)\)\{ window\.DECIDE_ENTITLEMENTS\.openPaywall\('draw'\)/);
   assert.match(app, /window\.DECIDE_ENTITLEMENTS\?\.recordDraw\?\.\(\)/);
-  assert.match(app, /DECIDE_ENTITLEMENTS\.canSaveLog\(logs\.length\)\)\{ window\.DECIDE_ENTITLEMENTS\.openPaywall\('save'\)/);
+  assert.match(app, /DECIDE_ENTITLEMENTS\.canSaveLog\(logs\.length\)\)\{ stashBlockedSave\(log\); window\.DECIDE_ENTITLEMENTS\.openPaywall\('save'\)/);
+  assert.match(app, /function restoreBlockedSave\(\)/);
+  assert.match(app, /visibilitychange[\s\S]{0,120}restoreBlockedSave/);
   assert.match(app, /startSession\(mode\)===false/);
 });
 

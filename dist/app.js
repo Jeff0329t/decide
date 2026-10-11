@@ -162,16 +162,22 @@ function prepareImport(payload) {
   if(!payload || payload.app!=='DECIDE' || payload.schema!==BACKUP_SCHEMA || !Array.isArray(payload.logs))throw new Error('DECIDEのバックアップファイルではありません。');
   if(!payload.logs.every(isImportLog))throw new Error('履歴データの形式が正しくありません。');
   const ids=payload.logs.map(log=>log.id); if(new Set(ids).size!==ids.length)throw new Error('同じ履歴IDが重複しています。');
-  const existing=new Map(logs.map(log=>[log.id,log])); const additions=[]; let duplicates=0; let reviewedUpdates=0;
+  const existing=new Map(logs.map(log=>[log.id,log])); const additions=[]; let updated=0; let same=0; let conflicts=0;
+  const mergeLog=globalThis.DECIDE_MERGE_LOG;
   for(const incoming of payload.logs) {
     const current=existing.get(incoming.id);
     if(!current) { additions.push(incoming); existing.set(incoming.id,incoming); continue; }
-    duplicates++;
-    if(reviewedAtTime(incoming)>reviewedAtTime(current)) { existing.set(incoming.id,{...current,review:incoming.review ?? current.review,reviewedAt:incoming.reviewedAt}); reviewedUpdates++; }
+    if(typeof mergeLog==='function') {
+      // 項目ごとに新しい方を採用し、空の項目は相手側で埋める（同期と同じ規則）
+      const result=mergeLog(current,incoming);
+      if(result.changed) { existing.set(incoming.id,result.log); updated++; if(result.conflict)conflicts++; } else same++;
+      continue;
+    }
+    if(reviewedAtTime(incoming)>reviewedAtTime(current)) { existing.set(incoming.id,{...current,review:incoming.review ?? current.review,reviewedAt:incoming.reviewedAt}); updated++; } else same++;
   }
-  const updated=logs.map(log=>existing.get(log.id));
+  const merged=logs.map(log=>existing.get(log.id));
   const dateValue=log=>Date.parse(log.createdAt || '') || 0;
-  return { additions, duplicates, reviewedUpdates, mergedLogs:[...updated,...additions].sort((a,b)=>dateValue(b)-dateValue(a)) };
+  return { additions, updated, same, conflicts, mergedLogs:[...merged,...additions].sort((a,b)=>dateValue(b)-dateValue(a)) };
 }
 function openImportPicker() { document.querySelector('#import-file')?.click(); }
 async function readImportFile(file) {
@@ -188,14 +194,14 @@ async function readImportFile(file) {
 }
 function openImportConfirm() {
   if(!pendingImport)return;
-  const {additions,duplicates,reviewedUpdates}=pendingImport;
+  const {additions,updated,same,conflicts}=pendingImport;
   const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='import-modal';
-  wrap.innerHTML=`<button class="modal-shade" data-action="close-import" aria-label="読み込み確認を閉じる"></button><section class="settings-sheet confirm-sheet import-sheet" role="dialog" aria-modal="true" aria-labelledby="import-title"><div class="sheet-handle"></div><p class="eyebrow">Import backup</p><h2 id="import-title">履歴を読み込みますか？</h2><p>既存の履歴は残したまま、バックアップの内容を追加します。</p><dl class="import-summary"><div><dt>追加</dt><dd>${additions.length}件</dd></div><div><dt>重複</dt><dd>${duplicates}件</dd></div>${reviewedUpdates ? `<div><dt>振り返り更新</dt><dd>${reviewedUpdates}件</dd></div>` : ''}</dl><p class="import-note">同じIDの履歴は既存内容を優先し、より新しい振り返り日時だけを反映します。</p><p class="storage-error" data-import-error role="alert" hidden></p><div class="confirm-actions"><button class="button secondary" data-action="close-import">キャンセル</button><button class="button" data-action="confirm-import">取り込む</button></div></section>`;
+  wrap.innerHTML=`<button class="modal-shade" data-action="close-import" aria-label="読み込み確認を閉じる"></button><section class="settings-sheet confirm-sheet import-sheet" role="dialog" aria-modal="true" aria-labelledby="import-title"><div class="sheet-handle"></div><p class="eyebrow">Import backup</p><h2 id="import-title">履歴を読み込みますか？</h2><p>今の履歴は残したまま、新しい内容だけを反映します。</p><dl class="import-summary"><div><dt>追加</dt><dd>${additions.length}件</dd></div><div><dt>更新</dt><dd>${updated}件</dd></div><div><dt>同じ内容</dt><dd>${same}件</dd></div>${conflicts ? `<div><dt>両方で変更</dt><dd>${conflicts}件</dd></div>` : ''}</dl><p class="import-note">同じ決定が両方にあるときは、項目ごとに新しく書かれた方を残し、空いている項目はもう一方の内容で埋めます。消える内容はありません。</p><p class="storage-error" data-import-error role="alert" hidden></p><div class="confirm-actions"><button class="button secondary" data-action="close-import">キャンセル</button><button class="button" data-action="confirm-import">取り込む</button></div></section>`;
   mountModal(wrap,'.settings-sheet [data-action="close-import"]');
 }
 function closeImport() { pendingImport=null; closeModal('#import-modal'); }
 function confirmImport() {
-  if(!pendingImport)return; const {additions,reviewedUpdates,mergedLogs}=pendingImport;
+  if(!pendingImport)return; const {additions,updated,mergedLogs}=pendingImport;
   if(!safeSetItem(STORAGE_KEY,JSON.stringify(mergedLogs))) {
     storageSaveFailed=true;
     const error=document.querySelector('[data-import-error]');
@@ -203,7 +209,7 @@ function confirmImport() {
     return;
   }
   logs=mergedLogs; pendingImport=null; window.DECIDE_SYNC?.schedule?.(); closeModal('#import-modal');
-  if(currentView==='history')renderHistory(); toast(`履歴を${additions.length}件追加しました${reviewedUpdates ? `（振り返り${reviewedUpdates}件を更新）` : ''}`);
+  if(currentView==='history')renderHistory(); toast(additions.length || updated ? `履歴を${additions.length}件追加${updated ? `・${updated}件更新` : ''}しました` : '新しい内容はありませんでした');
 }
 function esc(value='') { return String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 function contentCardId(card={}) {
@@ -478,6 +484,7 @@ function renderHome() {
         <button class="draw-choice primary" data-action="start" data-mode="one"><span class="choice-kicker" aria-hidden="true">SOLO · 1 CARD</span><span class="mode-art one-art" aria-hidden="true"><i class="card-back back-${settings.back}"></i></span><span class="choice-stamp" aria-hidden="true">DRAW!</span><strong>1枚引き</strong><span>ひとつの迷いを考える</span><small>${deckCount} CARDS</small></button>
         <button class="draw-choice" data-action="start" data-mode="two"><span class="choice-kicker" aria-hidden="true">DUEL · A or B</span><span class="mode-art two-art" aria-hidden="true"><i class="card-back back-${settings.back}"></i><i class="card-back back-${settings.back}"></i><b class="choice-vs">OR</b></span><span class="choice-stamp" aria-hidden="true">DRAW!</span><strong>2枚引き</strong><span>2つの選択肢を比べる</span><small>${deckCount} CARDS</small></button>
       </div>
+      ${drawQuotaNote()}
       <button class="quickstart-help" data-action="tutorial-open">使い方を見る</button>
       <a class="quickstart-cards" href="./cards/"><b>78 CARDS</b><span>カードの意味と、迷ったときのヒント</span></a>
       ${last ? `<button class="last-log" data-action="detail" data-id="${esc(last.id)}"><span>最近の決定</span><strong>${esc(last.title)}</strong><small>${esc(DECIDE_DECISION.choiceText(last.decision))} · ${formatDate(last.createdAt)}</small></button>` : ''}
@@ -670,6 +677,13 @@ function finishTutorial(status, redirect=true) {
   else if(returnFocus?.isConnected)returnFocus.focus({preventScroll:true});
 }
 
+// 無料枠の残りを開始前に控えめに伝える（深掘りは同じ1回に含まれる）
+function drawQuotaNote(){
+  const ent=window.DECIDE_ENTITLEMENTS;
+  const left=ent?.remaining?.().draws;
+  if(!ent || !Number.isFinite(left))return '';
+  return `<p class="quickstart-quota">${left>0?`無料ドローはあと<b>${left}</b>回（累計${ent.FREE_DRAWS}回まで）`:`無料ドロー（累計${ent.FREE_DRAWS}回）を使い切りました`}<span>カードを開いた時に1回。深掘りは同じ1回に含まれます</span></p>`;
+}
 let pickingDrawMode=false;
 function pickDrawMode(button, event){
   if(window.DECIDE_ENTITLEMENTS && !window.DECIDE_ENTITLEMENTS.canDraw()){ window.DECIDE_ENTITLEMENTS.openPaywall('draw'); return; }
@@ -707,18 +721,19 @@ function decisionOptionText(value) {
   return value==='選択肢1' ? decisionDraft.option1 || '' : value==='選択肢2' ? decisionDraft.option2 || '' : '';
 }
 function sessionContext() {
-  const values=[decisionDraft.genre, activeSession.mode==='two' && decisionDraft.option1 ? `A：${decisionDraft.option1}` : '', activeSession.mode==='two' && decisionDraft.option2 ? `B：${decisionDraft.option2}` : ''].filter(Boolean);
-  return values.length ? `<p class="session-context">${values.map(esc).join('<br>')}</p>` : '';
+  return decisionDraft.genre ? `<p class="session-context">ジャンル：${esc(decisionDraft.genre)}</p>` : '';
+}
+function sameOptionHint() {
+  return '<p class="same-option-hint" data-same-option-hint hidden>AとBが同じ内容です。このままでも引けます。</p>';
 }
 function renderPreparation() {
   if(!activeSession)return navigate('home');
   const options=currentView==='prepare-options';
-  app.innerHTML=`<section class="screen prepare-screen"><button class="text-back" data-action="${options?'prepare-back':'home'}">← 戻る</button><p class="eyebrow">${activeSession.mode==='two'?'2枚引き':'1枚引き'}</p><h1>${options?'2つの選択肢を選ぶ':'どんな迷いですか？'}</h1><p class="lead">${options?'候補からA・Bを1つずつ選ぶか、自由に入力できます。':'ジャンルを1タップで選べます。'}入力は任意です。</p><form id="prepare-form" class="save-form">${options?`${sessionContext()}<div class="pair-candidates" data-option-candidates></div>${optionEditor()}`:genreChips()}<button class="button" type="button" data-action="prepare-next">${options||activeSession.mode==='one'?'カードを引く':'選択肢を選ぶ →'}</button>${options||activeSession.mode==='two'?'':'<button class="button secondary" type="button" data-action="prepare-skip">スキップして引く</button>'}</form></section>`;
+  const fields=options
+    ? `${sessionContext()}${optionEditor()}${sameOptionHint()}<button class="button" type="button" data-action="prepare-next">カードを引く</button><button class="button secondary" type="button" data-action="prepare-skip">入力せず引く</button><div class="form-section prepare-candidates"><div class="form-section-head"><b>組合せ候補</b><span>タップでA・Bに入ります</span></div><div class="pair-candidates" data-pair-candidates></div></div>`
+    : `${genreChips()}<button class="button" type="button" data-action="prepare-next">${activeSession.mode==='one'?'カードを引く':'選択肢を選ぶ →'}</button>${activeSession.mode==='two'?'':'<button class="button secondary" type="button" data-action="prepare-skip">スキップして引く</button>'}`;
+  app.innerHTML=`<section class="screen prepare-screen"><button class="text-back" data-action="${options?'prepare-back':'home'}">← 戻る</button><p class="eyebrow">${activeSession.mode==='two'?'2枚引き':'1枚引き'}</p><h1>${options?'2つの選択肢を選ぶ':'どんな迷いですか？'}</h1><p class="lead">${options?'AとBを自由に入力するか、下の組合せ候補から選べます。':'ジャンルを1タップで選べます。'}入力は任意です。</p><form id="prepare-form" class="save-form">${fields}</form></section>`;
   restoreDecisionDraft();
-  if(options){
-    const values=[...new Set((DECIDE_DECISION.PAIRS[decisionDraft.genre]||[]).flat())];
-    document.querySelector('[data-option-candidates]').innerHTML=['1','2'].map(key=>`<div class="option-candidate-group"><b>選択肢${key==='1'?'A':'B'}の候補</b><div class="genre-chips">${values.map(value=>`<button type="button" class="meta-chip" data-action="prepare-choice" data-key="${key}" data-value="${esc(value)}" aria-pressed="${decisionDraft['option'+key]===value}">${esc(value)}</button>`).join('')}</div></div>`).join('');
-  }
 }
 function continuePreparation(skip=false) {
   captureDecisionDraft();
@@ -728,6 +743,11 @@ function continuePreparation(skip=false) {
 
 function backPicker() {
   const choice=([id,label])=>`<button class="back-choice ${settings.back === id ? 'selected' : ''}" data-action="select-back" data-value="${id}" aria-label="${label}" aria-pressed="${settings.back === id}"><i class="card-back back-${id}"></i><small>${label}</small><b aria-hidden="true">${settings.back === id ? '✓' : ''}</b></button>`;
+  // 裏面が1種類だけのときは、押しても何も変わらないボタンにせず説明だけ出す
+  if(DECIDE_CARD_BACKS.length <= 1) {
+    const [id,label]=DECIDE_CARD_BACKS[0] || ['celestial','星と月'];
+    return `<div class="back-single"><i class="card-back back-${id}" aria-hidden="true"></i><p><b>${label}</b><small>今は1種類です。デザインは今後追加予定です。</small></p></div>`;
+  }
   return `<div class="back-picker" aria-label="カードの裏面を選ぶ">
     ${DECIDE_CARD_BACKS.map(choice).join('')}
   </div>`;
@@ -930,6 +950,11 @@ function deepPrompts() {
   const used = activeSession.nodes.map(n => n.question);
   return DECIDE_INTERVIEW.availablePrompts(activeSession.mode,used);
 }
+// 二択の結果：決め手を言葉にするための問いを A・B に1つずつ
+function renderVerdictQuestions() {
+  const name=(key,letter)=>decisionDraft[key]?`『${esc(decisionDraft[key])}』`:`選択肢${letter}`;
+  return `<ul class="verdict-questions"><li>${name('option1','A')}を選んだ半年後、いちばんうれしいことは？</li><li>${name('option2','B')}を選ばなかったら、何が心残りになりそう？</li></ul>`;
+}
 function renderReflection(stepKey,answered=false,verdict=null) {
   const two=activeSession.mode==='two';
   const question=two?'この結果、しっくりきましたか？':'このカード、しっくりきましたか？';
@@ -958,7 +983,7 @@ function renderSession() {
     <section class="screen map-screen ${activeSession.mode === 'two' ? 'two-result' : 'one-result'} ${deepCount > 0 ? 'has-deep' : ''}">
       <button class="text-back" data-action="home">← 最初に戻る</button>
       ${sessionContext()}<div class="map-heading"><p class="eyebrow">Thought map</p><h1>${activeSession.mode === 'two' ? '2つの選択肢を<wbr>比べる' : 'カードが示す、<wbr>ひとつの視点'}</h1><p>${activeSession.mode === 'two' ? 'カードの向きと意味から、<wbr>どちらが今進めやすいかを<wbr>比べます。' : 'カードに未来を決めてもらうのではなく、<wbr>解説を自分の状況に照らして<wbr>読んでみてください。'}</p></div>
-      ${activeSession.mode === 'two' ? `<div class="choice-comparison">${comparison}</div><section class="verdict-card"><span class="verdict-kicker">今回のカードでは</span><h3>${esc(verdict.label.replace(/選択肢([AB])/g,(_,letter)=>decisionDraft['option'+(letter==='A'?'1':'2')] ? `『${decisionDraft['option'+(letter==='A'?'1':'2')]}』` : `選択肢${letter}`))}</h3><div class="score-lines">${renderScoreRow('選択肢A',verdict.scores[0])}${renderScoreRow('選択肢B',verdict.scores[1])}</div><details class="score-help"><summary>進めやすさとは？</summary><p>その選択肢を「いま進める」ときの追い風の強さです。運勢の良し悪しではありません。</p></details><p class="verdict-reason">${esc(verdict.reason)}</p>${verdict.note?`<p class="verdict-note">${esc(verdict.note)}</p>`:''}<p class="verdict-closing">${esc(verdict.closing)}</p></section>${renderReflection('verdict',deepCount>0,verdict)}<div class="thought-map deep-map">${activeSession.nodes.slice(2).map((node,index) => renderCard(node,index + 2,true)).join('')}</div>` : `<div class="thought-map">${activeSession.nodes.map((node,index)=>renderCard(node,index,true)).join('')}</div>`}
+      ${activeSession.mode === 'two' ? `<div class="choice-comparison">${comparison}</div><section class="verdict-card"><span class="verdict-kicker">今回のカードでは</span><h3>${esc(verdict.label.replace(/選択肢([AB])/g,(_,letter)=>decisionDraft['option'+(letter==='A'?'1':'2')] ? `『${decisionDraft['option'+(letter==='A'?'1':'2')]}』` : `選択肢${letter}`))}</h3><div class="score-lines">${renderScoreRow('選択肢A',verdict.scores[0])}${renderScoreRow('選択肢B',verdict.scores[1])}</div><p class="verdict-basis">カードの象徴を比べた目安です。入力した内容を分析したものではありません。</p>${renderVerdictQuestions()}<details class="score-help"><summary>進めやすさとは？</summary><p>その選択肢を「いま進める」ときの追い風の強さです。運勢の良し悪しではありません。</p></details><p class="verdict-reason">${esc(verdict.reason)}</p>${verdict.note?`<p class="verdict-note">${esc(verdict.note)}</p>`:''}<p class="verdict-closing">${esc(verdict.closing)}</p></section>${renderReflection('verdict',deepCount>0,verdict)}<div class="thought-map deep-map">${activeSession.nodes.slice(2).map((node,index) => renderCard(node,index + 2,true)).join('')}</div>` : `<div class="thought-map">${activeSession.nodes.map((node,index)=>renderCard(node,index,true)).join('')}</div>`}
     </section>`;
   renderTutorialStage();
 }
@@ -983,6 +1008,15 @@ function addDeep(prompt) {
   requestAnimationFrame(() => window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}));
 }
 
+function decisionSummaryHtml() {
+  const rows=[decisionDraft.genre?`<span><b>ジャンル</b>${esc(decisionDraft.genre)}</span>`:''];
+  if(activeSession?.mode==='two'){
+    if(decisionDraft.option1)rows.push(`<span><b>A</b>${esc(decisionDraft.option1)}</span>`);
+    if(decisionDraft.option2)rows.push(`<span><b>B</b>${esc(decisionDraft.option2)}</span>`);
+  }
+  const filled=rows.filter(Boolean);
+  return filled.length ? filled.join('') : `<span class="decision-summary-empty">${activeSession?.mode==='two'?'ジャンル・選択肢は未設定':'ジャンルは未設定'}</span>`;
+}
 function renderDecision() {
   if (!activeSession) return navigate('home');
   const options = activeSession.mode === 'two' ? ['選択肢1','選択肢2','保留する'] : ['進む','見送る','保留する'];
@@ -991,19 +1025,43 @@ function renderDecision() {
       <button class="text-back" data-action="session">← マップに戻る</button>
       <p class="eyebrow">Decide</p><div class="decide-title"><span class="decide-kicker">THE FINAL CALL</span><h1>今回は、<wbr>どうする？</h1><span class="decide-sub">YOU DECIDE, NOT THE CARDS.</span></div>
       <p class="lead">カードではなく、<wbr>あなたが決めます。<wbr>いちばん納得できるものを<wbr>選んでください。</p>
-      <div class="decision-options">${options.map((o,i) => `<button class="decision-option ${selectedDecision === o ? 'selected' : ''}" data-action="select-decision" data-value="${o}" aria-pressed="${selectedDecision === o}"><b class="decision-index">${(activeSession.mode === 'two' ? ['A','B','HOLD'] : ['GO','PASS','HOLD'])[i]}</b><span>${DECIDE_DECISION.choiceText(o)}${decisionOptionText(o) ? `<small>${esc(decisionOptionText(o))}</small>` : ''}</span><i>${selectedDecision === o ? '✓' : ''}</i></button>`).join('')}</div>
+      <div class="decision-options">${options.map((o,i) => `<button class="decision-option ${selectedDecision === o ? 'selected' : ''}" data-action="select-decision" data-value="${o}" aria-pressed="${selectedDecision === o}"><b class="decision-index">${(activeSession.mode === 'two' ? ['A','B','HOLD'] : ['GO','PASS','HOLD'])[i]}</b><span>${DECIDE_DECISION.choiceText(o)}<small data-option-text="${o}"${decisionOptionText(o) ? '' : ' hidden'}>${esc(decisionOptionText(o))}</small></span><i>${selectedDecision === o ? '✓' : ''}</i></button>`).join('')}</div>
       <form id="save-form" class="save-form">
-        ${selectedDecision ? `<section class="decision-meta" aria-label="決定の補足">
-          <div class="form-section"><div class="form-section-head"><b>ジャンル</b><span>任意・1つだけ</span></div><div class="genre-chips">${DECIDE_DECISION.GENRES.map(genre=>`<button type="button" class="meta-chip" data-action="select-genre" data-value="${genre}" aria-pressed="false">${genre}</button>`).join('')}</div></div>
-          ${activeSession.mode==='two'?`<div class="form-section"><div class="form-section-head"><b>選択肢の内容</b><span>任意</span></div><div class="pair-candidates" data-pair-candidates></div>${optionEditor()}<div class="recent-options" data-recent-options></div></div>`:''}
-        </section>`:''}
-        <label>題名 <span>任意</span><input name="title" maxlength="60" autocomplete="off" enterkeyhint="done" lang="ja" placeholder="空欄なら内容から自動で作成"></label>
-        <label>ひとことメモ <span>任意</span><textarea name="memo" maxlength="240" rows="3" lang="ja" placeholder="決め手や、今の気持ち"></textarea></label>
-        <button class="button" type="submit" ${selectedDecision ? '' : 'disabled'}>決定を記録する</button>
+        <label>ひとことメモ <span>任意</span><textarea name="memo" maxlength="240" rows="2" lang="ja" placeholder="決め手や、今の気持ち"></textarea></label>
+        <button class="button" type="submit" data-save-decision ${selectedDecision ? '' : 'disabled'}>決定を記録する</button>
         <p class="timestamp">${formatDate(new Date().toISOString(), true)} の記録として保存</p>
+        <section class="decision-meta" aria-label="記録の補足">
+          <div class="decision-summary"><div class="decision-summary-values" data-decision-summary>${decisionSummaryHtml()}</div><button type="button" class="decision-meta-toggle" data-action="toggle-decision-meta" aria-expanded="false" aria-controls="decision-meta-editor">変更する</button></div>
+          <div id="decision-meta-editor" class="decision-meta-editor" hidden>
+            <label>題名 <span>任意</span><input name="title" maxlength="60" autocomplete="off" enterkeyhint="done" lang="ja" placeholder="空欄なら内容から自動で作成"></label>
+            <div class="form-section"><div class="form-section-head"><b>ジャンル</b><span>任意・1つだけ</span></div>${genreChips()}</div>
+            ${activeSession.mode==='two'?`<div class="form-section"><div class="form-section-head"><b>選択肢の内容</b><span>任意</span></div>${optionEditor()}${sameOptionHint()}<div class="pair-candidates" data-pair-candidates></div><div class="recent-options" data-recent-options></div></div>`:''}
+          </div>
+        </section>
       </form>
     </section>`;
   restoreDecisionDraft();
+}
+
+function selectDecision(value) {
+  captureDecisionDraft(); sensoryFeedback('tap'); selectedDecision=value;
+  document.querySelectorAll('[data-action="select-decision"]').forEach(button=>{ const selected=button.dataset.value===value; button.classList.toggle('selected',selected); button.setAttribute('aria-pressed',String(selected)); const mark=button.querySelector('i'); if(mark)mark.textContent=selected?'✓':''; });
+  const submit=document.querySelector('[data-save-decision]'); if(submit)submit.disabled=false;
+}
+
+function toggleDecisionMeta(button) {
+  const editor=document.getElementById('decision-meta-editor'); if(!editor)return;
+  const open=editor.hidden; editor.hidden=!open; button.setAttribute('aria-expanded',String(open)); button.textContent=open?'閉じる':'変更する';
+  if(open)editor.querySelector('input, textarea, button')?.focus({preventScroll:true});
+}
+
+function updateDraftDisplays() {
+  const hint=document.querySelector('[data-same-option-hint]');
+  if(hint)hint.hidden=!(decisionDraft.option1 && decisionDraft.option1===decisionDraft.option2);
+  const summary=document.querySelector('[data-decision-summary]'); if(summary)summary.innerHTML=decisionSummaryHtml();
+  document.querySelectorAll('[data-option-text]').forEach(small=>{ const text=decisionOptionText(small.dataset.optionText); small.textContent=text; small.hidden=!text; });
+  const pairs=DECIDE_DECISION.PAIRS[decisionDraft.genre]||[];
+  document.querySelectorAll('[data-action="select-pair"]').forEach(button=>{ const pair=pairs[Number(button.dataset.pairIndex)]||[]; const selected=pair[0]===decisionDraft.option1 && pair[1]===decisionDraft.option2; button.classList.toggle('selected',selected); button.setAttribute('aria-pressed',String(selected)); });
 }
 
 function captureDecisionDraft() {
@@ -1019,7 +1077,7 @@ function renderPairCandidates() {
   wrap.replaceChildren();
   const pairs=DECIDE_DECISION.PAIRS[decisionDraft.genre]||[];
   if(!pairs.length){ const hint=document.createElement('p'); hint.className='pair-hint'; hint.textContent='ジャンルを選ぶと候補が表示されます。'; wrap.append(hint); return; }
-  pairs.forEach((pair,index)=>{ const button=document.createElement('button'); button.type='button'; button.className='pair-chip'; button.dataset.action='select-pair'; button.dataset.pairIndex=String(index); button.textContent=`${pair[0]}／${pair[1]}`; wrap.append(button); });
+  pairs.forEach((pair,index)=>{ const button=document.createElement('button'); button.type='button'; button.className='pair-chip'; button.dataset.action='select-pair'; button.dataset.pairIndex=String(index); button.setAttribute('aria-pressed','false'); button.textContent=`${pair[0]}／${pair[1]}`; wrap.append(button); });
 }
 
 function renderRecentChoices() {
@@ -1040,18 +1098,18 @@ function restoreDecisionDraft() {
   if(form.elements.option1)form.elements.option1.value=decisionDraft.option1;
   if(form.elements.option2)form.elements.option2.value=decisionDraft.option2;
   document.querySelectorAll('[data-action="select-genre"]').forEach(button=>{ const selected=button.dataset.value===decisionDraft.genre; button.classList.toggle('selected',selected); button.setAttribute('aria-pressed',String(selected)); });
-  renderPairCandidates(); renderRecentChoices();
+  renderPairCandidates(); renderRecentChoices(); updateDraftDisplays();
 }
 
 function selectGenre(value) {
   captureDecisionDraft();
   decisionDraft.genre=decisionDraft.genre===value?'':DECIDE_DECISION.validGenre(value);
-  if(currentView.startsWith('prepare-'))renderPreparation(); else restoreDecisionDraft(); sensoryFeedback('tick');
+  restoreDecisionDraft(); sensoryFeedback('tick');
 }
 
 function selectPair(index) {
   const pair=(DECIDE_DECISION.PAIRS[decisionDraft.genre]||[])[index]; if(!pair)return;
-  decisionDraft.option1=pair[0]; decisionDraft.option2=pair[1]; restoreDecisionDraft(); sensoryFeedback('tick');
+  captureDecisionDraft(); decisionDraft.option1=pair[0]; decisionDraft.option2=pair[1]; restoreDecisionDraft(); sensoryFeedback('tick');
 }
 
 function swapOptions() {
@@ -1080,7 +1138,7 @@ function saveDecision(form) {
   const requestPersistence=retry ? pendingSave.requestPersistence : firstRecord && !settings.storagePersistRequested;
   const existing=logs.findIndex(item=>item.id===log.id);
   if(existing>=0 && 'remindAt' in logs[existing]){ log.remindAt=logs[existing].remindAt; if(logs[existing].remindDays)log.remindDays=logs[existing].remindDays; } else if(existing<0){ const remindAt=window.DECIDE_REMINDERS?.defaultRemindAt?.(log.createdAt); if(remindAt) log.remindAt=remindAt; }
-  if(existing<0 && !retry && window.DECIDE_ENTITLEMENTS && !window.DECIDE_ENTITLEMENTS.canSaveLog(logs.length)){ window.DECIDE_ENTITLEMENTS.openPaywall('save'); return; }
+  if(existing<0 && !retry && window.DECIDE_ENTITLEMENTS && !window.DECIDE_ENTITLEMENTS.canSaveLog(logs.length)){ stashBlockedSave(log); window.DECIDE_ENTITLEMENTS.openPaywall('save'); return; }
   if(existing>=0)logs[existing]=log; else logs.unshift(log);
   if(requestPersistence)settings.storagePersistRequested=true;
   if(!persist()) { pendingSave={log,firstRecord,requestPersistence}; openSaveFailure(log); return; }
@@ -1090,6 +1148,23 @@ function saveDecision(form) {
   activeSession = null; selectedDecision = ''; detailId = log.id;
   decisionDraft = {genre:'',option1:'',option2:'',title:'',memo:''};
   completionId=log.id; currentView = 'detail'; render(); toast('決定を記録しました');
+}
+
+// 保存上限で止まった決定は、購入・ログインで画面を離れても失われないよう退避しておく
+const BLOCKED_SAVE_KEY='decide.blockedSave.v1';
+function stashBlockedSave(log){ try{ sessionStorage.setItem(BLOCKED_SAVE_KEY,JSON.stringify(log)); }catch{} }
+function restoreBlockedSave(){
+  let log=null;
+  try{ log=JSON.parse(sessionStorage.getItem(BLOCKED_SAVE_KEY)||'null'); }catch{}
+  if(!log || typeof log.id!=='string' || !Array.isArray(log.nodes))return false;
+  if(logs.some(item=>item.id===log.id)){ try{ sessionStorage.removeItem(BLOCKED_SAVE_KEY); }catch{} return false; }
+  if(!window.DECIDE_ENTITLEMENTS?.canSaveLog?.(logs.length))return false;
+  logs.unshift(log);
+  if(!persist()){ logs.shift(); return false; }
+  try{ sessionStorage.removeItem(BLOCKED_SAVE_KEY); }catch{}
+  if(activeSession?.id===log.id){ activeSession=null; selectedDecision=''; decisionDraft={genre:'',option1:'',option2:'',title:'',memo:''}; }
+  detailId=log.id; currentView='detail'; render(); toast('保留していた決定を記録しました');
+  return true;
 }
 
 function openSaveFailure(log) {
@@ -1285,7 +1360,7 @@ function renderDetail() {
     <div class="saved-cards"><p class="panel-title">引いたカードと意味</p>${log.nodes.map((node,index) => renderSavedCard(log,node,index)).join('')}</div>
     ${log.memo ? '<div class="saved-memo"><span>メモ</span><p data-detail-memo></p></div>' : ''}
     <section class="story-panel"><div class="story-head"><div><p class="panel-title">その後のストーリー</p><span>時間が経って分かったことや、選択の続きを残せます。</span></div>${log.storyUpdatedAt ? `<time>更新 ${formatDate(log.storyUpdatedAt)}</time>` : ''}</div>
-      <textarea id="story-text" rows="6" maxlength="2000" placeholder="例：実際に選択肢Aを選んでみたら、最初に心配していたことよりも…"></textarea>
+      <textarea id="story-text" aria-label="その後のストーリー" rows="6" maxlength="2000" placeholder="例：実際に選択肢Aを選んでみたら、最初に心配していたことよりも…"></textarea>
       <div class="story-actions"><button class="button secondary" data-action="save-story" data-id="${esc(log.id)}">${log.story ? 'ストーリーを更新する' : 'ストーリーを保存する'}</button>${log.story ? `<button class="button ghost" data-action="share-story" data-id="${esc(log.id)}">その後をシェア ↗</button>` : ''}</div>
     </section>
     <section class="review-panel"><p class="panel-title">この選択、その後どうでした？</p>
@@ -1308,8 +1383,13 @@ function renderRemindPicker(log) {
   return `<section class="remind-picker" aria-labelledby="remind-title-${esc(log.id)}">
     <p class="remind-kicker">REMIND ME</p>
     <h2 id="remind-title-${esc(log.id)}">いつ頃、結論が出そう？</h2>
-    <div class="remind-options">${REMIND_OPTIONS.map(([days,label])=>`<button class="${(days?chosen===days:log.remindAt===null)?'selected':''}" data-action="set-remind" data-days="${days}" data-id="${esc(log.id)}" aria-pressed="${days?chosen===days:log.remindAt===null}">${label}</button>`).join('')}</div>
-    <p class="remind-status">${valid ? `<b>${formatDate(log.remindAt)}</b> ごろ、アプリを開いたときに「その後どう？」とお聞きします` : log.remindAt===null ? 'リマインドなし。気が向いたら履歴から振り返れます' : '選ぶと、その頃にアプリを開いたとき振り返りをご案内します'}</p>
+    <div class="remind-options">${REMIND_OPTIONS.map(([days,label])=>{
+      const on=days ? chosen===days : log.remindAt===null;
+      // 選び直すと今日から数える。選択中は保存済みの日付、それ以外は今日から数えた日付を出す
+      const date=days ? (on ? at : new Date(Date.now()+days*DAY_MS)) : null;
+      return `<button class="${on?'selected':''}" data-action="set-remind" data-days="${days}" data-id="${esc(log.id)}" aria-pressed="${on}">${label}${date ? `<small>${date.getMonth()+1}/${date.getDate()}</small>` : ''}</button>`;
+    }).join('')}</div>
+    <p class="remind-status">${valid ? `<b>${formatDate(log.remindAt)}</b> ごろ、アプリを開いたときに「その後どう？」とお聞きします。選び直すと今日から数えます` : log.remindAt===null ? 'リマインドなし。選ぶと今日から数えた日にお聞きします' : '選ぶと、今日から数えたその頃にアプリを開いたとき振り返りをご案内します'}</p>
   </section>`;
 }
 function setRemind(id,days) {
@@ -1672,9 +1752,9 @@ function openSettings() {
       <div class="deck-quad-detail" data-deck-detail aria-live="polite">${deckDetailHtml()}</div>
       <div class="deck-preset-notes"><p>選ぶと、次に引くカードから変わります。これまでの履歴は変わりません。逆位置ありでは、引いたカードの約3割が逆位置になります。</p></div>
     </div>
-    <div class="feedback-setting"><div><b>操作音・振動</b><p>カードを開く時や決定を保存する時に、控えめな反応を返します。</p></div><button class="toggle-button ${settings.feedback ? 'on' : ''}" data-action="toggle-feedback" aria-pressed="${settings.feedback}"><span></span><b>${settings.feedback ? 'ON' : 'OFF'}</b></button></div>
+    <div class="feedback-setting"><div><b>操作音・振動</b><p>カードを開く時や決定を保存する時に、控えめな反応を返します。</p></div><button class="toggle-button ${settings.feedback ? 'on' : ''}" data-action="toggle-feedback" aria-label="操作音・振動" aria-pressed="${settings.feedback}"><span></span><b>${settings.feedback ? 'ON' : 'OFF'}</b></button></div>
     <div class="setting-backs"><b>カードの裏面</b>${backPicker()}</div>
-    <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">データ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}${isIOS() && !isStandalone() ? '<p class="safari-storage-note">Safariでは、記録は端末内に保存されます。しばらく開かないと消えることがあるため、ホーム画面への追加と、書き出しをおすすめします。</p>' : ''}${canInstallPrompt() && !isStandalone() ? '<div class="a2hs-settings" data-a2hs-settings><p>ホーム画面に追加すると、アプリのようにすぐ開けます。</p><button class="button" data-action="a2hs-install">ホーム画面に追加</button></div>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-markdown">履歴を書き出す</button><button class="button secondary" data-action="import-markdown">履歴を読み込む</button></div><p class="backup-format-note">メモ帳やObsidianでそのまま読めるファイル（.md）で保存します。読み込むと、書き出したときの履歴に戻せます。</p><input id="import-file" type="file" accept="text/markdown,.md,text/plain,application/json,.json" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップ内容"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
+    <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">データ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}${isIOS() && !isStandalone() ? '<p class="safari-storage-note">Safariでは、記録は端末内に保存されます。しばらく開かないと消えることがあるため、ホーム画面への追加と、書き出しをおすすめします。</p>' : ''}${canInstallPrompt() && !isStandalone() ? '<div class="a2hs-settings" data-a2hs-settings><p>ホーム画面に追加すると、アプリのようにすぐ開けます。</p><button class="button" data-action="a2hs-install">ホーム画面に追加</button></div>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-markdown">履歴を書き出す</button><button class="button secondary" data-action="import-markdown">履歴を読み込む</button></div><p class="backup-format-note">メモ帳やObsidianでそのまま読めるファイル（.md）で保存します。読み込むと、今の履歴と合わせて新しい内容を反映します。</p><input id="import-file" type="file" accept="text/markdown,.md,text/plain,application/json,.json" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップ内容"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
      <section class="data-setting account-setting" data-account-setting aria-labelledby="account-setting-title" hidden></section>
      <nav class="settings-links" aria-label="その他">${window.DECIDE_ENTITLEMENTS?.hasPurchased?.() ? '' : '<button class="settings-link settings-link-pro" data-action="open-paywall"><span><small>UNLIMITED EDITION</small>引き放題・残し放題にする</span><span class="settings-link-chevron" aria-hidden="true">›</span></button>'}<button class="settings-link" data-action="open-learn"><span>カード図鑑</span><span class="settings-link-chevron" aria-hidden="true">›</span></button><button class="settings-link" data-action="tutorial-replay"><span data-tutorial-label>使い方をもう一度見る</span><span class="settings-link-chevron" aria-hidden="true">›</span></button><a class="settings-link" href="./cards/worries.html" target="_blank" rel="noopener"><span>記事を読む</span><span class="settings-link-chevron" aria-hidden="true">›</span></a></nav>
      <button class="sheet-bottom-close" data-action="close-settings">設定を閉じる</button>
@@ -1821,7 +1901,6 @@ document.addEventListener('click', event => {
   else if (action === 'prepare-next') continuePreparation();
   else if (action === 'prepare-skip') continuePreparation(true);
   else if (action === 'prepare-back') { captureDecisionDraft(); navigate('prepare-genre'); }
-  else if (action === 'prepare-choice') { captureDecisionDraft(); decisionDraft['option'+el.dataset.key]=el.dataset.value; renderPreparation(); }
   else if (action === 'flip-card') flipCard(Number(el.dataset.slot));
   else if (action === 'flip-both') { if(event.detail===0 || prefersReducedMotion()) flipBoth(); else if(!revealHold) nudgeRevealHold(el); }
   else if (action === 'select-back') selectBack(el.dataset.value);
@@ -1829,7 +1908,8 @@ document.addEventListener('click', event => {
   else if (action === 'close-deep-menu') { const toggle=el.closest('.map-screen')?.querySelector('[data-action="toggle-reflection"][aria-expanded="true"]'); if(toggle)toggleReflection(toggle); }
   else if (action === 'deepen') addDeep(el.dataset.prompt);
   else if (action === 'decide') navigate('decide');
-  else if (action === 'select-decision') { captureDecisionDraft(); sensoryFeedback('tap'); selectedDecision=el.dataset.value; renderDecision(); }
+  else if (action === 'select-decision') selectDecision(el.dataset.value);
+  else if (action === 'toggle-decision-meta') toggleDecisionMeta(el);
   else if (action === 'select-genre') selectGenre(el.dataset.value);
   else if (action === 'select-pair') selectPair(Number(el.dataset.pairIndex));
   else if (action === 'swap-options') swapOptions();
@@ -1838,7 +1918,7 @@ document.addEventListener('click', event => {
   else if (action === 'review') setReview(el.dataset.value);
   else if (action === 'set-remind') setRemind(el.dataset.id,Number(el.dataset.days));
   else if (action === 'due-review-open') { const log=logs.find(item=>item.id===el.dataset.id); closeModal('#due-review-modal'); if(log){ log.remindAt=null; log.remindDays=null; persist(); } completionId=null; detailReturn='history'; navigate('detail',el.dataset.id); }
-  else if (action === 'due-review-later') { const log=logs.find(item=>item.id===el.dataset.id); if(log){ log.remindAt=new Date(Date.now()+3*DAY_MS).toISOString(); log.remindDays=3; persist(); } closeModal('#due-review-modal'); toast('3日後にまたお聞きします'); }
+  else if (action === 'due-review-later') { const log=logs.find(item=>item.id===el.dataset.id); if(log){ log.remindAt=new Date(Date.now()+3*DAY_MS).toISOString(); log.remindDays=3; persist(); } closeModal('#due-review-modal'); toast(log ? `${formatDate(log.remindAt)} ごろにまたお聞きします` : '3日後にまたお聞きします'); }
   else if (action === 'satisfied') openFarewell();
   else if (action === 'farewell-share-instagram') shareFarewellInstagram();
   else if (action === 'farewell-home') { closeFarewell(); activeSession=null; completionId=null; homeStage='quickstart'; navigate('home'); }
@@ -1881,7 +1961,7 @@ document.addEventListener('click', event => {
   else if (action === 'open-app') { history.replaceState(null,'',location.pathname); sharedPayload=null; activeSession=null; navigate('home'); if(shouldAutoStartTutorial())requestAnimationFrame(startTutorialIntro); }
 });
 document.addEventListener('submit', event => { if(event.target.id === 'save-form'){ event.preventDefault(); saveDecision(event.target); } });
-document.addEventListener('input', event => { if(event.target.id === 'history-search'){ historyQuery=event.target.value; const results=document.querySelector('[data-history-results]'); if(results)results.innerHTML=renderHistoryResults(); const count=event.target.closest('.history-search')?.querySelector('small'); if(count)count.textContent=historyQuery?`${filteredLogs().length}件`:''; } });
+document.addEventListener('input', event => { if(event.target.id === 'option-1' || event.target.id === 'option-2'){ captureDecisionDraft(); updateDraftDisplays(); return; } if(event.target.id === 'history-search'){ historyQuery=event.target.value; const results=document.querySelector('[data-history-results]'); if(results)results.innerHTML=renderHistoryResults(); const count=event.target.closest('.history-search')?.querySelector('small'); if(count)count.textContent=historyQuery?`${filteredLogs().length}件`:''; } });
 document.addEventListener('change', event => { if(['import-file','import-markdown-file'].includes(event.target.id)) { const [file]=event.target.files || []; readImportFile(file).finally(()=>{ event.target.value=''; }); } });
 document.addEventListener('pointerdown', event => {
   const button=event.target.closest('[data-action="flip-both"]');
@@ -1995,5 +2075,8 @@ window.DECIDE_APP_BRIDGE={getLogs:()=>logs,setLogs:v=>{logs=v},getSettings:()=>s
   rebuildStory:theme=>{ if(activeShareData?.cards) activeShareData.storyBlobPromise=createStoryImageBlob(activeShareData,theme).catch(()=>null); }};
 loadCardContent();
 render();
+// 購入完了やログインで権限が変わった後、前面に戻った時に退避分を保存する
+setTimeout(restoreBlockedSave,1200);
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible')setTimeout(restoreBlockedSave,800); });
 if(shouldAutoStartTutorial())requestAnimationFrame(startTutorialIntro);
 else setTimeout(checkDueReview,900);

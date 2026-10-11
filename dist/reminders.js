@@ -136,18 +136,19 @@
     const on = state.enabled;
     const supported = hasNotification();
     const note = supported
-      ? `ONにすると、決定ごとに選んだ日に「あの決断、どうなった？」と通知します。通知に決定の内容は出ません。アプリを閉じている間も届けるには、iPhoneはSafariの共有ボタンから「ホーム画面に追加」したアプリで開いてください（iOS 16.4以降）。`
+      ? '決定ごとに選んだ日に「あの決断、どうなった？」とお知らせします。アプリを開いている間・開いたときに届きます。通知に決定の内容は出ません。'
       : 'この端末・ブラウザは通知に対応していません。アプリを開いたときのお知らせは、これまで通り表示されます。';
-    return `<div class="feedback-setting remind-setting" data-remind-setting><div><b>ふり返りの通知</b><p>${note}</p></div>
-      <button class="toggle-button ${on ? 'on' : ''}" type="button" data-remind-action="toggle" aria-pressed="${on}"><span></span><b>${on ? 'ON' : 'OFF'}</b></button></div>`;
+    return `<div class="feedback-setting remind-setting" data-remind-setting><div><b>アプリ内のお知らせ</b><p>${note}</p></div>
+      <button class="toggle-button ${on ? 'on' : ''}" type="button" aria-label="ふり返りの通知（アプリ内のお知らせ）" data-remind-action="toggle" aria-pressed="${on}"><span></span><b>${on ? 'ON' : 'OFF'}</b></button></div>`;
   }
 
+  const GROUP_TITLE = '<h3 class="notify-group-title" data-notify-group>通知</h3>';
   function mountSettings(wrap) {
     if(!wrap?.querySelector) return;
     const old = wrap.querySelector('[data-remind-setting]');
     if(old) { old.outerHTML = renderToggle(); return; }
     const anchor = wrap.querySelector('[data-action="toggle-feedback"]')?.closest?.('.feedback-setting');
-    if(anchor) anchor.insertAdjacentHTML('afterend', renderToggle());
+    if(anchor) anchor.insertAdjacentHTML('afterend', (wrap.querySelector('[data-notify-group]') ? '' : GROUP_TITLE) + renderToggle());
   }
 
   function refreshSettings() {
