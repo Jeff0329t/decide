@@ -156,6 +156,48 @@ test('フォアグラウンド復帰で plan_type を取り直し、返金済み
   assert.equal(client.calls.profiles, 1);
 });
 
+test('needsOnline: 購入済みのキャッシュが7日を過ぎたら true、再確認できたら false', async () => {
+  const stale = { draws: 50, plan: 'pro', userId: USER.id, checkedAt: new Date(Date.now() - 8 * DAY).toISOString() };
+  assert.equal(load({ stored: stale, user: USER }).ent.needsOnline(), true);
+  assert.equal(load({ stored: { ...stale, checkedAt: FRESH() }, user: USER }).ent.needsOnline(), false);
+  assert.equal(load({ stored: { ...stale, plan: 'free' }, user: USER }).ent.needsOnline(), false);
+  assert.equal(load({ stored: stale, user: null }).ent.needsOnline(), false);
+
+  const client = fakeClient({ value: 'pro' });
+  const { ent } = load({ stored: stale, user: USER, client });
+  await ent.refresh();
+  assert.equal(ent.needsOnline(), false);
+  assert.equal(ent.hasPurchased(), true);
+});
+
+test('mountSettings: 再確認が必要なときだけ設定画面に通知欄を出す', () => {
+  // 設定画面の最小限の偽物：[data-account-setting] の直後に挿入され、outerHTML='' で消える
+  function fakeWrap() {
+    let notice = null;
+    const node = html => ({ html, set outerHTML(value) { if(value === '') notice = null; else notice = node(value); } });
+    const anchor = { insertAdjacentHTML(pos, html) { assert.equal(pos, 'afterend'); notice = node(html); } };
+    return {
+      get notice() { return notice; },
+      querySelector: sel => sel === '[data-ent-online-notice]' ? notice : sel === '[data-account-setting]' ? anchor : null
+    };
+  }
+  const stale = { plan: 'pro', userId: USER.id, checkedAt: new Date(Date.now() - 8 * DAY).toISOString() };
+  const wrap = fakeWrap();
+  load({ stored: stale, user: USER }).ent.mountSettings(wrap);
+  assert.match(wrap.notice.html, /data-ent-online-notice/);
+  assert.match(wrap.notice.html, /data-ent-action="recheck"/);
+  // 2回目は置き換え（重複しない）
+  load({ stored: stale, user: USER }).ent.mountSettings(wrap);
+  assert.match(wrap.notice.html, /data-ent-online-notice/);
+  // 不要になったら消す
+  load({ stored: { ...stale, checkedAt: FRESH() }, user: USER }).ent.mountSettings(wrap);
+  assert.equal(wrap.notice, null);
+  // 不要なら何も入れない
+  const fresh = fakeWrap();
+  load({ stored: { ...stale, checkedAt: FRESH() }, user: USER }).ent.mountSettings(fresh);
+  assert.equal(fresh.notice, null);
+});
+
 test('isProPlan / mergeDraws（大きい方を採用・加算しない）', () => {
   const { isProPlan, mergeDraws } = load().ent._pure;
   assert.equal(isProPlan('pro'), true);
@@ -207,6 +249,7 @@ test('app.js のフックは最小限', () => {
   assert.match(app, /function restoreBlockedSave\(\)/);
   assert.match(app, /visibilitychange[\s\S]{0,120}restoreBlockedSave/);
   assert.match(app, /startSession\(mode\)===false/);
+  assert.match(app, /window\.DECIDE_ENTITLEMENTS\?\.mountSettings\?\.\(wrap\)/);
 });
 
 test('index.html は auth → entitlements → app の順で読み込む', () => {

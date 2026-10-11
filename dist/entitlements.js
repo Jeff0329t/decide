@@ -136,6 +136,35 @@
     }
     save();
     resumeCheckout(user);
+    refreshSettings();
+  }
+
+  // 設定画面：購入済みでキャッシュが7日を過ぎたときだけ「再確認」の通知欄を出す
+  function needsOnline(user = currentUser()) {
+    return accessFor(user).needsOnline;
+  }
+  function renderOnlineNotice() {
+    return `<div class="feedback-setting" data-ent-online-notice><div><b>購入状態の再確認</b><p>オンラインで購入状態を再確認してください。確認できるまでも、PROはこれまで通り使えます。</p></div>
+      <button class="button secondary" type="button" data-ent-action="recheck">再確認</button></div>`;
+  }
+  function mountSettings(wrap) {
+    if(!wrap?.querySelector) return;
+    const show = needsOnline();
+    const old = wrap.querySelector('[data-ent-online-notice]');
+    if(old) { old.outerHTML = show ? renderOnlineNotice() : ''; return; }
+    if(show) wrap.querySelector('[data-account-setting]')?.insertAdjacentHTML('afterend', renderOnlineNotice());
+  }
+  function refreshSettings() {
+    const wrap = typeof document !== 'undefined' ? document.querySelector?.('#settings-modal') : null;
+    if(wrap) mountSettings(wrap);
+  }
+  let recheckBusy = false;
+  async function recheck() {
+    if(recheckBusy) return;
+    if(typeof navigator !== 'undefined' && navigator.onLine === false) { notify('オフラインです。オンラインにしてからもう一度お試しください'); return; }
+    recheckBusy = true;
+    try { await syncWithServer(currentUser()); } finally { recheckBusy = false; }
+    notify(needsOnline() ? '確認できませんでした。時間をおいてもう一度お試しください' : '購入状態を確認できました');
   }
 
   function handleUser(user) {
@@ -286,7 +315,8 @@
       await auth().signInWithGoogle();
       return;
     }
-    if(action === 'checkout') { await startCheckout(); }
+    if(action === 'checkout') { await startCheckout(); return; }
+    if(action === 'recheck') { await recheck(); }
   });
 
   handleCheckoutReturn();
@@ -319,6 +349,8 @@
     openPaywall,
     startCheckout,
     refresh: () => syncWithServer(currentUser()),
+    needsOnline: () => needsOnline(),
+    mountSettings,
     _pure: Object.freeze({ isProPlan, isProActive, mergeDraws, isCacheFresh, resolveAccess })
   });
 })();

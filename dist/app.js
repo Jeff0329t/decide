@@ -1764,6 +1764,7 @@ function openSettings() {
   window.DECIDE_AUTH?.renderSettings?.(wrap);
   window.DECIDE_REMINDERS?.mountSettings?.(wrap);
   window.DECIDE_PUSH?.mountSettings?.(wrap);
+  window.DECIDE_ENTITLEMENTS?.mountSettings?.(wrap);
   mountModal(wrap,'.sheet-head button');
 }
 function closeSettings() { closeModal('#settings-modal'); }
