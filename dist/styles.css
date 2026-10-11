@@ -319,6 +319,12 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .confirm-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 22px; }
 .google-signin { grid-column: 1 / -1; display: flex; justify-content: center; min-height: 44px; }
 .google-signin[hidden] { display: none; }
+/* 自前の「Google でログイン」ボタン（押すまでGoogleへ通信しない）。マークと文字は横並びで重ならない */
+.button.google-login { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.data-actions .button.google-login { grid-column: 1 / -1; }
+.google-login-mark { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 2px; background: #fff; }
+.google-login-mark svg { display: block; width: 18px; height: 18px; }
+.button.google-login[aria-busy="true"] { cursor: progress; opacity: .72; }
 .button.danger { border-color: var(--danger-surface); background: var(--danger-surface); color: var(--on-danger); }
 .modal-wrap { position: fixed; inset: 0; z-index: 50; display: grid; align-items: end; opacity: 0; transition: opacity .18s ease; }
 .modal-wrap.open { opacity: 1; }

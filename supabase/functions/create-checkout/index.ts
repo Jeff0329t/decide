@@ -3,6 +3,7 @@
 // PRO is granted by stripe-webhook, not here.
 import Stripe from 'npm:stripe@17';
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { checkoutIdempotencyKey, createCheckoutUrl } from './checkout-idempotency.ts';
 
 const PRODUCT_NAME = 'DECIDE. UNLIMITED EDITION（買い切り）';
 const PRICE_JPY = 980;
@@ -54,24 +55,36 @@ Deno.serve(async (req) => {
   const reusable = await findOpenSession(user.id, base);
   if (reusable) return json({ url: reusable });
 
+  // Everything Stripe sees is in this object; it must stay free of per-request values (timestamps, random ids)
+  // because its hash is part of the idempotency key below.
+  const params = {
+    mode: 'payment' as const,
+    // Card only (Apple Pay / Google Pay included) so PRO is granted instantly; no delayed methods like konbini.
+    payment_method_types: ['card' as const],
+    locale: 'ja' as const,
+    line_items: [{
+      quantity: 1,
+      price_data: { currency: 'jpy', unit_amount: PRICE_JPY, product_data: { name: PRODUCT_NAME } },
+    }],
+    client_reference_id: user.id,
+    customer_email: user.email ?? undefined,
+    metadata,
+    payment_intent_data: { metadata },
+    success_url: `${base}/success.html?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${base}/?checkout=cancel`,
+  };
+
   try {
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      // Card only (Apple Pay / Google Pay included) so PRO is granted instantly; no delayed methods like konbini.
-      payment_method_types: ['card'],
-      locale: 'ja',
-      line_items: [{
-        quantity: 1,
-        price_data: { currency: 'jpy', unit_amount: PRICE_JPY, product_data: { name: PRODUCT_NAME } },
-      }],
-      client_reference_id: user.id,
-      customer_email: user.email ?? undefined,
-      metadata,
-      payment_intent_data: { metadata },
-      success_url: `${base}/success.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${base}/?checkout=cancel`,
-    });
-    return json({ url: session.url });
+    // findOpenSession + create is not atomic: two concurrent requests can both find nothing. The idempotency key
+    // (user + 10-minute bucket + hash of params) makes Stripe hand both of them the same session.
+    const key = await checkoutIdempotencyKey(user.id, params);
+    const url = await createCheckoutUrl(
+      (p, options) => stripe.checkout.sessions.create(p as Stripe.Checkout.SessionCreateParams, options),
+      params,
+      key,
+      () => findOpenSession(user.id, base),
+    );
+    return json({ url });
   } catch (stripeError) {
     console.error('checkout create failed', (stripeError as Error).message);
     return json({ error: 'checkout failed' }, 502);

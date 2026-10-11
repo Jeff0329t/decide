@@ -94,6 +94,13 @@
     };
     pick('reviewedAt',['review','reviewedAt']);
     pick('storyUpdatedAt',['story','storyUpdatedAt']);
+    // 通知予定は remindAt・remindDays・remindUpdatedAt をひとまとまりで、remindUpdatedAt が新しい側から取る（ない古いログは updatedAt で比べる）。
+    // 勝った側の null は「解除した」なので古い側から補わない。勝った側に remindAt がまったく無いときだけ相手側の予定を使う。
+    const remindFields=['remindAt','remindDays','remindUpdatedAt'];
+    const remindTime=log=>time(log.remindUpdatedAt)||time(log.updatedAt)||time(log.createdAt);
+    let remindSrc=remindTime(b)>remindTime(a)?b:(remindTime(a)>remindTime(b)?a:base);
+    if(remindSrc.remindAt===undefined)remindSrc=remindSrc===a?b:a;
+    for(const key of remindFields){ if(remindSrc[key]===undefined)delete log[key]; else log[key]=remindSrc[key]; }
     const result=canonicalJson(log);
     const changed=result!==canonicalJson(a);
     return {log,changed,conflict:changed && result!==canonicalJson(b)};

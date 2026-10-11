@@ -1,5 +1,6 @@
 // DECIDE. ログイン（Google Identity Services の IDトークン → Supabase signInWithIdToken）
-// GOOGLE_CLIENT_ID 未設定・GISが読めない場合は従来の signInWithOAuth リダイレクトにフォールバックする。
+// GISは「Google でログイン」ボタンを押したときだけ読み込む（画面表示だけではGoogleへ通信しない）。
+// GOOGLE_CLIENT_ID 未設定・GISが読めない・One Tapを表示できない場合は signInWithOAuth リダイレクトにフォールバックする。
 // 決定ログ本文は、PROで「ログの同期」をONにした場合だけ送信する（sync.js）。それ以外でSupabaseに渡るのはメール等のアカウント情報のみ。
 (function(){
   const config = window.DECIDE_CONFIG || {};
@@ -58,23 +59,27 @@
     return String(config.GOOGLE_CLIENT_ID || '').trim();
   }
 
-  // GISスクリプトはログインを選んだときだけ読み込む（それまでGoogleには接続しない）
+  // GISスクリプトはログインボタンを押したときだけ読み込む（設定やUNLIMITED案内を開いただけではGoogleに接続しない）
   const GIS_SRC = 'https://accounts.google.com/gsi/client';
+  let gisFailed = false;
   function loadGis() {
     if(window.google?.accounts?.id || document.querySelector(`script[src="${GIS_SRC}"]`)) return;
+    gisFailed = false;
     const script = document.createElement('script');
     script.src = GIS_SRC;
     script.async = true;
+    // 読み込めなかったらタグを外し、次の操作で読み直せるようにする
+    script.onerror = () => { gisFailed = true; script.remove(); };
     document.head.appendChild(script);
   }
 
-  function waitForGis(timeout = 5000) {
+  function waitForGis(timeout = 8000) {
     loadGis();
     return new Promise(resolve => {
       const started = Date.now();
       (function check() {
         if(window.google?.accounts?.id) return resolve(window.google.accounts.id);
-        if(Date.now() - started >= timeout) return resolve(null);
+        if(gisFailed || Date.now() - started >= timeout) return resolve(null);
         setTimeout(check, 100);
       })();
     });
@@ -91,34 +96,24 @@
     return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('');
   }
 
-  // Googleにはnonceのハッシュを渡し、Supabaseには生のnonceを渡す（Supabase側で照合）
+  // 以前はここでGoogle製ボタン（GIS）を描画していたが、描画のためにGISを読み込むと
+  // 画面を開いただけでGoogleへ通信してしまう。互換のため関数は残し、何も読み込まずに false を返す
+  // （呼び出し側は自前の「Googleでログイン」ボタンをそのまま使う）。
   async function renderGoogleButton(container) {
-    if(!container || !client || !googleClientId() || !window.crypto?.subtle) return false;
-    const gis = await waitForGis();
-    if(!gis || !container.isConnected) return false;
-    try {
-      const nonce = randomNonce();
-      const hashedNonce = await sha256Hex(nonce);
-      gis.initialize({
-        client_id: googleClientId(),
-        nonce: hashedNonce,
-        callback: async response => {
-          const { error } = await client.auth.signInWithIdToken({ provider: 'google', token: response.credential, nonce });
-          if(error) { notify('ログインできませんでした'); return; }
-          if(document.querySelector('#paywall-modal')) closeSheet('paywall-modal');
-          notify('ログインしました');
-        }
-      });
-      // 置き場所の幅いっぱいに描画して、隣のボタンと端をそろえる（GISの上限は400px）
-      container.hidden = false;
-      const width = Math.min(400, Math.floor(container.clientWidth));
-      gis.renderButton(container, { type: 'standard', theme: 'outline', size: 'large', text: 'signin_with', locale: 'ja', ...(width >= 200 ? { width } : {}) });
-    } catch(error) {
-      container.hidden = true;
-      return false;
-    }
-    container.parentElement?.querySelectorAll('[data-auth-action="login"]').forEach(button => { button.hidden = true; });
-    return true;
+    if(container) container.hidden = true;
+    return false;
+  }
+
+  // 自前ボタンの読み込み中表示
+  const LOGIN_LABEL = 'Google でログイン';
+  function setLoginBusy(busy) {
+    document.querySelectorAll('[data-auth-action="login"], [data-ent-action="login"]').forEach(button => {
+      button.disabled = busy;
+      if(busy) button.setAttribute('aria-busy', 'true');
+      else button.removeAttribute('aria-busy');
+      const label = button.querySelector('[data-login-label]');
+      if(label) label.textContent = busy ? 'Google に接続中…' : LOGIN_LABEL;
+    });
   }
 
   async function signInWithRedirect() {
@@ -127,10 +122,63 @@
     if(error) notify('ログインを開始できませんでした');
   }
 
-  // GISボタンが出せない場面のログイン（リダイレクト）
+  // ボタン1回で始まるログイン：GISを読み込み → One Tap（FedCM）のアカウント選択を表示。
+  // Googleにはnonceのハッシュを渡し、Supabaseには生のnonceを渡す（Supabase側で照合）。
+  // 選択画面を出せない（未ログイン・抑止中・ブラウザ非対応など）ときは、そのままリダイレクト方式へ進む。
+  // 利用者自身が閉じた場合はリダイレクトしない（ボタンを押し直せば再表示、抑止中ならリダイレクト）。
+  async function promptGoogle(gis) {
+    const nonce = randomNonce();
+    const hashedNonce = await sha256Hex(nonce);
+    gis.initialize({
+      client_id: googleClientId(),
+      nonce: hashedNonce,
+      use_fedcm_for_prompt: true,
+      itp_support: true,
+      auto_select: false,
+      callback: async response => {
+        const { error } = await client.auth.signInWithIdToken({ provider: 'google', token: response.credential, nonce });
+        if(error) { notify('ログインできませんでした'); return; }
+        if(document.querySelector('#paywall-modal')) closeSheet('paywall-modal');
+        notify('ログインしました');
+      }
+    });
+    return new Promise(resolve => {
+      let settled = false;
+      const done = value => { if(!settled) { settled = true; resolve(value); } };
+      // FedCMでは「表示された」通知が来ないため、少し待って読み込み中表示だけ解除する
+      const timer = setTimeout(() => done('shown'), 2500);
+      gis.prompt(moment => {
+        if(moment?.isNotDisplayed?.()) { clearTimeout(timer); done('unavailable'); return; }
+        if(moment?.isSkippedMoment?.()) {
+          const reason = moment.getSkippedReason?.();
+          clearTimeout(timer);
+          if(reason === 'user_cancel' || reason === 'tap_outside') { done('cancelled'); return; }
+          if(settled) signInWithRedirect(); else done('unavailable');
+          return;
+        }
+        if(moment?.isDismissedMoment?.() || moment?.isDisplayed?.()) { clearTimeout(timer); done('shown'); }
+      });
+    });
+  }
+
+  let signInBusy = false;
   async function signInWithGoogle() {
     if(!client) { notify('ログインは準備中です'); return; }
-    await signInWithRedirect();
+    if(signInBusy) return;
+    // クライアントID未設定などGISを使えない環境は、従来のリダイレクト方式
+    if(!googleClientId() || !window.crypto?.subtle) { await signInWithRedirect(); return; }
+    signInBusy = true;
+    setLoginBusy(true);
+    try {
+      const gis = await waitForGis();
+      const result = gis ? await promptGoogle(gis) : 'unavailable';
+      if(result === 'unavailable') await signInWithRedirect();
+    } catch(error) {
+      await signInWithRedirect();
+    } finally {
+      signInBusy = false;
+      setLoginBusy(false);
+    }
   }
 
   async function signOut() {
@@ -180,6 +228,8 @@
     }
     return '無料';
   }
+  // Googleの「G」マーク（インラインSVG。外部への読み込みは発生しない）
+  const GOOGLE_G_ICON = `<span class="google-login-mark" aria-hidden="true"><svg viewBox="0 0 48 48" width="18" height="18" focusable="false"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg></span>`;
   function renderSettings(wrap) {
     const section = wrap?.querySelector('[data-account-setting]');
     if(!section) return;
@@ -199,10 +249,8 @@
       : `<div><b id="account-setting-title">アカウント</b>
         <p>Googleでログインすると、UNLIMITED EDITION（購入済みの状態）を別の端末でも使えます。決定ログの本文は、UNLIMITED EDITIONで同期をONにしない限り送信されず、この端末に残ります。</p></div>
         <div class="data-actions">
-          <div class="google-signin" data-google-button hidden></div>
-          <button class="button" type="button" data-auth-action="login">ログイン</button>
+          <button class="button google-login" type="button" data-auth-action="login">${GOOGLE_G_ICON}<span data-login-label>${LOGIN_LABEL}</span></button>
         </div>`;
-    if(!user) renderGoogleButton(section.querySelector('[data-google-button]'));
   }
 
   function refreshOpenSettings() {

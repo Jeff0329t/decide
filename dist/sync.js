@@ -99,29 +99,46 @@
   let again = false;
   let applying = false;
   let warned = false;
+  // ログアウト・アカウント切替・OFFで進める番号。待っているあいだに変わったら、その同期の結果は端末に書かない
+  let gen = 0;
+  const bump = () => { gen++; };
   const asRows = logs => logs.map(data => ({ id: data.id, data, deleted: false }));
   async function syncNow({ quiet = true } = {}) {
     if(running) { again = true; return running; }
-    running = (async () => {
+    // 動かせないときは running を作らずに返す（「同期中…」のまま止まらないように）
+    if(!isOn()) return false;
+    const who = auth()?.getUser?.();
+    // 端末のログの持ち主と違うアカウントなら送らず、確認の流れへ回す
+    if(who && !paused && state.lastUserId !== who.id) { start(who); return false; }
+    if(!accountOk(who)) return false;
+    const myGen = gen;
+    const job = (async () => {
       try {
-        if(!isOn() || !accountOk(auth()?.getUser?.())) return false;
         await ent()?.refresh?.();
-        if(!canSync()) return false;
+        if(myGen !== gen || !canSync()) return false;
         const db = auth().client?.();
         const user = auth().getUser();
         const bridge = app();
-        if(!db || !user || !bridge || !accountOk(user)) return false;
+        if(!db || !user || !bridge || user.id !== who.id) return false;
+        const stale = () => myGen !== gen || auth()?.getUser?.()?.id !== user.id || !isOn() || !accountOk(user);
+        if(stale()) return false;
         const remote = await fetchRemote(db, user.id);
+        if(stale()) return false;
         const sentTombstones = [...state.tombstones];
+        // 送る内容を決めた時刻を最終同期にする（送信中の編集は未同期として数える）
+        const sentAt = new Date().toISOString();
         const snapshot = JSON.stringify(bridge.getLogs());
         let { logs, upload } = merge(bridge.getLogs(), remote, sentTombstones);
         for(let i = 0; i < upload.length; i += 200) {
+          // 送る直前にも持ち主・世代を確かめる
+          if(stale()) return false;
           const rows = upload.slice(i, i + 200).map(row => ({ user_id: user.id, id: row.id, data: row.data, deleted: row.deleted }));
           const { error } = await db.from(TABLE).upsert(rows, { onConflict: 'user_id,id' });
           if(error) throw error;
         }
+        if(stale()) return false;
         state.tombstones = state.tombstones.filter(id => !sentTombstones.includes(id));
-        state.lastSyncAt = new Date().toISOString();
+        state.lastSyncAt = sentAt;
         state.lastErrorAt = null;
         saveState();
         // 送信を待つあいだに端末で編集・追加・削除されていたら、それを消さないように重ね直して次の同期で送る
@@ -140,6 +157,7 @@
         if(!quiet) notify('決定ログを同期しました');
         return true;
       } catch(error) {
+        if(myGen !== gen) return false;
         console.warn('[DECIDE sync]', error);
         state.lastErrorAt = new Date().toISOString();
         saveState();
@@ -148,11 +166,12 @@
         if(!quiet || (online && !warned)) { warned = true; notify('同期できませんでした。通信状況を確認してください'); }
         return false;
       } finally {
-        running = null;
+        if(running === job) running = null;
         if(again) { again = false; setTimeout(() => syncNow(), 0); }
       }
     })();
-    return running;
+    running = job;
+    return job;
   }
 
   let timer = null;
@@ -174,7 +193,7 @@
     const tomb = Array.isArray(st?.tombstones) ? st.tombstones.length : 0;
     const last = Date.parse(st?.lastSyncAt || '');
     if(!Number.isFinite(last)) return list.length + tomb;
-    return list.filter(log => { const t = Date.parse(stampOf(log) || ''); return Number.isFinite(t) && t > last; }).length + tomb;
+    return list.filter(log => { const t = stampOf(log); return Number.isFinite(t) && t > last; }).length + tomb;
   }
 
   // 設定画面（ログイン中のアカウント欄）に出すスイッチ
@@ -233,6 +252,7 @@
     if(!settings) return;
     if(settings.cloudSync === true) {
       settings.cloudSync = false;
+      bump();
       bridge.persist();
       refreshSettings();
       notify('同期をOFFにしました');
@@ -240,6 +260,9 @@
     }
     await ent()?.refresh?.();
     if(!ent()?.hasProAccess?.()) { ent()?.openPaywall?.(); return; }
+    // 端末のログが別アカウントのものなら、ONにする前に確かめる
+    const user = auth()?.getUser?.();
+    if(user && !(await checkAccount(user))) { openAccountConfirm(user); return; }
     settings.cloudSync = true;
     bridge.persist();
     refreshSettings();
@@ -257,17 +280,19 @@
   }
 
   // ログインしたアカウントが、この端末で前に同期したアカウントと同じか確かめる。
-  // 違うアカウントで、この端末にログがあり、同期が動きそうなときは、まとめてよいか聞くまで同期しない。
+  // 違うアカウントで、この端末にログがあるときは、ON/OFFにかかわらず持ち主を前のアカウントのままにし、
+  // まとめてよいか聞くまで同期しない（同期が動きそうなときだけすぐ聞き、OFFならONにするときに聞く）。
   async function checkAccount(user) {
     if(!user) return false;
     if(state.lastUserId === user.id) return !paused;
     if(!state.lastUserId) { state.lastUserId = user.id; saveState(); return true; }
     const logs = app()?.getLogs?.() || [];
+    if(!logs.length) { adoptAccount(user); return true; }
     let wouldSync = isOn();
     if(!wouldSync && !state.autoOn) { await ent()?.refresh?.(); wouldSync = !!ent()?.hasProAccess?.(); }
-    if(!logs.length || !wouldSync) { adoptAccount(user); return true; }
+    if(auth()?.getUser?.()?.id !== user.id || state.lastUserId === user.id) return false;
     paused = true;
-    openAccountConfirm(user);
+    if(wouldSync) openAccountConfirm(user);
     return false;
   }
 
@@ -301,14 +326,22 @@
     const user = auth()?.getUser?.();
     closeAccountConfirm();
     if(!user) { paused = false; return; }
-    adoptAccount(user);
-    paused = false;
+    const bridge = app();
+    const settings = bridge?.getSettings?.();
     if(merge) {
+      // ここで初めてこのアカウントを端末のログの持ち主にする（明示的な引き継ぎ）
+      adoptAccount(user);
+      paused = false;
       await autoEnable().catch(() => {});
+      if(settings && settings.cloudSync !== true) {
+        await ent()?.refresh?.();
+        if(ent()?.hasProAccess?.()) { settings.cloudSync = true; bridge.persist?.(); }
+      }
       await syncNow({ quiet: false });
     } else {
-      const bridge = app();
-      const settings = bridge?.getSettings?.();
+      // 引き継がない：持ち主は前のアカウントのまま。あとでONにするときにまた聞く
+      paused = true;
+      bump();
       state.autoOn = true;
       saveState();
       if(settings && settings.cloudSync === true) { settings.cloudSync = false; bridge.persist?.(); }
@@ -334,7 +367,8 @@
   const a = auth();
   if(a?.isEnabled?.()) {
     a.onChange?.(user => {
-      if(user) { start(user); return; }
+      bump();
+      if(user) { paused = false; start(user); return; }
       // ログアウトしたら、聞きかけの確認は閉じる（次にログインしたアカウントでまた確かめる）
       paused = false;
       closeAccountConfirm();

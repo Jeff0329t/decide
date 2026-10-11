@@ -1149,7 +1149,7 @@ function saveDecision(form) {
   const firstRecord=retry ? pendingSave.firstRecord : logs.length===0;
   const requestPersistence=retry ? pendingSave.requestPersistence : firstRecord && !settings.storagePersistRequested;
   const existing=logs.findIndex(item=>item.id===log.id);
-  if(existing>=0 && 'remindAt' in logs[existing]){ log.remindAt=logs[existing].remindAt; if(logs[existing].remindDays)log.remindDays=logs[existing].remindDays; } else if(existing<0){ const remindAt=window.DECIDE_REMINDERS?.defaultRemindAt?.(log.createdAt); if(remindAt) log.remindAt=remindAt; }
+  if(existing>=0 && 'remindAt' in logs[existing]){ log.remindAt=logs[existing].remindAt; if(logs[existing].remindDays)log.remindDays=logs[existing].remindDays; if('remindUpdatedAt' in logs[existing])log.remindUpdatedAt=logs[existing].remindUpdatedAt; } else if(existing<0){ const remindAt=window.DECIDE_REMINDERS?.defaultRemindAt?.(log.createdAt); if(remindAt){ log.remindAt=remindAt; log.remindUpdatedAt=new Date().toISOString(); } }
   if(existing<0 && !retry && window.DECIDE_ENTITLEMENTS && !window.DECIDE_ENTITLEMENTS.canSaveLog(logs.length)){ stashBlockedSave(log); window.DECIDE_ENTITLEMENTS.openPaywall('save'); return; }
   if(existing>=0)logs[existing]=log; else logs.unshift(log);
   if(requestPersistence)settings.storagePersistRequested=true;
@@ -1383,7 +1383,7 @@ function renderDetail() {
   </section>`;
   app.querySelector('[data-detail-title]').textContent=log.title;
   const memo=app.querySelector('[data-detail-memo]'); if(memo)memo.textContent=log.memo;
-  app.querySelector('#story-text').value=log.story || '';
+  app.querySelector('#story-text').value=log.story || ''; const storyDraft=storyDraftFor(log.id); if(storyDraft!==null)app.querySelector('#story-text').value=storyDraft; // 未保存の下書きを優先して復元
   if(showA2HS && a2hsShownLogId!==log.id) { a2hsShownLogId=log.id; storageEvent('a2hsShown'); }
 }
 
@@ -1407,10 +1407,8 @@ function renderRemindPicker(log) {
 function setRemind(id,days) {
   const log=logs.find(item=>item.id===id); if(!log)return;
   sensoryFeedback('tick');
-  log.remindAt=days>0 ? new Date(Date.now()+days*DAY_MS).toISOString() : null;
-  log.remindDays=days>0 ? days : null;
-  log.updatedAt=new Date().toISOString();
-  const saved=persist(); renderDetailKeepingDraft(); toast(!saved ? SAVE_FAILED_MESSAGE : days>0 ? `${formatDate(log.remindAt)} ごろにお聞きします` : 'リマインドなしにしました');
+  const saved=commitLogChange(log,REMIND_KEYS,log=>{ log.remindAt=days>0 ? new Date(Date.now()+days*DAY_MS).toISOString() : null; log.remindDays=days>0 ? days : null; log.remindUpdatedAt=log.updatedAt=new Date().toISOString(); });
+  renderDetail(); toast(!saved ? SAVE_FAILED_MESSAGE : days>0 ? `${formatDate(log.remindAt)} ごろにお聞きします` : 'リマインドなしにしました');
 }
 function dueReviewLog() {
   const now=Date.now();
@@ -1484,25 +1482,35 @@ function renderDetailDate(iso) {
 }
 
 const SAVE_FAILED_MESSAGE='この端末に保存できませんでした。空き容量を確認してください';
-// 振り返りやリマインドを押しても、書きかけのストーリーを消さずに描き直す
-function renderDetailKeepingDraft() {
-  const field=app.querySelector('#story-text'); const draft=field ? field.value : null;
-  renderDetail();
-  const next=app.querySelector('#story-text');
-  if(next && draft!==null && draft!==next.value)next.value=draft;
-}
+// 書きかけのストーリーはログIDごとに保持（メモリ＋sessionStorage）。画面移動・同期・保存失敗の描き直しでも消さず、保存成功で消す
+const STORY_DRAFTS_KEY='decide.storyDrafts.v1';
+const storyDrafts=new Map((()=>{ try{ const raw=JSON.parse(sessionStorage.getItem(STORY_DRAFTS_KEY)||'{}'); return raw && typeof raw==='object' && !Array.isArray(raw) ? Object.entries(raw).filter(([,value])=>typeof value==='string') : []; }catch{ return []; } })());
+function writeStoryDrafts(){ try{ if(storyDrafts.size)sessionStorage.setItem(STORY_DRAFTS_KEY,JSON.stringify(Object.fromEntries(storyDrafts))); else sessionStorage.removeItem(STORY_DRAFTS_KEY); }catch{} }
+// 保存済みの本文と同じになったら下書き扱いをやめる
+function setStoryDraft(id,value,savedStory){ if(!id)return; const text=String(value ?? ''); if(text===(savedStory || ''))storyDrafts.delete(id); else storyDrafts.set(id,text); writeStoryDrafts(); }
+function storyDraftFor(id){ return storyDrafts.has(id) ? storyDrafts.get(id) : null; }
+function clearStoryDraft(id){ if(storyDrafts.delete(id))writeStoryDrafts(); }
+// ログ変更を保存し、保存できなければ変更前の値へ戻す（失敗を成功と表示しない・やり直せるように）
+function snapshotFields(target,keys){ return Object.fromEntries(keys.map(key=>[key,Object.prototype.hasOwnProperty.call(target,key) ? target[key] : undefined])); }
+function restoreFields(target,snapshot){ for(const [key,value] of Object.entries(snapshot)){ if(value===undefined)delete target[key]; else target[key]=value; } }
+function commitLogChange(log,keys,mutate){ const before=snapshotFields(log,keys); mutate(log); const saved=persist(); if(!saved)restoreFields(log,before); return saved; }
+// リマインドを書き換えるときは必ず remindUpdatedAt も更新（解除も削除せず null を明示）
+const REMIND_KEYS=['remindAt','remindDays','remindUpdatedAt','updatedAt'];
+function writeRemind(log,remindAt,remindDays){ log.remindAt=remindAt || null; log.remindDays=remindAt && remindDays ? remindDays : null; log.remindUpdatedAt=log.updatedAt=new Date().toISOString(); }
 function setReview(value) {
   const log = logs.find(l => l.id === detailId); if (!log) return;
   sensoryFeedback('tap');
-  log.review = value; log.reviewedAt = log.updatedAt = new Date().toISOString();
-  const saved=persist(); renderDetailKeepingDraft(); toast(saved ? '振り返りを保存しました' : SAVE_FAILED_MESSAGE);
+  const saved=commitLogChange(log,['review','reviewedAt','updatedAt'],item=>{ item.review = value; item.reviewedAt = item.updatedAt = new Date().toISOString(); });
+  renderDetail(); toast(saved ? '振り返りを保存しました' : SAVE_FAILED_MESSAGE);
 }
 
 function saveStory(id) {
   const log=logs.find(item=>item.id===id); const field=document.querySelector('#story-text'); if(!log || !field)return;
   sensoryFeedback('save');
-  log.story=field.value.trim(); log.storyUpdatedAt=log.updatedAt=new Date().toISOString();
-  const saved=persist(); renderDetail(); toast(saved ? 'その後のストーリーを保存しました' : SAVE_FAILED_MESSAGE);
+  setStoryDraft(id,field.value,log.story); // 保存に失敗して描き直しても入力が残るように
+  const saved=commitLogChange(log,['story','storyUpdatedAt','updatedAt'],item=>{ item.story=field.value.trim(); item.storyUpdatedAt=item.updatedAt=new Date().toISOString(); });
+  if(saved)clearStoryDraft(id);
+  renderDetail(); toast(saved ? 'その後のストーリーを保存しました' : SAVE_FAILED_MESSAGE);
 }
 
 function openDeleteConfirm(id) {
@@ -1571,7 +1579,9 @@ function closeModal(selector) {
 function closeDelete() { closeModal('#delete-modal'); }
 function deleteLog(id) {
   const log=logs.find(item=>item.id===id); if(!log)return;
-  logs=logs.filter(item=>item.id!==id); window.DECIDE_SYNC?.markDeleted?.(id); persist(); closeDelete(); detailId=null; currentView='history'; render(); toast('履歴を削除しました');
+  const before=logs; logs=logs.filter(item=>item.id!==id);
+  if(!persist()){ logs=before; toast(SAVE_FAILED_MESSAGE); return; } // 保存できなければ履歴も確認画面も残し、削除の印も付けない
+  window.DECIDE_SYNC?.markDeleted?.(id); clearStoryDraft(id); closeDelete(); detailId=null; currentView='history'; render(); toast('履歴を削除しました');
 }
 
 function switchCardTheme(key) {
@@ -1932,8 +1942,8 @@ document.addEventListener('click', event => {
   else if (action === 'detail') navigate('detail', el.dataset.id);
   else if (action === 'review') setReview(el.dataset.value);
   else if (action === 'set-remind') setRemind(el.dataset.id,Number(el.dataset.days));
-  else if (action === 'due-review-open') { const log=logs.find(item=>item.id===el.dataset.id); closeModal('#due-review-modal'); if(log){ log.remindAt=null; log.remindDays=null; persist(); } completionId=null; detailReturn='history'; navigate('detail',el.dataset.id); }
-  else if (action === 'due-review-later') { const log=logs.find(item=>item.id===el.dataset.id); if(log){ log.remindAt=new Date(Date.now()+3*DAY_MS).toISOString(); log.remindDays=3; persist(); } closeModal('#due-review-modal'); toast(log ? `${formatDate(log.remindAt)} ごろにまたお聞きします` : '3日後にまたお聞きします'); }
+  else if (action === 'due-review-open') { const log=logs.find(item=>item.id===el.dataset.id); closeModal('#due-review-modal'); const saved=!log || commitLogChange(log,REMIND_KEYS,item=>writeRemind(item,null,null)); completionId=null; detailReturn='history'; navigate('detail',el.dataset.id); if(!saved)toast(SAVE_FAILED_MESSAGE); }
+  else if (action === 'due-review-later') { const log=logs.find(item=>item.id===el.dataset.id); const saved=!log || commitLogChange(log,REMIND_KEYS,item=>writeRemind(item,new Date(Date.now()+3*DAY_MS).toISOString(),3)); if(!saved)toast(SAVE_FAILED_MESSAGE); else { closeModal('#due-review-modal'); toast(log ? `${formatDate(log.remindAt)} ごろにまたお聞きします` : '3日後にまたお聞きします'); } }
   else if (action === 'satisfied') openFarewell();
   else if (action === 'farewell-share-instagram') shareFarewellInstagram();
   else if (action === 'farewell-home') { closeFarewell(); activeSession=null; completionId=null; homeStage='quickstart'; navigate('home'); }
@@ -1976,7 +1986,7 @@ document.addEventListener('click', event => {
   else if (action === 'open-app') { history.replaceState(null,'',location.pathname); sharedPayload=null; activeSession=null; navigate('home'); if(shouldAutoStartTutorial())requestAnimationFrame(startTutorialIntro); }
 });
 document.addEventListener('submit', event => { if(event.target.id === 'save-form'){ event.preventDefault(); saveDecision(event.target); } });
-document.addEventListener('input', event => { if(event.target.id === 'option-1' || event.target.id === 'option-2'){ captureDecisionDraft(); updateDraftDisplays(); return; } if(event.target.id === 'history-search'){ historyQuery=event.target.value; const results=document.querySelector('[data-history-results]'); if(results)results.innerHTML=renderHistoryResults(); const count=event.target.closest('.history-search')?.querySelector('small'); if(count)count.textContent=historyQuery?`${filteredLogs().length}件`:''; } });
+document.addEventListener('input', event => { if(event.target.id === 'story-text' && detailId){ setStoryDraft(detailId,event.target.value,logs.find(item=>item.id===detailId)?.story); return; } if(event.target.id === 'option-1' || event.target.id === 'option-2'){ captureDecisionDraft(); updateDraftDisplays(); return; } if(event.target.id === 'history-search'){ historyQuery=event.target.value; const results=document.querySelector('[data-history-results]'); if(results)results.innerHTML=renderHistoryResults(); const count=event.target.closest('.history-search')?.querySelector('small'); if(count)count.textContent=historyQuery?`${filteredLogs().length}件`:''; } });
 document.addEventListener('change', event => { if(['import-file','import-markdown-file'].includes(event.target.id)) { const [file]=event.target.files || []; readImportFile(file).finally(()=>{ event.target.value=''; }); } });
 document.addEventListener('pointerdown', event => {
   const button=event.target.closest('[data-action="flip-both"]');
@@ -2040,7 +2050,7 @@ function registerWebMcp() {
   const tools = [
     { name:'start_decision_session', title:'カードを引く', description:'1枚引きまたは2枚引きの意思決定セッションを開始して画面に表示します。', inputSchema:{type:'object',properties:{mode:{type:'string',enum:['one','two']}},required:['mode'],additionalProperties:false}, annotations:{readOnlyHint:false,untrustedContentHint:false}, execute:({mode})=>{ if(!['one','two'].includes(mode)) throw new Error('mode must be one or two'); if(startSession(mode)===false) return {status:'blocked',reason:'free_limit'}; return {status:'started',mode,cards:activeSession.nodes.map(n=>n.card.name)}; } },
     { name:'list_decision_logs', title:'決定履歴を見る', description:'このブラウザに保存された決定ログを新しい順に読み取ります。', inputSchema:{type:'object',properties:{},additionalProperties:false}, annotations:{readOnlyHint:true,untrustedContentHint:false}, execute:()=>logs.map(l=>({id:l.id,date:l.createdAt,title:l.title,decision:l.decision,review:l.review})) },
-    { name:'review_decision', title:'決定を振り返る', description:'保存済みの決定に後日の評価を記録します。', inputSchema:{type:'object',properties:{id:{type:'string'},review:{type:'string',enum:['良かった','まあ良かった','どちらとも言えない','違った']}},required:['id','review'],additionalProperties:false}, annotations:{readOnlyHint:false,untrustedContentHint:false}, execute:({id,review})=>{ const log=logs.find(l=>l.id===id); if(!log) throw new Error('log not found'); log.review=review; log.reviewedAt=new Date().toISOString(); persist(); if(detailId===id) renderDetail(); return {status:'saved',id,review}; } }
+    { name:'review_decision', title:'決定を振り返る', description:'保存済みの決定に後日の評価を記録します。', inputSchema:{type:'object',properties:{id:{type:'string'},review:{type:'string',enum:['良かった','まあ良かった','どちらとも言えない','違った']}},required:['id','review'],additionalProperties:false}, annotations:{readOnlyHint:false,untrustedContentHint:false}, execute:({id,review})=>{ const log=logs.find(l=>l.id===id); if(!log) throw new Error('log not found'); const saved=commitLogChange(log,['review','reviewedAt','updatedAt'],item=>{ item.review=review; item.reviewedAt=item.updatedAt=new Date().toISOString(); }); if(detailId===id && currentView==='detail') renderDetail(); return saved ? {status:'saved',id,review} : {status:'error',error:'save_failed',id,message:SAVE_FAILED_MESSAGE}; } }
   ];
   tools.forEach(tool => { try { Promise.resolve(context.registerTool(tool)).catch(()=>{}); } catch {} });
 }
