@@ -247,7 +247,7 @@
         ${window.DECIDE_SYNC?.renderToggle?.() || ''}
         ${window.DECIDE_REFERRAL?.renderSettings?.() || ''}`
       : `<div><b id="account-setting-title">アカウント</b>
-        <p>Googleでログインすると、UNLIMITED EDITION（購入済みの状態）を別の端末でも使えます。決定ログの本文は、UNLIMITED EDITIONで同期をONにしない限り送信されず、この端末に残ります。</p></div>
+        <p>Googleでログインすると、UNLIMITED EDITION（購入済みの状態）を別の端末でも使えます。決定ログの本文は、UNLIMITED EDITIONでの初回ログイン時に同期が自動でONになり、別の端末と同期されます（設定でOFFにできます）。それ以外は送信されず、この端末に残ります。</p></div>
         <div class="data-actions">
           <button class="button google-login" type="button" data-auth-action="login">${GOOGLE_G_ICON}<span data-login-label>${LOGIN_LABEL}</span></button>
         </div>`;
