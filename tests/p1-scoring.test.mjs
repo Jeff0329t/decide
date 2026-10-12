@@ -59,3 +59,15 @@ assert.match(appSource,/class="compare-heading"[\s\S]*renderStars\(verdict\.scor
 
 console.log(`P1 scoring: OK (${combinations} ordered combinations)`);
 for(const [name,result] of Object.entries(cases))console.log(`${name}: ${result.label}${result.note?` / ${result.note}`:''}`);
+
+for(let first=1;first<=5;first++)for(let second=1;second<=5;second++) {
+  const result=scoring.compare({score:first,keywords:['A']},{score:second,keywords:['B']});
+  const low=Math.max(first,second)<=2;
+  assert.equal(result.holdRecommended,low);
+  if(low){
+    assert.match(result.label,/^今回は、保留をおすすめします。/);
+    assert.doesNotMatch(result.label,/どちらも選択としておすすめ|選択肢[AB]を選択としておすすめ/);
+    if(first!==second)assert.equal(result.label,`今回は、保留をおすすめします。選ぶなら選択肢${first>second?'A':'B'}です。`);
+  }else if(first===second)assert.equal(result.label,'どちらも選択としておすすめです');
+  else assert.equal(result.label,`選択肢${first>second?'A':'B'}を選択としておすすめします`);
+}

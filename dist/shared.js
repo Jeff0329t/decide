@@ -65,6 +65,7 @@
     const answer=String(decision||'');
     const label=answer.replace(/^選択肢([12])$/,(_,n)=>`選択肢${'AB'[n-1]}`);
     const base=`選んだ答え：${label}`;
+    if(verdict?.holdRecommended)return `${base}　（カードの視点では、今回は保留をおすすめします）`;
     if(!verdict || verdict.tie || !/^選択肢[12]$/.test(answer))return base;
     const recommended=verdict.difference>0?'選択肢1':'選択肢2';
     return answer===recommended

@@ -45,3 +45,19 @@ test('length limits hold without breaking an emoji at the boundary',()=>{
   const data=share.draft({...log,options:{'1':'x'.repeat(29)+'😀','2':'B'}},cards);data.question='q'.repeat(59)+'😀';
   assert.doesNotThrow(()=>decode(data));const p=decode(data);assert.ok(p.t.length<=60);assert.ok(p.q[0].length<=30);
 });
+
+test('shared low-score result recommends hold instead of endorsing a choice',()=>{
+  assert.equal(shared.sharedOutcomeText('選択肢2',{holdRecommended:true,tie:false,difference:-1}),'選んだ答え：選択肢B　（カードの視点では、今回は保留をおすすめします）');
+});
+test('sharing always renders a 1080 by 1920 image even with an old square-format draft',async()=>{
+  let canvas;
+  const context=new Proxy({measureText:text=>({width:String(text).length*24})},{get:(target,key)=>key in target?target[key]:()=>{}});
+  const scope={Blob,Image:class{width=480;height=830;set src(value){queueMicrotask(()=>this.onload());}},document:{fonts:{ready:Promise.resolve()},createElement:()=>canvas={width:0,height:0,getContext:()=>context,toBlob:callback=>callback(new Blob(['test'],{type:'image/png'}))}}};
+  scope.globalThis=scope;
+  vm.runInNewContext(fs.readFileSync(new URL('../dist/consultation-share.js',import.meta.url),'utf8'),scope);
+  assert.equal(share.draft(log,cards).format,'story');
+  for(const format of ['direct','story']){
+    await scope.DECIDE_CONSULTATION.renderImage({...share.draft(log,cards),format});
+    assert.equal(canvas.width,1080);assert.equal(canvas.height,1920);
+  }
+});

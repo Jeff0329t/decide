@@ -3,7 +3,7 @@
   const clean=(value,max)=>String(value||'').trim().slice(0,max).replace(/[\uD800-\uDBFF]$/,'');
   function draft(log,cards){
     const two=log.mode==='two';
-    return {cards:cards.slice(0,two?2:1),choices:two?[clean(log.options?.['1'],30)||'選択肢A',clean(log.options?.['2'],30)||'選択肢B']:[],question:'',chosen:two && /^選択肢[12]$/.test(log.decision)?Number(log.decision.slice(-1)):0,decision:two?'':clean(log.decision,40),memo:clean(log.memo,240),includeMemo:false,format:'direct'};
+    return {cards:cards.slice(0,two?2:1),choices:two?[clean(log.options?.['1'],30)||'選択肢A',clean(log.options?.['2'],30)||'選択肢B']:[],question:'',chosen:two && /^選択肢[12]$/.test(log.decision)?Number(log.decision.slice(-1)):0,decision:two?'':clean(log.decision,40),memo:clean(log.memo,240),includeMemo:false,format:'story'};
   }
   function payload(data){
     const two=data.cards.length===2;
@@ -27,7 +27,7 @@
   function image(src){return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(new Error('カード画像を読み込めませんでした'));img.src=src;});}
   async function renderImage(data){
     await document.fonts.ready;
-    const W=1080,H=data.format==='story'?1920:1080,story=H>W;
+    const W=1080,H=1920,story=true;
     const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
     const ctx=canvas.getContext('2d'),cream='#f4efe3',ink='#0b0b0b',yellow='#f1d527';
     const serif='"Hiragino Mincho ProN","Yu Mincho",serif',sans='"Hiragino Kaku Gothic ProN",sans-serif';
@@ -60,21 +60,34 @@
     if(story){ctx.fillStyle=cream;ctx.font=`500 24px ${sans}`;ctx.fillText('decisionprocess.net',540,1855);}
     return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('画像を作れませんでした')),'image/png'));
   }
-  function open(log,cards,{mount,close,toast,escapeHtml,initialFormat='direct'}){
-    const data=draft(log,cards),esc=escapeHtml;data.format=initialFormat==='story'?'story':'direct';
+  function open(log,cards,{mount,close,toast,escapeHtml}){
+    const data=draft(log,cards),esc=escapeHtml;
     if(!data.cards.length){toast('共有できるカードがありません');return;}
     const two=data.cards.length===2,wrap=document.createElement('div');wrap.className='modal-wrap';wrap.id='consultation-modal';
-    wrap.innerHTML=`<button class="modal-shade" data-consult-close aria-label="共有画面を閉じる"></button><section class="settings-sheet consultation-sheet" role="dialog" aria-modal="true" aria-labelledby="consultation-title"><div class="sheet-handle"></div><header class="sheet-head"><div><p class="eyebrow">DECIDE.</p><h2 id="consultation-title" tabindex="-1">Instagram投稿作成</h2></div><button data-consult-close aria-label="閉じる">×</button></header><p class="consult-intro">画像を確認して、保存または共有できます。</p><div class="consult-preview" aria-busy="true"><img alt="共有する相談画像のプレビュー" hidden><p data-consult-status role="status">画像を作っています…</p></div><div class="consult-fields"><fieldset><legend>共有画像の形式</legend><div class="consult-segments"><button type="button" data-format="story" aria-pressed="${data.format==='story'}">SNS用 9:16</button><button type="button" data-format="direct" aria-pressed="${data.format==='direct'}">個別相談用 1:1</button></div></fieldset><label>相談のひとこと <small>任意・共有されます</small><input data-question maxlength="60" placeholder="例：今の仕事、どうしよう？" autocomplete="off"></label>${two?`<fieldset><legend>共有する選択肢</legend>${data.choices.map((q,i)=>`<label class="consult-choice"><span>${'AB'[i]}</span><input data-choice="${i}" maxlength="30" value="${esc(q)}" aria-label="共有する選択肢${'AB'[i]}" autocomplete="off"></label>`).join('')}<p class="consult-note">実名・会社名は、ここでぼかして送れます。元のログは変わりません。</p></fieldset><fieldset><legend>私が選んだ方</legend><div class="consult-segments">${[[1,'A'],[2,'B'],[0,'まだ迷っている']].map(([v,l])=>`<button type="button" data-chosen="${v}" aria-pressed="${data.chosen===v}">${l}</button>`).join('')}</div></fieldset>`:`<p class="consult-note">カード1枚と、このときの決定「${esc(data.decision)}」を共有します。</p>`}<label class="consult-memo"><span>当時のメモを含める</span><input type="checkbox" data-memo ${data.memo?'':'disabled'}></label><p class="consult-note" data-privacy>選択肢と相談のひとことは共有されます。メモは含めません。</p></div><div class="consult-actions"><div><button type="button" data-save disabled>画像を保存</button><button type="button" data-copy>テキストをコピー</button></div><button class="button" type="button" data-send disabled>共有先を選ぶ ↗</button><button type="button" class="sheet-bottom-close" data-consult-close>閉じる</button></div></section>`;
+    wrap.innerHTML=`<button class="modal-shade" data-consult-close aria-label="共有画面を閉じる"></button><section class="settings-sheet consultation-sheet" role="dialog" aria-modal="true" aria-labelledby="consultation-title"><div class="sheet-handle"></div><header class="sheet-head"><div><p class="eyebrow">DECIDE.</p><h2 id="consultation-title" tabindex="-1">Instagram投稿作成</h2></div><button data-consult-close aria-label="閉じる">×</button></header><p class="consult-intro">9:16の画像を確認して、共有先を選べます。</p><div class="consult-preview" aria-busy="true"><img alt="共有する相談画像のプレビュー" hidden><p data-consult-status role="status">画像を作っています…</p></div><div class="consult-fields"><label>相談のひとこと <small>任意・共有されます</small><input data-question maxlength="60" placeholder="例：今の仕事、どうしよう？" autocomplete="off"></label>${two?`<fieldset><legend>共有する選択肢</legend>${data.choices.map((q,i)=>`<label class="consult-choice"><span>${'AB'[i]}</span><input data-choice="${i}" maxlength="30" value="${esc(q)}" aria-label="共有する選択肢${'AB'[i]}" autocomplete="off"></label>`).join('')}<p class="consult-note">実名・会社名は、ここでぼかして送れます。元のログは変わりません。</p></fieldset><fieldset><legend>私が選んだ方</legend><div class="consult-segments">${[[1,'A'],[2,'B'],[0,'まだ迷っている']].map(([v,l])=>`<button type="button" data-chosen="${v}" aria-pressed="${data.chosen===v}">${l}</button>`).join('')}</div></fieldset>`:`<p class="consult-note">カード1枚と、このときの決定「${esc(data.decision)}」を共有します。</p>`}<section class="consult-memo-section" aria-label="当時のメモ">${data.memo ? `<label class="consult-memo"><span>当時のメモを含める</span><input type="checkbox" data-memo></label><p class="consult-memo-content">${esc(data.memo)}</p><p class="consult-note">チェックすると、このメモも共有されます。</p>` : '<p class="consult-note">当時のメモはありません。</p>'}</section><p class="consult-note" data-privacy>${two?'選択肢と':''}相談のひとことは共有されます。メモは含めません。</p></div><div class="consult-actions"><button class="button" type="button" data-send disabled>共有先を選ぶ ↗</button><button type="button" class="sheet-bottom-close" data-consult-close>閉じる</button></div></section>`;
     let revision=0,blob=null,objectURL=null,timer=null,alive=true;
-    const preview=wrap.querySelector('.consult-preview'),status=wrap.querySelector('[data-consult-status]'),img=preview.querySelector('img'),save=wrap.querySelector('[data-save]'),send=wrap.querySelector('[data-send]');
+    const preview=wrap.querySelector('.consult-preview'),status=wrap.querySelector('[data-consult-status]'),img=preview.querySelector('img'),send=wrap.querySelector('[data-send]');
     const base=location.origin+location.pathname;
     const refresh=()=>{
-      const id=++revision;blob=null;save.disabled=send.disabled=true;preview.setAttribute('aria-busy','true');img.hidden=true;status.hidden=false;status.textContent='画像を作っています…';clearTimeout(timer);
-      timer=setTimeout(async()=>{try{const next=await renderImage(JSON.parse(JSON.stringify(data)));if(!alive||id!==revision)return;blob=next;if(objectURL)URL.revokeObjectURL(objectURL);objectURL=URL.createObjectURL(blob);img.src=objectURL;img.hidden=false;status.hidden=true;preview.setAttribute('aria-busy','false');save.disabled=send.disabled=false;}catch(error){if(alive&&id===revision){status.textContent=error.message;preview.setAttribute('aria-busy','false');}}},140);
+      const id=++revision;blob=null;send.disabled=true;preview.setAttribute('aria-busy','true');img.hidden=true;status.hidden=false;status.textContent='画像を作っています…';clearTimeout(timer);
+      timer=setTimeout(async()=>{try{const next=await renderImage(JSON.parse(JSON.stringify(data)));if(!alive||id!==revision)return;blob=next;if(objectURL)URL.revokeObjectURL(objectURL);objectURL=URL.createObjectURL(blob);img.src=objectURL;img.hidden=false;status.hidden=true;preview.setAttribute('aria-busy','false');send.disabled=false;}catch(error){if(alive&&id===revision){status.textContent=error.message;preview.setAttribute('aria-busy','false');}}},140);
     };
-    function download(){if(!blob)return;const a=document.createElement('a');a.href=objectURL;a.download=`decide-consultation-${data.format}.png`;a.click();toast('相談画像を保存しました');}
     wrap.addEventListener('input',event=>{const el=event.target;if(el.matches('[data-question]'))data.question=clean(el.value,60);else if(el.matches('[data-choice]'))data.choices[Number(el.dataset.choice)]=clean(el.value,30);else if(el.matches('[data-memo]'))data.includeMemo=el.checked;else return;wrap.querySelector('[data-privacy]').textContent=`${two?'選択肢と':''}相談のひとことは共有されます。${data.includeMemo?'メモも画像・投稿文・リンク先に含めます。':'メモは含めません。'}`;refresh();});
-    wrap.addEventListener('click',async event=>{const el=event.target.closest('button');if(!el)return;if(el.hasAttribute('data-consult-close')){close('#consultation-modal');return;}if(el.dataset.format){data.format=el.dataset.format;wrap.querySelectorAll('[data-format]').forEach(b=>b.setAttribute('aria-pressed',String(b===el)));refresh();}else if(el.hasAttribute('data-chosen')){data.chosen=Number(el.dataset.chosen);wrap.querySelectorAll('[data-chosen]').forEach(b=>b.setAttribute('aria-pressed',String(b===el)));refresh();}else if(el.hasAttribute('data-save'))download();else if(el.hasAttribute('data-copy')){try{await navigator.clipboard.writeText(postText(data)+'\n'+link(data,base));toast('相談のテキストとリンクをコピーしました');}catch{toast('コピーできませんでした。ブラウザの権限をご確認ください');}}else if(el.hasAttribute('data-send') && blob){const file=new File([blob],`decide-consultation-${data.format}.png`,{type:'image/png'});if(navigator.canShare?.({files:[file]})){try{await navigator.share({files:[file],text:postText(data)+'\n'+link(data,base)});}catch(error){if(error.name!=='AbortError')toast('共有できませんでした。「画像を保存」から送れます');}}else{download();toast('保存した画像をLINEやSNSで送れます。リンクはテキストをコピーしてください');}}});
+    wrap.addEventListener('click',async event=>{
+      const el=event.target.closest('button');if(!el)return;
+      if(el.hasAttribute('data-consult-close')){close('#consultation-modal');return;}
+      if(el.hasAttribute('data-chosen')){
+        data.chosen=Number(el.dataset.chosen);wrap.querySelectorAll('[data-chosen]').forEach(b=>b.setAttribute('aria-pressed',String(b===el)));refresh();
+      }else if(el.hasAttribute('data-send') && blob){
+        const file=new File([blob],'decide-consultation-story.png',{type:'image/png'});
+        if(navigator.share && navigator.canShare?.({files:[file]})){
+          send.disabled=true;
+          try{await navigator.share({files:[file],text:postText(data)+'\n'+link(data,base)});}
+          catch(error){if(error.name!=='AbortError')toast('共有できませんでした。もう一度お試しください');}
+          finally{if(alive && blob)send.disabled=false;}
+        }else toast('このブラウザは画像共有に対応していません。スマートフォンのSafariやChromeでお試しください。');
+      }
+    });
     const observer=new MutationObserver(()=>{if(wrap.isConnected)return;alive=false;clearTimeout(timer);if(objectURL)URL.revokeObjectURL(objectURL);observer.disconnect();});
     mount(wrap,'#consultation-title');observer.observe(document.body,{childList:true});refresh();
   }

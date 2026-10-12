@@ -978,7 +978,7 @@ function renderSession() {
   const comparison=activeSession.mode === 'two' ? activeSession.nodes.slice(0,2).map((node,index) => {
     const reading=nodeReading(node,'two',index);
     const label=DECIDE_DECISION.choiceText(node.label).replace(' ','');
-    const recommended=!verdict.tie && verdict.scores[index]>verdict.scores[1-index];
+    const recommended=!verdict.holdRecommended && !verdict.tie && verdict.scores[index]>verdict.scores[1-index];
     return `<article class="compare-node${recommended ? ' is-recommended' : ''}"><div class="compare-heading"><span class="compare-letter" aria-hidden="true">${'AB'[index]}</span>${renderStars(verdict.scores[index],`${label}のおすすめ度`)}</div>${recommended ? '<span class="recommendation-badge">おすすめ</span>' : ''}<button class="compare-card card-detail-button" data-action="card-detail" data-index="${index}" aria-label="${esc(node.card.name)}の詳しい意味を見る"><span class="card-image-frame">${cardPicture(node.card,{className:node.card.orientation === 'reversed' ? 'reversed-image' : '',sizes:'160px'})}</span></button><div class="compare-meta"><b>${esc(node.card.name)}</b><small>${orientationLabel(node.card)}</small></div><p><strong>${esc(reading.heading)}</strong>${esc(reading.body)}</p></article>`;
   }).join('') : '';
   app.innerHTML = `

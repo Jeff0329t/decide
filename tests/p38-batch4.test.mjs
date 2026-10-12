@@ -179,3 +179,14 @@ test('DECIDE confirmation moves once after the stamp settles, and cancels after 
   const replaced=harness(); replaced.context.confirmDecisionStep(replaced.button); replaced.context.activeSession={id:'new'}; replaced.pending[0].callback(); assert.equal(replaced.destinations.length,0);
   const reduced=harness(true); reduced.context.confirmDecisionStep(reduced.button); assert.equal(reduced.pending.length,0); assert.deepEqual(reduced.destinations,['decide']);
 });
+
+test('low-score comparison omits the recommendation badge and card emphasis', () => {
+  const markup={innerHTML:''};
+  const nodes=[{card:{name:'A',orientation:'upright'},label:'A'},{card:{name:'B',orientation:'upright'},label:'B'}];
+  const context={activeSession:{mode:'two',nodes},app:markup,decisionDraft:{option1:'貯める',option2:'使う'},comparisonVerdict:()=>({scores:[1,2],tie:false,holdRecommended:true,label:'今回は、保留をおすすめします。選ぶなら選択肢Bです。'}),nodeReading:()=>({heading:'意味',body:'本文'}),DECIDE_DECISION:{choiceText:value=>value},esc:value=>value,renderStars:()=>'',cardPicture:()=>'',orientationLabel:()=>'',sessionContext:()=>'',renderReflection:()=>'',renderTutorialStage(){}};
+  vm.createContext(context);vm.runInContext(body(app,'renderSession'),context);context.renderSession();
+  assert.doesNotMatch(markup.innerHTML,/is-recommended|recommendation-badge/);
+  assert.match(markup.innerHTML,/今回は、保留をおすすめします。選ぶなら『使う』です。/);
+  context.comparisonVerdict=()=>({scores:[2,3],tie:false,holdRecommended:false,label:'選択肢Bを選択としておすすめします'});
+  context.renderSession();assert.match(markup.innerHTML,/is-recommended/);assert.match(markup.innerHTML,/recommendation-badge/);
+});
