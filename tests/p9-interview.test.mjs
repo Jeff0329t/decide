@@ -41,9 +41,9 @@ for(const mode of ['one','two']){
 
 assert.match(appSource,/このカード、しっくりきましたか？/);
 assert.match(appSource,/この結果、しっくりきましたか？/);
-assert.match(appSource,/しっくりきた → 決める/);
-assert.match(appSource,/data-action="toggle-reflection" aria-expanded="false"/);
-assert.match(appSource,/setAttribute\('aria-expanded',String\(!expanded\)\)/);
+assert.match(appSource,/data-action="decide" aria-label="DECIDE\.">\$\{decideWordmark\(\)\}/);
+assert.doesNotMatch(appSource,/data-action="toggle-reflection"|data-action="deepen"|まだ引っかかる/);
+assert.doesNotMatch(appSource,/function addDeep\(|カードが示す、/);
 assert.match(appSource,/renderCard\(node,index \+ 2,true\)/);
 assert.ok(!appSource.includes('decision-dock'));
 assert.ok(!appSource.includes('これで決めた'));

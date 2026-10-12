@@ -33,15 +33,33 @@ test('#13 決定後の入力内容は要約＋変更するボタンで、開く�
 });
 
 // #14 2択の準備画面
-test('#14 2択の準備は 現在のA/B → 引く → 入力せず引く → 候補 の順', () => {
-  const line = app.split('\n').find(l => l.includes('data-action="prepare-skip"'));
-  assert.ok(line, '入力せず引く がある');
-  const order = ['optionEditor()', 'sameOptionHint()', 'data-action="prepare-next"', 'data-action="prepare-skip">入力せず引く', 'data-pair-candidates'];
-  const idx = order.map(s => line.indexOf(s));
-  idx.forEach((i, n) => assert.ok(i >= 0, `${order[n]} がある`));
-  assert.deepEqual([...idx].sort((a, b) => a - b), idx, '並び順');
+test('準備のジャンル選択は1枚ならドロー、2枚なら選択肢へ進み、選択肢内の変更では移動しない', () => {
+  for (const [mode, view, expected] of [['one','prepare-genre','draw'],['two','prepare-genre','prepare-options'],['two','prepare-options',null]]) {
+    const classes=new Set(); const pending=[];
+    const screen={isConnected:true,classList:{contains:v=>classes.has(v),add:v=>classes.add(v)}};
+    const state={currentView:view,activeSession:{mode},decisionDraft:{genre:'仕事'},document:{querySelector:()=>screen},prefersReducedMotion:()=>false,setTimeout:fn=>pending.push(fn),DECIDE_DECISION:{validGenre:v=>v},captureDecisionDraft(){},restoreDecisionDraft(){},sensoryFeedback(){},navigate:next=>{state.next=next;}};
+    vm.runInNewContext(`${body(app,'selectGenre')}\nselectGenre('仕事');`,state);
+    assert.equal(state.next,undefined);
+    if(view==='prepare-genre') {
+      assert.ok(classes.has('is-genre-chosen'));
+      vm.runInNewContext("selectGenre('健康');",state);
+      assert.equal(pending.length,1);
+      pending[0]();
+    }
+    assert.equal(state.next,expected ?? undefined);
+    assert.equal(state.decisionDraft.genre,view==='prepare-genre'?'仕事':'');
+  }
+  assert.match(body(app,'startSession'), /navigate\('prepare-genre'\)/);
+  assert.match(body(app,'navigateBack'), /currentView==='prepare-options'[\s\S]*?navigate\('prepare-genre'\)/);
+});
+
+test('#14 準備画面は組合せ候補を常時表示し、スキップと主操作を下部にまとめる', () => {
+  assert.match(app, /<section class="prepare-candidates quick-pairs">/);
+  assert.doesNotMatch(app, /<details class="prepare-candidates/);
+  assert.match(app, /class="prepare-actions"/);
   assert.match(app, /action === 'prepare-skip'\) continuePreparation\(true\)/);
-  assert.match(app, /スキップして引く/, '1枚引きは従来どおり');
+  assert.doesNotMatch(app, /prepare-skip-genre|prepare-genre-filter/);
+  assert.doesNotMatch(app, /スキップして引く/);
 });
 
 test('#14 AとBが同じときは軽いヒントだけ出す（ブロックしない）', () => {
@@ -97,13 +115,11 @@ test('#20 Google のスクリプトは静的に読み込まない', () => {
   assert.match(read('dist/auth.js'), /GIS_SRC = 'https:\/\/accounts\.google\.com\/gsi\/client'/);
 });
 
-// #21 判定の根拠を誤解させない
-test('#21 判定カードに目安である旨と「進めやすさとは？」を出す', () => {
-  assert.match(app, /<p class="verdict-basis">カードの象徴を比べた目安です。入力した内容を分析したものではありません。<\/p>/);
-  assert.match(app, /<details class="score-help"><summary>進めやすさとは？<\/summary><p>[^<]*運勢の良し悪しではありません。/);
-  const css = read('dist/styles.css');
-  assert.match(css, /\.verdict-basis\s*\{/);
-  assert.match(css, /\.score-help/);
+test('#21 結果はおすすめを明示し、補足解説を表示しない', () => {
+  const result = app.slice(app.indexOf('function renderSession()'), app.indexOf('function decisionSummaryHtml()'));
+  assert.doesNotMatch(result, /verdict-basis|verdict-questions|score-help|verdict-reason|verdict-note|verdict-closing|今回のカードでは/);
+  assert.match(result, /is-recommended/);
+  assert.match(result, /recommendation-badge/);
 });
 
 // #22 同期の状態が分かる
@@ -144,4 +160,22 @@ test('#23 設定は目的別の見出しでまとまる', () => {
   assert.match(app, /data-settings-group="card">カードと操作</);
   assert.match(app, /data-settings-group="data">データとアカウント</);
   assert.match(read('dist/styles.css'), /\.settings-group-title/);
+});
+
+test('DECIDE confirmation moves once after the stamp settles, and cancels after leaving', () => {
+  function harness(reduced=false) {
+    const pending=[],destinations=[];
+    const button={disabled:false,isConnected:true,setAttribute(){},classList:{add(){}}};
+    const context={activeSession:{id:'test'},currentView:'session',sensoryFeedback(){},prefersReducedMotion:()=>reduced,navigate:view=>destinations.push(view),setTimeout:(callback,ms)=>pending.push({callback,ms})};
+    vm.createContext(context); vm.runInContext(body(app,'confirmDecisionStep'),context);
+    return {context,button,pending,destinations};
+  }
+  const first=harness();
+  first.context.confirmDecisionStep(first.button); first.context.confirmDecisionStep(first.button);
+  assert.equal(first.pending.length,1); assert.equal(first.pending[0].ms,420);
+  assert.equal(first.destinations.length,0); assert.equal(first.button.disabled,true);
+  first.pending[0].callback(); assert.deepEqual(first.destinations,['decide']);
+  const left=harness(); left.context.confirmDecisionStep(left.button); left.context.currentView='home'; left.pending[0].callback(); assert.equal(left.destinations.length,0);
+  const replaced=harness(); replaced.context.confirmDecisionStep(replaced.button); replaced.context.activeSession={id:'new'}; replaced.pending[0].callback(); assert.equal(replaced.destinations.length,0);
+  const reduced=harness(true); reduced.context.confirmDecisionStep(reduced.button); assert.equal(reduced.pending.length,0); assert.deepEqual(reduced.destinations,['decide']);
 });

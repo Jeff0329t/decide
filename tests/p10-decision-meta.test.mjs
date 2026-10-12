@@ -13,9 +13,12 @@ const nodes=[
 ];
 
 test('all requested genres and pair presets are available',()=>{
-  assert.equal(meta.GENRES.length,9);
+  assert.deepEqual(meta.GENRES,['仕事','お金','人間関係・恋愛','その他']);
   assert.deepEqual(meta.PAIRS['仕事'][0],['今の仕事を続ける','新しい仕事に挑戦する']);
   assert.deepEqual(meta.PAIRS['その他'][1],['今','あと']);
+  assert.ok(meta.PAIRS['仕事'].some(pair=>pair[0]==='転職する'));
+  assert.ok(meta.PAIRS['人間関係・恋愛'].some(pair=>pair[0]==='告白する'));
+  assert.equal(meta.validGenre('健康'),'');
 });
 
 test('options are optional, capped at 30, and recent values are unique/max four',()=>{
@@ -28,7 +31,7 @@ test('options are optional, capped at 30, and recent values are unique/max four'
 test('automatic titles follow priority and manual title is preserved in save code',()=>{
   const date='2026-09-21T10:00:00+09:00';
   assert.equal(meta.autoTitle({genre:'仕事',options:{'1':'続ける','2':'挑戦する'},nodes,createdAt:date,mode:'two'}),'仕事：続ける／挑戦する');
-  assert.equal(meta.autoTitle({genre:'健康',nodes,createdAt:date,mode:'two'}),'健康：星・9/21');
+  assert.equal(meta.autoTitle({genre:'お金',nodes,createdAt:date,mode:'two'}),'お金：星・9/21');
   assert.equal(meta.autoTitle({nodes,createdAt:date,mode:'two'}),'星／月・9/21');
   assert.equal(meta.autoTitle({nodes:[nodes[0]],createdAt:date,mode:'one'}),'星（正位置）・9/21');
   assert.match(app,/manualTitle\|\|DECIDE_DECISION\.autoTitle/);

@@ -10,11 +10,8 @@
   function compare(first,second) {
     validateOption(first); validateOption(second);
     const difference=first.score-second.score;
-    const absoluteDifference=Math.abs(difference);
     const recommended=difference>=0 ? 1 : 2;
-    let label='拮抗しています。どちらも同じくらいの追い風です';
-    if(absoluteDifference>=2)label=`カードの視点では、選択肢${'AB'[recommended-1]}がおすすめです`;
-    else if(absoluteDifference===1)label=`わずかに、選択肢${'AB'[recommended-1]}が進めやすそうです`;
+    const label=difference===0 ? 'どちらも選択としておすすめです' : `選択肢${'AB'[recommended-1]}を選択としておすすめします`;
     let note='';
     if(first.score<=2 && second.score<=2)note='どちらも今は慎重に。急がず条件を整える時期かもしれません。';
     else if(first.score>=4 && second.score>=4)note='どちらも追い風です。差は小さいので、本音で選んで大丈夫です。';

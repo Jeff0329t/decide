@@ -29,6 +29,6 @@ test('two-card editorial styles exist without touching the card faces',()=>{
 
 test('two-card instruction sits above OPTION A instead of over the reveal button',()=>{
   assert.match(app,/<span class="draw-vs" aria-hidden="true">OR<\/span>\s*<p class="draw-instruction">/);
-  assert.match(app,/\$\{two \? '' : `<p class="draw-instruction">/);
+  assert.match(app,/\$\{two \? drawTheme\(\) : `<header class="draw-editorial">/);
   assert.match(css,/\.draw-screen\.draw-two \.dual-draw \.draw-instruction\s*\{[^}]*bottom:\s*calc\(100% \+ 14px\)/);
 });

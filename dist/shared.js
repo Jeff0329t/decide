@@ -10,6 +10,11 @@
     if(!payload.c.every(item=>Array.isArray(item) && item.length===2 && typeof item[0]==='string' && validCardIds.has(item[0]) && (item[1]===0 || item[1]===1)))return false;
     if(payload.t!==undefined && (typeof payload.t!=='string' || payload.t.length>60))return false;
     if(payload.s!==undefined && (typeof payload.s!=='string' || payload.s.length>700))return false;
+    if(payload.k!==undefined){
+      if(payload.k!==1 || !Array.isArray(payload.q) || payload.q.length!==(payload.c.length===2?2:0) || !payload.q.every(q=>typeof q==='string' && q.length<=30))return false;
+      if(!Number.isInteger(payload.a) || payload.a<0 || payload.a>(payload.c.length===2?2:0))return false;
+      if(payload.n!==undefined && (typeof payload.n!=='string' || payload.n.length>240))return false;
+    }
     return true;
   }
 
@@ -45,7 +50,11 @@
       const verdict=cards.length===2?compare(cards.map((card,index)=>({card,label:`選択肢 ${index+1}`}))):null;
       return {
         title:payload.t||'決定の記録', decision:payload.d, cards, story:payload.s||'',
-        verdict
+        verdict,
+        consultation:payload.k===1,
+        choices:payload.k===1?payload.q:[],
+        chosen:payload.k===1?payload.a:0,
+        memo:payload.k===1?(payload.n||''):''
       };
     } catch {
       return null;

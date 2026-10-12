@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'decide-shell-editorial-v125';
+const SHELL_CACHE = 'decide-shell-editorial-v148';
 const IMAGE_CACHE = 'decide-card-images-p14-v1';
 const IMAGE_LIMIT = 100;
 const CARD_SHELL_FILES = [
@@ -7,6 +7,7 @@ const CARD_SHELL_FILES = [
 ].map(path=>`${path}-320.webp`);
 const SHELL_FILES = [
   './', './index.html', './app.js', './styles.css', './scoring.js',
+  './consultation-share.js', './consultation-ui.css', './assets/editorial/prepare-portals-v1.webp',
   './shared.js', './interview.js', './decision-meta.js', './backup-format.js', './card-backs.js', './learn.js', './config.js', './auth.js', './entitlements.js', './sync.js',
   './reminders.js', './share-themes.js', './referral.js', './push.js', './card-entry.js',
   './manifest.webmanifest', './icon-192.png?v=2', './icon-512.png?v=2',
