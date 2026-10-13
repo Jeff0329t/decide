@@ -27,6 +27,20 @@
 
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=2" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png?v=2" />
+  <!-- Use a neutral launch image instead of a saved page snapshot on iPhone. -->
+  <link rel="apple-touch-startup-image" href="./assets/startup/black-640x1136.png" media="screen and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./assets/startup/black-750x1334.png" media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./assets/startup/black-1242x2208.png" media="screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./assets/startup/black-1125x2436.png" media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./assets/startup/black-828x1792.png" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./assets/startup/black-1242x2688.png" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./assets/startup/black-1170x2532.png" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./assets/startup/black-1179x2556.png" media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./assets/startup/black-1206x2622.png" media="screen and (device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./assets/startup/black-1284x2778.png" media="screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./assets/startup/black-1290x2796.png" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./assets/startup/black-1320x2868.png" media="screen and (device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+  <link rel="apple-touch-startup-image" href="./assets/startup/black-1260x2736.png" media="screen and (device-width: 420px) and (device-height: 912px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
   <link rel="manifest" href="./manifest.webmanifest" />
   <meta name="theme-color" content="#080808" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#080808" media="(prefers-color-scheme: dark)" />
@@ -39,7 +53,7 @@
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./consultation-ui.css" />
 </head>
-<body>
+<body data-view="home" data-home-stage="splash">
 <div class="rotate-lock" role="status"><div class="rotate-lock-card"><span class="rotate-lock-icon" aria-hidden="true">↻</span><p>縦向きがおすすめです</p><small>横向きのままでも使えます</small></div></div>
   <div class="app-shell">
     <header class="topbar">
@@ -50,7 +64,21 @@
       </div>
     </header>
 
-    <main id="app" tabindex="-1"><p><a href="./cards/">タロットカード78枚の意味と、迷ったときのヒント</a></p></main>
+    <main id="app" tabindex="-1">
+      <section class="screen home-screen splash-screen">
+        <div class="splash-copy">
+          <h1 class="home-wordmark">DECIDE<span>.</span></h1>
+          <p class="home-tagline">心から納得いく決断を。</p>
+        </div>
+        <p class="splash-sidecopy">A TOOL<br>FOR<br>BETTING<br>ON YOU.</p>
+        <div class="splash-hit" data-action="start-app" aria-hidden="true"></div>
+        <div class="splash-start" data-action="start-app">
+          <button data-action="start-app" aria-label="DECIDEをはじめる"><span>→</span></button>
+          <b>はじめる</b>
+        </div>
+      </section>
+      <noscript><p><a href="./cards/">タロットカード78枚の意味と、迷ったときのヒント</a></p></noscript>
+    </main>
 
     <nav class="bottom-nav" aria-label="メインナビゲーション">
       <button class="nav-item nav-back" data-action="nav-back"><span>戻る</span></button>
