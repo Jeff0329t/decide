@@ -48,9 +48,9 @@ body:is([data-view="prepare-genre"],[data-view="prepare-options"]) .bottom-nav {
 @media (max-height:700px) { .thumb-prepare .prepare-art { height:130px; } .thumb-prepare[data-prepare-art="options"] .prepare-art { height:110px; } }
 
 /* Read directly on one continuous collage, with a dark wash for contrast. */
-.detail-screen { position:relative; max-width:620px; margin:auto; padding:28px 22px 176px; color:#f4efe3; background-color:#111 !important; background-image:linear-gradient(90deg,rgba(8,8,8,.9),rgba(8,8,8,.82) 65%,rgba(8,8,8,.62)),url('./assets/editorial/dark-collage.webp') !important; background-position:center top !important; background-size:cover !important; background-repeat:no-repeat !important; isolation:isolate; }
+.detail-screen { position:relative; max-width:620px; margin:auto; padding:28px 22px 176px; color:#f4efe3; background:#111 !important; isolation:isolate; }
 .detail-screen { animation:none; transform:none; }
-.detail-screen::before,.detail-screen::after { display:none; }
+.detail-screen::after { display:none; }
 .detail-screen .detail-heading { padding-top:18px; }
 .detail-screen .detail-heading .eyebrow { color:#5b554b; margin:0 0 10px; font:12px/1.5 sans-serif; letter-spacing:.07em; }
 .detail-screen .detail-genre { border:1px solid #8a8375; padding:3px 8px; font-size:12px; }
@@ -229,7 +229,7 @@ body[data-view="prepare-options"] .thumb-prepare .prepare-art { height:auto; asp
 .detail-screen .saved-card-image-frame { width:100%; }
 
 .history-screen { background:#111 !important; animation:none; transform:none; isolation:isolate; }
-.history-screen::before { content:""; display:block; position:fixed; inset:0; z-index:0; width:min(100%,430px); height:100vh; height:100svh; margin-inline:auto; opacity:1; background-color:#111; background-image:linear-gradient(rgba(8,8,8,.78),rgba(8,8,8,.9)),url('./assets/editorial/dark-collage.webp'); background-position:center top; background-size:100% 100%,100% auto; background-repeat:no-repeat; pointer-events:none; }
+.history-screen::before,.detail-screen::before { content:""; display:block; position:fixed; inset:0; z-index:0; width:min(100%,430px); height:100vh; height:100svh; margin-inline:auto; opacity:1; background-color:#111; background-image:linear-gradient(rgba(8,8,8,.78),rgba(8,8,8,.9)),url('./assets/editorial/dark-collage.webp'); background-position:center top; background-size:100% 100%,100% auto; background-repeat:no-repeat; pointer-events:none; }
 .history-screen .history-row { background:transparent; border-radius:0; box-shadow:none; }
 .history-screen .history-copy strong { color:#f4efe3; }
 .history-screen .history-copy :is(time,span) { color:#d9d4ca; }
