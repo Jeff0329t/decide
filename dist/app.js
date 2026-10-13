@@ -1367,15 +1367,15 @@ function renderDetail() {
     <header class="detail-heading"><p class="eyebrow">${formatDate(log.createdAt, true)}</p>${log.genre?`<span class="detail-genre">${esc(log.genre)}</span>`:''}</header>
     <h1 data-detail-title></h1><div class="outcome"><span class="decided-stamp" aria-hidden="true">DECIDED</span><span>このときの決定</span><strong>${esc(DECIDE_DECISION.decisionText(log))}</strong></div>
     ${log.memo ? '<div class="saved-memo"><span>当時のメモ</span><p data-detail-memo></p></div>' : ''}
-    <div class="saved-cards"><p class="panel-title">引いたカードと意味</p>${log.nodes.map((node,index) => renderSavedCard(log,node,index)).join('')}</div>
-    <details class="detail-fold story-fold"><summary>その後のストーリー <span>書く・読み返す ＋</span></summary><section class="story-panel"><div class="story-head"><div><p class="panel-title">その後のストーリー</p><span>時間が経って分かったことや、選択の続きを残せます。</span></div>${log.storyUpdatedAt ? `<time>更新 ${formatDate(log.storyUpdatedAt)}</time>` : ''}</div>
-      <textarea id="story-text" aria-label="その後のストーリー" rows="6" maxlength="2000" placeholder="例：実際に選択肢Aを選んでみたら、最初に心配していたことよりも…"></textarea>
-      <div class="story-actions"><button class="button secondary" data-action="save-story" data-id="${esc(log.id)}">${log.story ? 'ストーリーを更新する' : 'ストーリーを保存する'}</button>${log.story ? `<button class="button ghost" data-action="share-story" data-id="${esc(log.id)}">その後をシェア ↗</button>` : ''}</div>
-    </section></details>
-    <details class="detail-fold review-fold"><summary>振り返り <span>${log.review?esc(log.review):'評価待ち'} ＋</span></summary><section class="review-panel"><p class="panel-title">この選択、その後どうでした？</p>
-      <div class="review-grid">${['良かった','まあ良かった','どちらとも言えない','違った'].map(r => `<button class="review-button ${log.review === r ? 'selected' : ''}" data-action="review" data-value="${r}"><b>${reviewIcon(r)}</b><span>${r}</span></button>`).join('')}</div>
+    <section class="detail-fold review-section" aria-labelledby="review-heading"><div class="review-panel"><h2 class="panel-title" id="review-heading">この選択、その後どうでした？</h2>
+      <div class="review-grid">${['良かった','まあ良かった','どちらとも言えない','違った'].map(r => `<button class="review-button ${log.review === r ? 'selected' : ''}" data-action="review" data-value="${r}" aria-pressed="${log.review === r}"><b>${reviewIcon(r)}</b><span>${r}</span></button>`).join('')}</div>
       ${log.review ? `<p class="review-saved">${formatDate(log.reviewedAt || new Date().toISOString())} に振り返りました</p><button class="button satisfied-button" data-action="satisfied"><small>DONE</small>納得できた！</button>` : `<p class="review-hint">すぐに決めなくても大丈夫です。時間が経ってから戻ってきてください。</p>${renderRemindPicker(log)}`}
-    </section></details>
+    </div></section>
+    <section class="detail-fold story-section" aria-labelledby="story-heading"><div class="story-panel"><div class="story-head"><div><h2 class="panel-title" id="story-heading">その後のストーリー</h2><span>選んでから気づいたことを、ひとことから。</span></div>${log.storyUpdatedAt ? `<time>更新 ${formatDate(log.storyUpdatedAt)}</time>` : ''}</div>
+      <textarea id="story-text" aria-label="その後のストーリー" rows="4" maxlength="2000" placeholder="選んでみて、どうだった？ ひとことでも大丈夫。"></textarea>
+      <div class="story-actions"><button class="button secondary" data-action="save-story" data-id="${esc(log.id)}">${log.story ? 'ストーリーを更新する' : 'ストーリーを保存する'}</button>${log.story ? `<button class="button ghost" data-action="share-story" data-id="${esc(log.id)}">その後をシェア ↗</button>` : ''}</div>
+    </div></section>
+    <div class="saved-cards"><p class="panel-title">引いたカードと意味</p>${log.nodes.map((node,index) => renderSavedCard(log,node,index)).join('')}</div>
     <div class="detail-action-dock"><button class="detail-edit" data-action="edit-log" data-id="${esc(log.id)}">編集</button><button class="button" data-action="share-log" data-id="${esc(log.id)}">Instagram投稿作成 ↗</button></div>
     <div class="danger-zone"><button class="danger-button" data-action="delete-log" data-id="${esc(log.id)}"><span class="danger-icon" aria-hidden="true">🗑</span>この履歴を削除</button></div>
   </section>`;

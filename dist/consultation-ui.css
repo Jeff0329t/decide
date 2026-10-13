@@ -378,3 +378,18 @@ body[data-detail-mode="complete"] .app-shell { padding-bottom:calc(70px + env(sa
 .decision-log-item:active { background:#202018; }
 .calendar-detail .decision-log-item + .decision-log-item { margin-top:12px; }
 @media (max-width:360px) { .decision-log-item { padding:14px; gap:10px; } .decision-log-choice { font-size:20px; } }
+
+/* Always-open reflection, with paper buttons and a distinct yellow selection. */
+.detail-screen :is(.review-section,.story-section) { padding-top:20px; margin-top:20px; }
+.detail-screen :is(.review-section,.story-section) .panel-title { font-size:17px; line-height:1.6; }
+.detail-screen .review-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.detail-screen .review-button { position:relative; display:flex; justify-content:flex-start; align-items:center; gap:7px; min-height:54px; padding:10px 14px 10px 10px; border:1px solid #f4efe3; border-radius:0; background:#f4efe3; color:#111; box-shadow:2px 2px 0 #f1d527; text-align:left; }
+.detail-screen .review-button b { flex:none; color:#111; font-size:20px; line-height:1; }
+.detail-screen .review-button span { font-size:12px; font-weight:700; line-height:1.5; }
+.detail-screen .review-button.selected { border-color:#f1d527; background:#f1d527; color:#111; box-shadow:3px 3px 0 #f4efe3; }
+.detail-screen .review-button.selected::after { content:"✓"; position:absolute; top:2px; right:4px; color:#111; font:700 12px/1 sans-serif; }
+.detail-screen .review-button:focus-visible { outline:2px solid #f1d527; outline-offset:4px; }
+.detail-screen .review-section .remind-picker :is(h2,.remind-status) { color:#111; }
+.detail-screen .story-head { gap:10px; flex-wrap:wrap; }
+.detail-screen .story-section .story-actions .button { min-height:44px; background:#111; color:#f1d527; border:1px solid #f4efe3; border-radius:0; box-shadow:3px 3px 0 #f1d527; }
+.detail-screen .story-section .story-actions .button.ghost { background:transparent; color:#f4efe3; box-shadow:none; }
