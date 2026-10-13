@@ -228,8 +228,8 @@ body[data-view="prepare-options"] .thumb-prepare .prepare-art { height:auto; asp
 .detail-screen .saved-card-image-button { width:72px; }
 .detail-screen .saved-card-image-frame { width:100%; }
 
-.history-screen { background-color:#111 !important; background-image:linear-gradient(rgba(8,8,8,.78),rgba(8,8,8,.9)),url('./assets/editorial/dark-collage.webp') !important; background-position:center top !important; background-size:cover !important; background-repeat:no-repeat !important; }
-.history-screen::before { display:none; }
+.history-screen { background:#111 !important; animation:none; transform:none; isolation:isolate; }
+.history-screen::before { content:""; display:block; position:fixed; inset:0; z-index:0; width:min(100%,430px); height:100vh; height:100svh; margin-inline:auto; opacity:1; background-color:#111; background-image:linear-gradient(rgba(8,8,8,.78),rgba(8,8,8,.9)),url('./assets/editorial/dark-collage.webp'); background-position:center top; background-size:100% 100%,100% auto; background-repeat:no-repeat; pointer-events:none; }
 .history-screen .history-row { background:transparent; border-radius:0; box-shadow:none; }
 .history-screen .history-copy strong { color:#f4efe3; }
 .history-screen .history-copy :is(time,span) { color:#d9d4ca; }
