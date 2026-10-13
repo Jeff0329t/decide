@@ -397,7 +397,7 @@ function setupFanFeedback(deck) {
 function updateNavigationState(view=currentView) {
   const selected=view==='history' || view==='detail' ? 'history' : view==='stats' ? 'stats' : view==='home' ? 'home' : '';
   const bottomNav=document.querySelector('.bottom-nav');
-  if(bottomNav)bottomNav.style.display=['history','detail','stats','session','decide','prepare-genre','prepare-options','draw'].includes(view)?'grid':'';
+  if(bottomNav)bottomNav.style.display=['history','detail','stats','session','decide','prepare-genre','prepare-options','draw','learn'].includes(view)?'grid':'';
   document.querySelectorAll('.nav-item').forEach(item=>{
     const active=item.dataset.nav===selected;
     item.classList.toggle('active',active);
@@ -407,7 +407,7 @@ function updateNavigationState(view=currentView) {
   const back=document.querySelector('.nav-back');
   if(back){
     // 表示は「戻る」に統一し、戻り先は読み上げ用ラベルで補う
-    const labels={detail:detailReturn==='stats'?'統計へ戻る':'ログへ戻る',decide:'結果へ戻る',learn:'設定へ戻る'};
+    const labels={detail:detailReturn==='stats'?'統計へ戻る':'ログへ戻る',decide:'結果へ戻る',learn:'ホームへ戻る'};
     back.querySelector('span').textContent='戻る';
     back.setAttribute('aria-label',labels[view]||'戻る');
     back.disabled=view==='home'&&homeStage==='splash';

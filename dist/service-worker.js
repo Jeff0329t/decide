@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'decide-shell-editorial-v160';
+const SHELL_CACHE = 'decide-shell-editorial-v163';
 const IMAGE_CACHE = 'decide-card-images-p14-v1';
 const IMAGE_LIMIT = 100;
 const CARD_SHELL_FILES = [
@@ -12,6 +12,7 @@ const SHELL_FILES = [
   './reminders.js', './share-themes.js', './referral.js', './push.js', './card-entry.js',
   './manifest.webmanifest', './icon-192.png?v=2', './icon-512.png?v=2',
   './icon-512-maskable.png?v=2', './apple-touch-icon.png?v=2',
+  './assets/editorial/learn-celestial-v1.webp', './assets/editorial/learn-elements-v1.webp',
   './assets/cards.json', './assets/learn.json', './assets/card-back-lines.jpg',
   './assets/editorial/home-collage.webp', './assets/editorial/choice-collage.webp',
   './assets/editorial/draw-collage.webp', './assets/editorial/result-collage.webp',

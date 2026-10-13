@@ -42,6 +42,10 @@
     else navigate('home');
   }
   window.addEventListener('popstate',()=>{if(currentView==='learn'){closeModal('#card-modal');navigate('home');}});
+  function goBack() {
+    if(lessonId){lessonId=null;render();window.scrollTo(0,0);return;}
+    goHome();
+  }
   function allCards() {return DECK.map(card=>({base:card,copy:cardContent(card)})).filter(item=>item.copy);}
   function filtered() {
     const q=query.trim().toLocaleLowerCase('ja');
@@ -57,6 +61,8 @@
   function render() {
     document.body.classList.toggle('learn-active',currentView==='learn');
     const root=el('section','screen learn-screen');
+    root.dataset.learnTab=tab;
+    document.querySelector('.nav-back')?.setAttribute('aria-label',lessonId?'レッスン一覧へ戻る':'ホームへ戻る');
     const header=el('header','learn-header');
     header.append(btn('← 戻る','home','learn-back'),el('p','learn-kicker','TAROT ATLAS'),el('h1','', 'タロットを学ぶ'));
     root.append(header);
@@ -77,8 +83,6 @@
   }
   function renderCards(root) {
     const pane=el('div','learn-cards');pane.setAttribute('role','tabpanel');
-    const progress=el('p','learn-progress');progress.dataset.learnProgress='';
-    progress.textContent=`78枚中${viewed.length}枚を見ました`;pane.append(progress);
     const chips=el('div','learn-filters');chips.setAttribute('aria-label','カードの種類');
     for(const [key,label] of FILTERS){const b=btn(label,'filter','learn-filter');b.dataset.filter=key;b.setAttribute('aria-pressed',String(filter===key));chips.append(b);}
     pane.append(chips);
@@ -117,8 +121,6 @@
   }
   function markViewed(id) {
     if(!viewed.includes(id)){viewed.push(id);save();}
-    const progress=document.querySelector('[data-learn-progress]');
-    if(progress)progress.textContent=`78枚中${viewed.length}枚を見ました`;
   }
   function paragraph(parent,value,cls='') {parent.append(el('p',cls,value));}
   function section(title,value) {const s=el('section');s.append(el('h3','',title),el('p','',value));return s;}
@@ -169,7 +171,7 @@
     if(lessonId){renderLesson(pane);root.append(pane);return;}
     data.lessons.forEach(lesson=>{
       const b=btn('','lesson','learn-lesson-item');b.dataset.id=lesson.id;
-      const label=el('span');label.append(el('strong','',lesson.title),el('small','',`所要${lesson.minutes}分`),el('p','',lesson.summary));
+      const label=el('span');label.append(el('strong','',lesson.title),el('p','',lesson.summary));
       b.append(label,el('span','learn-read',read[lesson.id]?'✓ 読んだ':'読む →'));pane.append(b);
     });
     if(data.lessons.every(l=>read[l.id])){const done=el('div','learn-complete');done.append(el('p','', 'タロットの基礎は、ひととおり読みました。カードを引いて、試してみましょう'),btn('ホームへ','home','button'));pane.append(done);}
@@ -177,7 +179,7 @@
   }
   function renderLesson(pane) {
     const lesson=data.lessons.find(l=>l.id===lessonId);if(!lesson)return;
-    pane.append(btn('← レッスン一覧','lesson-list','learn-lesson-back'),el('p','learn-kicker','LESSON'),el('h2','',lesson.title),el('p','learn-minutes',`所要${lesson.minutes}分`));
+    pane.append(btn('← レッスン一覧','lesson-list','learn-lesson-back'),el('p','learn-kicker','LESSON'),el('h2','',lesson.title));
     lesson.body.forEach(part=>paragraph(pane,part));
     if(lesson.id==='l2'){
       const journey=el('div','learn-journey');data.majorJourney.forEach(part=>{const row=el('div','learn-journey-step');row.append(el('b','',part.range),el('strong','',part.title),el('p','',part.text));journey.append(row);});pane.append(journey);
@@ -221,5 +223,5 @@
     const tabButton=event.target.closest?.('.learn-tab');if(!tabButton || !['ArrowLeft','ArrowRight'].includes(event.key))return;
     event.preventDefault();tab=tab==='cards'?'lessons':'cards';lessonId=null;render();document.querySelector(`.learn-tab[data-tab="${tab}"]`)?.focus();
   });
-  window.DECIDE_LEARN={open,render};
+  window.DECIDE_LEARN={open,render,close:goBack};
 })();
