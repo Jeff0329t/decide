@@ -7,7 +7,14 @@ function installViewportNavigation() {
   let frame=0,settleTimer=0;
   const update=()=>{
     frame=0;
-    const offset=viewport.scale===1 ? document.documentElement.clientHeight-viewport.height-viewport.offsetTop : 0;
+    const layoutHeight=document.documentElement.clientHeight;
+    const active=document.activeElement;
+    const editing=active?.matches('textarea,input') || active?.isContentEditable;
+    // iOS may leave a small safe-area gap (or offsetTop) after dismissing
+    // the keyboard, even while the textarea remains focused. Do not retain
+    // that gap as a permanent dock inset. A keyboard obscures much more.
+    const keyboardOpen=editing && viewport.scale===1 && layoutHeight-viewport.height>120;
+    const offset=keyboardOpen ? Math.max(0,layoutHeight-viewport.height-viewport.offsetTop) : 0;
     document.documentElement.style.setProperty('--bottom-nav-viewport-offset',`${Math.round(offset)}px`);
   };
   const schedule=()=>{ if(!frame)frame=requestAnimationFrame(update); };
