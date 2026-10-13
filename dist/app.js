@@ -1,4 +1,31 @@
 const app = document.querySelector('#app');
+// iOS can pan the visual viewport independently while editing a story.
+// Keep the dock on its visible bottom, including the keyboard closing animation.
+function installViewportNavigation() {
+  const viewport=window.visualViewport;
+  if(!viewport)return;
+  let frame=0,settleTimer=0;
+  const update=()=>{
+    frame=0;
+    const offset=viewport.scale===1 ? document.documentElement.clientHeight-viewport.height-viewport.offsetTop : 0;
+    document.documentElement.style.setProperty('--bottom-nav-viewport-offset',`${Math.round(offset)}px`);
+  };
+  const schedule=()=>{ if(!frame)frame=requestAnimationFrame(update); };
+  const settle=()=>{
+    schedule();
+    clearTimeout(settleTimer);
+    settleTimer=setTimeout(schedule,350);
+  };
+  viewport.addEventListener('resize',schedule,{passive:true});
+  viewport.addEventListener('scroll',schedule,{passive:true});
+  window.addEventListener('resize',settle,{passive:true});
+  window.addEventListener('pageshow',settle);
+  document.addEventListener('focusin',settle);
+  document.addEventListener('focusout',settle);
+  document.addEventListener('visibilitychange',settle);
+  schedule();
+}
+installViewportNavigation();
 const STORAGE_KEY = 'decide.tarot.logs.v1';
 const SETTINGS_KEY = 'decide.tarot.settings.v1';
 const TUTORIAL_KEY = 'decide.tarot.tutorial.v1';
