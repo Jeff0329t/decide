@@ -442,6 +442,7 @@ function navigateBack() {
 function navigate(view, id=null) {
   if(tutorial && ['home','history','detail','decide'].includes(view))finishTutorial('skipped',false);
   if(view==='detail'&&currentView!=='detail')detailReturn=currentView==='stats'?'stats':'history';
+  completionId=null; // 記録完了は保存直後だけ。開き直したログは通常の振り返り画面にする。
   currentView = view; detailId = id;
   render(); requestAnimationFrame(() => { window.scrollTo({top:0,left:0,behavior:'instant'}); app.focus({preventScroll:true}); });
 }
