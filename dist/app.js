@@ -1409,7 +1409,7 @@ function renderDetail() {
     ${log.memo ? '<div class="saved-memo"><span>当時のメモ</span><p data-detail-memo></p></div>' : ''}
     <section class="detail-fold review-section" aria-labelledby="review-heading"><div class="review-panel"><h2 class="panel-title" id="review-heading">この選択、その後どうでした？</h2>
       <div class="review-grid">${['良かった','まあ良かった','どちらとも言えない','違った'].map(r => `<button class="review-button ${log.review === r ? 'selected' : ''}" data-action="review" data-value="${r}" aria-pressed="${log.review === r}"><b>${reviewIcon(r)}</b><span>${r}</span></button>`).join('')}</div>
-      ${log.review ? `<p class="review-saved">${formatDate(log.reviewedAt || new Date().toISOString())} に振り返りました</p>` : `<p class="review-hint">すぐに決めなくても大丈夫です。時間が経ってから戻ってきてください。</p>${renderRemindPicker(log)}`}
+      ${log.review ? `<p class="review-saved">${formatDate(log.reviewedAt || new Date().toISOString())} に振り返りました</p>` : `<p class="review-hint">すぐに決めなくても大丈夫です。時間が経ってから戻ってきてください。</p>`}
     </div></section>
     <section class="detail-fold story-section" aria-labelledby="story-heading"><div class="story-panel"><div class="story-head"><div><h2 class="panel-title" id="story-heading">その後のストーリー</h2></div>${log.storyUpdatedAt ? `<time>更新 ${formatDate(log.storyUpdatedAt)}</time>` : ''}</div>
       <div class="story-prompt"><p class="story-prompt-kicker">ひとことのきっかけ</p><h3 id="story-question">${storyQuestion}</h3></div><p class="story-prompt-note">ひとことでも大丈夫。</p>
