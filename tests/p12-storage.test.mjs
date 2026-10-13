@@ -44,7 +44,7 @@ test('backup reminder requires three logs and uses fourteen-day suppression',()=
   assert.match(app,/logs\.length<3/);
   assert.match(app,/Date\.now\(\)-last>14\*DAY_MS/);
   assert.match(app,/backupReminderDismissedUntil=Date\.now\(\)\+14\*DAY_MS/);
-  assert.match(app,/バックアップしておきませんか/);
+  assert.doesNotMatch(app,/バックアップしておきませんか/);
 });
 
 test('persistent storage is requested once after the first successful record',()=>{

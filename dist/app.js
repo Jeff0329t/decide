@@ -1209,8 +1209,7 @@ function renderHistory() {
     <div class="history-head"><div><p class="eyebrow">Decision log</p><h1>決めたこと。</h1></div>
       <div class="view-switch" aria-label="履歴の表示形式"><button class="${historyMode === 'list' ? 'selected' : ''}" data-action="history-mode" data-value="list">リスト</button><button class="${historyMode === 'calendar' ? 'selected' : ''}" data-action="history-mode" data-value="calendar">カレンダー</button></div>
     </div>
-    ${shouldShowBackupReminder() ? '<aside class="storage-banner backup-reminder" data-backup-reminder><button class="banner-close" data-action="dismiss-backup-reminder" aria-label="バックアップ案内を閉じる">×</button><b>バックアップしておきませんか</b><p>記録を書き出して、端末の外にも残しておけます。</p><button class="button secondary" data-action="export-markdown">履歴を書き出す</button></aside>' : ''}
-    ${logs.length ? `<label class="history-search"><span aria-hidden="true">⌕</span><input id="history-search" type="search" value="${esc(historyQuery)}" placeholder="題名、カード、意味、ストーリーを検索" aria-label="履歴を検索"><small>${historyQuery ? `${results.length}件` : ''}</small></label>${historyMode === 'list' ? '<p class="swipe-hint">履歴を左へスワイプすると削除できます</p>' : ''}<div data-history-results>${renderHistoryResults(results)}</div>` : `<div class="empty-state"><h2>まだ履歴はありません</h2><p>最初のカードを引いて、ひとつ決めてみましょう。</p><button class="button" data-action="home">カードを引く</button></div>`}
+    ${logs.length ? `<label class="history-search"><span aria-hidden="true">⌕</span><input id="history-search" type="search" value="${esc(historyQuery)}" placeholder="題名・決定を検索" aria-label="履歴を検索"><small>${historyQuery ? `${results.length}件` : ''}</small></label><div data-history-results>${renderHistoryResults(results)}</div>` : `<div class="empty-state"><h2>まだ履歴はありません</h2><p>最初のカードを引いて、ひとつ決めてみましょう。</p><button class="button" data-action="home">カードを引く</button></div>`}
   </section>`;
 }
 
@@ -1224,7 +1223,15 @@ function filteredLogs() {
 
 function renderHistoryResults(results=filteredLogs()) {
   if(!results.length) return `<div class="search-empty"><span>⌕</span><b>見つかりませんでした</b><p>言葉を短くするか、別のキーワードで試してください。</p></div>`;
-  return historyMode === 'calendar' ? renderCalendar(results) : `<div class="history-list">${results.map(log=>historyItem(log)).join('')}</div>`;
+  return historyMode === 'calendar' ? renderCalendar(results) : `<div class="history-list">${results.map(log=>decisionLogItem(log)).join('')}</div>`;
+}
+
+function decisionLogItem(log) {
+  return `<button class="decision-log-item" data-action="detail" data-id="${esc(log.id)}">
+    <span class="decision-log-meta"><time>${formatDate(log.createdAt)}</time>${log.review ? `<em class="decision-log-status status-${reviewKey(log.review)}"><span aria-hidden="true">${reviewIcon(log.review)}</span> ${esc(log.review)}</em>` : '<em class="decision-log-status status-pending">評価待ち</em>'}</span>
+    ${log.title ? `<strong class="decision-log-title">${esc(log.title)}</strong>` : ''}
+    <span class="decision-log-choice"><span>${esc(DECIDE_DECISION.decisionText(log))}</span><i aria-hidden="true">→</i></span>
+  </button>`;
 }
 
 function historyItem(log,{deletable=true}={}) {
@@ -1268,7 +1275,7 @@ function renderCalendar(viewLogs=logs) {
     <div class="calendar-summary"><p class="calendar-pending-plate ${monthPending ? '' : 'clear'}"><span>AWAITING REVIEW</span><strong>${monthPending}</strong><small>件</small></p><ul class="calendar-legend"><li class="pending">評価待ち</li><li class="reviewed">評価済み</li></ul></div>
     <div class="week-row">${['日','月','火','水','木','金','土'].map(d=>`<span>${d}</span>`).join('')}</div>
     <div class="calendar-grid">${blanks}${cells}</div>
-    <div class="calendar-detail">${selectedCalendarDate ? `<p class="calendar-date-label"><span>${Number(selectedCalendarDate.slice(5,7))}月${Number(selectedCalendarDate.slice(8,10))}日の決定</span>${selectedPending ? `<em>評価待ち ${selectedPending}件</em>` : ''}</p>${selectedLogs.map(historyItem).join('')}` : '<p class="calendar-hint">印のある日を選ぶと、その日の決定を確認できます。</p>'}</div>
+    <div class="calendar-detail">${selectedCalendarDate ? `<p class="calendar-date-label"><span>${Number(selectedCalendarDate.slice(5,7))}月${Number(selectedCalendarDate.slice(8,10))}日の決定</span>${selectedPending ? `<em>評価待ち ${selectedPending}件</em>` : ''}</p>${selectedLogs.map(log=>decisionLogItem(log)).join('')}` : '<p class="calendar-hint">印のある日を選ぶと、その日の決定を確認できます。</p>'}</div>
   </div>`;
 }
 
