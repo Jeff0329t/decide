@@ -208,7 +208,7 @@
       : '別の端末と決定ログを同期できます（UNLIMITED EDITION限定）。ログはこの端末の中に保存されています。';
     const status = on ? syncStatus() : '';
     const actions = on
-      ? `<div class="sync-actions"><button class="sync-action-button" type="button" data-sync-action="now"${running ? ' disabled' : ''}>今すぐ同期</button><button class="sync-action-button" type="button" data-action="export-markdown">バックアップを書き出す</button></div>`
+      ? `<div class="sync-actions"><button class="sync-action-button" type="button" data-sync-action="now"${running ? ' disabled' : ''}>今すぐ同期</button></div>`
       : '';
     return `<div class="feedback-setting sync-setting"><div><b>ログの同期</b><p>${note}</p>${status}${actions}</div>
       <button class="toggle-button ${on ? 'on' : ''}" type="button" aria-label="ログの同期（別の端末と決定ログを共有）" data-sync-action="toggle" aria-pressed="${on}"><span></span><b>${on ? 'ON' : 'OFF'}</b></button></div>`;

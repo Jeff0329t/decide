@@ -126,7 +126,7 @@ test('#21 結果はおすすめを明示し、補足解説を表示しない', (
 test('#22 同期ONのときは状態行と操作ボタンを出す', () => {
   const sync = read('dist/sync.js');
   assert.match(sync, /data-sync-action="now"[^>]*>今すぐ同期</);
-  assert.match(sync, /data-action="export-markdown">バックアップを書き出す</);
+  assert.doesNotMatch(sync, /data-action="export-markdown"/);
   assert.match(sync, /同期中…/);
   assert.match(sync, /最終同期 \$\{fmt\(state\.lastSyncAt\)\}/);
   assert.match(sync, /・未同期 \$\{pending\}件/);
