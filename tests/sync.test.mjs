@@ -121,9 +121,13 @@ test('merge: 古いログでも updatedAt が新しい方を優先する（リ�
 test('renderToggle: 同期ONのとき最終同期・失敗の状態を表示する', () => {
   const user = { id: 'u1' };
   const ok = load({ user, pro: true, cloudSync: true, stored: { lastSyncAt: '2026-10-11T03:04:00Z' } }).sync.renderToggle();
+  assert.doesNotMatch(ok, /data-sync-action="now"/);
+  assert.match(ok, /data-sync-action="help"/);
+  assert.match(ok, /別の端末でも同じログを使う/);
   assert.match(ok, /最終同期 \d+\/\d+ \d{2}:\d{2}/);
   const ng = load({ user, pro: true, cloudSync: true, stored: { lastSyncAt: '2026-10-11T03:04:00Z', lastErrorAt: '2026-10-11T04:00:00Z' } }).sync.renderToggle();
   assert.match(ng, /sync-status is-error/);
+  assert.match(ng, /data-sync-action="now">再試行/);
   assert.match(ng, /同期に失敗しました/);
   const off = load({ user, pro: true, cloudSync: false, stored: { lastErrorAt: '2026-10-11T04:00:00Z' } }).sync.renderToggle();
   assert.doesNotMatch(off, /sync-status/);

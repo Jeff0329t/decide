@@ -123,9 +123,9 @@ test('#21 結果はおすすめを明示し、補足解説を表示しない', (
 });
 
 // #22 同期の状態が分かる
-test('#22 同期ONのときは状態行と操作ボタンを出す', () => {
+test('#22 同期ONのときは状態行を出し、失敗時に再試行できる', () => {
   const sync = read('dist/sync.js');
-  assert.match(sync, /data-sync-action="now"[^>]*>今すぐ同期</);
+  assert.match(sync, /data-sync-action="now"[^>]*>再試行</);
   assert.doesNotMatch(sync, /data-action="export-markdown"/);
   assert.match(sync, /同期中…/);
   assert.match(sync, /最終同期 \$\{fmt\(state\.lastSyncAt\)\}/);

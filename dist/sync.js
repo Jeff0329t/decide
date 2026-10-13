@@ -201,17 +201,31 @@
     if(!auth()?.getUser?.()) return '';
     const pro = !!ent()?.hasProAccess?.();
     const on = pro && isOn();
-    const note = pro
-      ? (on
-        ? '決定ログをサーバーに保存し、同じアカウントでログインした別の端末でも見られます。OFFにすると以後の同期を止めます。OFFにしてもサーバーの内容は残ります（アカウント削除で消えます）。OFFのあいだにこの端末で消した記録は、またONにするとサーバーから戻ります。'
-        : 'ONにすると、決定ログをサーバーに保存し、同じアカウントでログインした別の端末でも見られます。OFFのあいだ、ログはこの端末の中だけに保存されます。以前に同期した内容はサーバーに残っていて、OFFのあいだにこの端末で消した記録も、ONにするとサーバーから戻ります。')
-      : '別の端末と決定ログを同期できます（UNLIMITED EDITION限定）。ログはこの端末の中に保存されています。';
+    const note = pro ? '別の端末でも同じログを使う' : '別の端末との同期はUNLIMITED EDITION限定です。';
     const status = on ? syncStatus() : '';
-    const actions = on
-      ? `<div class="sync-actions"><button class="sync-action-button" type="button" data-sync-action="now"${running ? ' disabled' : ''}>今すぐ同期</button></div>`
-      : '';
+    const retry = on && state.lastErrorAt && !running
+      ? '<button class="sync-action-button" type="button" data-sync-action="now">再試行</button>' : '';
+    const actions = `<div class="sync-actions">${retry}<button class="sync-help-button" type="button" data-sync-action="help">同期について</button></div>`;
     return `<div class="feedback-setting sync-setting"><div><b>ログの同期</b><p>${note}</p>${status}${actions}</div>
       <button class="toggle-button ${on ? 'on' : ''}" type="button" aria-label="ログの同期（別の端末と決定ログを共有）" data-sync-action="toggle" aria-pressed="${on}"><span></span><b>${on ? 'ON' : 'OFF'}</b></button></div>`;
+  }
+
+  function openSyncHelp() {
+    if(document.querySelector('#sync-help-modal')) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'modal-wrap';
+    wrap.id = 'sync-help-modal';
+    wrap.innerHTML = `<button class="modal-shade" type="button" data-sync-action="help-close" aria-label="同期についてを閉じる"></button>
+      <section class="settings-sheet confirm-sheet" role="dialog" aria-modal="true" aria-labelledby="sync-help-title">
+        <div class="sheet-handle" aria-hidden="true"></div>
+        <div class="sheet-head"><h2 id="sync-help-title">同期について</h2><button type="button" data-sync-action="help-close" aria-label="閉じる">×</button></div>
+        <p>決定ログをサーバーに保存し、同じアカウントでログインした別の端末でも使える機能です（UNLIMITED EDITION限定）。初回ログイン時に自動でONになり、設定でOFFにできます。</p>
+        <p>OFFにすると以後の同期を止め、この端末の中だけに保存します。OFFにしてもサーバーの内容は残ります（アカウント削除で消えます）。OFFのあいだにこの端末で消した記録は、またONにするとサーバーから戻ります。</p>
+        <p>同期に失敗した場合は、通信が戻ると自動でやり直します。「再試行」から手動でやり直すこともできます。</p>
+        <div class="confirm-actions"><button class="button" type="button" data-sync-action="help-close">閉じる</button></div>
+      </section>`;
+    if(typeof mountModal === 'function') mountModal(wrap, '.sheet-head button');
+    else document.body.appendChild(wrap);
   }
 
   function syncStatus() {
@@ -358,6 +372,11 @@
     if(action === 'toggle') { if(paused) openAccountConfirm(auth()?.getUser?.() || {}); else toggle(); }
     // 閉じただけのときは決めていないので、同期は止めたまま（次に開いたときにまた聞く）
     else if(action === 'now') { if(!running) { const job = syncNow({ quiet: false }); refreshSettings(); Promise.resolve(job).finally(refreshSettings); } }
+    else if(action === 'help') openSyncHelp();
+    else if(action === 'help-close') {
+      if(typeof closeModal === 'function') closeModal('#sync-help-modal');
+      else document.querySelector('#sync-help-modal')?.remove();
+    }
     else if(action === 'close') closeAccountConfirm();
     else if(action === 'account-merge') resolveAccount(true);
     else if(action === 'account-keep') resolveAccount(false);
