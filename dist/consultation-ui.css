@@ -418,3 +418,8 @@ body[data-detail-mode="complete"] .app-shell { padding-bottom:calc(70px + env(sa
 .detail-screen .story-head { gap:10px; flex-wrap:wrap; }
 .detail-screen .story-section .story-actions .button { min-height:44px; background:#111; color:#f1d527; border:1px solid #f4efe3; border-radius:0; box-shadow:3px 3px 0 #f1d527; }
 .detail-screen .story-section .story-actions .button.ghost { background:transparent; color:#f4efe3; box-shadow:none; }
+
+.detail-screen .story-prompt { margin:16px 0 8px; padding:0 0 0 12px; border-left:4px solid #f1d527; }
+.detail-screen .story-prompt .story-prompt-kicker { margin:0 0 5px; color:#f1d527; font-size:12px; line-height:1.5; }
+.detail-screen .story-prompt h3 { margin:0; color:#f4efe3; font-size:21px; line-height:1.6; overflow-wrap:anywhere; }
+.detail-screen .story-prompt-note { margin:0; color:#f4efe3; font-size:12px; line-height:1.6; }

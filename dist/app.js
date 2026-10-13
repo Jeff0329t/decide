@@ -1400,6 +1400,7 @@ function renderDetail() {
   const showA2HS=log.id===a2hsBannerLogId && shouldShowA2HS();
   const installable=showA2HS && canInstallPrompt();
   const appBrowser=showA2HS && !installable && inAppBrowser();
+  const storyQuestion=({'良かった':'何がよかった？','まあ良かった':'何がよかった？','どちらとも言えない':'今、どんな気持ち？','違った':'次は何を変えたい？'})[log.review] || '選んでみて、どうだった？';
   app.innerHTML = `<section class="screen detail-screen">
     <button class="text-back" data-action="${detailReturn==='stats'?'stats':'history'}" aria-label="${detailReturn==='stats'?'統計へ戻る':'履歴へ戻る'}">← 戻る</button>
     ${showA2HS ? `<aside class="storage-banner a2hs-banner" data-a2hs-banner><button class="banner-close" data-action="dismiss-a2hs" aria-label="案内を閉じる">×</button><p>${installable ? 'ホーム画面に追加すると、アプリのようにすぐ開けて、記録も消えにくくなります。' : appBrowser ? 'この画面では、ホーム画面に追加できません。メニューから『ブラウザで開く』（Safariで開く）を選んでから、追加してください。' : '記録を消さないために、ホーム画面に追加しておきませんか？　Safariでは、しばらく開かないと記録が消えることがあります。'}</p><div class="banner-actions">${installable ? '<button class="button" data-action="a2hs-install">ホーム画面に追加</button>' : appBrowser ? '' : '<button class="button secondary" data-action="a2hs-help">追加のしかた</button>'}<button class="button ghost" data-action="dismiss-a2hs">あとで</button></div></aside>` : ''}
@@ -1408,10 +1409,11 @@ function renderDetail() {
     ${log.memo ? '<div class="saved-memo"><span>当時のメモ</span><p data-detail-memo></p></div>' : ''}
     <section class="detail-fold review-section" aria-labelledby="review-heading"><div class="review-panel"><h2 class="panel-title" id="review-heading">この選択、その後どうでした？</h2>
       <div class="review-grid">${['良かった','まあ良かった','どちらとも言えない','違った'].map(r => `<button class="review-button ${log.review === r ? 'selected' : ''}" data-action="review" data-value="${r}" aria-pressed="${log.review === r}"><b>${reviewIcon(r)}</b><span>${r}</span></button>`).join('')}</div>
-      ${log.review ? `<p class="review-saved">${formatDate(log.reviewedAt || new Date().toISOString())} に振り返りました</p><button class="button satisfied-button" data-action="satisfied"><small>DONE</small>納得できた！</button>` : `<p class="review-hint">すぐに決めなくても大丈夫です。時間が経ってから戻ってきてください。</p>${renderRemindPicker(log)}`}
+      ${log.review ? `<p class="review-saved">${formatDate(log.reviewedAt || new Date().toISOString())} に振り返りました</p>` : `<p class="review-hint">すぐに決めなくても大丈夫です。時間が経ってから戻ってきてください。</p>${renderRemindPicker(log)}`}
     </div></section>
-    <section class="detail-fold story-section" aria-labelledby="story-heading"><div class="story-panel"><div class="story-head"><div><h2 class="panel-title" id="story-heading">その後のストーリー</h2><span>選んでから気づいたことを、ひとことから。</span></div>${log.storyUpdatedAt ? `<time>更新 ${formatDate(log.storyUpdatedAt)}</time>` : ''}</div>
-      <textarea id="story-text" aria-label="その後のストーリー" rows="4" maxlength="2000" placeholder="選んでみて、どうだった？ ひとことでも大丈夫。"></textarea>
+    <section class="detail-fold story-section" aria-labelledby="story-heading"><div class="story-panel"><div class="story-head"><div><h2 class="panel-title" id="story-heading">その後のストーリー</h2></div>${log.storyUpdatedAt ? `<time>更新 ${formatDate(log.storyUpdatedAt)}</time>` : ''}</div>
+      <div class="story-prompt"><p class="story-prompt-kicker">ひとことのきっかけ</p><h3 id="story-question">${storyQuestion}</h3></div><p class="story-prompt-note">ひとことでも大丈夫。</p>
+      <textarea id="story-text" aria-label="その後のストーリー" aria-describedby="story-question" rows="4" maxlength="2000" placeholder="ここにひとこと"></textarea>
       <div class="story-actions"><button class="button secondary" data-action="save-story" data-id="${esc(log.id)}">${log.story ? 'ストーリーを更新する' : 'ストーリーを保存する'}</button>${log.story ? `<button class="button ghost" data-action="share-story" data-id="${esc(log.id)}">その後をシェア ↗</button>` : ''}</div>
     </div></section>
     <div class="saved-cards"><p class="panel-title">引いたカードと意味</p>${log.nodes.map((node,index) => renderSavedCard(log,node,index)).join('')}</div>
