@@ -64,7 +64,7 @@
     root.dataset.learnTab=tab;
     document.querySelector('.nav-back')?.setAttribute('aria-label',lessonId?'レッスン一覧へ戻る':'ホームへ戻る');
     const header=el('header','learn-header');
-    header.append(btn('← 戻る','home','learn-back'),el('p','learn-kicker','TAROT ATLAS'),el('h1','', 'タロットを学ぶ'));
+    header.append(el('h1','', 'タロットを学ぶ'));
     root.append(header);
     if(!data){
       root.append(el('p','learn-loading',pending?'読み込み中…':'学習データを読み込めませんでした。'));
