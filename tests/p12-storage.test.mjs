@@ -32,12 +32,12 @@ test('iOS standalone and in-app browser conditions are present',()=>{
   assert.match(app,/isIOS\(\) && !isStandalone\(\)/);
 });
 
-test('A2HS copy, help steps, and seven-day suppression are wired',()=>{
+test('A2HS copy, help steps, and two-day suppression are wired',()=>{
   assert.match(app,/記録を消さないために、ホーム画面に追加しておきませんか/);
-  assert.match(app,/画面下の共有ボタン（□に↑）を押す/);
+  assert.match(app,/共有ボタン（□に↑）を押す/);
   assert.match(app,/「ホーム画面に追加」を選ぶ/);
-  assert.match(app,/右上の「追加」を押す/);
-  assert.match(app,/a2hsDismissedUntil=Date\.now\(\)\+7\*DAY_MS/);
+  assert.match(app,/「追加」を押す/);
+  assert.match(app,/a2hsDismissedUntil=Date\.now\(\)\+2\*DAY_MS/);
 });
 
 test('backup reminder requires three logs and uses fourteen-day suppression',()=>{

@@ -2,6 +2,8 @@ const app = document.querySelector('#app');
 const STORAGE_KEY = 'decide.tarot.logs.v1';
 const SETTINGS_KEY = 'decide.tarot.settings.v1';
 const TUTORIAL_KEY = 'decide.tarot.tutorial.v1';
+const A2HS_HIDDEN_KEY = 'decide.install.hidden.v1';
+let a2hsHidden = load(A2HS_HIDDEN_KEY, false) === true;
 const BACKUP_SCHEMA = 1;
 const IMPORT_LIMIT_BYTES = 5 * 1024 * 1024;
 const MARKDOWN_IMPORT_LIMIT_BYTES = 16 * 1024 * 1024;
@@ -124,7 +126,17 @@ function isStandalone() { return navigator.standalone===true || matchMedia('(dis
 function isIOS() { return /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1); }
 function inAppBrowser() { return /Line\/|FBAN|FBAV|Instagram|Twitter/i.test(navigator.userAgent); }
 function canInstallPrompt() { return !isIOS() && !!deferredInstallPrompt; }
-function shouldShowA2HS() { return (isIOS() || canInstallPrompt()) && !isStandalone() && Number(settings.a2hsDismissedUntil || 0)<=Date.now(); }
+function shouldShowA2HS() { return (isIOS() || /Android/i.test(navigator.userAgent) || canInstallPrompt()) && !isStandalone() && !a2hsHidden && Number(settings.a2hsDismissedUntil || 0)<=Date.now(); }
+function homeInstallBanner() {
+  if(!shouldShowA2HS())return '';
+  return `<aside class="home-install" data-a2hs-banner aria-label="ホーム画面に追加"><button class="home-install-close" data-action="dismiss-a2hs" aria-label="案内を2日間非表示にする">×</button><div class="home-install-copy"><img src="./icon-192.png?v=2" alt="" width="64" height="64"><div><h2><span class="home-install-logo" aria-label="DECIDE"><span aria-hidden="true">DECIDE<span class="home-install-dot">.</span></span></span><span class="home-install-tagline">いつでもすぐに。</span></h2><p>ホーム画面から、ワンタップで開けます。</p></div></div><button class="button home-install-button" data-action="${canInstallPrompt() ? 'a2hs-install' : 'a2hs-help'}">ホーム画面に追加</button><div class="home-install-actions"><button class="home-install-later" data-action="dismiss-a2hs">あとで</button><button class="home-install-never" data-action="hide-a2hs" aria-label="追加済み・今後表示しない">追加済み</button></div></aside>`;
+}
+function refreshHomeInstallBanner() {
+  const link=document.querySelector('.quickstart-screen .quickstart-cards');
+  if(!link)return;
+  document.querySelector('.home-install')?.remove();
+  link.insertAdjacentHTML('afterend',homeInstallBanner());
+}
 function shouldShowBackupReminder() {
   if(logs.length<3 || Number(settings.backupReminderDismissedUntil || 0)>Date.now())return false;
   const last=Date.parse(settings.lastBackupAt || '');
@@ -132,7 +144,13 @@ function shouldShowBackupReminder() {
 }
 function storageEvent(action) { window.dispatchEvent(new CustomEvent('decide:storage',{detail:{action}})); }
 function requestPersistentStorage() { try { Promise.resolve(navigator.storage?.persist?.()).catch(()=>{}); } catch {} }
-function backupDateLabel(value) { return value ? `${formatDate(value, true)} に書き出しました` : 'まだバックアップしていません'; }
+function backupDateLabel(value) { const d=new Date(value); return value && !Number.isNaN(d.getTime()) ? `最終書き出し：${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : 'まだ書き出していません'; }
+function openBackupHelp() {
+  if(document.querySelector('#backup-help-modal'))return;
+  const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='backup-help-modal';
+  wrap.innerHTML=`<button class="modal-shade" type="button" data-action="close-backup-help" aria-label="バックアップについてを閉じる"></button><section class="settings-sheet confirm-sheet" role="dialog" aria-modal="true" aria-labelledby="backup-help-title"><div class="sheet-handle"></div><div class="sheet-head"><h2 id="backup-help-title">バックアップについて</h2><button type="button" data-action="close-backup-help" aria-label="閉じる">×</button></div><p>書き出すと、決定ログをメモ帳やObsidianでそのまま読めるファイル（.md）で保存できます。端末の外に控えを残したいときに使えます。</p><p>読み込みは「追加取り込み」です。今の履歴は消さずに、新しい決定と新しく書かれた項目だけを反映します。書き出した時点へ丸ごと戻す「完全復元」ではありません。取り込む前に変更内容を確認できます。</p>${isIOS() && !isStandalone() ? '<p class="safari-storage-note">Safariでは、記録は端末内に保存されます。しばらく開かないと消えることがあるため、ホーム画面への追加と、書き出しをおすすめします。</p>' : ''}${canInstallPrompt() && !isStandalone() ? '<div class="a2hs-settings" data-a2hs-settings><p>ホーム画面に追加すると、アプリのようにすぐ開けます。</p><button class="button" data-action="a2hs-install">ホーム画面に追加</button></div>' : ''}<div class="confirm-actions"><button class="button" type="button" data-action="close-backup-help">閉じる</button></div></section>`;
+  mountModal(wrap,'.sheet-head button');
+}
 function backupFileName(date=new Date()) { const local=value=>String(value).padStart(2,'0'); return `decide-log-${date.getFullYear()}${local(date.getMonth()+1)}${local(date.getDate())}.json`; }
 function backupPayload() { return { app:'DECIDE', schema:BACKUP_SCHEMA, exportedAt:new Date().toISOString(), logs }; }
 function backupPayloadFor(records=logs) { const payload=backupPayload(); return records===logs ? payload : {...payload,logs:records}; }
@@ -495,6 +513,7 @@ function renderHome() {
       </div>
       <button class="quickstart-help" data-action="tutorial-open">使い方を見る</button>
       <a class="quickstart-cards" href="./cards/"><b>78 CARDS</b><span>カードの意味と、迷ったときのヒント</span></a>
+      ${homeInstallBanner()}
       ${last ? `<button class="last-log" data-action="detail" data-id="${esc(last.id)}"><span>最近の決定</span><strong>${esc(last.title)}</strong><small>${esc(DECIDE_DECISION.choiceText(last.decision))} · ${formatDate(last.createdAt)}</small></button>` : ''}
     </section>`;
 }
@@ -1179,13 +1198,30 @@ function openSaveFailure(log) {
 
 function openA2HSHelp() {
   storageEvent('a2hsHelp');
+  document.querySelector('#a2hs-help-modal')?.remove();
+  const steps=inAppBrowser()
+    ? '<p>このアプリのメニューから「ブラウザで開く」を選び、SafariやChromeで追加してください。</p>'
+    : isIOS()
+      ? '<p>iPhoneでは、Safariから追加できます。</p><ol class="a2hs-steps"><li>共有ボタン（□に↑）を押す</li><li>「ホーム画面に追加」を選ぶ</li><li>「追加」を押す</li></ol>'
+      : '<p>Chromeのメニュー（⋮）から追加できます。</p><ol class="a2hs-steps"><li>ブラウザのメニュー（⋮）を開く</li><li>「ホーム画面に追加」または「アプリをインストール」を選ぶ</li><li>確認画面で追加する</li></ol>';
   const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='a2hs-help-modal';
-  wrap.innerHTML=`<button class="modal-shade" data-action="close-a2hs-help" aria-label="追加手順を閉じる"></button><section class="settings-sheet confirm-sheet" role="dialog" aria-modal="true" aria-labelledby="a2hs-help-title"><div class="sheet-handle"></div><div class="sheet-head"><h2 id="a2hs-help-title">ホーム画面に追加する方法</h2><button data-action="close-a2hs-help" aria-label="閉じる">×</button></div><ol class="a2hs-steps"><li>画面下の共有ボタン（□に↑）を押す</li><li>「ホーム画面に追加」を選ぶ</li><li>右上の「追加」を押す</li></ol><div class="confirm-actions"><button class="button" data-action="close-a2hs-help">閉じる</button></div></section>`;
+  wrap.innerHTML=`<button class="modal-shade" data-action="close-a2hs-help" aria-label="追加手順を閉じる"></button><section class="settings-sheet confirm-sheet" role="dialog" aria-modal="true" aria-labelledby="a2hs-help-title"><div class="sheet-handle"></div><div class="sheet-head"><h2 id="a2hs-help-title">ホーム画面に追加</h2><button data-action="close-a2hs-help" aria-label="閉じる">×</button></div><img class="install-help-icon" src="./icon-192.png?v=2" alt="DECIDE" width="64" height="64">${steps}<div class="confirm-actions"><button class="button" data-action="close-a2hs-help">わかった</button><button class="button ghost" data-action="hide-a2hs">追加済み・今後表示しない</button></div></section>`;
   mountModal(wrap,'.sheet-head button');
 }
 
+function removeInstallBanners() {
+  a2hsBannerLogId=null;
+  document.querySelectorAll('[data-a2hs-banner]').forEach(el=>el.remove());
+}
 function dismissA2HS() {
-  settings.a2hsDismissedUntil=Date.now()+7*DAY_MS; a2hsBannerLogId=null; persist(); storageEvent('a2hsDismiss'); document.querySelector('[data-a2hs-banner]')?.remove();
+  settings.a2hsDismissedUntil=Date.now()+2*DAY_MS; persist(); storageEvent('a2hsDismiss'); removeInstallBanners();
+}
+function hideA2HS() {
+  a2hsHidden=true;
+  const saved=safeSetItem(A2HS_HIDDEN_KEY,'true');
+  removeInstallBanners();
+  closeModal('#a2hs-help-modal');
+  if(!saved)toast('この端末では設定を保存できませんでした。今回は案内を非表示にしました。');
 }
 // Android/Chrome などはブラウザが出す「インストール」確認をワンタップで呼び出せる（iPhone は Apple の制限で手順案内のみ）
 async function installApp() {
@@ -1196,12 +1232,15 @@ async function installApp() {
   try {
     promptEvent.prompt();
     const choice=await promptEvent.userChoice;
-    if(choice?.outcome==='accepted') { a2hsBannerLogId=null; document.querySelector('[data-a2hs-banner]')?.remove(); toast('ホーム画面に追加しました'); }
+    if(choice?.outcome==='accepted') removeInstallBanners();
   } catch(error) {}
   document.querySelectorAll('[data-a2hs-settings]').forEach(el=>{ if(!deferredInstallPrompt) el.remove(); });
 }
-window.addEventListener('beforeinstallprompt', event => { event.preventDefault(); deferredInstallPrompt=event; });
-window.addEventListener('appinstalled', () => { deferredInstallPrompt=null; a2hsBannerLogId=null; document.querySelectorAll('[data-a2hs-banner],[data-a2hs-settings]').forEach(el=>el.remove()); });
+window.addEventListener('beforeinstallprompt', event => { event.preventDefault(); deferredInstallPrompt=event; refreshHomeInstallBanner(); });
+window.addEventListener('appinstalled', () => { deferredInstallPrompt=null; hideA2HS(); document.querySelectorAll('[data-a2hs-settings]').forEach(el=>el.remove()); toast('ホーム画面に追加しました'); });
+window.matchMedia('(display-mode: standalone)').addEventListener('change', refreshHomeInstallBanner);
+window.addEventListener('pageshow', refreshHomeInstallBanner);
+document.addEventListener('visibilitychange', () => { if(document.visibilityState==='visible')refreshHomeInstallBanner(); });
 
 function renderHistory() {
   const results=filteredLogs();
@@ -1767,7 +1806,7 @@ function openSettings() {
     <div class="setting-backs"><b>カードの裏面</b>${backPicker()}</div>
     <div class="feedback-setting"><div><b>操作音・振動</b><p>カードを開く時や決定を保存する時に、控えめな反応を返します。</p></div><button class="toggle-button ${settings.feedback ? 'on' : ''}" data-action="toggle-feedback" aria-label="操作音・振動" aria-pressed="${settings.feedback}"><span></span><b>${settings.feedback ? 'ON' : 'OFF'}</b></button></div>
     <h3 class="settings-group-title" data-settings-group="data">データとアカウント</h3>
-    <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">バックアップ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}${isIOS() && !isStandalone() ? '<p class="safari-storage-note">Safariでは、記録は端末内に保存されます。しばらく開かないと消えることがあるため、ホーム画面への追加と、書き出しをおすすめします。</p>' : ''}${canInstallPrompt() && !isStandalone() ? '<div class="a2hs-settings" data-a2hs-settings><p>ホーム画面に追加すると、アプリのようにすぐ開けます。</p><button class="button" data-action="a2hs-install">ホーム画面に追加</button></div>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-markdown">履歴を書き出す</button><button class="button secondary" data-action="import-markdown">履歴を読み込む</button></div><p class="backup-format-note">メモ帳やObsidianでそのまま読めるファイル（.md）で保存します。読み込みは「追加取り込み」です。今の履歴は消さずに、新しい決定と新しく書かれた項目だけを反映します（書き出した時点へ丸ごと戻す完全復元ではありません）。</p><input id="import-file" type="file" accept="text/markdown,.md,text/plain,application/json,.json" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップ内容"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
+    <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">バックアップ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-markdown">書き出す</button><button class="button secondary" data-action="import-markdown">読み込む</button></div><div class="sync-actions"><button class="sync-help-button" type="button" data-action="backup-help">バックアップについて</button></div><input id="import-file" type="file" accept="text/markdown,.md,text/plain,application/json,.json" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップ内容"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
      <section class="data-setting account-setting" data-account-setting aria-labelledby="account-setting-title" hidden></section>
      <nav class="settings-links" aria-label="その他">${window.DECIDE_ENTITLEMENTS?.hasPurchased?.() ? '' : '<button class="settings-link settings-link-pro" data-action="open-paywall"><span><small>UNLIMITED EDITION</small>引き放題・残し放題にする</span><span class="settings-link-chevron" aria-hidden="true">›</span></button>'}<button class="settings-link" data-action="open-learn"><span>カード図鑑</span><span class="settings-link-chevron" aria-hidden="true">›</span></button><button class="settings-link" data-action="tutorial-replay"><span data-tutorial-label>使い方をもう一度見る</span><span class="settings-link-chevron" aria-hidden="true">›</span></button><a class="settings-link" href="./cards/worries.html" target="_blank" rel="noopener"><span>記事を読む</span><span class="settings-link-chevron" aria-hidden="true">›</span></a></nav>
      <button class="sheet-bottom-close" data-action="close-settings">設定を閉じる</button>
@@ -1941,11 +1980,14 @@ document.addEventListener('click', event => {
   else if (action === 'toggle-feedback') { settings.feedback=!settings.feedback; persist(); el.classList.toggle('on',settings.feedback); el.setAttribute('aria-pressed',String(settings.feedback)); el.querySelector('b').textContent=settings.feedback?'ON':'OFF'; if(settings.feedback)sensoryFeedback('tap'); toast(settings.feedback?'操作音・振動をONにしました':'操作音・振動をOFFにしました'); }
   else if (action === 'export-logs') exportLogs();
   else if (action === 'export-markdown') exportLogs(logs,true,'markdown');
+  else if (action === 'backup-help') openBackupHelp();
+  else if (action === 'close-backup-help') closeModal('#backup-help-modal');
   else if (action === 'export-failed-log') { const failed=el.closest('#save-failed-modal')?.failedLog; if(failed){ storageEvent('exportFromError'); exportLogs([failed],false); } }
   else if (action === 'close-save-failed') closeModal('#save-failed-modal');
   else if (action === 'a2hs-help') openA2HSHelp();
   else if (action === 'close-a2hs-help') closeModal('#a2hs-help-modal');
   else if (action === 'dismiss-a2hs') dismissA2HS();
+  else if (action === 'hide-a2hs') hideA2HS();
   else if (action === 'a2hs-install') installApp();
   else if (action === 'dismiss-backup-reminder') { settings.backupReminderDismissedUntil=Date.now()+14*DAY_MS; persist(); document.querySelector('[data-backup-reminder]')?.remove(); }
   else if (action === 'import-logs') openImportPicker();
