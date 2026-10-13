@@ -43,7 +43,7 @@
   }
   window.addEventListener('popstate',()=>{if(currentView==='learn'){closeModal('#card-modal');navigate('home');}});
   function goBack() {
-    if(lessonId){lessonId=null;render();window.scrollTo(0,0);return;}
+    if(lessonId){lessonId=null;render();scrollAppTo(0);return;}
     goHome();
   }
   function allCards() {return DECK.map(card=>({base:card,copy:cardContent(card)})).filter(item=>item.copy);}
@@ -208,10 +208,10 @@
       modal.querySelectorAll('[data-learn="theme"]').forEach(b=>b.setAttribute('aria-selected',String(b===target)));
       const panel=modal.querySelector('.theme-panel');panel.querySelector('b').textContent=cardThemeLabels[target.dataset.theme];panel.querySelector('p').textContent=copy.themes[target.dataset.theme];return;
     }
-    if(action==='related'){closeModal('#card-modal');tab='lessons';lessonId=target.dataset.id;setTimeout(()=>{render();window.scrollTo(0,0);signal('lesson',lessonId);},190);return;}
+    if(action==='related'){closeModal('#card-modal');tab='lessons';lessonId=target.dataset.id;setTimeout(()=>{render();scrollAppTo(0);signal('lesson',lessonId);},190);return;}
     if(action==='tab'){tab=target.dataset.tab;lessonId=null;render();return;}
     if(action==='filter'){filter=target.dataset.filter;document.querySelectorAll('.learn-filter').forEach(b=>b.setAttribute('aria-pressed',String(b===target)));fillGrid(document.querySelector('[data-learn-grid]'));return;}
-    if(action==='lesson'){lessonId=target.dataset.id;render();window.scrollTo(0,0);signal('lesson',lessonId);return;}
+    if(action==='lesson'){lessonId=target.dataset.id;render();scrollAppTo(0);signal('lesson',lessonId);return;}
     if(action==='lesson-list'){lessonId=null;render();return;}
     if(action==='read-lesson'){read[lessonId]=true;save();lessonId=null;render();return;}
   });

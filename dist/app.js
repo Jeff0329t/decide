@@ -1,30 +1,43 @@
 const app = document.querySelector('#app');
-// iOS can pan the visual viewport independently while editing a story.
-// Keep the dock on its visible bottom, including the keyboard closing animation.
+// Home-screen apps scroll their content independently of the native root.
+// Keyboard dismissal can then reset the root without losing the reading position.
 function installViewportNavigation() {
+  const standalone=window.matchMedia?.('(display-mode: standalone)').matches || window.navigator.standalone===true;
+  if(!standalone)return;
+  const shell=document.querySelector('.app-shell');
+  const nav=document.querySelector('.bottom-nav');
+  if(!shell || !nav)return;
+  const frame=document.createElement('div');frame.className='app-viewport';
+  document.body.insertBefore(frame,shell);
+  frame.append(shell,nav);
+  const toast=document.querySelector('#toast');if(toast)frame.append(toast);
+  document.documentElement.classList.add('standalone-shell');
   const viewport=window.visualViewport;
-  if(!viewport)return;
-  let frame=0,settleTimer=0;
+  let pending=0,settleTimer=0,finalTimer=0,keyboardWasOpen=false,resetRequested=true;
   const update=()=>{
-    frame=0;
+    pending=0;
     const layoutHeight=document.documentElement.clientHeight;
     const active=document.activeElement;
     const editing=active?.matches('textarea,input') || active?.isContentEditable;
-    // iOS may leave a small safe-area gap (or offsetTop) after dismissing
-    // the keyboard, even while the textarea remains focused. Do not retain
-    // that gap as a permanent dock inset. A keyboard obscures much more.
-    const keyboardOpen=editing && viewport.scale===1 && layoutHeight-viewport.height>120;
-    const offset=keyboardOpen ? Math.max(0,layoutHeight-viewport.height-viewport.offsetTop) : 0;
-    document.documentElement.style.setProperty('--bottom-nav-viewport-offset',`${Math.round(offset)}px`);
+    const keyboardOpen=!!(viewport && editing && viewport.scale===1 && layoutHeight-viewport.height>120);
+    // Native root scrolling belongs to iOS, content scrolling belongs to shell.
+    // Reset even when window.scrollY reports zero: native inset drift can be hidden.
+    if(!keyboardOpen && (keyboardWasOpen || resetRequested)){
+      window.scrollTo({top:0,left:0,behavior:'instant'});
+      resetRequested=false;
+    }
+    keyboardWasOpen=keyboardOpen;
+    frame.style.setProperty('--app-viewport-top',`${keyboardOpen?viewport.offsetTop:0}px`);
+    frame.style.setProperty('--app-viewport-height',`${keyboardOpen?viewport.height:layoutHeight}px`);
   };
-  const schedule=()=>{ if(!frame)frame=requestAnimationFrame(update); };
+  const schedule=()=>{if(!pending)pending=requestAnimationFrame(update);};
   const settle=()=>{
-    schedule();
-    clearTimeout(settleTimer);
-    settleTimer=setTimeout(schedule,350);
+    resetRequested=true;schedule();clearTimeout(settleTimer);clearTimeout(finalTimer);
+    settleTimer=setTimeout(()=>{resetRequested=true;schedule();},350);
+    finalTimer=setTimeout(()=>{resetRequested=true;schedule();},750);
   };
-  viewport.addEventListener('resize',schedule,{passive:true});
-  viewport.addEventListener('scroll',schedule,{passive:true});
+  viewport?.addEventListener('resize',schedule,{passive:true});
+  viewport?.addEventListener('scroll',schedule,{passive:true});
   window.addEventListener('resize',settle,{passive:true});
   window.addEventListener('pageshow',settle);
   document.addEventListener('focusin',settle);
@@ -33,6 +46,12 @@ function installViewportNavigation() {
   schedule();
 }
 installViewportNavigation();
+function appOverlayRoot(){return document.querySelector('.app-viewport') || document.body;}
+function appScrollTop(){return document.documentElement.classList.contains('standalone-shell') ? document.querySelector('.app-shell').scrollTop : window.scrollY;}
+function scrollAppTo(top=0){
+  if(document.documentElement.classList.contains('standalone-shell'))document.querySelector('.app-shell').scrollTo({top,left:0,behavior:'instant'});
+  else window.scrollTo({top,left:0,behavior:'instant'});
+}
 const STORAGE_KEY = 'decide.tarot.logs.v1';
 const SETTINGS_KEY = 'decide.tarot.settings.v1';
 const TUTORIAL_KEY = 'decide.tarot.tutorial.v1';
@@ -303,7 +322,7 @@ function loadCardContent() {
     cardThemeLabels={...cardThemeLabels,...data.themes};
     deepenThemeMap={...deepenThemeMap,...data.deepenThemeMap};
     if(['session','detail','shared'].includes(currentView) && !document.querySelector('.modal-wrap')) {
-      const scrollY=window.scrollY; render(); requestAnimationFrame(()=>window.scrollTo(0,scrollY));
+      const scrollY=appScrollTop(); render(); requestAnimationFrame(()=>scrollAppTo(scrollY));
     }
     return data;
   }).catch(()=>null);
@@ -478,7 +497,7 @@ function navigate(view, id=null) {
   if(view==='detail'&&currentView!=='detail')detailReturn=currentView==='stats'?'stats':'history';
   completionId=null; // 記録完了は保存直後だけ。開き直したログは通常の振り返り画面にする。
   currentView = view; detailId = id;
-  render(); requestAnimationFrame(() => { window.scrollTo({top:0,left:0,behavior:'instant'}); app.focus({preventScroll:true}); });
+  render(); requestAnimationFrame(() => { scrollAppTo(0); app.focus({preventScroll:true}); });
 }
 function render() {
   document.body.classList.toggle('learn-active',currentView==='learn');
@@ -580,7 +599,7 @@ function startTutorialIntro() {
   const start=document.createElement('button'); start.className='button tutorial-intro-start'; start.dataset.action='tutorial-start'; start.textContent='やってみる';
   actions.append(skipBottom,start);
   dialog.append(heading,lines,note,actions); wrap.append(dialog);
-  document.body.append(wrap); setBodyScrollLocked(true); setBackgroundInert(true); start.focus();
+  appOverlayRoot().append(wrap); setBodyScrollLocked(true); setBackgroundInert(true); start.focus();
 }
 function releaseTutorialIntro() {
   const intro=document.querySelector('#tutorial-intro'); if(!intro)return;
@@ -605,7 +624,7 @@ function renderTutorialStage() {
   document.querySelectorAll('.tutorial-guidance').forEach(element=>element.remove());
   const screen=app.querySelector(tutorial.stage===2?'.draw-screen':'.map-screen'); if(!screen)return;
   const controls=document.createElement('div'); controls.className='tutorial-guidance tutorial-stage-controls';
-  const skip=document.createElement('button'); skip.dataset.action='tutorial-skip'; skip.textContent='スキップ'; controls.append(tutorialProgress(page),skip); document.body.append(controls);
+  const skip=document.createElement('button'); skip.dataset.action='tutorial-skip'; skip.textContent='スキップ'; controls.append(tutorialProgress(page),skip); appOverlayRoot().append(controls);
   let target;
   if(tutorial.stage===2) {
     setTutorialInactive(document.querySelector('.topbar')); setTutorialInactive(document.querySelector('.bottom-nav'));
@@ -682,7 +701,7 @@ function beginTutorialLog() {
   log.append(meta,title,drawn,question,choices,memo);
   const hint=tutorialCallout('試しに「決めたこと」を1つ選んでみてください（保存はされません）'); hint.classList.add('tutorial-lookback-callout');
   dialog.append(lead,log,hint);
-  document.body.append(wrap); setBodyScrollLocked(true); setBackgroundInert(true); choices.querySelector('button')?.focus();
+  appOverlayRoot().append(wrap); setBodyScrollLocked(true); setBackgroundInert(true); choices.querySelector('button')?.focus();
 }
 function chooseTutorialDecision(value) {
   if(tutorial?.stage!==3 || tutorial.phase!=='log')return;
@@ -713,7 +732,7 @@ function beginTutorialLookBack() {
   log.append(meta,title,drawn,past,question,grid);
   const hint=tutorialCallout('当時の気持ちと見比べながら、試しに1つ選んでみてください（保存はされません）'); hint.classList.add('tutorial-lookback-callout');
   dialog.append(log,hint);
-  document.body.append(wrap); setBodyScrollLocked(true); setBackgroundInert(true); grid.querySelector('button')?.focus();
+  appOverlayRoot().append(wrap); setBodyScrollLocked(true); setBackgroundInert(true); grid.querySelector('button')?.focus();
 }
 function chooseTutorialReview(value) {
   if(tutorial?.stage!==4)return;
@@ -1521,7 +1540,7 @@ function openFarewell() {
     <button class="button farewell-home" data-action="farewell-home">ホームへ</button>
     <button class="farewell-share" data-action="farewell-share-instagram"><b aria-hidden="true">◎</b><span>Instagram投稿作成 ↗</span></button>
   </div>`;
-  document.body.appendChild(wrap); setBodyScrollLocked(true);
+  appOverlayRoot().appendChild(wrap); setBodyScrollLocked(true);
   requestAnimationFrame(()=>{ wrap.classList.add('is-open'); wrap.querySelector('.farewell-home')?.focus({preventScroll:true}); });
 }
 // 締め画面のストーリーズ用 9:16。相談内容は含めず、件数とメッセージだけを載せる
@@ -1586,6 +1605,14 @@ function focusableElements(modal) { return [...modal.querySelectorAll('.settings
 let modalScrollY=0;
 function setBodyScrollLocked(value) {
   const shell=document.querySelector('.app-shell');
+  if(document.documentElement.classList.contains('standalone-shell')){
+    if(value && !document.body.classList.contains('modal-open')){
+      modalScrollY=shell.scrollTop;document.body.classList.add('modal-open');
+    }else if(!value && document.body.classList.contains('modal-open')){
+      document.body.classList.remove('modal-open');shell.scrollTop=modalScrollY;
+    }
+    return;
+  }
   if(value) {
     if(document.body.classList.contains('modal-open'))return;
     modalScrollY=window.scrollY;
@@ -1623,7 +1650,7 @@ function enableSheetSwipe(wrap) {
 }
 function mountModal(wrap, initialSelector) {
   wrap.returnFocus=document.activeElement;
-  document.body.appendChild(wrap);
+  appOverlayRoot().appendChild(wrap);
   setBodyScrollLocked(true);
   setBackgroundInert(true);
   enableSheetSwipe(wrap);
@@ -1943,7 +1970,7 @@ function showUpdateBar(registration) {
     setTimeout(() => location.reload(), 3000);
   });
   close.addEventListener('click', () => bar.remove());
-  document.body.appendChild(bar);
+  appOverlayRoot().appendChild(bar);
 }
 function toast(message) { const t=document.querySelector('#toast'); t.textContent=message; t.classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>t.classList.remove('show'),1800); }
 function selectDeckMode(mode) {

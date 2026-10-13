@@ -47,7 +47,7 @@ test('keywords, hearing highlight, completion and replay are wired',()=>{
 test('callouts are live statuses with 44px controls and 15px text',()=>{
   assert.match(app,/bubble\.setAttribute\('role','status'\)/);
   assert.match(app,/bubble\.setAttribute\('aria-live','polite'\)/);
-  assert.match(app,/const page=tutorial\.stage-1;[\s\S]*controls\.append\(tutorialProgress\(page\),skip\); document\.body\.append\(controls\)/);
+  assert.match(app,/const page=tutorial\.stage-1;[\s\S]*controls\.append\(tutorialProgress\(page\),skip\); appOverlayRoot\(\)\.append\(controls\)/);
   assert.match(css,/\.tutorial-keywords button \{ min-height: 44px;[^}]*font-size: 15px/);
   assert.match(css,/\.tutorial-stage-controls button \{ min-height: 44px;[^}]*font-size: 15px/);
   assert.match(css,/\.tutorial-callout p \{[^}]*font-size: 15px/);
