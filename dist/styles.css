@@ -4202,6 +4202,8 @@ body[data-view="decide"] .decide-screen .pair-chip.selected { background: #0b0b0
 #settings-modal .sheet-head+.settings-group-title{margin-top:8px}
 #settings-modal .settings-group-title+*{margin-top:10px}
 #settings-modal .remind-setting+.push-setting{margin-top:0;border-top:0}
+#settings-modal .push-setting+.email-remind-setting,#settings-modal .remind-setting+.email-remind-setting{margin-top:0;border-top:0}
+#settings-modal .email-remind-setting p{overflow-wrap:anywhere}
 #settings-modal .push-status{margin-top:8px;font-size:.75rem;color:#cfc7ba}
 
 /* #17 リマインド候補の日付 */

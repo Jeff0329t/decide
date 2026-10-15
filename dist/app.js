@@ -173,6 +173,7 @@ function persist() {
   const settingsSaved=safeSetItem(SETTINGS_KEY,JSON.stringify(settings));
   storageSaveFailed=!(logsSaved && settingsSaved);
   window.DECIDE_SYNC?.schedule?.();
+  if(!storageSaveFailed) window.DECIDE_EMAIL_REMINDERS?.schedule?.();
   return !storageSaveFailed;
 }
 function isStandalone() { return navigator.standalone===true || matchMedia('(display-mode: standalone)').matches; }
@@ -1503,7 +1504,7 @@ function renderRemindPicker(log) {
       const date=days ? (on ? at : new Date(Date.now()+days*DAY_MS)) : null;
       return `<button class="${on?'selected':''}" data-action="set-remind" data-days="${days}" data-id="${esc(log.id)}" aria-pressed="${on}">${label}${date ? `<small>${date.getMonth()+1}/${date.getDate()}</small>` : ''}</button>`;
     }).join('')}</div>
-    <p class="remind-status">${valid ? `<b>${formatDate(log.remindAt)}</b> ごろ、アプリを開いたときに「その後どう？」とお聞きします。選び直すと今日から数えます` : log.remindAt===null ? 'リマインドなし。選ぶと今日から数えた日にお聞きします' : '選ぶと、今日から数えたその頃にアプリを開いたとき振り返りをご案内します'}</p>
+    <p class="remind-status">${valid ? `<b>${formatDate(log.remindAt)}</b> ごろ、${window.DECIDE_EMAIL_REMINDERS?.isOn?.() ? 'メールでふり返りをご案内します' : 'アプリを開いたときに「その後どう？」とお聞きします'}。選び直すと今日から数えます` : log.remindAt===null ? 'リマインドなし。選ぶと今日から数えた日にお聞きします' : window.DECIDE_EMAIL_REMINDERS?.isOn?.() ? '選ぶと、今日から数えたその頃にメールでふり返りをご案内します' : '選ぶと、今日から数えたその頃にアプリを開いたとき振り返りをご案内します'}</p>
   </section>`;
 }
 function setRemind(id,days) {
@@ -1880,6 +1881,7 @@ function openSettings() {
   window.DECIDE_AUTH?.renderSettings?.(wrap);
   window.DECIDE_REMINDERS?.mountSettings?.(wrap);
   window.DECIDE_PUSH?.mountSettings?.(wrap);
+  window.DECIDE_EMAIL_REMINDERS?.mountSettings?.(wrap);
   window.DECIDE_ENTITLEMENTS?.mountSettings?.(wrap);
   mountModal(wrap,'.sheet-head button');
 }

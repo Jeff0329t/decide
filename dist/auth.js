@@ -183,6 +183,7 @@
 
   async function signOut() {
     if(!client) return;
+    if(await window.DECIDE_EMAIL_REMINDERS?.disableForSignOut?.() === false) return;
     // セッションが残っているうちに、この端末の通知の宛先をサーバーから外す
     try { await window.DECIDE_PUSH?.disableForSignOut?.(); } catch(error) {}
     await client.auth.signOut().catch(() => {});
