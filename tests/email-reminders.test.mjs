@@ -83,6 +83,10 @@ test('sign-out must cancel server schedules; failure is surfaced instead of clai
   h.setFail(false); assert.equal(await h.api.disableForSignOut(),true);
   assert.equal(h.calls.at(-1).args.enabled,false); assert.deepEqual(h.calls.at(-1).args.items,[]);
 });
+test('known OFF setting never blocks sign-out during a network failure or creates an unnecessary enrollment', async () => {
+  const h=await load(); const before=h.calls.length; h.setFail(true);
+  assert.equal(await h.api.disableForSignOut(),true); assert.equal(h.calls.length,before);
+});
 test('a large history fails explicitly rather than silently dropping scheduled reminders', async () => {
   const h=await load(); h.setLogs(Array.from({length:501},(_,i)=>({id:`id${i}`,remindAt:'2026-11-01'})));
   await h.api.toggle(); assert.equal(h.api.isOn(),false);

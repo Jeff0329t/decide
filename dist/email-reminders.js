@@ -103,6 +103,7 @@
   async function disableForSignOut() {
     if(!available() || !owner || !device) return true;
     if(busy) { notify('メール通知の設定を変更中です。少し待ってください'); return false; }
+    if(loaded && !enabled) return true;
     busy = true; clearTimeout(timer); clearTimeout(retryTimer); refresh();
     try {
       await serialize(async () => {
