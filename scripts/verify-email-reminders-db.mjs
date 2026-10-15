@@ -16,6 +16,7 @@ try {
     create table auth.users(id uuid primary key, email text, email_confirmed_at timestamptz);
     create function auth.uid() returns uuid language sql as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;`);
   await db.exec(fs.readFileSync(new URL('../supabase/migrations/20261016000000_email_reminders.sql',import.meta.url),'utf8'));
+  await db.exec(fs.readFileSync(new URL('../supabase/migrations/20261016010000_reminder_title_copy.sql',import.meta.url),'utf8'));
   await db.query('insert into auth.users values ($1,$2,now()),($3,$4,now())',[alice,'alice@example.test',bob,'bob@example.test']);
   await db.query("select set_config('request.jwt.claim.sub',$1,false)",[alice]);
   const due=(await db.query("select (now()-interval '1 minute')::text as at")).rows[0].at;
@@ -66,6 +67,18 @@ try {
   await db.query("select set_config('request.jwt.claim.sub',$1,false)",[alice]);
   await assert.rejects(set(a,true,[{id:'broken'}])); assertions++;
   await assert.rejects(set(a,true,[{id:'broken',remindAt:'infinity'}])); assertions++;
+  await assert.rejects(set(a,true,[{id:'long-title',remindAt:due,title:'x'.repeat(61)}])); assertions++;
+  await assert.rejects(set(a,true,[{id:'bad-title',remindAt:due,title:{text:'invalid'}}])); assertions++;
+  await set(b,false,[]);
+  await set(a,true,[{id:'titled-log',remindAt:due,title:'転職\nするか'}]);
+  jobs=await claim();
+  const titled=jobs.find(job=>job.log_id==='titled-log');
+  eq(titled.payload.subject,'DECIDE.｜「転職 するか」を振り返ってみませんか？');
+  eq(titled.payload.text.includes('「転職 するか」を振り返る日に設定していました。'),true);
+  eq(titled.payload.text.includes('まだ動けていない'),true);
+  await set(a,true,[{id:'legacy-log',remindAt:due}]);
+  jobs=await claim();
+  eq(jobs.find(job=>job.log_id==='legacy-log').payload.subject,'DECIDE.｜記録した決定を振り返ってみませんか？');
   await db.query('delete from auth.users where id=$1',[alice]);
   eq(Number((await db.query('select count(*) from public.email_reminders where user_id=$1',[alice])).rows[0].count),0);
   eq(Number((await db.query('select count(*) from public.email_reminder_deliveries where user_id=$1',[alice])).rows[0].count),0);

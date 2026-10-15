@@ -1497,14 +1497,15 @@ function renderRemindPicker(log) {
   const chosen=!valid ? null : REMIND_OPTIONS.some(([days])=>days && days===log.remindDays) ? log.remindDays : REMIND_OPTIONS.find(([days])=>days && Math.abs(at-new Date(log.createdAt).getTime()-days*DAY_MS)<DAY_MS/2)?.[0] ?? null;
   return `<section class="remind-picker" aria-labelledby="remind-title-${esc(log.id)}">
     <p class="remind-kicker">REMIND ME</p>
-    <h2 id="remind-title-${esc(log.id)}">いつ頃、結論が出そう？</h2>
+    <h2 id="remind-title-${esc(log.id)}">いつ、この決定を振り返る？</h2>
+    <p class="remind-note">やってみてどうだったか、気持ちは変わったか。一言残すだけでも、次に迷ったときの手がかりになります。まだ結論が出ていなくても大丈夫です。</p>
     <div class="remind-options">${REMIND_OPTIONS.map(([days,label])=>{
       const on=days ? chosen===days : log.remindAt===null;
       // 選び直すと今日から数える。選択中は保存済みの日付、それ以外は今日から数えた日付を出す
       const date=days ? (on ? at : new Date(Date.now()+days*DAY_MS)) : null;
       return `<button class="${on?'selected':''}" data-action="set-remind" data-days="${days}" data-id="${esc(log.id)}" aria-pressed="${on}">${label}${date ? `<small>${date.getMonth()+1}/${date.getDate()}</small>` : ''}</button>`;
     }).join('')}</div>
-    <p class="remind-status">${valid ? `<b>${formatDate(log.remindAt)}</b> ごろ、${window.DECIDE_EMAIL_REMINDERS?.isOn?.() ? 'メールでふり返りをご案内します' : 'アプリを開いたときに「その後どう？」とお聞きします'}。選び直すと今日から数えます` : log.remindAt===null ? 'リマインドなし。選ぶと今日から数えた日にお聞きします' : window.DECIDE_EMAIL_REMINDERS?.isOn?.() ? '選ぶと、今日から数えたその頃にメールでふり返りをご案内します' : '選ぶと、今日から数えたその頃にアプリを開いたとき振り返りをご案内します'}</p>
+    <p class="remind-status">${valid ? `<b>${formatDate(log.remindAt)}</b> ごろ、${window.DECIDE_EMAIL_REMINDERS?.isOn?.() ? '記録の題名を添えたメールで、振り返るきっかけをお届けします' : 'アプリを開いたときに「その後どう？」とお聞きします'}。選び直すと今日から数えます` : log.remindAt===null ? 'リマインドなし。選ぶと今日から数えた日にお聞きします' : window.DECIDE_EMAIL_REMINDERS?.isOn?.() ? '選ぶと、今日から数えたその頃に記録の題名を添えたメールで、振り返るきっかけをお届けします' : '選ぶと、今日から数えたその頃にアプリを開いたとき振り返りをご案内します'}</p>
   </section>`;
 }
 function setRemind(id,days) {
@@ -1875,7 +1876,7 @@ function openSettings() {
      <section class="data-setting account-setting" data-account-setting aria-labelledby="account-setting-title" hidden></section>
      <nav class="settings-links" aria-label="その他">${window.DECIDE_ENTITLEMENTS?.hasPurchased?.() ? '' : '<button class="settings-link settings-link-pro" data-action="open-paywall"><span><small>UNLIMITED EDITION</small>引き放題・残し放題にする</span><span class="settings-link-chevron" aria-hidden="true">›</span></button>'}<button class="settings-link" data-action="open-learn"><span>カード図鑑</span><span class="settings-link-chevron" aria-hidden="true">›</span></button><button class="settings-link" data-action="tutorial-replay"><span data-tutorial-label>使い方をもう一度見る</span><span class="settings-link-chevron" aria-hidden="true">›</span></button><a class="settings-link" href="./cards/worries.html" target="_blank" rel="noopener"><span>記事を読む</span><span class="settings-link-chevron" aria-hidden="true">›</span></a></nav>
      <button class="sheet-bottom-close" data-action="close-settings">設定を閉じる</button>
-     <nav class="settings-legal" aria-label="規約・お問い合わせ"><a href="./privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a><a href="./terms.html" target="_blank" rel="noopener">利用規約</a><a href="./tokushoho.html" target="_blank" rel="noopener">特定商取引法に基づく表記</a><a href="mailto:twaziki@yahoo.co.jp">お問い合わせ</a></nav>
+     <nav class="settings-legal" aria-label="規約・お問い合わせ"><a href="./privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a><a href="./terms.html" target="_blank" rel="noopener">利用規約</a><a href="./tokushoho.html" target="_blank" rel="noopener">特定商取引法に基づく表記</a><a href="mailto:decisionprocess.decide@gmail.com">お問い合わせ</a></nav>
      
   </section>`;
   window.DECIDE_AUTH?.renderSettings?.(wrap);

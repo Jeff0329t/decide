@@ -1,4 +1,4 @@
-// メール通知は端末ごとの明示的な同意で登録する。本文や選択肢は送らない。
+// メール通知は端末ごとの明示的な同意で登録する。題名を案内に使う。メモや選択肢は送らない。
 (function(){
   const KEY = 'decide.emailReminders.device.v1';
   const auth = () => window.DECIDE_AUTH;
@@ -21,7 +21,7 @@
     const pending = logs.filter(log => log && typeof log.id === 'string' && log.id.length > 0 && log.id.length <= 100 && !log.review && Number.isFinite(Date.parse(log.remindAt)));
     if(pending.length > 500) throw new Error('too-many-logs');
     return pending
-      .map(log => ({ id: log.id, remindAt: new Date(log.remindAt).toISOString() }))
+      .map(log => ({ id: log.id, remindAt: new Date(log.remindAt).toISOString(), title: String(log.title || '').replace(/[\r\n\t]+/g, ' ').trim().slice(0,60) }))
       .sort((a,b) => a.id.localeCompare(b.id));
   }
   // Serialize snapshots so an older request cannot restore a canceled reminder.
@@ -122,7 +122,7 @@
       : !user ? 'Googleでログインすると、メールで受け取れます。'
       : !device ? '端末への設定の保存を許可してください。'
       : !loaded ? error || '設定を確認しています…'
-      : `この端末で選んだ日に、${escape(user.email)} へ送ります。決定の内容は載せません。`;
+      : `この端末で選んだ日に、${escape(user.email)} へ、記録の題名を添えて送ります。題名は配信用に保存します。題名以外の記録は載せません。`;
     return `<div class="feedback-setting email-remind-setting" data-email-remind-setting><div><b>メールでリマインド</b><p>${note}</p>${loaded && error ? `<p role="status">${escape(error)}</p>` : ''}${user && available() && error ? '<button type="button" class="text-button" data-email-remind-action="retry">再試行</button>' : ''}</div>${loaded ? `<button class="toggle-button ${isOn()?'on':''}" type="button" aria-label="メールでリマインド" data-email-remind-action="toggle" aria-pressed="${isOn()}" ${busy?'disabled aria-busy="true"':''}><span></span><b>${busy?'…':isOn()?'ON':'OFF'}</b></button>`:''}</div>`;
   }
   function mountSettings(wrap) {

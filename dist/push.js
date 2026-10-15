@@ -3,6 +3,7 @@
 // サーバーに送るのは「通知の宛先（購読情報）」と、ふり返り前のログの {id, remindAt} だけ。悩みや選択肢などログの中身は送らない。
 // 通知の文面は決まった一文だけ。VAPID の公開鍵は config.js（公開してよい値）。秘密鍵はサーバー（Supabase Secrets）にだけ置く。
 (function(){
+  const retired = () => window.DECIDE_CONFIG?.PUSH_REMINDERS_ENABLED === false;
   const STORE_KEY = 'decide.tarot.push.v1';
   const LOGS_KEY = 'decide.tarot.logs.v1';
   const MAX_ITEMS = 500;
@@ -89,6 +90,7 @@
   }
 
   function mode() {
+    if(retired()) return '';
     if(!vapidKey()) return '';
     if(!loggedIn()) return 'login';
     if(hasPush()) return 'ready';
@@ -96,7 +98,7 @@
     return '';
   }
 
-  const isOn = () => state.enabled && loggedIn() && hasPush() && !!vapidKey();
+  const isOn = () => !retired() && state.enabled && loggedIn() && hasPush() && !!vapidKey();
 
   let lastError = '';
   let requesting = false;
@@ -219,6 +221,7 @@
       : '通知がブロックされています。ブラウザのサイト設定で通知を許可してからもう一度ONにしてください';
   }
   async function toggle() {
+    if(retired()) return;
     if(busy) { notify('切り替え中です。少し待ってください'); return; }
     const m = mode();
     if(m !== 'ready') {
@@ -345,14 +348,39 @@
     return false;
   }
 
+  // メールへ移行した端末の購読を解除する。失敗したら次の起動・オンライン復帰で再試行。
+  let retiring = null;
+  function retireSubscription() {
+    if(!retired()) return Promise.resolve();
+    state.enabled = false;
+    state.ownerId = '';
+    saveState();
+    if(retiring) return retiring;
+    retiring = (async () => {
+      const reg = await nav()?.serviceWorker?.getRegistration?.();
+      const sub = await reg?.pushManager?.getSubscription?.();
+      if(!sub) return;
+      const client = auth()?.client?.();
+      if(client) {
+        const { error } = await client.rpc('delete_push_subscription', { endpoint: sub.endpoint }) || {};
+        if(error) throw error;
+      }
+      await sub.unsubscribe();
+    })().catch(() => {}).finally(() => { retiring = null; });
+    return retiring;
+  }
+  retireSubscription();
+  window.addEventListener?.('online', retireSubscription);
+
   auth()?.onChange?.(user => {
     lastSent = '';
     failedAt = 0;
     lastError = '';
     refreshSection();
+    if(retired()) { retireSubscription(); return; }
     if(user) checkOwner(user).then(ok => { if(ok) syncReminders(); });
   });
-  auth()?.ready?.()?.then?.(user => { if(user) checkOwner(user).then(ok => { if(ok) syncReminders(); }); });
+  auth()?.ready?.()?.then?.(user => { if(retired()) { retireSubscription(); return; } if(user) checkOwner(user).then(ok => { if(ok) syncReminders(); }); });
 
   window.DECIDE_PUSH = Object.freeze({
     isOn,

@@ -42,13 +42,13 @@ test('mail stays unavailable until configured; no server calls or false ON state
   assert.match(h.api.renderSettings(), /準備中/);
   assert.doesNotMatch(h.api.renderSettings(), /data-email-remind-action="toggle"/);
 });
-test('opt-in uploads only pending id/time, excluding review, private text and invalid dates', async () => {
+test('opt-in uploads pending id/time/title, excluding review, memo and invalid dates', async () => {
   const h=await load();
-  h.setLogs([{id:'a',remindAt:'2026-11-01T10:00:00+09:00',memo:'SECRET'},
+  h.setLogs([{id:'a',remindAt:'2026-11-01T10:00:00+09:00',title:'転職するか',memo:'SECRET'},
     {id:'b',remindAt:'2026-11-01',review:'良かった'}, {id:'bad',remindAt:'invalid'}]);
   await h.api.toggle();
   assert.equal(h.api.isOn(),true);
-  assert.deepEqual(h.calls.at(-1).args.items,[{id:'a',remindAt:'2026-11-01T01:00:00.000Z'}]);
+  assert.deepEqual(h.calls.at(-1).args.items,[{id:'a',remindAt:'2026-11-01T01:00:00.000Z',title:'転職するか'}]);
   assert.doesNotMatch(JSON.stringify(h.calls), /SECRET/);
 });
 test('review, cancellation and deletion replace the device snapshot; unchanged snapshots are skipped', async () => {
