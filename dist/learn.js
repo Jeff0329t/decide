@@ -3,6 +3,8 @@
   const KEY='decide.tarot.learn.v1';
   const FILTERS=[['all','すべて'],['ar','大アルカナ'],['wa','ワンド'],['cu','カップ'],['sw','ソード'],['pe','ペンタクル']];
   let data=null, pending=null, tab='cards', filter='all', query='', lessonId=null;
+  let articles=null, articlePending=null, articleError=false, articleId=null, articleQuery='', articleCategory='all', articleLimit=12, articleListScroll=0;
+  const TABS=[['cards','図鑑'],['lessons','学ぶ'],['articles','関連記事']];
   let viewed=[], read={}, visible=[], cardIndex=-1, direction='upright', returnTile=null, observer=null;
   const state=load(KEY,{});
   if(Array.isArray(state.viewed))viewed=[...new Set(state.viewed.filter(id=>typeof id==='string'))];
@@ -33,7 +35,7 @@
     closeSettings();
     setTimeout(()=>{
       history.pushState({...history.state,decideLearn:true},'',location.href);
-      tab='cards'; lessonId=null; query=''; filter='all';
+      tab='cards'; lessonId=null; articleId=null; query=''; filter='all';
       fetchData(); navigate('learn'); signal('open');
     },190);
   }
@@ -43,6 +45,7 @@
   }
   window.addEventListener('popstate',()=>{if(currentView==='learn'){closeModal('#card-modal');navigate('home');}});
   function goBack() {
+    if(articleId){showArticleList();return;}
     if(lessonId){lessonId=null;render();scrollAppTo(0);return;}
     goHome();
   }
@@ -62,7 +65,7 @@
     document.body.classList.toggle('learn-active',currentView==='learn');
     const root=el('section','screen learn-screen');
     root.dataset.learnTab=tab;
-    document.querySelector('.nav-back')?.setAttribute('aria-label',lessonId?'レッスン一覧へ戻る':'ホームへ戻る');
+    document.querySelector('.nav-back')?.setAttribute('aria-label',articleId?'関連記事の一覧へ戻る':lessonId?'レッスン一覧へ戻る':'ホームへ戻る');
     const header=el('header','learn-header');
     header.append(el('h1','', 'タロットを学ぶ'));
     root.append(header);
@@ -72,12 +75,12 @@
       app.replaceChildren(root);return;
     }
     const tabs=el('div','learn-tabs');tabs.setAttribute('role','tablist');tabs.setAttribute('aria-label','タロットを学ぶ');
-    for(const [key,label] of [['cards','図鑑'],['lessons','学ぶ']]){
+    for(const [key,label] of TABS){
       const b=btn(label,'tab','learn-tab');b.dataset.tab=key;b.setAttribute('role','tab');b.setAttribute('aria-selected',String(tab===key));
       b.tabIndex=tab===key?0:-1;tabs.append(b);
     }
     root.append(tabs);
-    if(tab==='cards')renderCards(root);else renderLessons(root);
+    if(tab==='cards')renderCards(root);else if(tab==='lessons')renderLessons(root);else renderArticles(root);
     app.replaceChildren(root);
     if(tab==='cards')observeImages();
   }
@@ -193,9 +196,68 @@
       const table=el('table','learn-rank-table');const body=el('tbody');
       [...data.numbers.map(n=>[String(n.n),n.label]),...data.court.map(c=>[c.name,c.label])].forEach(([name,label])=>{const row=el('tr');row.append(el('th','',name),el('td','',label));body.append(row);});table.append(body);pane.append(table);
     }
-    const points=el('section','learn-points');points.append(el('h3','','要点'));const list=el('ul');lesson.points.forEach(p=>list.append(el('li','',p)));points.append(list);pane.append(points);
+    const points=el('section','learn-points');points.append(el('h3','','覚えておきたいこと'));const list=el('ul');lesson.points.forEach(p=>list.append(el('li','',p)));points.append(list);pane.append(points);
     pane.append(btn(read[lesson.id]?'読んだ ✓':'読んだ','read-lesson','button learn-mark-read'));
   }
+  function fetchArticles() {
+    if(articles || articlePending)return;
+    articleError=false;
+    articlePending=fetch('./assets/related-articles.json').then(response=>{
+      if(!response.ok)throw Error('articles');return response.json();
+    }).then(value=>{
+      const types=new Set(['p','h2','h3','li','blockquote']);
+      if(!Array.isArray(value.articles) || !Array.isArray(value.categories) || !value.articles.length || new Set(value.articles.map(a=>a.id)).size!==value.articles.length || !value.articles.every(a=>typeof a.id==='string' && /^[a-z0-9-]+$/.test(a.id) && typeof a.title==='string' && Array.isArray(a.blocks) && a.blocks.length && a.blocks.every(b=>types.has(b.type) && typeof b.text==='string')))throw Error('article format');
+      articles=value;
+    }).catch(()=>{articleError=true;}).finally(()=>{
+      articlePending=null;if(currentView==='learn' && tab==='articles')render();
+    });
+  }
+  function articleMatches() {
+    const q=articleQuery.trim().toLocaleLowerCase('ja');
+    return articles.articles.filter(a=>(articleCategory==='all' || a.category===articleCategory) && (!q || [a.title,...a.blocks.map(b=>b.text)].join(' ').toLocaleLowerCase('ja').includes(q)));
+  }
+  function fillArticleList(list) {
+    const matches=articleMatches();list.replaceChildren();
+    const count=list.parentElement?.querySelector('[data-article-count]');if(count)count.textContent=`${matches.length}件の記事`;
+    if(!matches.length){list.append(el('p','learn-empty','見つかりませんでした。別の言葉で探してみてください。'));return;}
+    matches.slice(0,articleLimit).forEach(article=>{
+      const button=btn('','article','learn-article-item');button.dataset.id=article.id;
+      const category=articles.categories.find(c=>c.id===article.category)?.label || '';
+      button.append(el('small','learn-article-meta',`${category} ・ 約${article.minutes}分`),el('strong','',article.title),el('p','',article.summary));list.append(button);
+    });
+    if(matches.length>articleLimit)list.append(btn('もっと見る','article-more','button secondary learn-article-more'));
+  }
+  function renderArticles(root) {
+    const pane=el('div','learn-articles');pane.setAttribute('role','tabpanel');root.append(pane);
+    if(!articles){
+      pane.append(el('p','learn-loading',articleError?'記事を読み込めませんでした。':'記事を読み込んでいます…'));
+      if(articleError)pane.append(btn('もう一度読み込む','article-retry','button secondary'));else fetchArticles();
+      return;
+    }
+    const article=articleId && articles.articles.find(a=>a.id===articleId);
+    if(article){
+      pane.classList.add('learn-article-reader');
+      pane.append(btn('← 記事の一覧へ','article-list','learn-lesson-back'),el('h2','',article.title));
+      const body=el('article','learn-article-body');
+      article.blocks.forEach(block=>body.append(el(block.type==='li'?'p':block.type,'',block.type==='li'?`・${block.text}`:block.text)));
+      pane.append(body,btn('記事の一覧へ戻る','article-list','button secondary'));return;
+    }
+    pane.append(el('p','learn-articles-intro','気になる話から読んでみましょう。'));
+    const filters=el('div','learn-filters');filters.setAttribute('aria-label','記事のテーマ');
+    [['all','すべて'],...articles.categories.map(c=>[c.id,c.label])].forEach(([id,label])=>{
+      const button=btn(label,'article-filter','learn-filter');button.dataset.category=id;button.setAttribute('aria-pressed',String(articleCategory===id));filters.append(button);
+    });pane.append(filters);
+    const search=el('input','learn-search');search.id='learn-article-search';search.type='search';search.placeholder='気になる言葉で記事を探す';search.setAttribute('aria-label','関連記事を検索');search.value=articleQuery;pane.append(search);
+    const count=el('p','learn-article-count');count.dataset.articleCount='';count.setAttribute('role','status');pane.append(count);
+    const list=el('div','learn-article-list');list.dataset.articleList='';pane.append(list);fillArticleList(list);
+  }
+  function showArticleList() {
+    articleId=null;render();requestAnimationFrame(()=>{
+      scrollAppTo(articleListScroll);
+      document.querySelector(`[data-learn="article"][data-id="${lastArticleId}"]`)?.focus({preventScroll:true});
+    });
+  }
+  let lastArticleId='';
   document.addEventListener('click',event=>{
     const target=event.target.closest('[data-learn]');if(!target)return;
     const action=target.dataset.learn;
@@ -211,19 +273,25 @@
       const panel=modal.querySelector('.theme-panel');panel.querySelector('b').textContent=cardThemeLabels[target.dataset.theme];panel.querySelector('p').textContent=copy.themes[target.dataset.theme];return;
     }
     if(action==='related'){closeModal('#card-modal');tab='lessons';lessonId=target.dataset.id;setTimeout(()=>{render();scrollAppTo(0);signal('lesson',lessonId);},190);return;}
-    if(action==='tab'){tab=target.dataset.tab;lessonId=null;render();return;}
+    if(action==='tab'){tab=target.dataset.tab;lessonId=null;articleId=null;render();return;}
+    if(action==='article-retry'){fetchArticles();render();return;}
+    if(action==='article'){articleListScroll=appScrollTop();articleId=target.dataset.id;lastArticleId=articleId;render();scrollAppTo(0);app.focus({preventScroll:true});return;}
+    if(action==='article-list'){showArticleList();return;}
+    if(action==='article-filter'){articleCategory=target.dataset.category;articleLimit=12;render();document.querySelector('[data-learn="article-filter"][aria-pressed="true"]')?.focus({preventScroll:true});return;}
+    if(action==='article-more'){const previous=articleLimit;articleLimit+=12;const list=document.querySelector('[data-article-list]');fillArticleList(list);list.querySelectorAll('[data-learn="article"]')[previous]?.focus({preventScroll:true});return;}
     if(action==='filter'){filter=target.dataset.filter;document.querySelectorAll('.learn-filter').forEach(b=>b.setAttribute('aria-pressed',String(b===target)));fillGrid(document.querySelector('[data-learn-grid]'));return;}
     if(action==='lesson'){lessonId=target.dataset.id;render();scrollAppTo(0);signal('lesson',lessonId);return;}
     if(action==='lesson-list'){lessonId=null;render();return;}
     if(action==='read-lesson'){read[lessonId]=true;save();lessonId=null;render();return;}
   });
   document.addEventListener('input',event=>{
+    if(event.target.id==='learn-article-search'){articleQuery=event.target.value;articleLimit=12;fillArticleList(document.querySelector('[data-article-list]'));return;}
     if(event.target.id!=='learn-search')return;
     query=event.target.value;fillGrid(document.querySelector('[data-learn-grid]'));
   });
   document.addEventListener('keydown',event=>{
-    const tabButton=event.target.closest?.('.learn-tab');if(!tabButton || !['ArrowLeft','ArrowRight'].includes(event.key))return;
-    event.preventDefault();tab=tab==='cards'?'lessons':'cards';lessonId=null;render();document.querySelector(`.learn-tab[data-tab="${tab}"]`)?.focus();
+    const tabButton=event.target.closest?.('.learn-tab');if(!tabButton || !['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+    event.preventDefault();const index=TABS.findIndex(([id])=>id===tab);const next=event.key==='Home'?0:event.key==='End'?TABS.length-1:(index+(event.key==='ArrowRight'?1:-1)+TABS.length)%TABS.length;tab=TABS[next][0];lessonId=null;articleId=null;render();document.querySelector(`.learn-tab[data-tab="${tab}"]`)?.focus();
   });
   window.DECIDE_LEARN={open,render,close:goBack};
 })();

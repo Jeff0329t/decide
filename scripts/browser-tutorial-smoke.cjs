@@ -45,7 +45,13 @@ for(const [width,height] of [[320,568],[390,844],[430,932]]){
  await page.reload();await page.locator('.splash-screen').waitFor();assert.equal(await page.locator('#tutorial-intro').count(),0);
  const help=page.locator('.splash-help');
  const box=await help.boundingBox();assert.ok(box && box.y>=0 && box.y+box.height<=height-60,'cover help is above navigation');
+ const atlas=page.locator('.splash-atlas');const atlasBox=await atlas.boundingBox();
+ assert.ok(atlasBox && atlasBox.x>=box.x+box.width && Math.abs(atlasBox.y-box.y)<1 && atlasBox.x+atlasBox.width<=width,'cover links are side by side');
  await page.screenshot({path:`${out}/${width}-cover-help.png`,fullPage:true});
+ await atlas.click();await page.locator('.learn-tile').first().waitFor();assert.equal(await page.locator('.learn-tile').count(),78);
+ await page.locator('.learn-tile').first().click();await page.locator('#card-modal.open').waitFor();
+ await page.locator('#card-modal .card-detail-close').click();await page.locator('#card-modal').waitFor({state:'detached'});
+ await page.locator('.bottom-nav [data-action="nav-back"]').click();await page.locator('.splash-screen').waitFor();
  await help.click();await page.locator('#tutorial-intro').waitFor();
  await page.locator('[data-action="tutorial-skip"]').click();await page.locator('.quickstart-screen').waitFor();
  assert.equal(await page.evaluate(()=>document.querySelector('#app').inert),false);
