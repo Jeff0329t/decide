@@ -4259,3 +4259,9 @@ body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(82
 
 .learn-articles .learn-filters { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px; }
 .learn-articles .learn-filter { flex: 0 0 auto; white-space: nowrap; }
+
+/* Crawlable reading links share the cover's existing auxiliary navigation. */
+.home-reading-links { grid-column: 1 / -1; background: rgba(8,8,8,.85); display: flex; align-items: center; justify-content: center; gap: 4px; }
+.home-reading-links a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 4px 6px; color: #f4efe3; font-size: 12px; line-height: 1.4; text-underline-offset: 4px; }
+.home-reading-links a:focus-visible { outline: 3px solid #f1d527; outline-offset: 1px; }
+body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(136px + env(safe-area-inset-bottom)); }

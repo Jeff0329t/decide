@@ -40,7 +40,7 @@ export function updateSeoHead(html, { title, description }) {
       `<meta property="og:description" content="${escapeAttribute(description)}">`,
       `<meta name="twitter:title" content="${escapeAttribute(title)}">`,
       `<meta name="twitter:description" content="${escapeAttribute(description)}">`];
-    return head.replace(/<\/head>$/i, tags.join('\n') + '\n</head>');
+    return head.replace(/<script type="application\/ld\+json">|<\/head>$/i, (anchor) => tags.join('\n') + '\n' + anchor);
   });
   if (heads !== 1) throw new Error('Expected exactly one head');
   return result;
