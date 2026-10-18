@@ -13,14 +13,14 @@ test('tutorial uses its own key and requires no marker, no logs and no shared li
   assert.match(app,/status==='completed'\?'complete':'skip'/);
 });
 
-test('intro is an accessible three-step dialog with exact copy and no input',()=>{
+test('intro explains a concrete unsaved trial in an accessible three-step dialog',()=>{
   assert.match(app,/setAttribute\('role','dialog'\)/);
   assert.match(app,/setAttribute\('aria-modal','true'\)/);
-  for(const copy of ['心から納得いく決断を。','DRAW','DECIDE','LOOK BACK','迷いを1つ思い浮かべ、カードを直感で1枚引く','ログに残す','決める精度が上がっていく','カードは答えを決めません。決めるのは、あなたです。','やってみる','スキップ'])assert.ok(app.includes(copy));
+  for(const copy of ['小さな迷いで、使ってみよう。','DRAW','DECIDE','LOOK BACK','気になるカードを1枚引き、意味を読む','練習の内容は保存されません。','カードは答えを決めません。決めるのは、あなたです。','1枚引いて試す','スキップ'])assert.ok(app.includes(copy));
   assert.match(app,/tutorial-intro-actions/);
   assert.match(app,/tutorial-intro-skip-bottom/);
   assert.match(app,/actions\.append\(skipBottom,start\)/);
-  assert.match(app,/start\.focus\(\)/);
+  assert.match(app,/start\.focus\(\{preventScroll:true\}\)/);
   assert.match(app,/event\.key==='Escape'\)\{ event\.preventDefault\(\); finishTutorial\('skipped'\)/);
 });
 
@@ -37,8 +37,8 @@ test('keywords, hearing highlight, completion and replay are wired',()=>{
   assert.match(app,/button\.setAttribute\('aria-pressed',String\(tutorial\.selectedKeyword===index\)\)/);
   assert.match(app,/tutorial\.phase='reflection'/);
   assert.match(app,/reflection\.classList\.add\('tutorial-highlight'\)/);
-  assert.match(app,/done\.textContent='わかった'/);
-  assert.match(app,/toast\('ログと統計から、いつでも振り返れます'\)/);
+  assert.match(app,/done\.textContent='自分の迷いで始める'/);
+  assert.match(app,/toast\('小さな迷いから、始めてみましょう'\)/);
   assert.match(app,/data-action="tutorial-replay"/);
   assert.match(app,/localStorage\.removeItem\(TUTORIAL_KEY\)/);
   assert.match(app,/tutorialEvent\(action, step\) \{ window\.dispatchEvent\(new CustomEvent\('decide:tutorial',\{detail:\{action,step\}\}\)\)/);
@@ -56,7 +56,7 @@ test('callouts are live statuses with 44px controls and 15px text',()=>{
 });
 
 test('intro has no page number and steps are numbered DRAW 01, DECIDE 02, LOOK BACK 03',()=>{
-  assert.match(app,/dialog\.append\(heading,lines,note,actions\)/);
+  assert.match(app,/dialog\.append\(heading,example,lines,note,actions\)/);
   assert.match(app,/const page=tutorial\.stage-1;/);
   assert.match(app,/top\.append\(tutorialProgress\(step\),skip\)/);
   assert.match(app,/tutorialOverlay\(2,'tutorial-logstep'/);

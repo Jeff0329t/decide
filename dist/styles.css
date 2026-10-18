@@ -4218,3 +4218,12 @@ body[data-view="decide"] .decide-screen .pair-chip.selected { background: #0b0b0
 
 /* Compact sync settings: keep the switch visible and move guidance to a dialog. */
 .sync-help-button { min-height:44px; padding:4px 0; border:0; background:transparent; color:inherit; font:inherit; font-size:.75rem; text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
+
+/* First-use guidance: concrete example and optional card learning. */
+.tutorial-example { margin: 0 0 18px; padding: 12px 14px; border-left: 3px solid #f1d527; background: #0b0b0b; color: #f4efe3; font-size: 15px; line-height: 1.7; }
+.tutorial-callout .tutorial-meaning-help { margin-top: 16px; padding-top: 14px; border-top: 1px solid currentColor; font-weight: 500; }
+.tutorial-callout > .button { width: 100%; min-height: 44px; white-space: normal; }
+
+.tutorial-welcome .tutorial-intro-card { justify-content: center; padding-top: max(32px, env(safe-area-inset-top)); }
+.tutorial-welcome .tutorial-intro-card h2 { max-width: none; margin: 0 0 18px; font-size: clamp(1.8rem, 7vw, 2.3rem); line-height: 1.35; }
+.tutorial-guidance { scroll-margin-top: 72px; }
