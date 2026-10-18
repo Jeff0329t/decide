@@ -16,7 +16,7 @@ test('tutorial uses its own key and requires no marker, no logs and no shared li
 test('intro explains a concrete unsaved trial in an accessible three-step dialog',()=>{
   assert.match(app,/setAttribute\('role','dialog'\)/);
   assert.match(app,/setAttribute\('aria-modal','true'\)/);
-  for(const copy of ['小さな迷いで、使ってみよう。','DRAW','DECIDE','LOOK BACK','気になるカードを1枚引き、意味を読む','練習の内容は保存されません。','カードは答えを決めません。決めるのは、あなたです。','1枚引いて試す','スキップ'])assert.ok(app.includes(copy));
+  for(const copy of ['まずは、1枚引いてみよう。','引く','決める','ふり返る','カードを1枚選び、意味を読む','練習は保存されません。','読んで感じたことをヒントに、自分で決めます。','1枚引いて試す','スキップ'])assert.ok(app.includes(copy));
   assert.match(app,/tutorial-intro-actions/);
   assert.match(app,/tutorial-intro-skip-bottom/);
   assert.match(app,/actions\.append\(skipBottom,start\)/);
@@ -69,7 +69,7 @@ test('LOOK BACK shows a sample log and an unsaved trial review before completion
   assert.match(app,/if\(tutorial\?\.stage!==3 \|\| tutorial\.phase!=='log' \|\| !tutorial\.decision\)return;/);
   assert.match(app,/action === 'tutorial-review'\) chooseTutorialReview\(el\.dataset\.value\)/);
   assert.match(app,/action === 'tutorial-complete'\) \{ if\(tutorial\?\.stage===4 && tutorial\.review\)finishTutorial\('completed'\)/);
-  for(const copy of ['後日、その決断をレビューする。','決断の傾向がわかります','DECISION LOG','この選択、その後どうでした？','（保存はされません）','良かった','まあ良かった','どちらとも言えない','違った'])assert.ok(app.includes(copy),copy);
+  for(const copy of ['あとで「どうなった？」を残そう。','次に迷ったときのヒントになります','決めたことのメモ','やってみて、どうでしたか？','（練習なので保存されません）','良かった','まあ良かった','どちらとも言えない','違った'])assert.ok(app.includes(copy),copy);
   const lookBack=app.slice(app.indexOf('function beginTutorialLookBack'),app.indexOf('function finishTutorial'));
   assert.doesNotMatch(lookBack,/saveLogs|logs\.push|safeSetItem\(STORAGE_KEY/);
   assert.match(css,/\.tutorial-lookback-skip \{ min-height: 44px;[^}]*font-size: 15px/);
@@ -79,7 +79,7 @@ test('LOOK BACK shows a sample log and an unsaved trial review before completion
 test('DECIDE log step shows what a log records and why, without saving',()=>{
   assert.match(app,/action === 'tutorial-next'\) beginTutorialLog\(\)/);
   assert.match(app,/action === 'tutorial-decision'\) chooseTutorialDecision\(el\.dataset\.value\)/);
-  for(const copy of ['決めたら、ログに残す。','1件のログに、こんなことが残ります。','（今日）','決めたこと','進む','見送る','保留する','決め手・今の気持ち','時間が経つと忘れたり、結果に合わせて書き換わったりします','後で結果と正直に比べられます','その時の気持ち'])assert.ok(app.includes(copy),copy);
+  for(const copy of ['決めたことを、メモしよう。','保存したメモは、下の「ログ」から読めます。','（今日）','決めたこと','進む','見送る','保留する','決めた理由・今の気持ち','あとで思い出せます','短いひとことだけでもOKです','その時の気持ち'])assert.ok(app.includes(copy),copy);
   const logStep=app.slice(app.indexOf('function beginTutorialLog'),app.indexOf('function beginTutorialLookBack'));
   assert.doesNotMatch(logStep,/saveLogs|logs\.push|safeSetItem\(STORAGE_KEY/);
   assert.match(css,/\.tutorial-mock-decisions button \{ min-height: 44px;[^}]*font-size: 15px/);

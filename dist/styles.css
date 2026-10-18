@@ -4227,3 +4227,12 @@ body[data-view="decide"] .decide-screen .pair-chip.selected { background: #0b0b0
 .tutorial-welcome .tutorial-intro-card { justify-content: center; padding-top: max(32px, env(safe-area-inset-top)); }
 .tutorial-welcome .tutorial-intro-card h2 { max-width: none; margin: 0 0 18px; font-size: clamp(1.8rem, 7vw, 2.3rem); line-height: 1.35; }
 .tutorial-guidance { scroll-margin-top: 72px; }
+
+.tutorial-mock-decisions button span, .tutorial-mock-decisions button small { display: block; }
+.tutorial-mock-decisions button small { margin-top: 4px; font-size: 12px; font-weight: 500; line-height: 1.4; }
+
+/* A visible tutorial entry on the opening cover. */
+body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(82px + env(safe-area-inset-bottom)); z-index: 5; }
+.splash-help { position: absolute; z-index: 5; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom)); transform: translateX(-50%); width: min(230px, 72vw); min-height: 44px; padding: 10px 16px; border: 1px solid #f4efe3; border-radius: 0; background: rgba(8,8,8,.85); color: #f4efe3; font: 700 15px/1.5 "Hiragino Mincho ProN","Yu Mincho",serif; cursor: pointer; }
+.splash-help:focus-visible { outline: 3px solid #f1d527; outline-offset: 4px; }
+.splash-screen.peeling .splash-help { pointer-events: none; }

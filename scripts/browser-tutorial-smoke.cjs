@@ -11,7 +11,7 @@ for(const [width,height] of [[320,568],[390,844],[430,932]]){
  const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
  await page.goto(baseURL);
  await page.locator('#tutorial-intro').waitFor();
- assert.match(await page.locator('#tutorial-intro').innerText(),/練習の内容は保存されません/);
+ assert.match(await page.locator('#tutorial-intro').innerText(),/練習は保存されません/);
  assert.ok(await page.locator('#tutorial-intro h2').evaluate(el=>el.getBoundingClientRect().top>=0));
  await page.screenshot({path:`${out}/${width}-intro.png`,fullPage:true});
  await page.locator('[data-action="tutorial-start"]').click();
@@ -34,7 +34,8 @@ for(const [width,height] of [[320,568],[390,844],[430,932]]){
  await page.locator('[data-action="tutorial-decision"]').first().click();
  await page.locator('[data-action="tutorial-log-next"]').click();
  await page.locator('[data-action="tutorial-review"]').first().click();
- assert.match(await page.locator('#tutorial-intro').innerText(),/設定の「カード図鑑」/);
+ await page.waitForFunction(()=>document.querySelector('.tutorial-lookback-callout > p')?.textContent.length>0);
+ assert.match(await page.locator('#tutorial-intro').innerText(),/「設定」→「カード図鑑」/);
  await page.screenshot({path:`${out}/${width}-finish.png`,fullPage:true});
  await page.locator('[data-action="tutorial-complete"]').click();
  await page.locator('.quickstart-screen').waitFor();
@@ -42,11 +43,16 @@ for(const [width,height] of [[320,568],[390,844],[430,932]]){
  assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('decide.tarot.logs.v1')||'[]').length),0);
  assert.equal(await page.locator('#tutorial-intro').count(),0);
  await page.reload();await page.locator('.splash-screen').waitFor();assert.equal(await page.locator('#tutorial-intro').count(),0);
- await page.locator('.splash-hit').click();
- await page.locator('[data-action="tutorial-open"]').click();await page.locator('#tutorial-intro').waitFor();
+ const help=page.locator('.splash-help');
+ const box=await help.boundingBox();assert.ok(box && box.y>=0 && box.y+box.height<=height-60,'cover help is above navigation');
+ await page.screenshot({path:`${out}/${width}-cover-help.png`,fullPage:true});
+ await help.click();await page.locator('#tutorial-intro').waitFor();
  await page.locator('[data-action="tutorial-skip"]').click();await page.locator('.quickstart-screen').waitFor();
  assert.equal(await page.evaluate(()=>document.querySelector('#app').inert),false);
  await page.reload();await page.locator('.splash-screen').waitFor();assert.equal(await page.locator('#tutorial-intro').count(),0);
+ await page.locator('.splash-start button').click();await page.locator('.quickstart-screen').waitFor();
+ await page.locator('.quickstart-help').click();await page.locator('#tutorial-intro').waitFor();
+ await page.locator('[data-action="tutorial-skip"]').click();
  console.log('PASS',width,height,'first visit, manual reading, meaning + Escape, full trial, no logs, reload, replay, skip');
  await context.close();
 }
