@@ -140,13 +140,14 @@
     const meta=el('div');meta.append(el('span','orientation-badge',direction==='upright'?'正位置':'逆位置'),el('h3','',copy.name));
     if(copy.en)paragraph(meta,copy.en,'card-english');paragraph(meta,`番号 ${base.number} ・ ${copy.arcana}`,'card-meta');if(copy.symbol)paragraph(meta,copy.symbol,'card-symbol');
     hero.append(frame,meta);sheet.append(hero);
+    paragraph(sheet,'正位置は、ふつうの向き。逆位置は、上下が逆の向きです。逆位置だから悪いことが起きる、という意味ではありません。','card-direction-help');
     const switcher=el('div','learn-direction');switcher.setAttribute('role','group');switcher.setAttribute('aria-label','カードの向き');
     for(const [key,label] of [['upright','正位置'],['reversed','逆位置']]){const b=btn(label,'direction');b.dataset.direction=key;b.setAttribute('aria-pressed',String(direction===key));switcher.append(b);}sheet.append(switcher);
     const copyBox=el('div','card-detail-copy');
-    copyBox.append(section('物語のなかの位置',copy.story),section('絵柄と背景',copy.background));
-    const meaning=el('section');meaning.append(el('h3','','この向きの意味'));
+    copyBox.append(section('このカードが表すこと',copy.story),section('絵に描かれているもの',copy.background));
+    const meaning=el('section');meaning.append(el('h3','','カードの意味'));
     const keywords=el('div','keyword-chips');copy[direction].keywords.forEach(word=>keywords.append(el('i','',word)));meaning.append(keywords,el('p','direction-meaning',copy[direction].meaning));copyBox.append(meaning);
-    const themes=el('section','theme-reading');themes.append(el('h3','','テーマ別の読み方'));
+    const themes=el('section','theme-reading');themes.append(el('h3','','迷ったときに考えるヒント'));
     const themeTabs=el('div','theme-tabs');themeTabs.setAttribute('role','tablist');themeTabs.setAttribute('aria-label','テーマを選ぶ');
     Object.entries(cardThemeLabels).forEach(([key,label])=>{const b=btn(label,'theme');b.dataset.theme=key;b.setAttribute('role','tab');b.setAttribute('aria-selected',String(key==='blind'));themeTabs.append(b);});
     const themePanel=el('div','theme-panel');themePanel.setAttribute('role','tabpanel');themePanel.append(el('b','',cardThemeLabels.blind),el('p','',copy[direction].themes.blind));
@@ -157,9 +158,10 @@
     const type=el('section','learn-card-type');type.append(el('h3','','このカードの種類'));
     const id=copy.id, suit=data.suits.find(s=>id.startsWith(s.id));const rank=Number(id.slice(2));
     if(suit){paragraph(type,`${suit.name}（${suit.element}）：${suit.theme}。${suit.asks}`);const n=data.numbers.find(n=>n.n===rank);const c=data.court.find(c=>c.n===rank);if(n)paragraph(type,`${rank}：${n.label}`);if(c)paragraph(type,`${c.name}：${c.label}`);}
-    else paragraph(type,'大アルカナ');
+    else paragraph(type,'大アルカナ：大きな変化や、自分の気持ちを考える22枚のカードです。');
+    if(suit)paragraph(type,'火・水・風・地は、カードの4つのグループについたイメージです。数字や人物は、考えるときの目安として読めます。');
     const links=el('div','learn-related');for(const lid of suit?['l3','l4']:['l2']){const lesson=data.lessons.find(l=>l.id===lid);if(!lesson)continue;const b=btn(`関連レッスン：${lesson.title}`,'related','learn-related-link');b.dataset.id=lid;links.append(b);}type.append(links);copyBox.append(type);
-    copyBox.append(el('small','card-disclaimer','カードは未来を断定するものではありません。自分の状況を考える視点として使ってください。'));
+    copyBox.append(el('small','card-disclaimer','カードは未来を決めるものではありません。自分の気持ちや、次にすることを考えるヒントにしてください。'));
     sheet.append(copyBox);
     const nav=el('div','learn-card-nav');const prev=btn('← 前のカード','prev','button secondary');const next=btn('次のカード →','next','button secondary');
     prev.disabled=cardIndex===0;next.disabled=cardIndex===visible.length-1;nav.append(prev,next);sheet.append(nav,btn('閉じる','close-card','button card-detail-close'));

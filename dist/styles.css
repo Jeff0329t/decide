@@ -4236,3 +4236,5 @@ body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(82
 .splash-help { position: absolute; z-index: 5; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom)); transform: translateX(-50%); width: min(230px, 72vw); min-height: 44px; padding: 10px 16px; border: 1px solid #f4efe3; border-radius: 0; background: rgba(8,8,8,.85); color: #f4efe3; font: 700 15px/1.5 "Hiragino Mincho ProN","Yu Mincho",serif; cursor: pointer; }
 .splash-help:focus-visible { outline: 3px solid #f1d527; outline-offset: 4px; }
 .splash-screen.peeling .splash-help { pointer-events: none; }
+
+.card-direction-help { margin: 14px 0; padding: 12px; border-left: 3px solid var(--accent); font-size: 15px; line-height: 1.7; }

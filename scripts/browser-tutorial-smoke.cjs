@@ -24,7 +24,7 @@ for(const [width,height] of [[320,568],[390,844],[430,932]]){
  await page.screenshot({path:`${out}/${width}-reading.png`,fullPage:true});
  await page.locator('.tutorial-guidance [data-action="card-detail"]').click();
  await page.locator('#card-modal.open').waitFor();
- assert.match(await page.locator('#card-modal').innerText(),/絵柄と背景/);
+ assert.match(await page.locator('#card-modal').innerText(),/絵に描かれているもの/);
  await page.screenshot({path:`${out}/${width}-meaning.png`,fullPage:true});
  await page.keyboard.press('Escape');
  await page.locator('#card-modal').waitFor({state:'detached'});

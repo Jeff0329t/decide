@@ -148,8 +148,8 @@ let a2hsShownLogId = null;
 let deferredInstallPrompt = null;
 let cardContentById = new Map();
 let cardThemeLabels = {
-  blind:'見落としていること', caution:'進むときの注意点', want:'本音（本当はどうしたい？）',
-  letgo:'手放してよいこと', diff:'決め手になる違い'
+  blind:'気づいていないこと', caution:'気をつけたいこと', want:'本当はどうしたい？',
+  letgo:'やめてもよい考え', diff:'選ぶときのヒント'
 };
 let deepenThemeMap = {
   '見落としていること':'blind', '進むときの注意点':'caution', '本当はどうしたい？':'want',
@@ -1713,10 +1713,11 @@ function openCardDetail(card, originQuestion='') {
   const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='card-modal';
   wrap.innerHTML=`<button class="modal-shade" data-action="close-card-detail" aria-label="カード詳細を閉じる"></button><section class="settings-sheet card-detail-sheet" role="dialog" aria-modal="true" aria-labelledby="card-detail-title"><div class="sheet-handle"></div><div class="sheet-head"><div><p class="eyebrow">Card meaning</p><h2 id="card-detail-title">カードの詳しい意味</h2></div><button data-action="close-card-detail" aria-label="閉じる">×</button></div>
     <header class="card-detail-header"><span class="card-image-frame card-detail-image-frame">${cardPicture(card,{className:direction==='reversed'?'reversed-image':'',sizes:'132px'})}</span><div><span class="orientation-badge">${orientationLabel(card)}</span><h3>${esc(content.name)}</h3>${content.en?`<p class="card-english">${esc(content.en)}</p>`:''}<p class="card-meta">番号 ${esc(number)} ・ ${esc(content.arcana)}</p>${content.symbol?`<p class="card-symbol">${esc(content.symbol)}</p>`:''}</div></header>
-    <div class="card-detail-copy"><section><h3>物語のなかの位置</h3><p>${esc(content.story)}</p></section><section><h3>絵柄と背景</h3><p>${esc(content.background)}</p></section><section><h3>この向きの意味</h3><div class="keyword-chips">${current.keywords.map(keyword=>`<i>${esc(keyword)}</i>`).join('')}</div><p class="direction-meaning">${esc(current.meaning)}</p></section>
-    <section class="theme-reading"><h3>テーマ別の読み方</h3><div class="theme-tabs" role="tablist" aria-label="テーマを選ぶ">${Object.entries(cardThemeLabels).map(([key,label])=>`<button role="tab" aria-selected="${key===originKey}" class="${key===originKey?'selected':''}" data-action="card-theme" data-theme="${key}">${key===originKey?'<span aria-hidden="true">●</span>':''}${esc(label)}</button>`).join('')}</div><div class="theme-panel" role="tabpanel"><b data-theme-title>${esc(cardThemeLabels[originKey])}</b><p data-theme-text>${esc(current.themes[originKey])}</p></div></section>
+    <p class="card-direction-help">正位置は、ふつうの向き。逆位置は、上下が逆の向きです。逆位置だから悪いことが起きる、という意味ではありません。</p>
+    <div class="card-detail-copy"><section><h3>このカードが表すこと</h3><p>${esc(content.story)}</p></section><section><h3>絵に描かれているもの</h3><p>${esc(content.background)}</p></section><section><h3>カードの意味</h3><div class="keyword-chips">${current.keywords.map(keyword=>`<i>${esc(keyword)}</i>`).join('')}</div><p class="direction-meaning">${esc(current.meaning)}</p></section>
+    <section class="theme-reading"><h3>迷ったときに考えるヒント</h3><div class="theme-tabs" role="tablist" aria-label="テーマを選ぶ">${Object.entries(cardThemeLabels).map(([key,label])=>`<button role="tab" aria-selected="${key===originKey}" class="${key===originKey?'selected':''}" data-action="card-theme" data-theme="${key}">${key===originKey?'<span aria-hidden="true">●</span>':''}${esc(label)}</button>`).join('')}</div><div class="theme-panel" role="tabpanel"><b data-theme-title>${esc(cardThemeLabels[originKey])}</b><p data-theme-text>${esc(current.themes[originKey])}</p></div></section>
     <details class="opposite-meaning"><summary>反対の向きでは <span>${opposite==='upright'?'正位置':'逆位置'}</span></summary><div class="keyword-chips">${other.keywords.map(keyword=>`<i>${esc(keyword)}</i>`).join('')}</div><p>${esc(other.meaning)}</p></details>
-    <small class="card-disclaimer">カードは未来を断定するものではありません。自分の状況を考える視点として使ってください。</small></div><button class="button card-detail-close" data-action="close-card-detail">閉じる</button></section>`;
+    <small class="card-disclaimer">カードは未来を決めるものではありません。自分の気持ちや、次にすることを考えるヒントにしてください。</small></div><button class="button card-detail-close" data-action="close-card-detail">閉じる</button></section>`;
   mountModal(wrap,'.sheet-head button');
 }
 function closeCardDetail() { activeCardDetail=null; closeModal('#card-modal'); }
