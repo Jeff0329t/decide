@@ -115,7 +115,7 @@ function sameScore(c, exclude) {
     .slice(0, 4);
 }
 
-const gridHtml = (list) => `<ul class="grid">${list.map((r) => `<li><a href="./${r.id}.html">${picture(r, { sizes: '120px' })}${esc(r.name)}</a></li>`).join('')}</ul>`;
+const gridHtml = (list) => `<ul class="grid">${list.map((r) => `<li><a href="./${r.id}">${picture(r, { sizes: '120px' })}${esc(r.name)}</a></li>`).join('')}</ul>`;
 
 const imgBase = (id) => `../assets/rider-waite/${id}`;
 const altOf = (c) => `${c.name}（${c.en}）のカード画像。ライダー版タロット`;
@@ -241,7 +241,7 @@ ${body}
 <footer>
 <p>${CREDIT}（ライダー＝ウェイト＝スミス版 1909年）</p>
 <p>解釈は決断を考えるための一つの視点です。占いの結果や将来を保証するものではありません。</p>
-<p class="meta"><a href="../tokushoho.html">特定商取引法に基づく表記</a> ／ <a href="../terms.html">利用規約</a> ／ <a href="../privacy.html">プライバシーポリシー</a> ／ <a href="../">DECIDE に戻る</a></p>
+<p class="meta"><a href="../tokushoho">特定商取引法に基づく表記</a> ／ <a href="../terms">利用規約</a> ／ <a href="../privacy">プライバシーポリシー</a> ／ <a href="../">DECIDE に戻る</a></p>
 </footer>
 </body>
 </html>
@@ -280,14 +280,14 @@ function sideHtml(c, key) {
 
 function cardPage(c) {
   const x = extra[c.id];
-  const path = `/cards/${c.id}.html`;
+  const path = `/cards/${c.id}`;
   const title = `${c.name}（${c.en}）の意味｜正位置・逆位置と決断のヒント - DECIDE`;
   const description = `タロット「${c.name}」の象徴と、正位置（${c.upright.keywords.join('・')}）・逆位置（${c.reversed.keywords.join('・')}）の意味。迷いや決断の場面でどう読むかを解説します。`.slice(0, 160);
   const ogImage = `${ORIGIN}/assets/og/${c.id}.jpg`;
   const crumbs = [
     { name: 'DECIDE', href: '../', path: '/' },
     { name: 'カード解説', href: './', path: '/cards/' },
-    { name: catOf(c).label, href: `./${catOf(c).slug}.html`, path: `/cards/${catOf(c).slug}.html` },
+    { name: catOf(c).label, href: `./${catOf(c).slug}`, path: `/cards/${catOf(c).slug}` },
     { name: c.name, path },
   ];
   const article = {
@@ -313,7 +313,7 @@ ${crumbsHtml(crumbs)}
 ${picture(c, { eager: true })}
 <div>
 <ul class="facts">
-<li><b>分類</b><a href="./${cat.slug}.html">${esc(c.arcana)}</a></li>
+<li><b>分類</b><a href="./${cat.slug}">${esc(c.arcana)}</a></li>
 <li><b>象徴</b>${esc(c.symbol)}</li>
 <li><b>正位置</b>${esc(c.upright.keywords.join('・'))}</li>
 <li><b>逆位置</b>${esc(c.reversed.keywords.join('・'))}</li>
@@ -344,10 +344,10 @@ ${ctaHtml(c, 'end')}
 ${gridHtml(rel)}
 ${same.length ? `<h3>正位置の${esc(deck.scoring.axis)}が同じ（${c.upright.score} / 5）カード</h3>
 ${gridHtml(same)}` : ''}
-<p class="note"><a href="./${cat.slug}.html">${esc(cat.label)}のカード一覧（${cards.filter((o) => o.arcana === c.arcana).length}枚）</a> ／ <a href="./">78枚すべてのカード解説を見る</a></p>
+<p class="note"><a href="./${cat.slug}">${esc(cat.label)}のカード一覧（${cards.filter((o) => o.arcana === c.arcana).length}枚）</a> ／ <a href="./">78枚すべてのカード解説を見る</a></p>
 <nav aria-label="前後のカード"><ul class="pager">
-<li class="prev">${prev ? `<a href="./${prev.id}.html" rel="prev"><small>← 前のカード</small>${esc(prev.name)}</a>` : ''}</li>
-<li class="next">${next ? `<a href="./${next.id}.html" rel="next"><small>次のカード →</small>${esc(next.name)}</a>` : ''}</li>
+<li class="prev">${prev ? `<a href="./${prev.id}" rel="prev"><small>← 前のカード</small>${esc(prev.name)}</a>` : ''}</li>
+<li class="next">${next ? `<a href="./${next.id}" rel="next"><small>次のカード →</small>${esc(next.name)}</a>` : ''}</li>
 </ul></nav>
 </section>
 </article>
@@ -363,14 +363,14 @@ function indexPage() {
   const groups = ARCANA_ORDER.map((a) => {
     const list = cards.filter((c) => c.arcana === a);
     return `<section>
-<h2 id="${a === '大アルカナ' ? 'major' : SUIT_PREFIX[a]}"><a href="./${CATEGORY[a].slug}.html">${esc(a)}（${list.length}枚）</a></h2>
-<p class="note">${esc(SUIT_NOTE[a])} <a href="./${CATEGORY[a].slug}.html">${esc(a)}の解説を読む</a></p>
+<h2 id="${a === '大アルカナ' ? 'major' : SUIT_PREFIX[a]}"><a href="./${CATEGORY[a].slug}">${esc(a)}（${list.length}枚）</a></h2>
+<p class="note">${esc(SUIT_NOTE[a])} <a href="./${CATEGORY[a].slug}">${esc(a)}の解説を読む</a></p>
 ${gridHtml(list)}
 </section>`;
   }).join('\n');
   const itemList = {
     '@context': 'https://schema.org', '@type': 'ItemList', name: 'タロットカード78枚の解説',
-    itemListElement: cards.map((c, i) => ({ '@type': 'ListItem', position: i + 1, url: `${ORIGIN}/cards/${c.id}.html`, name: c.name })),
+    itemListElement: cards.map((c, i) => ({ '@type': 'ListItem', position: i + 1, url: `${ORIGIN}/cards/${c.id}`, name: c.name })),
   };
   const body = `<main>
 ${crumbsHtml(crumbs)}
@@ -378,14 +378,14 @@ ${crumbsHtml(crumbs)}
 <p>DECIDE は、二つの選択肢で迷ったときにタロットの視点を借りて考えを整理するアプリです。ここでは78枚それぞれの象徴と、正位置・逆位置の意味、そして決断の場面での読み方を紹介します。カードは未来を言い当てるものではなく、見落としていた視点に気づくための問いかけとして使ってください。</p>
 <div class="cta"><p>カードを引いて、いまの迷いを整理する</p><a href="../">${CTA_TEXT}</a></div>
 <section>
-<h2 id="worries"><a href="./worries.html">悩み別に読む</a></h2>
+<h2 id="worries"><a href="./worries">悩み別に読む</a></h2>
 <p class="note">転職・別れ・引っ越しなど、よくある迷いごとに考え方と関係するカードをまとめています。</p>
 ${worriesNav()}
 </section>
 ${published.length ? `<section>
 <h2 id="articles"><a href="../articles/">読みもの</a></h2>
 <p class="note">迷いや決断について、もう少し踏み込んで考えるための記事です。</p>
-<ul class="cats">${published.slice(0, 5).map((a) => `<li><a href="../articles/${a.slug}.html">${esc(a.h1)}</a></li>`).join('')}<li><a href="../articles/">記事の一覧</a></li></ul>
+<ul class="cats">${published.slice(0, 5).map((a) => `<li><a href="../articles/${a.slug}">${esc(a.h1)}</a></li>`).join('')}<li><a href="../articles/">記事の一覧</a></li></ul>
 </section>` : ''}
 ${groups}
 </main>`;
@@ -398,13 +398,13 @@ ${groups}
 function catsNav(current) {
   return `<ul class="cats" aria-label="カテゴリ">${ARCANA_ORDER.map((a) => a === current
     ? `<li aria-current="page">${esc(a)}</li>`
-    : `<li><a href="./${CATEGORY[a].slug}.html">${esc(a)}</a></li>`).join('')}<li><a href="./">78枚すべて</a></li></ul>`;
+    : `<li><a href="./${CATEGORY[a].slug}">${esc(a)}</a></li>`).join('')}<li><a href="./">78枚すべて</a></li></ul>`;
 }
 
 function categoryPage(a) {
   const cat = CATEGORY[a];
   const list = cards.filter((c) => c.arcana === a);
-  const path = `/cards/${cat.slug}.html`;
+  const path = `/cards/${cat.slug}`;
   const title = a === '大アルカナ'
     ? `大アルカナ${list.length}枚の意味一覧｜正位置・逆位置と決断のヒント - DECIDE`
     : `${a}（${list.length}枚）の意味一覧｜タロット小アルカナと決断のヒント - DECIDE`;
@@ -416,9 +416,9 @@ function categoryPage(a) {
   ];
   const itemList = {
     '@context': 'https://schema.org', '@type': 'ItemList', name: `${a}のカード解説`,
-    itemListElement: list.map((c, i) => ({ '@type': 'ListItem', position: i + 1, url: `${ORIGIN}/cards/${c.id}.html`, name: c.name })),
+    itemListElement: list.map((c, i) => ({ '@type': 'ListItem', position: i + 1, url: `${ORIGIN}/cards/${c.id}`, name: c.name })),
   };
-  const rows = list.map((c) => `<li><a href="./${c.id}.html"><b>${esc(c.name)}</b></a>：正位置「${esc(c.upright.keywords.join('・'))}」／逆位置「${esc(c.reversed.keywords.join('・'))}」</li>`).join('\n');
+  const rows = list.map((c) => `<li><a href="./${c.id}"><b>${esc(c.name)}</b></a>：正位置「${esc(c.upright.keywords.join('・'))}」／逆位置「${esc(c.reversed.keywords.join('・'))}」</li>`).join('\n');
   const body = `<main>
 ${crumbsHtml(crumbs)}
 <h1>${esc(a)}の意味一覧（${list.length}枚）</h1>
@@ -440,17 +440,17 @@ ${rows}
 function worriesNav(current) {
   return `<ul class="cats" aria-label="悩み別">${worries.map((w) => w.slug === current
     ? `<li aria-current="page">${esc(w.h1)}</li>`
-    : `<li><a href="./worry-${w.slug}.html">${esc(w.h1)}</a></li>`).join('')}<li><a href="./worries.html">悩み別の一覧</a></li></ul>`;
+    : `<li><a href="./worry-${w.slug}">${esc(w.h1)}</a></li>`).join('')}<li><a href="./worries">悩み別の一覧</a></li></ul>`;
 }
 
 function worryPage(w) {
-  const path = `/cards/worry-${w.slug}.html`;
+  const path = `/cards/worry-${w.slug}`;
   const primary = byId.get(w.primary);
   const ogImage = `${ORIGIN}/assets/og/worry-${w.slug}.jpg`;
   const crumbs = [
     { name: 'DECIDE', href: '../', path: '/' },
     { name: 'カード解説', href: './', path: '/cards/' },
-    { name: '悩み別に読む', href: './worries.html', path: '/cards/worries.html' },
+    { name: '悩み別に読む', href: './worries', path: '/cards/worries' },
     { name: w.h1, path },
   ];
   const article = {
@@ -466,7 +466,7 @@ function worryPage(w) {
 </aside>`;
   const cardRows = w.cards.map(({ id, reason }) => {
     const c = byId.get(id);
-    return `<li><a href="./${id}.html">${picture(c, { sizes: '96px' })}</a><div><h3><a href="./${id}.html">${esc(c.name)}</a></h3><p>${esc(reason)}</p></div></li>`;
+    return `<li><a href="./${id}">${picture(c, { sizes: '96px' })}</a><div><h3><a href="./${id}">${esc(c.name)}</a></h3><p>${esc(reason)}</p></div></li>`;
   }).join('\n');
   const body = `<main>
 ${crumbsHtml(crumbs)}
@@ -519,7 +519,7 @@ function firstQuestion(text) {
 }
 
 function worriesIndex() {
-  const path = '/cards/worries.html';
+  const path = '/cards/worries';
   const title = '悩み別に読むタロット｜転職・恋愛・引っ越しなど決断の考え方 - DECIDE';
   const description = `転職、就活、副業、恋愛、結婚、別れ、介護、引っ越し、お金など、よくある${worries.length}の迷いについて、考え方の整理のしかたと視点を貸してくれるタロットカードを紹介します。`;
   const crumbs = [
@@ -529,7 +529,7 @@ function worriesIndex() {
   ];
   const itemList = {
     '@context': 'https://schema.org', '@type': 'ItemList', name: '悩み別のタロット解説',
-    itemListElement: worries.map((w, i) => ({ '@type': 'ListItem', position: i + 1, url: `${ORIGIN}/cards/worry-${w.slug}.html`, name: w.h1 })),
+    itemListElement: worries.map((w, i) => ({ '@type': 'ListItem', position: i + 1, url: `${ORIGIN}/cards/worry-${w.slug}`, name: w.h1 })),
   };
   const bySlug = new Map(worries.map((w) => [w.slug, w]));
   const grouped = new Set(WORRY_GROUPS.flatMap((g) => g.slugs));
@@ -539,10 +539,10 @@ function worriesIndex() {
   const tile = (w) => {
     const c = byId.get(w.primary);
     const ask = w.sections.find((x) => x.h2 === '自分への問いかけ');
-    return `<li class="wtile"><a class="wtile-head" href="./worry-${w.slug}.html">${picture(c, { sizes: '64px' })}<h3>${esc(w.h1)}<small>鍵になるカード：${esc(c.name)}</small></h3></a>
+    return `<li class="wtile"><a class="wtile-head" href="./worry-${w.slug}">${picture(c, { sizes: '64px' })}<h3>${esc(w.h1)}<small>鍵になるカード：${esc(c.name)}</small></h3></a>
 <div class="wtile-body"><p>${esc(w.description)}</p>${ask ? `<p class="wtile-q">${esc(firstQuestion(ask.p))}</p>` : ''}
-<ul class="wtile-cards" aria-label="関係するカード">${w.cards.map((x) => `<li><a href="./${x.id}.html">${esc(byId.get(x.id).name)}</a></li>`).join('')}</ul></div>
-<a class="wtile-more" href="./worry-${w.slug}.html" aria-label="${esc(w.h1)}を読む">考え方を読む →</a></li>`;
+<ul class="wtile-cards" aria-label="関係するカード">${w.cards.map((x) => `<li><a href="./${x.id}">${esc(byId.get(x.id).name)}</a></li>`).join('')}</ul></div>
+<a class="wtile-more" href="./worry-${w.slug}" aria-label="${esc(w.h1)}を読む">考え方を読む →</a></li>`;
   };
   const sections = groups.map((g) => `<section id="${g.id}">
 <h2>${esc(g.name)}</h2>
@@ -563,7 +563,7 @@ ${WORRIES_INTRO.map((p, i) => `<p${i === 0 ? ' class="lede"' : ''}>${esc(p)}</p>
 <li><b>実際に引いてみる</b>二つの選択肢を思い浮かべて、DECIDEでカードを引きます。</li>
 </ol>
 <nav aria-label="テーマから探す"><ul class="wjump">
-${worries.map((w) => `<li><a href="./worry-${w.slug}.html">${esc(w.h1.replace(/(で|を|に)?(迷う|決められない|踏み切れない|始めるか迷う)とき$/, '').replace(/するか$/, '').replace(/るか$/, 'る'))}</a></li>`).join('\n')}
+${worries.map((w) => `<li><a href="./worry-${w.slug}">${esc(w.h1.replace(/(で|を|に)?(迷う|決められない|踏み切れない|始めるか迷う)とき$/, '').replace(/するか$/, '').replace(/るか$/, 'る'))}</a></li>`).join('\n')}
 </ul></nav>
 ${sections}
 <div class="cta"><p>カードを引いて、いまの迷いを整理する</p><a href="../">${CTA_TEXT}</a></div>
@@ -576,7 +576,7 @@ ${sections}
 const fmtDate = (d) => { const [y, m, dd] = d.split('-').map(Number); return `${y}年${m}月${dd}日`; };
 
 function articlePage(a) {
-  const path = `/articles/${a.slug}.html`;
+  const path = `/articles/${a.slug}`;
   const primary = byId.get(a.primary);
   const ogImage = `${ORIGIN}/assets/og/article-${a.slug}.jpg`;
   const crumbs = [
@@ -613,16 +613,16 @@ ${bodyHtml}
 ${cta('二つの選択肢を並べて、カードと一緒に整理できます。')}
 ${relWorries.length ? `<section>
 <h2>関係する悩み別ガイド</h2>
-<ul class="cats">${relWorries.map((w) => `<li><a href="../cards/worry-${w.slug}.html">${esc(w.h1)}</a></li>`).join('')}<li><a href="../cards/worries.html">悩み別の一覧</a></li></ul>
+<ul class="cats">${relWorries.map((w) => `<li><a href="../cards/worry-${w.slug}">${esc(w.h1)}</a></li>`).join('')}<li><a href="../cards/worries">悩み別の一覧</a></li></ul>
 </section>` : ''}
 <section>
 <h2>この記事に関係するカード</h2>
-<ul class="grid">${relCards.map((c) => `<li><a href="../cards/${c.id}.html">${picture(c, { sizes: '120px' })}${esc(c.name)}</a></li>`).join('')}</ul>
+<ul class="grid">${relCards.map((c) => `<li><a href="../cards/${c.id}">${picture(c, { sizes: '120px' })}${esc(c.name)}</a></li>`).join('')}</ul>
 <p class="note"><a href="../cards/">78枚すべてのカード解説を見る</a></p>
 </section>
 ${others.length ? `<section>
 <h2>ほかの読みもの</h2>
-<ul>${others.map((o) => `<li><a href="./${o.slug}.html">${esc(o.h1)}</a></li>`).join('')}</ul>
+<ul>${others.map((o) => `<li><a href="./${o.slug}">${esc(o.h1)}</a></li>`).join('')}</ul>
 <p class="note"><a href="./">記事の一覧</a></p>
 </section>` : ''}
 </article>
@@ -637,9 +637,9 @@ function articlesIndex(list) {
   const crumbs = [{ name: 'DECIDE', href: '../', path: '/' }, { name: '読みもの', path }];
   const itemList = {
     '@context': 'https://schema.org', '@type': 'ItemList', name: 'DECIDE の読みもの',
-    itemListElement: list.map((a, i) => ({ '@type': 'ListItem', position: i + 1, url: `${ORIGIN}/articles/${a.slug}.html`, name: a.h1 })),
+    itemListElement: list.map((a, i) => ({ '@type': 'ListItem', position: i + 1, url: `${ORIGIN}/articles/${a.slug}`, name: a.h1 })),
   };
-  const rows = list.map((a) => `<li><h3><a href="./${a.slug}.html">${esc(a.h1)}</a>${a.draft ? '（下書き）' : ''}</h3><p class="dateline"><time datetime="${a.date}">${fmtDate(a.date)}</time></p><p>${esc(a.description)}</p></li>`).join('\n');
+  const rows = list.map((a) => `<li><h3><a href="./${a.slug}">${esc(a.h1)}</a>${a.draft ? '（下書き）' : ''}</h3><p class="dateline"><time datetime="${a.date}">${fmtDate(a.date)}</time></p><p>${esc(a.description)}</p></li>`).join('\n');
   const body = `<main>
 ${crumbsHtml(crumbs)}
 <h1>読みもの</h1>
@@ -648,7 +648,7 @@ ${crumbsHtml(crumbs)}
 ${rows}
 </ul>
 <div class="cta"><p>カードを引いて、いまの迷いを整理する</p><a href="../">${CTA_TEXT}</a></div>
-<p class="note"><a href="../cards/worries.html">悩み別に読む</a> ／ <a href="../cards/">78枚のカード解説</a></p>
+<p class="note"><a href="../cards/worries">悩み別に読む</a> ／ <a href="../cards/">78枚のカード解説</a></p>
 </main>`;
   return layout({ title, description, path, ogType: 'website', ogImage: `${ORIGIN}/og-image-v3.png`, ld: [itemList, crumbsLd(crumbs)], body, noindex: !list.some((a) => !a.draft) });
 }
@@ -692,12 +692,12 @@ if (articles.length) {
 
 const urls = [
   ['/', '1.0'], ['/cards/', '0.8'],
-  ...ARCANA_ORDER.map((a) => [`/cards/${CATEGORY[a].slug}.html`, '0.7']),
-  ['/cards/worries.html', '0.7'],
-  ...worries.map((w) => [`/cards/worry-${w.slug}.html`, '0.7']),
-  ...cards.map((c) => [`/cards/${c.id}.html`, '0.6']),
-  ...(published.length ? [['/articles/', '0.7'], ...published.map((a) => [`/articles/${a.slug}.html`, '0.6'])] : []),
-  ['/privacy.html', '0.2'], ['/terms.html', '0.2'], ['/tokushoho.html', '0.2'],
+  ...ARCANA_ORDER.map((a) => [`/cards/${CATEGORY[a].slug}`, '0.7']),
+  ['/cards/worries', '0.7'],
+  ...worries.map((w) => [`/cards/worry-${w.slug}`, '0.7']),
+  ...cards.map((c) => [`/cards/${c.id}`, '0.6']),
+  ...(published.length ? [['/articles/', '0.7'], ...published.map((a) => [`/articles/${a.slug}`, '0.6'])] : []),
+  ['/privacy', '0.2'], ['/terms', '0.2'], ['/tokushoho', '0.2'],
 ];
 writeFileSync(DIST + 'sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -706,7 +706,7 @@ ${urls.map(([p, pr]) => `  <url><loc>${ORIGIN}${p}</loc><lastmod>${TODAY}</lastm
 `);
 writeFileSync(DIST + 'robots.txt', `User-agent: *
 Allow: /
-Disallow: /success.html
+Disallow: /success
 Sitemap: ${ORIGIN}/sitemap.xml
 `);
 

@@ -18,7 +18,7 @@ for (const [file, { title, description }] of Object.entries(cardsSeo)) {
 
 export function seoForPath(path) {
   if (!path.startsWith('/cards/')) return null;
-  const file = path.slice('/cards/'.length) || 'index.html';
+  const file = (path.slice('/cards/'.length) || 'index') + '.html';
   if (!cardsSeo[file]) throw new Error(`Missing SEO copy: ${path}`);
   return cardsSeo[file];
 }

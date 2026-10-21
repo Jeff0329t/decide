@@ -1,6 +1,6 @@
 // 記事用の小さな Markdown / front matter パーサ（依存なし）。
 // 対応: ## / ### 見出し、段落、- / 1. リスト、> 引用、**太字**、[文字](URL)、<!-- コメント（出力しない） -->
-// 生の HTML はすべてエスケープする。リンクは http(s) とサイト内の "/..." のみ許可（"/x" は記事ページから見た "../x" に変換）。
+// 生の HTML はすべてエスケープする。リンクは http(s) とサイト内の "/..." のみ許可（"/x" は記事ページから見た "../x" に変換し、末尾の .html は外す）。
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 
 export const esc = (s) => String(s)
@@ -33,7 +33,7 @@ export function parseFrontMatter(src) {
 export function safeHref(url) {
   const u = url.trim();
   if (/^https?:\/\/[^\s"'<>]+$/i.test(u)) return u;
-  if (/^\/(?!\/)[^\s"'<>]*$/.test(u)) return '..' + u;
+  if (/^\/(?!\/)[^\s"'<>]*$/.test(u)) return '..' + u.replace(/\.html(?=$|[?#])/, '');
   return null;
 }
 

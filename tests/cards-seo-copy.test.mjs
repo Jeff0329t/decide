@@ -9,7 +9,7 @@ test('every card HTML has unique editorial metadata and synchronized social prev
   assert.deepEqual(Object.keys(cardsSeo).sort(), files);
   for (const file of files) {
     const html = readFileSync(new URL(file, dir), 'utf8');
-    const { title, description } = seoForPath(`/cards/${file}`);
+    const { title, description } = seoForPath(`/cards/${file === 'index.html' ? '' : file.replace(/\.html$/, '')}`);
     assert.equal(html.match(/<title>(.*?)<\/title>/s)?.[1], title, file);
     for (const [key, value] of Object.entries({ description, 'og:title': title, 'og:description': description, 'twitter:title': title, 'twitter:description': description })) {
       const tags = [...html.matchAll(new RegExp(`<meta (?:name|property)="${key}" content="([^"]*)">`, 'g'))];
@@ -23,8 +23,8 @@ test('every card HTML has unique editorial metadata and synchronized social prev
     }
     assert.equal(updateSeoHead(html, cardsSeo[file]), html, `${file} idempotent`);
   }
-  assert.equal(seoForPath('/articles/example.html'), null);
-  assert.throws(() => seoForPath('/cards/missing.html'), /Missing SEO/);
+  assert.equal(seoForPath('/articles/example'), null);
+  assert.throws(() => seoForPath('/cards/missing'), /Missing SEO/);
 });
 
 test('metadata updater adds missing tags, removes duplicates, escapes copy and preserves page behavior', () => {

@@ -11,7 +11,7 @@ import { enhanceCardsPage } from '../scripts/lib/cards-navigation-seo.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const origin = 'https://decisionprocess.net';
 const read = p => readFileSync(join(root, p), 'utf8');
-const canonical = file => `/cards/${file === 'index.html' ? '' : file}`;
+const canonical = file => `/cards/${file === 'index.html' ? '' : file.replace(/\.html$/, '')}`;
 const ld = html => [...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)].map(m => JSON.parse(m[1]));
 const deck = JSON.parse(read('dist/assets/cards.json')).cards;
 
@@ -37,22 +37,24 @@ function validate(file, html) {
   assert.doesNotMatch(html, /<base|noindex|\.preview\.html|seo-proposal/);
   const body = html.split('<body>')[1];
   if (file !== 'index.html') assert.match(body, /href="\.\/"/);
+  assert.doesNotMatch(body, /href="[^"]*\.html"/, `${file}: internal links must be extensionless`);
+  assert.doesNotMatch(data.map(x => JSON.stringify(x)).join(''), /\.html/, `${file}: JSON-LD URLs must be extensionless`);
   const card = deck.find(c => c.id + '.html' === file);
   if (card) {
     const section = html.match(/<!-- related-worries:start -->(.*?)<!-- related-worries:end -->/s)?.[1];
     assert.ok(section, file);
-    const worries = [...section.matchAll(/href="\.\/worry-([a-z]+)\.html"/g)];
+    const worries = [...section.matchAll(/href="\.\/worry-([a-z]+)"/g)];
     assert.ok(worries.length >= 2 && worries.length <= 3, file);
     assert.equal(new Set(worries.map(x => x[1])).size, worries.length);
     const suit = deck.filter(c => c.arcana === card.arcana), index = suit.findIndex(c => c.id === card.id);
     const pager = html.match(/<nav aria-label="前後のカード">(.*?)<\/nav>/s)[1];
     const expected = [suit[index - 1]?.id, suit[index + 1]?.id].filter(Boolean);
-    assert.deepEqual([...pager.matchAll(/href="\.\/([^\"]+)\.html"/g)].map(m => m[1]), expected, file);
+    assert.deepEqual([...pager.matchAll(/href="\.\/([^\"]+)"/g)].map(m => m[1]), expected, file);
   }
   if (file.startsWith('worry-')) {
     const section = body.match(/<h2>他の悩みから探す<\/h2>(.*?)<\/section>/s)?.[1];
     assert.ok(section, file);
-    assert.equal(new Set([...section.matchAll(/href="\.\/worry-([^\"]+)\.html"/g)].map(x => x[1])).size, 11);
+    assert.equal(new Set([...section.matchAll(/href="\.\/worry-([^\"]+)"/g)].map(x => x[1])).size, 11);
     assert.match(section, /すべてのカード・悩み一覧を見る/);
   }
   if (card || file.startsWith('worry-')) {
@@ -62,7 +64,7 @@ function validate(file, html) {
     assert.doesNotMatch(ctas.at(-1)[1], /今抱えている迷いを、このカードの視点から考えてみる/);
   }
   for (const m of body.matchAll(/href="\.\/([^"?#]*)"/g)) if (m[1]) {
-    assert.ok(readdirSync(join(root, 'dist/cards')).includes(m[1]), `${file}: ${m[1]}`);
+    assert.ok(readdirSync(join(root, 'dist/cards')).includes(m[1] + '.html'), `${file}: ${m[1]}`);
   }
 }
 
@@ -70,7 +72,7 @@ test('all 97 pages have synchronized structured data, crawlable navigation and p
   assert.equal(Object.keys(cardsSeo).length, 97);
   for (const file of Object.keys(cardsSeo)) validate(file, read(`dist/cards/${file}`));
   const article = '<html><head></head><body><h1>Unrelated</h1></body></html>';
-  assert.equal(enhanceCardsPage(article, '/articles/example.html'), article);
+  assert.equal(enhanceCardsPage(article, '/articles/example'), article);
 });
 
 test('reading links survive initial and runtime home rendering without replacing existing actions', () => {
