@@ -4,7 +4,7 @@
 // 出力: dist/cards/index.html, dist/cards/{major,wands,cups,swords,pentacles}.html,
 //       dist/cards/{id}.html, dist/cards/worries.html, dist/cards/worry-{slug}.html,
 //       dist/articles/index.html, dist/articles/{slug}.html（記事が1本以上あるとき）,
-//       dist/sitemap.xml, dist/robots.txt
+//       dist/sitemap.xml, dist/robots.txt, dist/404.html
 // 悩み別ページの文章: scripts/data/worries.json / 記事: scripts/data/articles/*.md
 // 使い方: node scripts/build-cards.mjs [--drafts]
 //   --drafts: draft: true の記事も noindex 付きで出力する（確認用。sitemap には入れない）
@@ -653,6 +653,33 @@ ${rows}
   return layout({ title, description, path, ogType: 'website', ogImage: `${ORIGIN}/og-image-v3.png`, ld: [itemList, crumbsLd(crumbs)], body, noindex: !list.some((a) => !a.draft) });
 }
 
+// どの深さの URL でも返されるので、layout() の相対パス（../）は使わずルートからのパスで書く
+function notFoundPage() {
+  return `<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ページが見つかりません - DECIDE</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f2efe7">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<style>${CSS}</style>
+</head>
+<body>
+<main>
+<h1>ページが見つかりません</h1>
+<p>お探しのページは、移動したか削除された可能性があります。</p>
+<ul class="cats"><li><a href="/">DECIDE を開く</a></li><li><a href="/cards/">78枚のカード解説</a></li><li><a href="/cards/worries">悩み別に読む</a></li></ul>
+</main>
+<footer>
+<p class="meta"><a href="/tokushoho">特定商取引法に基づく表記</a> ／ <a href="/terms">利用規約</a> ／ <a href="/privacy">プライバシーポリシー</a></p>
+</footer>
+</body>
+</html>
+`;
+}
+
 // ---- 生成 ----
 mkdirSync(DIST + 'cards', { recursive: true });
 const thin = [];
@@ -678,6 +705,7 @@ for (const w of worries) {
   if (n < MIN_CHARS) thin.push({ id: 'worries', name: '悩み別一覧', chars: n });
   writeFileSync(DIST + 'cards/worries.html', worriesIndex());
 }
+writeFileSync(DIST + '404.html', notFoundPage());
 
 rmSync(DIST + 'articles', { recursive: true, force: true });
 if (articles.length) {

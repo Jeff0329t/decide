@@ -175,3 +175,16 @@ test('sitemap lists extensionless URLs only and keeps the same 101 entries', () 
   assert.ok(locs.includes('https://decisionprocess.net/cards/ar00'));
   assert.ok(locs.includes('https://decisionprocess.net/privacy'));
 });
+
+test('404 page is standalone, noindex and uses root-absolute links', () => {
+  const html = read('dist/404.html');
+  assert.match(html, /<meta name="robots" content="noindex">/);
+  assert.match(html, /<title>ページが見つかりません - DECIDE<\/title>/);
+  assert.match(html, /href="\/"/);
+  assert.match(html, /href="\/cards\/"/);
+  assert.match(html, /href="\/cards\/worries"/);
+  assert.doesNotMatch(html, /(?:href|src)="\.\.?\//, 'no relative URLs');
+  assert.doesNotMatch(html, /rel="canonical"/);
+  assert.doesNotMatch(html, /<script/);
+  assert.doesNotMatch(read('dist/sitemap.xml'), /404/);
+});
