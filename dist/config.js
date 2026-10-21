@@ -4,6 +4,9 @@
 window.DECIDE_CONFIG = Object.freeze({
   SUPABASE_URL: 'https://ppuyenvuepxqqrhiswwb.supabase.co',
   SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwdXllbnZ1ZXB4cXFyaGlzd3diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMjg4MDIsImV4cCI6MjEwNjgwNDgwMn0.NvbyTthzp3ELRJyI-PXO0ZTGhzfpjd7E5JTL1rujbI4',
+  // DB・配信サービス・Cronの設定と送信検証が完了してから true にする。
+  EMAIL_REMINDERS_ENABLED: true,
+  PUSH_REMINDERS_ENABLED: false,
   SITE_URL: 'https://decisionprocess.net',
   // Google OAuth（ウェブアプリ）のクライアントID（公開してよい値・NEXT_PUBLIC_GOOGLE_CLIENT_ID 相当）。空なら従来のリダイレクト方式でログイン
   GOOGLE_CLIENT_ID: '550943837124-b7cgk85t5jur9636uep91tulgvooco44.apps.googleusercontent.com',

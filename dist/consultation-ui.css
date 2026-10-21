@@ -376,7 +376,9 @@ body[data-view="prepare-options"] .thumb-prepare .prepare-art { height:auto; asp
 .consult-actions .button { margin-top:0; }
 
 /* Pin the main navigation to the viewport, including the completion screen. */
-body .bottom-nav { position:fixed; top:auto; bottom:0; left:50%; transform:translateX(-50%); margin:0; border-radius:0; }
+/* Stop root rubber-banding from dragging the fixed dock on touch scroll. */
+html, body { overscroll-behavior-y:none; }
+body .bottom-nav { position:fixed; top:auto; bottom:0; left:50%; transform:translate3d(-50%,0,0); margin:0; border-radius:0; background:#040404; -webkit-backdrop-filter:none; backdrop-filter:none; }
 body[data-detail-mode="complete"] .bottom-nav { display:grid !important; }
 body[data-detail-mode="complete"] .app-shell { padding-bottom:calc(70px + env(safe-area-inset-bottom)); }
 
@@ -402,7 +404,6 @@ body[data-detail-mode="complete"] .app-shell { padding-bottom:calc(70px + env(sa
 .decision-log-item:focus-visible { outline:2px solid #f1d527; outline-offset:3px; }
 .decision-log-item:active { background:#202018; }
 .calendar-detail .decision-log-item + .decision-log-item { margin-top:12px; }
-@media (max-width:360px) { .decision-log-item { padding:14px; gap:10px; } .decision-log-choice { font-size:20px; } }
 
 /* Always-open reflection, with paper buttons and a distinct yellow selection. */
 .detail-screen :is(.review-section,.story-section) { padding-top:20px; margin-top:20px; }
@@ -418,8 +419,16 @@ body[data-detail-mode="complete"] .app-shell { padding-bottom:calc(70px + env(sa
 .detail-screen .story-head { gap:10px; flex-wrap:wrap; }
 .detail-screen .story-section .story-actions .button { min-height:44px; background:#111; color:#f1d527; border:1px solid #f4efe3; border-radius:0; box-shadow:3px 3px 0 #f1d527; }
 .detail-screen .story-section .story-actions .button.ghost { background:transparent; color:#f4efe3; box-shadow:none; }
-
 .detail-screen .story-prompt { margin:16px 0 8px; padding:0 0 0 12px; border-left:4px solid #f1d527; }
 .detail-screen .story-prompt .story-prompt-kicker { margin:0 0 5px; color:#f1d527; font-size:12px; line-height:1.5; }
 .detail-screen .story-prompt h3 { margin:0; color:#f4efe3; font-size:21px; line-height:1.6; overflow-wrap:anywhere; }
 .detail-screen .story-prompt-note { margin:0; color:#f4efe3; font-size:12px; line-height:1.6; }
+@media (max-width:360px) { .decision-log-item { padding:14px; gap:10px; } .decision-log-choice { font-size:20px; } }
+
+/* Home-screen app: the dock is outside the scrollable content. */
+html.standalone-shell { height:100%; overflow:hidden; }
+html.standalone-shell body { position:fixed; inset:0; height:100%; min-height:0; padding:0; overflow:hidden; }
+.app-viewport { position:fixed; top:var(--app-viewport-top,0px); left:0; right:0; height:var(--app-viewport-height,100%); overflow:hidden; transform:translateZ(0); }
+.app-viewport > .app-shell { position:relative; top:auto; height:100%; min-height:0; overflow-x:hidden; overflow-y:auto; overscroll-behavior-y:none; -webkit-overflow-scrolling:touch; }
+.app-viewport > .bottom-nav { position:absolute; bottom:0; }
+.modal-open .app-viewport > .app-shell { position:relative; top:auto; overflow-y:hidden; }

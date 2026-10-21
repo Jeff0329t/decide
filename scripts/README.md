@@ -24,6 +24,17 @@ node scripts/build-cards.mjs
 
 `dist/cards/` 内のHTMLを直接編集しても、次回ビルドで上書きされます。
 
+### SEO・回遊リンク・CTAの更新
+
+- 最新title/description: `scripts/data/cards-seo.json`。
+- 個別カードに関連付ける悩み（各2〜3件）: `scripts/data/card-worry-links.json`。無関係な自動選択を避けるため、カードごとに明示。
+- 共通のJSON-LD・パンくず・同分類の前後リンク・末尾CTA: `scripts/lib/cards-navigation-seo.mjs`。
+- 本文を再生成せず上記だけを同期: `node scripts/update-cards-seo.mjs`。
+- 全体生成の `build-cards.mjs` も同じ共通処理を使う。SEOの更新後もJSON-LDに古いdescriptionが残らない。
+- `node --test tests/cards-navigation-seo.test.mjs` は全97件と、隔離した作業ディレクトリでの全体生成・再実行を検証する。
+- 確認用HTML・画像は `docs/`、復元用データは `backups/` に置く。Pagesのアップロード対象は `dist/` のみ。これらを `dist/` やサイトマップへコピーしない。
+
+
 ### 注意
 
 - カードページはJS不要の静的HTML。Service Worker は `/cards/`・`/articles/`・`sitemap.xml`・`robots.txt` をキャッシュしません。

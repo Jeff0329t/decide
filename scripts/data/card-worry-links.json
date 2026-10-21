@@ -1,0 +1,392 @@
+{
+  "ar00": [
+    "tenshoku",
+    "dokuritsu",
+    "shukatsu"
+  ],
+  "ar01": [
+    "shukatsu",
+    "fukugyo",
+    "tenshoku"
+  ],
+  "ar02": [
+    "renai",
+    "kekkon",
+    "ningen"
+  ],
+  "ar03": [
+    "renai",
+    "kekkon",
+    "ningen"
+  ],
+  "ar04": [
+    "kaigo",
+    "ningen",
+    "kekkon"
+  ],
+  "ar05": [
+    "manabi",
+    "ningen",
+    "tenshoku"
+  ],
+  "ar06": [
+    "kekkon",
+    "renai",
+    "ningen"
+  ],
+  "ar07": [
+    "shukatsu",
+    "tenshoku",
+    "dokuritsu"
+  ],
+  "ar08": [
+    "kaigo",
+    "ningen",
+    "kekkon"
+  ],
+  "ar09": [
+    "manabi",
+    "ningen",
+    "tenshoku"
+  ],
+  "ar10": [
+    "hikkoshi",
+    "okane",
+    "tenshoku"
+  ],
+  "ar11": [
+    "ningen",
+    "kaigo",
+    "tenshoku"
+  ],
+  "ar12": [
+    "okane",
+    "manabi",
+    "ningen"
+  ],
+  "ar13": [
+    "tenshoku",
+    "wakare",
+    "ningen"
+  ],
+  "ar14": [
+    "ningen",
+    "kaigo",
+    "tenshoku"
+  ],
+  "ar15": [
+    "wakare",
+    "ningen",
+    "renai"
+  ],
+  "ar16": [
+    "wakare",
+    "ningen",
+    "renai"
+  ],
+  "ar17": [
+    "renai",
+    "kekkon",
+    "ningen"
+  ],
+  "ar18": [
+    "ningen",
+    "kaigo",
+    "tenshoku"
+  ],
+  "ar19": [
+    "ningen",
+    "kaigo",
+    "tenshoku"
+  ],
+  "ar20": [
+    "kekkon",
+    "kaigo",
+    "ningen"
+  ],
+  "ar21": [
+    "hikkoshi",
+    "okane",
+    "tenshoku"
+  ],
+  "wa01": [
+    "tenshoku",
+    "dokuritsu",
+    "shukatsu"
+  ],
+  "wa02": [
+    "tenshoku",
+    "dokuritsu",
+    "shukatsu"
+  ],
+  "wa03": [
+    "shukatsu",
+    "fukugyo",
+    "tenshoku"
+  ],
+  "wa04": [
+    "ningen",
+    "kaigo",
+    "tenshoku"
+  ],
+  "wa05": [
+    "ningen",
+    "kaigo",
+    "tenshoku"
+  ],
+  "wa06": [
+    "tenshoku",
+    "dokuritsu",
+    "shukatsu"
+  ],
+  "wa07": [
+    "shukatsu",
+    "tenshoku",
+    "dokuritsu"
+  ],
+  "wa08": [
+    "tenshoku",
+    "dokuritsu",
+    "shukatsu"
+  ],
+  "wa09": [
+    "ningen",
+    "kaigo",
+    "tenshoku"
+  ],
+  "wa10": [
+    "dokuritsu",
+    "kaigo",
+    "ningen"
+  ],
+  "wa11": [
+    "ningen",
+    "kaigo",
+    "tenshoku"
+  ],
+  "wa12": [
+    "tenshoku",
+    "dokuritsu",
+    "shukatsu"
+  ],
+  "wa13": [
+    "ningen",
+    "kaigo",
+    "tenshoku"
+  ],
+  "wa14": [
+    "tenshoku",
+    "dokuritsu",
+    "shukatsu"
+  ],
+  "cu01": [
+    "renai",
+    "kekkon",
+    "ningen"
+  ],
+  "cu02": [
+    "wakare",
+    "kekkon",
+    "ningen"
+  ],
+  "cu03": [
+    "renai",
+    "kekkon",
+    "ningen"
+  ],
+  "cu04": [
+    "fukugyo",
+    "ningen",
+    "kaigo"
+  ],
+  "cu05": [
+    "wakare",
+    "ningen",
+    "renai"
+  ],
+  "cu06": [
+    "kaigo",
+    "ningen",
+    "kekkon"
+  ],
+  "cu07": [
+    "hikkoshi",
+    "okane",
+    "tenshoku"
+  ],
+  "cu08": [
+    "tenshoku",
+    "wakare",
+    "ningen"
+  ],
+  "cu09": [
+    "renai",
+    "kekkon",
+    "ningen"
+  ],
+  "cu10": [
+    "hikkoshi",
+    "kekkon",
+    "renai"
+  ],
+  "cu11": [
+    "renai",
+    "kekkon",
+    "ningen"
+  ],
+  "cu12": [
+    "renai",
+    "kekkon",
+    "ningen"
+  ],
+  "cu13": [
+    "renai",
+    "kekkon",
+    "ningen"
+  ],
+  "cu14": [
+    "renai",
+    "kekkon",
+    "ningen"
+  ],
+  "sw01": [
+    "ningen",
+    "kaigo",
+    "tenshoku"
+  ],
+  "sw02": [
+    "wakare",
+    "renai",
+    "ningen"
+  ],
+  "sw03": [
+    "wakare",
+    "ningen",
+    "renai"
+  ],
+  "sw04": [
+    "kaigo",
+    "ningen",
+    "tenshoku"
+  ],
+  "sw05": [
+    "ningen",
+    "kaigo",
+    "tenshoku"
+  ],
+  "sw06": [
+    "hikkoshi",
+    "okane",
+    "tenshoku"
+  ],
+  "sw07": [
+    "wakare",
+    "ningen",
+    "renai"
+  ],
+  "sw08": [
+    "ningen",
+    "wakare",
+    "renai"
+  ],
+  "sw09": [
+    "ningen",
+    "kaigo",
+    "tenshoku"
+  ],
+  "sw10": [
+    "wakare",
+    "ningen",
+    "renai"
+  ],
+  "sw11": [
+    "manabi",
+    "ningen",
+    "tenshoku"
+  ],
+  "sw12": [
+    "ningen",
+    "kaigo",
+    "tenshoku"
+  ],
+  "sw13": [
+    "ningen",
+    "kaigo",
+    "tenshoku"
+  ],
+  "sw14": [
+    "ningen",
+    "kaigo",
+    "tenshoku"
+  ],
+  "pe01": [
+    "tenshoku",
+    "manabi",
+    "dokuritsu"
+  ],
+  "pe02": [
+    "kekkon",
+    "okane",
+    "fukugyo"
+  ],
+  "pe03": [
+    "fukugyo",
+    "hikkoshi",
+    "okane"
+  ],
+  "pe04": [
+    "hikkoshi",
+    "okane",
+    "tenshoku"
+  ],
+  "pe05": [
+    "ningen",
+    "kaigo",
+    "tenshoku"
+  ],
+  "pe06": [
+    "hikkoshi",
+    "okane",
+    "tenshoku"
+  ],
+  "pe07": [
+    "tenshoku",
+    "manabi",
+    "okane"
+  ],
+  "pe08": [
+    "shukatsu",
+    "fukugyo",
+    "manabi"
+  ],
+  "pe09": [
+    "dokuritsu",
+    "ningen",
+    "kaigo"
+  ],
+  "pe10": [
+    "kaigo",
+    "ningen",
+    "kekkon"
+  ],
+  "pe11": [
+    "manabi",
+    "ningen",
+    "tenshoku"
+  ],
+  "pe12": [
+    "hikkoshi",
+    "okane",
+    "tenshoku"
+  ],
+  "pe13": [
+    "ningen",
+    "kaigo",
+    "tenshoku"
+  ],
+  "pe14": [
+    "hikkoshi",
+    "okane",
+    "tenshoku"
+  ]
+}

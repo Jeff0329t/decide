@@ -1,0 +1,98 @@
+{
+  "worry-okane.html": {
+    "Article": {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "大きな買い物で迷う時の判断軸｜タロットで決断｜DECIDE.",
+      "description": "大きな買い物で迷い、貯金を使うのが不安な人へ。欲しい理由や使う頻度、購入後の家計を整理し、関連するタロットカードと自分への問いかけを通して、今買うか待つかを考えるヒントを紹介します。",
+      "image": "https://decisionprocess.net/assets/rider-waite/pe04.jpg",
+      "inLanguage": "ja",
+      "mainEntityOfPage": "https://decisionprocess.net/cards/worry-okane.html",
+      "datePublished": "2026-10-10",
+      "dateModified": "2026-10-10",
+      "author": {
+        "@type": "Organization",
+        "name": "DECIDE."
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "DECIDE.",
+        "url": "https://decisionprocess.net/"
+      },
+      "url": "https://decisionprocess.net/cards/worry-okane.html"
+    },
+    "BreadcrumbList": {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "DECIDE.",
+          "item": "https://decisionprocess.net/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "タロットカード78枚の意味",
+          "item": "https://decisionprocess.net/cards/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "大きな買い物・お金の使い方で迷うとき",
+          "item": "https://decisionprocess.net/cards/worry-okane.html"
+        }
+      ]
+    },
+    "cta": "<aside class=\"cta\" aria-label=\"DECIDE.で迷いを整理する\">\n<p>「今買う」と「もう少し待つ」。二つの選択肢を、カードの問いかけで整理してみませんか。</p>\n<a href=\"../?from=pe04\">買うか待つか、DECIDE.で考える</a>\n</aside>"
+  },
+  "cu12.html": {
+    "Article": {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "カップのナイトの意味と気持ちの決め方｜タロット｜DECIDE.",
+      "description": "誘いを受けるか、想いを伝えるか迷う人へ。タロット「カップのナイト」の正位置・逆位置と象徴を解説。相手の言葉と行動、理想と現実の条件を照らし合わせ、自分の気持ちに正直な選択を考えます。",
+      "image": "https://decisionprocess.net/assets/rider-waite/cu12.jpg",
+      "inLanguage": "ja",
+      "mainEntityOfPage": "https://decisionprocess.net/cards/cu12.html",
+      "datePublished": "2026-10-10",
+      "dateModified": "2026-10-10",
+      "author": {
+        "@type": "Organization",
+        "name": "DECIDE."
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "DECIDE.",
+        "url": "https://decisionprocess.net/"
+      },
+      "url": "https://decisionprocess.net/cards/cu12.html"
+    },
+    "BreadcrumbList": {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "DECIDE.",
+          "item": "https://decisionprocess.net/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "タロットカード78枚の意味",
+          "item": "https://decisionprocess.net/cards/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "カップのナイトの意味",
+          "item": "https://decisionprocess.net/cards/cu12.html"
+        }
+      ]
+    },
+    "cta": "<aside class=\"cta\" aria-label=\"DECIDE.で迷いを整理する\">\n<p>誘いを受けるか、想いを伝えるか。いまの迷いを、カードを引いて整理してみませんか。</p>\n<a href=\"../?from=cu12\">カードを引いて、自分の気持ちを整理する</a>\n</aside>"
+  }
+}

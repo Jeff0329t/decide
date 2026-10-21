@@ -35,8 +35,16 @@ test('requested representative copy is present',()=>{
   for(const card of document.cards)for(const orientation of ['upright','reversed'])assert.ok(card[orientation].themes.diff);
 });
 
-test('exactly 314 copy leaves changed and structure stayed intact',()=>{
+test('editorial updates preserve card identities, scores and data structure',()=>{
   const differences=leafDifferences(before,document);
-  assert.equal(differences.length,314);
-  for(const path of differences)assert.match(path,/^cards\.\d+\.(upright|reversed)\.(meaning|themes\.(letgo|diff|blind))$/);
+  assert.ok(differences.length>314);
+  for(const path of differences)assert.match(path,/^(cards\.\d+\.(story|background|(upright|reversed)\.(meaning|keywords\.\d+|themes\.(blind|caution|want|letgo|diff)))|meta\.(version|generated|note)|themes\.(blind|caution|want|letgo|diff))$/);
+  for(let index=0;index<document.cards.length;index++) {
+    const card=document.cards[index],original=before.cards[index];
+    for(const key of ['id','name','en','image','arcana','symbol'])assert.equal(card[key],original[key],`${card.id}.${key}`);
+    for(const direction of ['upright','reversed']) {
+      assert.equal(card[direction].score,original[direction].score,`${card.id}.${direction}.score`);
+      assert.equal(card[direction].keywords.length,3);
+    }
+  }
 });

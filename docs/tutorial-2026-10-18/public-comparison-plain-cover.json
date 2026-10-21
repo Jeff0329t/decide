@@ -1,0 +1,47 @@
+[
+  {
+    "path": "index.html",
+    "match": true,
+    "sha256": "333c7fba37a50508292801fcd2383fa6d1d6d53b5a7c7fdf459f75a7cac62dae"
+  },
+  {
+    "path": "app.js",
+    "match": true,
+    "sha256": "6c600903e0ef4010780218f568d32751c0dfc689358ebff6d19f18301816f5c9"
+  },
+  {
+    "path": "styles.css",
+    "match": true,
+    "sha256": "1adf0f358bf756fe820a914417564d4f5225411984a0e87437bf903ee4f320b7"
+  },
+  {
+    "path": "service-worker.js",
+    "match": true,
+    "sha256": "d9e40ee1c14536a5d3561538873d9ca50ed807b5877a848df48c98f86c743f76"
+  },
+  {
+    "path": "config.js",
+    "match": true,
+    "sha256": "f15cbc316737ddc1c7bbc512c2e337c81e408e160dc70e0a482eb6971ad2988c"
+  },
+  {
+    "path": "auth.js",
+    "match": true,
+    "sha256": "532f6eaee01a3edfb184a08b7e56535aa8594db36a70eb6329f9955e4f54f31a"
+  },
+  {
+    "path": "learn.js",
+    "match": true,
+    "sha256": "bc109e8d6350e44a6259b72bb372dab921d6f6ff415d96508f5175d54ffdb44c"
+  },
+  {
+    "path": "manifest.webmanifest",
+    "match": true,
+    "sha256": "42e2ae3fb37ad7df900a3bda9f22e073d83d24448569aa0bb5a05d0edf942c8a"
+  },
+  {
+    "path": "email-reminders.js",
+    "match": true,
+    "sha256": "5d2b4e6b6eeb0f3eb916a093305334d761376bd8b936f6ffe5478a4a7e046718"
+  }
+]

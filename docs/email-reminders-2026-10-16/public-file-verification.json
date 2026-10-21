@@ -1,0 +1,42 @@
+{
+  "commit": "28ef4b6cfe859e5f2ad7d450cf5a7b816b442b64",
+  "pagesRun": 38820386476,
+  "files": [
+    {
+      "file": "index.html",
+      "sha256": "2c0982befbeea3ca8639595d5b6d3537ace5048e7eedee02de75dc682cac39f2"
+    },
+    {
+      "file": "app.js",
+      "sha256": "35eaab5e7fdcec220db6a231bc0d14351222be259a971b7a3d5f91b995367c34"
+    },
+    {
+      "file": "auth.js",
+      "sha256": "532f6eaee01a3edfb184a08b7e56535aa8594db36a70eb6329f9955e4f54f31a"
+    },
+    {
+      "file": "config.js",
+      "sha256": "56a73d37310ac2a136831e82e94e4e977514f5a963c21f70b339ab1be8cbec5e"
+    },
+    {
+      "file": "reminders.js",
+      "sha256": "31c3dde098a2dbcb40c89fa804cc4793696e412271dbc702a2f38455811dfaed"
+    },
+    {
+      "file": "email-reminders.js",
+      "sha256": "dd4835c3e965fe6f311850505b45771a1003d32848254cc000b409af78f3ed25"
+    },
+    {
+      "file": "service-worker.js",
+      "sha256": "db0c9db75d2a8d6e924982e5ee14221719d01394a74787adea776a9f987cc229"
+    },
+    {
+      "file": "styles.css",
+      "sha256": "7365093c53e6c99a1a418c07983b9bea38c8523330009c2bec44290d6afbe751"
+    },
+    {
+      "file": "privacy.html",
+      "sha256": "780456fd7f542101a487b1cdf9e5569d191c1d629845b229466f43eed4d39753"
+    }
+  ]
+}

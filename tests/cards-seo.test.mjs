@@ -24,7 +24,8 @@ test('each card page has SEO essentials, CTAs, credit and alt', () => {
     assert.match(html, /name="twitter:card"/, id);
     assert.match(html, /"@type":\s*"Article"/, id);
     assert.match(html, /"@type":\s*"BreadcrumbList"/, id);
-    assert.equal(html.split(CTA).length - 1, 2, `${id} CTA count`);
+    assert.equal(html.split(CTA).length - 1, 1, `${id} mid CTA count`);
+    assert.equal((html.match(/<aside class="cta"/g) || []).length, 2, `${id} CTA count`);
     assert.match(html, /images: sixseeds\/tarot-api, public domain/, id);
     assert.match(html, /<img [^>]*alt="[^"]+"/, id);
     assert.match(html, /決断・迷いにおけるヒント/, id);
@@ -72,8 +73,8 @@ test('card pages link to their category and neighbours', () => {
   for (const id of ids) {
     const html = read(`dist/cards/${id}.html`);
     assert.match(html, new RegExp(`href="\\./${cats[id.slice(0, 2)]}\\.html"`), id);
-    if (id !== 'ar00') assert.match(html, /rel="prev"/, id);
-    if (id !== 'pe14') assert.match(html, /rel="next"/, id);
+    if (!['ar00', 'wa01', 'cu01', 'sw01', 'pe01'].includes(id)) assert.match(html, /rel="prev"/, id);
+    if (!['ar21', 'wa14', 'cu14', 'sw14', 'pe14'].includes(id)) assert.match(html, /rel="next"/, id);
   }
   const idx = read('dist/cards/index.html');
   for (const slug of Object.values(cats)) assert.match(idx, new RegExp(`href="\\./${slug}\\.html"`), slug);
@@ -116,7 +117,8 @@ test('worry pages have SEO essentials, CTAs into the app, credit and no JS', () 
     assert.match(html, /<meta name="description" content="[^"]{20,}"/, slug);
     assert.match(html, /"@type":\s*"Article"/, slug);
     assert.match(html, /"@type":\s*"BreadcrumbList"/, slug);
-    assert.equal(html.split(CTA).length - 1, 2, `${slug} CTA count`);
+    assert.equal(html.split(CTA).length - 1, 1, `${slug} mid CTA count`);
+    assert.equal((html.match(/<aside class="cta"/g) || []).length, 2, `${slug} CTA count`);
     const froms = [...html.matchAll(/href="\.\.\/\?from=([^"]+)"/g)].map((m) => m[1]);
     assert.equal(froms.length, 2, `${slug} from links`);
     for (const f of froms) assert.ok(ids.includes(f), `${slug} from=${f}`);

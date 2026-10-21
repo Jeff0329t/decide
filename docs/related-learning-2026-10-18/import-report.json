@@ -1,0 +1,47 @@
+{
+  "sources": [
+    {
+      "file": "decide_note_import_wxr.xml",
+      "sha256": "7956c531538a11f80ad4c484e6f5ca031bc099e43d9e4bc748af017e280a0ba5",
+      "articles": 6
+    },
+    {
+      "file": "decide_note_import_20articles_wxr.xml",
+      "sha256": "ef06657540a6b6f453656568b0acf48a457ee33f6d821879939dde0a1d6f027d",
+      "articles": 20
+    },
+    {
+      "file": "decide_note_import_vol3_20articles_wxr.xml",
+      "sha256": "c8c21c0c8210bf5805da403edc4c657a224a5959b1ecb5a5c27bc0dc5a350944",
+      "articles": 20
+    },
+    {
+      "file": "decide_note_import_vol4_20articles_wxr.xml",
+      "sha256": "5d2a837740ea3a61f0269d52a466bfe278e68703f82e2af4168aa13542f4f177",
+      "articles": 20
+    },
+    {
+      "file": "decide_note_import_vol5_20articles_wxr.xml",
+      "sha256": "8963c29a895d84c3ed6cebf2831751cef636486447a7c344286d553528c7f886",
+      "articles": 20
+    },
+    {
+      "file": "decide_note_import_vol6_20articles_wxr.xml",
+      "sha256": "fd281769fad9854a4a871f8c4dd6ca3e90771f687ed4298121d3519bd0a1f2fd",
+      "articles": 20
+    },
+    {
+      "file": "decide_note_import_vol7_modern20_wxr.xml",
+      "sha256": "057c84bc504f455c8e137b13d9f076828e8860bf0d576a08bdb500d85b63ac11",
+      "articles": 20
+    }
+  ],
+  "total": 126,
+  "categories": {
+    "tarot": 21,
+    "feelings": 64,
+    "relationships": 9,
+    "work-life": 18,
+    "habits": 14
+  }
+}

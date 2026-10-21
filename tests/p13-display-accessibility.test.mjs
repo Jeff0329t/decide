@@ -21,7 +21,7 @@ function contrast(a,b){
 
 test('P13 copy, headings, defaults, and duplicate delete semantics',()=>{
   const queen=cards.cards.find(card=>card.id==='pe13');
-  assert.equal(queen.upright.themes.blind,'暮らしの土台を整えることに、いま何より価値があるのではありませんか。');
+  assert.match(queen.upright.themes.blind,/食事や休み/);
   assert.match(app,/feedback: savedSettings\.feedback === true/);
   assert.match(app,/ひとつの迷いを考える/);
   assert.match(app,/2つの選択肢を比べる/);

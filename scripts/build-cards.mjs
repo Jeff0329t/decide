@@ -11,6 +11,8 @@
 import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { loadArticles } from './lib/markdown.mjs';
+import { seoForPath } from './lib/cards-seo.mjs';
+import { enhanceCardsPage } from './lib/cards-navigation-seo.mjs';
 
 const DIST = fileURLToPath(new URL('../dist/', import.meta.url));
 const DATA = fileURLToPath(new URL('./data/', import.meta.url));
@@ -205,8 +207,10 @@ main p{margin:0 0 1em}
 .wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}`;
 
 function layout({ title, description, path, ogImage, ogType = 'article', ld, body, noindex = false }) {
+  const seo = seoForPath(path);
+  if (seo) ({ title, description } = seo);
   const url = ORIGIN + path;
-  return `<!doctype html>
+  const html = `<!doctype html>
 <html lang="ja">
 <head>
 <meta charset="utf-8">
@@ -242,6 +246,7 @@ ${body}
 </body>
 </html>
 `;
+  return enhanceCardsPage(html, path);
 }
 
 function crumbsHtml(items) {

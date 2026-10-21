@@ -1,0 +1,29 @@
+[
+  {
+    "width": 320,
+    "height": 568,
+    "coverLinks": "passed",
+    "originalNavigation": "passed",
+    "articleCtas": "passed",
+    "horizontalOverflow": false,
+    "pageErrors": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "coverLinks": "passed",
+    "originalNavigation": "passed",
+    "articleCtas": "passed",
+    "horizontalOverflow": false,
+    "pageErrors": []
+  },
+  {
+    "width": 430,
+    "height": 932,
+    "coverLinks": "passed",
+    "originalNavigation": "passed",
+    "articleCtas": "passed",
+    "horizontalOverflow": false,
+    "pageErrors": []
+  }
+]

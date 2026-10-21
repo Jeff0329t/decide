@@ -1,0 +1,62 @@
+[
+  {
+    "path": "index.html",
+    "match": true,
+    "sha256": "d18207adb30a294fe8a0cc6539c441d66ea4f2c22c39caddf3dbe23778894c9d"
+  },
+  {
+    "path": "app.js",
+    "match": true,
+    "sha256": "1b044ca9156f6967e23dcc81c16ec469b17d4ac3209c5cb3e8173aa79a72d3ae"
+  },
+  {
+    "path": "styles.css",
+    "match": true,
+    "sha256": "a4c33f1dda95bf171702abc89b132ff0fbce98d655af996b7eb19f8ae0833e98"
+  },
+  {
+    "path": "service-worker.js",
+    "match": true,
+    "sha256": "d6ec682a705bdce85ef8aa59343895ec43e1e41d6894a90507bbe2efc3cdae6a"
+  },
+  {
+    "path": "config.js",
+    "match": true,
+    "sha256": "f15cbc316737ddc1c7bbc512c2e337c81e408e160dc70e0a482eb6971ad2988c"
+  },
+  {
+    "path": "auth.js",
+    "match": true,
+    "sha256": "532f6eaee01a3edfb184a08b7e56535aa8594db36a70eb6329f9955e4f54f31a"
+  },
+  {
+    "path": "learn.js",
+    "match": true,
+    "sha256": "0fa41bf264bebce7bf31f953b6ab858c91fefc11e34f35d0a05b736e6c27ed23"
+  },
+  {
+    "path": "manifest.webmanifest",
+    "match": true,
+    "sha256": "42e2ae3fb37ad7df900a3bda9f22e073d83d24448569aa0bb5a05d0edf942c8a"
+  },
+  {
+    "path": "email-reminders.js",
+    "match": true,
+    "sha256": "5d2b4e6b6eeb0f3eb916a093305334d761376bd8b936f6ffe5478a4a7e046718"
+  },
+  {
+    "path": "assets/cards.json",
+    "match": true,
+    "sha256": "1aa4c322a20df650905c5770cc8171a8d4e6b50263961e9b9582cdc136caec92"
+  },
+  {
+    "path": "assets/learn.json",
+    "match": true,
+    "sha256": "6edda7af821272f7f562e0dfc00b5e747a674400b35c5c88096fa3c42f9e882e"
+  },
+  {
+    "path": "assets/related-articles.json",
+    "match": true,
+    "sha256": "4514afff8aabb34695dbd1bf74cf3a4ba3033ba8965562c4cef27e60f4256c22"
+  }
+]

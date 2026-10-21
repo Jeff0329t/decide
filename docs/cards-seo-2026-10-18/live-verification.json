@@ -1,0 +1,390 @@
+[
+  {
+    "file": "ar00.html",
+    "match": true
+  },
+  {
+    "file": "ar01.html",
+    "match": true
+  },
+  {
+    "file": "ar02.html",
+    "match": true
+  },
+  {
+    "file": "ar03.html",
+    "match": true
+  },
+  {
+    "file": "ar04.html",
+    "match": true
+  },
+  {
+    "file": "ar05.html",
+    "match": true
+  },
+  {
+    "file": "ar06.html",
+    "match": true
+  },
+  {
+    "file": "ar07.html",
+    "match": true
+  },
+  {
+    "file": "ar08.html",
+    "match": true
+  },
+  {
+    "file": "ar09.html",
+    "match": true
+  },
+  {
+    "file": "ar10.html",
+    "match": true
+  },
+  {
+    "file": "ar11.html",
+    "match": true
+  },
+  {
+    "file": "ar12.html",
+    "match": true
+  },
+  {
+    "file": "ar13.html",
+    "match": true
+  },
+  {
+    "file": "ar14.html",
+    "match": true
+  },
+  {
+    "file": "ar15.html",
+    "match": true
+  },
+  {
+    "file": "ar16.html",
+    "match": true
+  },
+  {
+    "file": "ar17.html",
+    "match": true
+  },
+  {
+    "file": "ar18.html",
+    "match": true
+  },
+  {
+    "file": "ar19.html",
+    "match": true
+  },
+  {
+    "file": "ar20.html",
+    "match": true
+  },
+  {
+    "file": "ar21.html",
+    "match": true
+  },
+  {
+    "file": "cu01.html",
+    "match": true
+  },
+  {
+    "file": "cu02.html",
+    "match": true
+  },
+  {
+    "file": "cu03.html",
+    "match": true
+  },
+  {
+    "file": "cu04.html",
+    "match": true
+  },
+  {
+    "file": "cu05.html",
+    "match": true
+  },
+  {
+    "file": "cu06.html",
+    "match": true
+  },
+  {
+    "file": "cu07.html",
+    "match": true
+  },
+  {
+    "file": "cu08.html",
+    "match": true
+  },
+  {
+    "file": "cu09.html",
+    "match": true
+  },
+  {
+    "file": "cu10.html",
+    "match": true
+  },
+  {
+    "file": "cu11.html",
+    "match": true
+  },
+  {
+    "file": "cu12.html",
+    "match": true
+  },
+  {
+    "file": "cu13.html",
+    "match": true
+  },
+  {
+    "file": "cu14.html",
+    "match": true
+  },
+  {
+    "file": "cups.html",
+    "match": true
+  },
+  {
+    "file": "index.html",
+    "match": true
+  },
+  {
+    "file": "major.html",
+    "match": true
+  },
+  {
+    "file": "pe01.html",
+    "match": true
+  },
+  {
+    "file": "pe02.html",
+    "match": true
+  },
+  {
+    "file": "pe03.html",
+    "match": true
+  },
+  {
+    "file": "pe04.html",
+    "match": true
+  },
+  {
+    "file": "pe05.html",
+    "match": true
+  },
+  {
+    "file": "pe06.html",
+    "match": true
+  },
+  {
+    "file": "pe07.html",
+    "match": true
+  },
+  {
+    "file": "pe08.html",
+    "match": true
+  },
+  {
+    "file": "pe09.html",
+    "match": true
+  },
+  {
+    "file": "pe10.html",
+    "match": true
+  },
+  {
+    "file": "pe11.html",
+    "match": true
+  },
+  {
+    "file": "pe12.html",
+    "match": true
+  },
+  {
+    "file": "pe13.html",
+    "match": true
+  },
+  {
+    "file": "pe14.html",
+    "match": true
+  },
+  {
+    "file": "pentacles.html",
+    "match": true
+  },
+  {
+    "file": "sw01.html",
+    "match": true
+  },
+  {
+    "file": "sw02.html",
+    "match": true
+  },
+  {
+    "file": "sw03.html",
+    "match": true
+  },
+  {
+    "file": "sw04.html",
+    "match": true
+  },
+  {
+    "file": "sw05.html",
+    "match": true
+  },
+  {
+    "file": "sw06.html",
+    "match": true
+  },
+  {
+    "file": "sw07.html",
+    "match": true
+  },
+  {
+    "file": "sw08.html",
+    "match": true
+  },
+  {
+    "file": "sw09.html",
+    "match": true
+  },
+  {
+    "file": "sw10.html",
+    "match": true
+  },
+  {
+    "file": "sw11.html",
+    "match": true
+  },
+  {
+    "file": "sw12.html",
+    "match": true
+  },
+  {
+    "file": "sw13.html",
+    "match": true
+  },
+  {
+    "file": "sw14.html",
+    "match": true
+  },
+  {
+    "file": "swords.html",
+    "match": true
+  },
+  {
+    "file": "wa01.html",
+    "match": true
+  },
+  {
+    "file": "wa02.html",
+    "match": true
+  },
+  {
+    "file": "wa03.html",
+    "match": true
+  },
+  {
+    "file": "wa04.html",
+    "match": true
+  },
+  {
+    "file": "wa05.html",
+    "match": true
+  },
+  {
+    "file": "wa06.html",
+    "match": true
+  },
+  {
+    "file": "wa07.html",
+    "match": true
+  },
+  {
+    "file": "wa08.html",
+    "match": true
+  },
+  {
+    "file": "wa09.html",
+    "match": true
+  },
+  {
+    "file": "wa10.html",
+    "match": true
+  },
+  {
+    "file": "wa11.html",
+    "match": true
+  },
+  {
+    "file": "wa12.html",
+    "match": true
+  },
+  {
+    "file": "wa13.html",
+    "match": true
+  },
+  {
+    "file": "wa14.html",
+    "match": true
+  },
+  {
+    "file": "wands.html",
+    "match": true
+  },
+  {
+    "file": "worries.html",
+    "match": true
+  },
+  {
+    "file": "worry-dokuritsu.html",
+    "match": true
+  },
+  {
+    "file": "worry-fukugyo.html",
+    "match": true
+  },
+  {
+    "file": "worry-hikkoshi.html",
+    "match": true
+  },
+  {
+    "file": "worry-kaigo.html",
+    "match": true
+  },
+  {
+    "file": "worry-kekkon.html",
+    "match": true
+  },
+  {
+    "file": "worry-manabi.html",
+    "match": true
+  },
+  {
+    "file": "worry-ningen.html",
+    "match": true
+  },
+  {
+    "file": "worry-okane.html",
+    "match": true
+  },
+  {
+    "file": "worry-renai.html",
+    "match": true
+  },
+  {
+    "file": "worry-shukatsu.html",
+    "match": true
+  },
+  {
+    "file": "worry-tenshoku.html",
+    "match": true
+  },
+  {
+    "file": "worry-wakare.html",
+    "match": true
+  }
+]

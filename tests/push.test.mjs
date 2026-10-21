@@ -102,3 +102,29 @@ test('statusLabel: 状態ごとの表示', () => {
 test('isOn: はじめは OFF', () => {
   assert.equal(load().push.isOn(), false);
 });
+
+test('メール移行後は設定・再登録・予定同期を止め、旧購読を解除する', async () => {
+  const calls = [];
+  const storage = memoryStorage({ 'decide.tarot.push.v1': '{"enabled":true,"ownerId":"u"}' });
+  const sub = { endpoint: 'https://push.example.test/old', unsubscribe: async () => { calls.push('unsubscribe'); return true; } };
+  const online = {};
+  const window = {
+    DECIDE_CONFIG: { PUSH_REMINDERS_ENABLED: false, VAPID_PUBLIC_KEY: 'AQID' },
+    DECIDE_AUTH: { getUser: () => ({ id: 'u' }), client: () => ({ rpc: async (name, args) => { calls.push([name, args.endpoint]); return {}; } }) },
+    addEventListener: (name, fn) => { online[name] = fn; },
+    PushManager: function() {}
+  };
+  vm.runInNewContext(read('push.js'), {
+    window, localStorage: storage, console, atob,
+    navigator: { serviceWorker: { getRegistration: async () => ({ pushManager: { getSubscription: async () => sub } }) } },
+    Notification: { permission: 'granted' },
+    document: { addEventListener() {}, querySelector: () => null }
+  });
+  await online.online();
+  assert.equal(window.DECIDE_PUSH.isOn(), false);
+  assert.equal(window.DECIDE_PUSH.renderSettings(), '');
+  await window.DECIDE_PUSH.toggle();
+  assert.equal(await window.DECIDE_PUSH.syncNow(), false);
+  assert.deepEqual(calls, [['delete_push_subscription', sub.endpoint], 'unsubscribe']);
+  assert.equal(JSON.parse(storage.getItem('decide.tarot.push.v1')).enabled, false);
+});

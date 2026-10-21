@@ -213,7 +213,7 @@
 
   window.DECIDE_REMINDERS = Object.freeze({
     isOn: () => state.enabled,
-    defaultRemindAt: createdAt => defaultRemindAt(createdAt, state.enabled || window.DECIDE_PUSH?.isOn?.() === true),
+    defaultRemindAt: createdAt => defaultRemindAt(createdAt, state.enabled || window.DECIDE_PUSH?.isOn?.() === true || window.DECIDE_EMAIL_REMINDERS?.isOn?.() === true),
     mountSettings,
     renderToggle,
     syncNow: syncToDb,

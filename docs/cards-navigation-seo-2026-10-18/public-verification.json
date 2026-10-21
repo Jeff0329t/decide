@@ -1,0 +1,832 @@
+{
+  "commit": "7c58f4affa2644bdc9f0c192e29bea783c781f0f",
+  "deployment": "https://github.com/Jeff0329t/decide/actions/runs/39123150023",
+  "files": [
+    {
+      "path": "cards/ar00.html",
+      "url": "https://decisionprocess.net/cards/ar00.html",
+      "status": 200,
+      "bytes": 19827,
+      "sha256": "873cc9e8978709ded33a4e67c81dd38d11f206149246ed84b7446baacac038cc",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar01.html",
+      "url": "https://decisionprocess.net/cards/ar01.html",
+      "status": 200,
+      "bytes": 20211,
+      "sha256": "cfe4a6a2bfded12dabe0373f9b38921fc6e9fd47864fedf434f6c0b8d598a664",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar02.html",
+      "url": "https://decisionprocess.net/cards/ar02.html",
+      "status": 200,
+      "bytes": 20230,
+      "sha256": "333d9bf2b70436d42a7b9acb5fea689ca7f63b9df61c29b21b0b7d8ef0777920",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar03.html",
+      "url": "https://decisionprocess.net/cards/ar03.html",
+      "status": 200,
+      "bytes": 20002,
+      "sha256": "9fe74755931eb0cce25f05c8837f246cc16dd7c16dbb630c94e7ba42f619905f",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar04.html",
+      "url": "https://decisionprocess.net/cards/ar04.html",
+      "status": 200,
+      "bytes": 20011,
+      "sha256": "9d8675e37bae9467cc737ba9d0aef7ec172df18564a1c0ccb0aae3eb9f670a73",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar05.html",
+      "url": "https://decisionprocess.net/cards/ar05.html",
+      "status": 200,
+      "bytes": 19935,
+      "sha256": "340b43fb41cf00f729fedeec2e683dd8086b22f3745cbaa069c1d1065221a77d",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar06.html",
+      "url": "https://decisionprocess.net/cards/ar06.html",
+      "status": 200,
+      "bytes": 20033,
+      "sha256": "990f90b2b634d65941845e78b2e0370758937af02f9a028cf099282b139ed04d",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar07.html",
+      "url": "https://decisionprocess.net/cards/ar07.html",
+      "status": 200,
+      "bytes": 20029,
+      "sha256": "546b0b5fd5d41e410524cf04492b5864d7518dfe28866ee259380f433cfc1f46",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar08.html",
+      "url": "https://decisionprocess.net/cards/ar08.html",
+      "status": 200,
+      "bytes": 19982,
+      "sha256": "16050a6d3bdad10feca59bbe32554a4ae81e53a085ec9e58b3fff36f89afaf11",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar09.html",
+      "url": "https://decisionprocess.net/cards/ar09.html",
+      "status": 200,
+      "bytes": 20160,
+      "sha256": "6543cdbc65d513263a48d24d48488e617f6780f568a58332d4f0f1c51315361a",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar10.html",
+      "url": "https://decisionprocess.net/cards/ar10.html",
+      "status": 200,
+      "bytes": 20162,
+      "sha256": "7aeb8cb85c5a3cfb0a0a8a569f8ed264cd50c7b5a42311c348b461d041087cdb",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar11.html",
+      "url": "https://decisionprocess.net/cards/ar11.html",
+      "status": 200,
+      "bytes": 20053,
+      "sha256": "d4541466d580cb1c45d2f231ff32593719b34cf5427dfac79cb9bf017b7f9cb8",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar12.html",
+      "url": "https://decisionprocess.net/cards/ar12.html",
+      "status": 200,
+      "bytes": 20192,
+      "sha256": "7c37cd9c5fd3d36407bc6c4c3aea2833bf7cd98d1617864399dcb09aaef820ab",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar13.html",
+      "url": "https://decisionprocess.net/cards/ar13.html",
+      "status": 200,
+      "bytes": 20132,
+      "sha256": "0adeec0e28065df42d1dbbe0e2289b192a64836881fecdc771cce1b4168c2d2d",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar14.html",
+      "url": "https://decisionprocess.net/cards/ar14.html",
+      "status": 200,
+      "bytes": 20014,
+      "sha256": "c266cb67b04cbaf966f20909815e138c1330d2f42154ffaaa78eb112972fa335",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar15.html",
+      "url": "https://decisionprocess.net/cards/ar15.html",
+      "status": 200,
+      "bytes": 20028,
+      "sha256": "11c0d2240b026f5fd4f3e23065efacd793f65c45a9e948078ec8c931a1c0d4e0",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar16.html",
+      "url": "https://decisionprocess.net/cards/ar16.html",
+      "status": 200,
+      "bytes": 20178,
+      "sha256": "319e41ac50f56ea22aef90b00e904beaf97b3cc40982f76b7806a60402252175",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar17.html",
+      "url": "https://decisionprocess.net/cards/ar17.html",
+      "status": 200,
+      "bytes": 19936,
+      "sha256": "8cb200b21aa2f4e03ecaf0bb1efb9923df6ca3796891706d973e3642a2484a28",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar18.html",
+      "url": "https://decisionprocess.net/cards/ar18.html",
+      "status": 200,
+      "bytes": 20061,
+      "sha256": "c0b79859cb990e1216be308b3c8555bef61d1b8423c94bf88fdca10bd23bcd39",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar19.html",
+      "url": "https://decisionprocess.net/cards/ar19.html",
+      "status": 200,
+      "bytes": 20042,
+      "sha256": "6b2f8989dd0bf751e88a0a52c702244a1438bb2ee707e57ed05f9c2faf7ce375",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar20.html",
+      "url": "https://decisionprocess.net/cards/ar20.html",
+      "status": 200,
+      "bytes": 20012,
+      "sha256": "ab3733c0f3054534997442ec577df620b026bbbdbb2630c1ee614ab097637cef",
+      "matches_release": true
+    },
+    {
+      "path": "cards/ar21.html",
+      "url": "https://decisionprocess.net/cards/ar21.html",
+      "status": 200,
+      "bytes": 19690,
+      "sha256": "3eba912a5b4097a946a055c568544f126daf52225f51c8e9c4b8f8b03c06133f",
+      "matches_release": true
+    },
+    {
+      "path": "cards/cu01.html",
+      "url": "https://decisionprocess.net/cards/cu01.html",
+      "status": 200,
+      "bytes": 21117,
+      "sha256": "1aad44ca8f618e04cce224ea83e39eeede4eae035ba87741200f43b052a0e85b",
+      "matches_release": true
+    },
+    {
+      "path": "cards/cu02.html",
+      "url": "https://decisionprocess.net/cards/cu02.html",
+      "status": 200,
+      "bytes": 21450,
+      "sha256": "b16f5c978ed43c8fefa56f6de8fb07a46512bf9fea34e0c536864695012dda0e",
+      "matches_release": true
+    },
+    {
+      "path": "cards/cu03.html",
+      "url": "https://decisionprocess.net/cards/cu03.html",
+      "status": 200,
+      "bytes": 21509,
+      "sha256": "840f8e2c6dc5ac3d1c85bfe00eba5587d42cde916c17b898724490a54d574ecc",
+      "matches_release": true
+    },
+    {
+      "path": "cards/cu04.html",
+      "url": "https://decisionprocess.net/cards/cu04.html",
+      "status": 200,
+      "bytes": 21406,
+      "sha256": "ff319d600ac8e585637df3827fc2346c5f25152408b5b60479883a47116f80cc",
+      "matches_release": true
+    },
+    {
+      "path": "cards/cu05.html",
+      "url": "https://decisionprocess.net/cards/cu05.html",
+      "status": 200,
+      "bytes": 21534,
+      "sha256": "ed76cf143de271635b005b03299cfec333a9e10be7f7b2b15c5fd6e6ceab2087",
+      "matches_release": true
+    },
+    {
+      "path": "cards/cu06.html",
+      "url": "https://decisionprocess.net/cards/cu06.html",
+      "status": 200,
+      "bytes": 21382,
+      "sha256": "7ab1eed946ccb0c12ee3f27d8df616f0064163125285d5d21e3dcf282ddcd9f8",
+      "matches_release": true
+    },
+    {
+      "path": "cards/cu07.html",
+      "url": "https://decisionprocess.net/cards/cu07.html",
+      "status": 200,
+      "bytes": 21434,
+      "sha256": "26d4bce1b7aeb8b442916c94b0e7e6f19fd127604c584412a3c6e796f3ce2ee4",
+      "matches_release": true
+    },
+    {
+      "path": "cards/cu08.html",
+      "url": "https://decisionprocess.net/cards/cu08.html",
+      "status": 200,
+      "bytes": 21526,
+      "sha256": "977199cef8dcb58bc5d9e51a618d1531e6924624c75788ba24620cc3595ddd73",
+      "matches_release": true
+    },
+    {
+      "path": "cards/cu09.html",
+      "url": "https://decisionprocess.net/cards/cu09.html",
+      "status": 200,
+      "bytes": 21351,
+      "sha256": "9beab2da057acbf95823adfdf5aa13559434a2a705dfcc6c37cf0fdd9180721e",
+      "matches_release": true
+    },
+    {
+      "path": "cards/cu10.html",
+      "url": "https://decisionprocess.net/cards/cu10.html",
+      "status": 200,
+      "bytes": 21371,
+      "sha256": "ec5bf107dab01c3b97c5b4f65ff9f2235db390955ba021970095e2652e1e7918",
+      "matches_release": true
+    },
+    {
+      "path": "cards/cu11.html",
+      "url": "https://decisionprocess.net/cards/cu11.html",
+      "status": 200,
+      "bytes": 21659,
+      "sha256": "b22f1cdb8993f2b1b3a6cae2b5878e0d43f87bee1bf3b6b4ab00ff70e2d35b44",
+      "matches_release": true
+    },
+    {
+      "path": "cards/cu12.html",
+      "url": "https://decisionprocess.net/cards/cu12.html",
+      "status": 200,
+      "bytes": 21503,
+      "sha256": "3279c0c2046d771c30e64023d2e1393c2c960c6abf6ed3e3e715bafadfb6c453",
+      "matches_release": true
+    },
+    {
+      "path": "cards/cu13.html",
+      "url": "https://decisionprocess.net/cards/cu13.html",
+      "status": 200,
+      "bytes": 21703,
+      "sha256": "4e7c6fb73161440e4f722f935e09da3704ee46a0cf4df11a1835335b108ec4f5",
+      "matches_release": true
+    },
+    {
+      "path": "cards/cu14.html",
+      "url": "https://decisionprocess.net/cards/cu14.html",
+      "status": 200,
+      "bytes": 21114,
+      "sha256": "6e001b3a9ded81d82c66adad97386fd72c41020bd3e6528c75eeaef787e94cf1",
+      "matches_release": true
+    },
+    {
+      "path": "cards/cups.html",
+      "url": "https://decisionprocess.net/cards/cups.html",
+      "status": 200,
+      "bytes": 22539,
+      "sha256": "3f1e9bb02110bb70e5cbd0e4ebe0e2eabfa20f859cf63f946f3d779068f168d6",
+      "matches_release": true
+    },
+    {
+      "path": "cards/index.html",
+      "url": "https://decisionprocess.net/cards/",
+      "status": 200,
+      "bytes": 53252,
+      "sha256": "695f7a40d3d1cb0930dfa56756b0ed6bd561096f115696a1e4bf16bb749fa908",
+      "matches_release": true
+    },
+    {
+      "path": "cards/major.html",
+      "url": "https://decisionprocess.net/cards/major.html",
+      "status": 200,
+      "bytes": 26864,
+      "sha256": "8e24cfa88e12c9323470ad7d863dcd543d7c6163f7d8403a3926855fb8ffdce2",
+      "matches_release": true
+    },
+    {
+      "path": "cards/pe01.html",
+      "url": "https://decisionprocess.net/cards/pe01.html",
+      "status": 200,
+      "bytes": 21390,
+      "sha256": "cc7539a2a66aa1e9f220975627d45436add06db40a96bd7acea4516cdfe9834f",
+      "matches_release": true
+    },
+    {
+      "path": "cards/pe02.html",
+      "url": "https://decisionprocess.net/cards/pe02.html",
+      "status": 200,
+      "bytes": 21654,
+      "sha256": "7d294083948f82af024c2989312de2d0285b4d8988aaa225fef0c179de604517",
+      "matches_release": true
+    },
+    {
+      "path": "cards/pe03.html",
+      "url": "https://decisionprocess.net/cards/pe03.html",
+      "status": 200,
+      "bytes": 21615,
+      "sha256": "c767787bf88a248524e7e6a21f31b0384a727cea6b2398ce5469654cef071cd0",
+      "matches_release": true
+    },
+    {
+      "path": "cards/pe04.html",
+      "url": "https://decisionprocess.net/cards/pe04.html",
+      "status": 200,
+      "bytes": 21562,
+      "sha256": "96ac95728a5a050bd2da6035fb76b066d8b253f7e35eb2d211b143fdbe9dedfb",
+      "matches_release": true
+    },
+    {
+      "path": "cards/pe05.html",
+      "url": "https://decisionprocess.net/cards/pe05.html",
+      "status": 200,
+      "bytes": 21475,
+      "sha256": "11ccd835d61991fbe11c97c4991bf0250e412b7d4b09c83734d2614be382e163",
+      "matches_release": true
+    },
+    {
+      "path": "cards/pe06.html",
+      "url": "https://decisionprocess.net/cards/pe06.html",
+      "status": 200,
+      "bytes": 21673,
+      "sha256": "16874298b3edc5d87bfcf1f6c2bea875be2a090877ecc4af3ad17be935413f8b",
+      "matches_release": true
+    },
+    {
+      "path": "cards/pe07.html",
+      "url": "https://decisionprocess.net/cards/pe07.html",
+      "status": 200,
+      "bytes": 21716,
+      "sha256": "6b5c5c2931254077157cf9e77ada79c622c459142102e4b41cad94a625f9260c",
+      "matches_release": true
+    },
+    {
+      "path": "cards/pe08.html",
+      "url": "https://decisionprocess.net/cards/pe08.html",
+      "status": 200,
+      "bytes": 21592,
+      "sha256": "1508fd8524b15b0ea2ed6a45a4ebde341937efb280781005bbf2691ca98bfd54",
+      "matches_release": true
+    },
+    {
+      "path": "cards/pe09.html",
+      "url": "https://decisionprocess.net/cards/pe09.html",
+      "status": 200,
+      "bytes": 21507,
+      "sha256": "1e6673f1207646bd786518e261821db7cf8976b80dc98ddced0ea7550041ec2b",
+      "matches_release": true
+    },
+    {
+      "path": "cards/pe10.html",
+      "url": "https://decisionprocess.net/cards/pe10.html",
+      "status": 200,
+      "bytes": 21585,
+      "sha256": "ae8647254f827366eb9c975785850915eda912418af71096cb16fca838bd3b30",
+      "matches_release": true
+    },
+    {
+      "path": "cards/pe11.html",
+      "url": "https://decisionprocess.net/cards/pe11.html",
+      "status": 200,
+      "bytes": 21799,
+      "sha256": "8335af5fe0c5a7c03c204a48261537ead54e348b3255dc5ea895dfff1d5fe1fb",
+      "matches_release": true
+    },
+    {
+      "path": "cards/pe12.html",
+      "url": "https://decisionprocess.net/cards/pe12.html",
+      "status": 200,
+      "bytes": 21824,
+      "sha256": "0db5319e4de2aa26ef149b968817def40caff838057542e2afccec0daf0e8736",
+      "matches_release": true
+    },
+    {
+      "path": "cards/pe13.html",
+      "url": "https://decisionprocess.net/cards/pe13.html",
+      "status": 200,
+      "bytes": 21965,
+      "sha256": "e411bcf7c1f8c1486f1719d2ecea94527f1e601db09dec4c6b7c1da49e9d1ce7",
+      "matches_release": true
+    },
+    {
+      "path": "cards/pe14.html",
+      "url": "https://decisionprocess.net/cards/pe14.html",
+      "status": 200,
+      "bytes": 21282,
+      "sha256": "bdfa7fa7769b441e4c40cdd2f5dd4b65e1bd34427326b148875891b9783fbb4b",
+      "matches_release": true
+    },
+    {
+      "path": "cards/pentacles.html",
+      "url": "https://decisionprocess.net/cards/pentacles.html",
+      "status": 200,
+      "bytes": 22935,
+      "sha256": "b864467d5cc04010600757445eeed9867046b38e00c60a7c5f2d805d67a2b9df",
+      "matches_release": true
+    },
+    {
+      "path": "cards/sw01.html",
+      "url": "https://decisionprocess.net/cards/sw01.html",
+      "status": 200,
+      "bytes": 21093,
+      "sha256": "600d36025f9d3a0b076a24cec92e3896c9b468a5e6085717296a18d2351da16f",
+      "matches_release": true
+    },
+    {
+      "path": "cards/sw02.html",
+      "url": "https://decisionprocess.net/cards/sw02.html",
+      "status": 200,
+      "bytes": 21514,
+      "sha256": "45a70ec89ecdd1bc402f96076991e5880937941a81f7c5d2f5ceb71e888ffe16",
+      "matches_release": true
+    },
+    {
+      "path": "cards/sw03.html",
+      "url": "https://decisionprocess.net/cards/sw03.html",
+      "status": 200,
+      "bytes": 21412,
+      "sha256": "d0e5a80686a5c113afa6af4cc8897b9197fe940581b67f4459d2bf6c23487c3e",
+      "matches_release": true
+    },
+    {
+      "path": "cards/sw04.html",
+      "url": "https://decisionprocess.net/cards/sw04.html",
+      "status": 200,
+      "bytes": 21356,
+      "sha256": "52fcf91fd5217f1efe9b7dc4605daca54e2002b6d6b46c9d59a88e2a7ec9a420",
+      "matches_release": true
+    },
+    {
+      "path": "cards/sw05.html",
+      "url": "https://decisionprocess.net/cards/sw05.html",
+      "status": 200,
+      "bytes": 21315,
+      "sha256": "960b61cb5bf03e2be5930f5dca1a06d7d8951a14a5bdd536a85ea0e5191f7184",
+      "matches_release": true
+    },
+    {
+      "path": "cards/sw06.html",
+      "url": "https://decisionprocess.net/cards/sw06.html",
+      "status": 200,
+      "bytes": 21487,
+      "sha256": "308ce74159d98c87d14136fcd4d532e3f2ff068946ef4ee392328a71dfeb055f",
+      "matches_release": true
+    },
+    {
+      "path": "cards/sw07.html",
+      "url": "https://decisionprocess.net/cards/sw07.html",
+      "status": 200,
+      "bytes": 21271,
+      "sha256": "24272b1a128d324dc57385ce1a8df0f3650f9c32263bf136733c76254f447cb9",
+      "matches_release": true
+    },
+    {
+      "path": "cards/sw08.html",
+      "url": "https://decisionprocess.net/cards/sw08.html",
+      "status": 200,
+      "bytes": 21437,
+      "sha256": "ce1df439b75f84378cdbf52b546a72525921f292177eee135fdfffe169234051",
+      "matches_release": true
+    },
+    {
+      "path": "cards/sw09.html",
+      "url": "https://decisionprocess.net/cards/sw09.html",
+      "status": 200,
+      "bytes": 20866,
+      "sha256": "854ad2a052c6c54f2341890a21a373d8ad69bc6d53e23b96ecc01710b4125f10",
+      "matches_release": true
+    },
+    {
+      "path": "cards/sw10.html",
+      "url": "https://decisionprocess.net/cards/sw10.html",
+      "status": 200,
+      "bytes": 21419,
+      "sha256": "7796fc04ecc8de6d96c7e611f172a42f7fb13a9fa78452983bf5d4a8dae41231",
+      "matches_release": true
+    },
+    {
+      "path": "cards/sw11.html",
+      "url": "https://decisionprocess.net/cards/sw11.html",
+      "status": 200,
+      "bytes": 21564,
+      "sha256": "ce463eb0940824d0168c79afa42000092af39af4dadcdd9833af58c70b8f0c35",
+      "matches_release": true
+    },
+    {
+      "path": "cards/sw12.html",
+      "url": "https://decisionprocess.net/cards/sw12.html",
+      "status": 200,
+      "bytes": 21582,
+      "sha256": "2ad75399ac892dc8cc12f5467d54ba3d0cd94ae91bf3a07b88529cd4123eb82d",
+      "matches_release": true
+    },
+    {
+      "path": "cards/sw13.html",
+      "url": "https://decisionprocess.net/cards/sw13.html",
+      "status": 200,
+      "bytes": 21601,
+      "sha256": "365118dafc6739cf2116a55e108275f53b8b11ff223aca6813826f58997d6ccc",
+      "matches_release": true
+    },
+    {
+      "path": "cards/sw14.html",
+      "url": "https://decisionprocess.net/cards/sw14.html",
+      "status": 200,
+      "bytes": 21013,
+      "sha256": "fc02c9b8ecf8ce34b4dc8463e53729bf506f3e37f5e911fe4c6b6faaae49e41f",
+      "matches_release": true
+    },
+    {
+      "path": "cards/swords.html",
+      "url": "https://decisionprocess.net/cards/swords.html",
+      "status": 200,
+      "bytes": 22515,
+      "sha256": "12184d175374b2e5aa333e6a46c5e8ddbfb6474067d7225ac2e9b92ad8f083b9",
+      "matches_release": true
+    },
+    {
+      "path": "cards/wa01.html",
+      "url": "https://decisionprocess.net/cards/wa01.html",
+      "status": 200,
+      "bytes": 21090,
+      "sha256": "c1fbf4bb95fdfc24897a259317270989993a10ac491b155051748658ae61396c",
+      "matches_release": true
+    },
+    {
+      "path": "cards/wa02.html",
+      "url": "https://decisionprocess.net/cards/wa02.html",
+      "status": 200,
+      "bytes": 21525,
+      "sha256": "2e9ed314fd3f7aac578a0aac67040db01c73fd41078bf0ea535c1863b1bdd642",
+      "matches_release": true
+    },
+    {
+      "path": "cards/wa03.html",
+      "url": "https://decisionprocess.net/cards/wa03.html",
+      "status": 200,
+      "bytes": 21328,
+      "sha256": "81973dcee05b7010ae8b85c0b204b31af924b58137f2c4a40a446c5e6b880b88",
+      "matches_release": true
+    },
+    {
+      "path": "cards/wa04.html",
+      "url": "https://decisionprocess.net/cards/wa04.html",
+      "status": 200,
+      "bytes": 21330,
+      "sha256": "bd0d37219bdd20c6afd5c1c3731c12c6d685195b732cae67543a830b853c5db9",
+      "matches_release": true
+    },
+    {
+      "path": "cards/wa05.html",
+      "url": "https://decisionprocess.net/cards/wa05.html",
+      "status": 200,
+      "bytes": 21318,
+      "sha256": "00c2c0578a14523268e9c827e9ee187e818dc24cdb8e8ebce4263b83f849e699",
+      "matches_release": true
+    },
+    {
+      "path": "cards/wa06.html",
+      "url": "https://decisionprocess.net/cards/wa06.html",
+      "status": 200,
+      "bytes": 21385,
+      "sha256": "edb057593301150c3ea6b2c76932893c08b5c8ceb3a9b9f5122cc538dfbd11ce",
+      "matches_release": true
+    },
+    {
+      "path": "cards/wa07.html",
+      "url": "https://decisionprocess.net/cards/wa07.html",
+      "status": 200,
+      "bytes": 21297,
+      "sha256": "85d7075bc0f21c0d033f3cd2fbbdeb1c888e2c05d6236f151cfd8d4f6434a804",
+      "matches_release": true
+    },
+    {
+      "path": "cards/wa08.html",
+      "url": "https://decisionprocess.net/cards/wa08.html",
+      "status": 200,
+      "bytes": 21321,
+      "sha256": "c36626a97bb2ef9278f6114be9520c9fcb1da78f73d866693e335da1309cdd05",
+      "matches_release": true
+    },
+    {
+      "path": "cards/wa09.html",
+      "url": "https://decisionprocess.net/cards/wa09.html",
+      "status": 200,
+      "bytes": 21313,
+      "sha256": "c39f5e0add2e476d547fb4daffc50daa66c2922448bb9556e6d0a88865c3eec8",
+      "matches_release": true
+    },
+    {
+      "path": "cards/wa10.html",
+      "url": "https://decisionprocess.net/cards/wa10.html",
+      "status": 200,
+      "bytes": 21313,
+      "sha256": "41d84700f5f8d2a6639c54315f5da774cc1f8a169b79f58325b8884c65890e24",
+      "matches_release": true
+    },
+    {
+      "path": "cards/wa11.html",
+      "url": "https://decisionprocess.net/cards/wa11.html",
+      "status": 200,
+      "bytes": 21645,
+      "sha256": "ee16b50b8889cf7bcce1eab7a8d9e8072990f1fff5cf4dc5ab97a97e1bd4390b",
+      "matches_release": true
+    },
+    {
+      "path": "cards/wa12.html",
+      "url": "https://decisionprocess.net/cards/wa12.html",
+      "status": 200,
+      "bytes": 21524,
+      "sha256": "692c499d377c5f0202a0a7bfcba53727fdf7805ec1e321cb5b737b2ee803b340",
+      "matches_release": true
+    },
+    {
+      "path": "cards/wa13.html",
+      "url": "https://decisionprocess.net/cards/wa13.html",
+      "status": 200,
+      "bytes": 21604,
+      "sha256": "14e84dc20cc203c186674b5b5420f766cb0d3146b62cc4294704fa12db578f2b",
+      "matches_release": true
+    },
+    {
+      "path": "cards/wa14.html",
+      "url": "https://decisionprocess.net/cards/wa14.html",
+      "status": 200,
+      "bytes": 21147,
+      "sha256": "bd3e350d62e8840531cdbe635d32eff28862240563d572e4b47a33fc7e625535",
+      "matches_release": true
+    },
+    {
+      "path": "cards/wands.html",
+      "url": "https://decisionprocess.net/cards/wands.html",
+      "status": 200,
+      "bytes": 22563,
+      "sha256": "c7cde4fe762a8acf9a988a789abe3fcc13181eb826f870334a769a7a1237b05b",
+      "matches_release": true
+    },
+    {
+      "path": "cards/worries.html",
+      "url": "https://decisionprocess.net/cards/worries.html",
+      "status": 200,
+      "bytes": 32916,
+      "sha256": "8ed36b9de02d875d59f847732f3b2d02962d541b38a0c936413f9af8a04cea2f",
+      "matches_release": true
+    },
+    {
+      "path": "cards/worry-dokuritsu.html",
+      "url": "https://decisionprocess.net/cards/worry-dokuritsu.html",
+      "status": 200,
+      "bytes": 19415,
+      "sha256": "1eaec0e94ed7b7036caa2f978926f376fca73725f1a885b109891390e7e94c2c",
+      "matches_release": true
+    },
+    {
+      "path": "cards/worry-fukugyo.html",
+      "url": "https://decisionprocess.net/cards/worry-fukugyo.html",
+      "status": 200,
+      "bytes": 19782,
+      "sha256": "dfb7495020ff9e6c9cdb5bb9a53784b1cba7b401f707d0851b00fe702f71b0b2",
+      "matches_release": true
+    },
+    {
+      "path": "cards/worry-hikkoshi.html",
+      "url": "https://decisionprocess.net/cards/worry-hikkoshi.html",
+      "status": 200,
+      "bytes": 19174,
+      "sha256": "23826d5525db654756e5af2450ad1898ce0d8a5a75ce512c3e461c9da3a99ae5",
+      "matches_release": true
+    },
+    {
+      "path": "cards/worry-kaigo.html",
+      "url": "https://decisionprocess.net/cards/worry-kaigo.html",
+      "status": 200,
+      "bytes": 19615,
+      "sha256": "752a7db8ca9d109d58728caaaa65668548f247630b97d2c68f162f68e709bd6c",
+      "matches_release": true
+    },
+    {
+      "path": "cards/worry-kekkon.html",
+      "url": "https://decisionprocess.net/cards/worry-kekkon.html",
+      "status": 200,
+      "bytes": 19267,
+      "sha256": "cfb16138df513041634dba51e243a0b4bc199109abbc4c408916a6577e944066",
+      "matches_release": true
+    },
+    {
+      "path": "cards/worry-manabi.html",
+      "url": "https://decisionprocess.net/cards/worry-manabi.html",
+      "status": 200,
+      "bytes": 19342,
+      "sha256": "50767e35f0729ba67066d6cf8471df7633ace5ed4ee8b979eb00b988630b5409",
+      "matches_release": true
+    },
+    {
+      "path": "cards/worry-ningen.html",
+      "url": "https://decisionprocess.net/cards/worry-ningen.html",
+      "status": 200,
+      "bytes": 19328,
+      "sha256": "75a25be02c2414e5752e4a5924706d0f2b7a01f6a85da37d7d70b0af87f7259d",
+      "matches_release": true
+    },
+    {
+      "path": "cards/worry-okane.html",
+      "url": "https://decisionprocess.net/cards/worry-okane.html",
+      "status": 200,
+      "bytes": 19434,
+      "sha256": "181427164318bdbe1ae826148e50c10e6bebc22258da32d34799b32e61cdcf9c",
+      "matches_release": true
+    },
+    {
+      "path": "cards/worry-renai.html",
+      "url": "https://decisionprocess.net/cards/worry-renai.html",
+      "status": 200,
+      "bytes": 19004,
+      "sha256": "d6310bd49d202a218bf7b2f108cea81a6aef70780862cc6eb1f00ecf9df50eac",
+      "matches_release": true
+    },
+    {
+      "path": "cards/worry-shukatsu.html",
+      "url": "https://decisionprocess.net/cards/worry-shukatsu.html",
+      "status": 200,
+      "bytes": 19170,
+      "sha256": "66c3175ba40d5c4d205a35bbea8cbe2751a5d2ad9ef1837ed3061459fc047df7",
+      "matches_release": true
+    },
+    {
+      "path": "cards/worry-tenshoku.html",
+      "url": "https://decisionprocess.net/cards/worry-tenshoku.html",
+      "status": 200,
+      "bytes": 19739,
+      "sha256": "a948d6ad73f187b0807dfeb42bb9bdcd49ba05cb3fe310645465db7ab5867d94",
+      "matches_release": true
+    },
+    {
+      "path": "cards/worry-wakare.html",
+      "url": "https://decisionprocess.net/cards/worry-wakare.html",
+      "status": 200,
+      "bytes": 19672,
+      "sha256": "50c12320999c8435c32232298f0f8974521c2f3c6e401d85429d5cd9baf6ca9b",
+      "matches_release": true
+    },
+    {
+      "path": "index.html",
+      "url": "https://decisionprocess.net/",
+      "status": 200,
+      "bytes": 10292,
+      "sha256": "561938b0316438c988ed5334d8d1d3220f1b220d7bf570263279be755b5b9cdb",
+      "matches_release": true
+    },
+    {
+      "path": "app.js",
+      "url": "https://decisionprocess.net/app.js",
+      "status": 200,
+      "bytes": 209942,
+      "sha256": "f8e31bd4192191fa681e42766cbd08bef4b3ea7dca94da6ecfc6f26c9c66bfde",
+      "matches_release": true
+    },
+    {
+      "path": "styles.css",
+      "url": "https://decisionprocess.net/styles.css",
+      "status": 200,
+      "bytes": 253818,
+      "sha256": "98c06901c93201e56e752e1c1d2a15e6ffb58385f04d777abe1ae9a07631bc8a",
+      "matches_release": true
+    },
+    {
+      "path": "service-worker.js",
+      "url": "https://decisionprocess.net/service-worker.js",
+      "status": 200,
+      "bytes": 7605,
+      "sha256": "6090243bbb4a1100af68390fa80821d6acf627a9aa556385077cacfe0830df12",
+      "matches_release": true
+    },
+    {
+      "path": "sitemap.xml",
+      "url": "https://decisionprocess.net/sitemap.xml",
+      "status": 200,
+      "bytes": 12413,
+      "sha256": "4db708012c1785262f32c0b257c888b2d9953b931768c6e84a3555389fd49ffa",
+      "matches_release": true
+    },
+    {
+      "path": "robots.txt",
+      "url": "https://decisionprocess.net/robots.txt",
+      "status": 200,
+      "bytes": 96,
+      "sha256": "1a2deb14f047e638f8b000797bfb3a84f79e73da2ff271c52334bf501d252d39",
+      "matches_release": true
+    }
+  ],
+  "checked": 103,
+  "matching": 103
+}
