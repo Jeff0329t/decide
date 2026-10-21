@@ -65,3 +65,31 @@ test('update path never clears drafts/logs (localStorage) or the decide-remind I
   assert.doesNotMatch(sw, /deleteDatabase|\.clear\(\)/);
   assert.match(sw, /const IMAGE_CACHE = 'decide-card-images-p14-v1'/);
 });
+
+function fetchHandler() {
+  const handlers = {};
+  const context = {
+    URL, Request: class { constructor(url) { this.url = url; } }, Response,
+    self: {
+      registration: { scope: 'https://decisionprocess.net/' },
+      addEventListener: (type, fn) => { handlers[type] = fn; },
+      clients: { claim: async () => {} }
+    },
+    caches: { match: async () => undefined },
+    fetch: async () => new Response('')
+  };
+  vm.runInNewContext(sw, context);
+  return path => {
+    let answered = false;
+    handlers.fetch({ request: { method: 'GET', mode: 'navigate', url: 'https://decisionprocess.net' + path }, respondWith: () => { answered = true; } });
+    return answered;
+  };
+}
+
+test('navigation answers the app shell only for the scope root', () => {
+  const navigate = fetchHandler();
+  for (const path of ['/', '/?from=ar00', '/index.html']) assert.equal(navigate(path), true, path);
+  for (const path of ['/privacy', '/terms', '/tokushoho', '/success?session_id=abc', '/privacy.html', '/no-such-page', '/cards/ar00', '/cards/foo/bar']) {
+    assert.equal(navigate(path), false, path);
+  }
+});
