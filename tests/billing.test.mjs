@@ -248,8 +248,8 @@ test('法務ページがあり、購入完了ページとプライバシーポ�
   }
   for(const page of ['privacy.html', 'success.html']) {
     const html = read(page);
-    assert.match(html, /href="\.\/tokushoho\.html"/, `${page} → tokushoho`);
-    assert.match(html, /href="\.\/terms\.html"/, `${page} → terms`);
+    assert.match(html, /href="\.\/tokushoho"/, `${page} → tokushoho`);
+    assert.match(html, /href="\.\/terms"/, `${page} → terms`);
   }
   assert.match(read('tokushoho.html'), /980/);
   assert.match(read('success.html'), /success\.js/);

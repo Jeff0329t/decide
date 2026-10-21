@@ -215,7 +215,7 @@
         <p>${next}</p>
         <div class="confirm-actions">${primary}
           <button class="button secondary" type="button" data-ent-action="close">閉じる</button></div>
-        <p class="paywall-legal"><a href="./tokushoho.html" target="_blank" rel="noopener">特定商取引法に基づく表記</a> · <a href="./terms.html" target="_blank" rel="noopener">利用規約</a></p>
+        <p class="paywall-legal"><a href="./tokushoho" target="_blank" rel="noopener">特定商取引法に基づく表記</a> · <a href="./terms" target="_blank" rel="noopener">利用規約</a></p>
       </section>`;
     if(typeof mountModal === 'function') mountModal(wrap, '.confirm-actions button');
     else document.body.appendChild(wrap);

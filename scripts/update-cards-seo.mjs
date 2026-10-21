@@ -13,7 +13,7 @@ if (JSON.stringify(files) !== JSON.stringify(Object.keys(cardsSeo).sort())) {
 // Prepare and validate every file before writing any changes.
 const updates = files.map((file) => {
   const path = new URL(file, dir);
-  return [path, enhanceCardsPage(readFileSync(path, 'utf8'), `/cards/${file === 'index.html' ? '' : file}`)];
+  return [path, enhanceCardsPage(readFileSync(path, 'utf8'), `/cards/${file === 'index.html' ? '' : file.replace(/\.html$/, '')}`)];
 });
 for (const [path, html] of updates) writeFileSync(path, html);
 console.log(`Updated SEO and navigation: ${updates.length} card pages`);

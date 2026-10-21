@@ -18,7 +18,7 @@ test('78 card pages and index exist', () => {
 test('each card page has SEO essentials, CTAs, credit and alt', () => {
   for (const id of ids) {
     const html = read(`dist/cards/${id}.html`);
-    assert.match(html, new RegExp(`<link rel="canonical" href="https://decisionprocess\\.net/cards/${id}\\.html"`), id);
+    assert.match(html, new RegExp(`<link rel="canonical" href="https://decisionprocess\\.net/cards/${id}"`), id);
     assert.match(html, /<meta name="description" content="[^"]{20,}"/, id);
     assert.match(html, /property="og:title"/, id);
     assert.match(html, /name="twitter:card"/, id);
@@ -61,7 +61,7 @@ const cats = { ar: 'major', wa: 'wands', cu: 'cups', sw: 'swords', pe: 'pentacle
 test('category pages exist with SEO essentials and one CTA', () => {
   for (const slug of Object.values(cats)) {
     const html = read(`dist/cards/${slug}.html`);
-    assert.match(html, new RegExp(`<link rel="canonical" href="https://decisionprocess\\.net/cards/${slug}\\.html"`), slug);
+    assert.match(html, new RegExp(`<link rel="canonical" href="https://decisionprocess\\.net/cards/${slug}"`), slug);
     assert.match(html, /"@type":\s*"BreadcrumbList"/, slug);
     assert.match(html, /"@type":\s*"ItemList"/, slug);
     assert.equal(html.split(CTA).length - 1, 1, `${slug} CTA count`);
@@ -72,17 +72,17 @@ test('category pages exist with SEO essentials and one CTA', () => {
 test('card pages link to their category and neighbours', () => {
   for (const id of ids) {
     const html = read(`dist/cards/${id}.html`);
-    assert.match(html, new RegExp(`href="\\./${cats[id.slice(0, 2)]}\\.html"`), id);
+    assert.match(html, new RegExp(`href="\\./${cats[id.slice(0, 2)]}"`), id);
     if (!['ar00', 'wa01', 'cu01', 'sw01', 'pe01'].includes(id)) assert.match(html, /rel="prev"/, id);
     if (!['ar21', 'wa14', 'cu14', 'sw14', 'pe14'].includes(id)) assert.match(html, /rel="next"/, id);
   }
   const idx = read('dist/cards/index.html');
-  for (const slug of Object.values(cats)) assert.match(idx, new RegExp(`href="\\./${slug}\\.html"`), slug);
+  for (const slug of Object.values(cats)) assert.match(idx, new RegExp(`href="\\./${slug}"`), slug);
 });
 
 test('sitemap includes category pages', () => {
   const sm = read('dist/sitemap.xml');
-  for (const slug of Object.values(cats)) assert.match(sm, new RegExp(`<loc>https://decisionprocess\\.net/cards/${slug}\\.html</loc>`), slug);
+  for (const slug of Object.values(cats)) assert.match(sm, new RegExp(`<loc>https://decisionprocess\\.net/cards/${slug}</loc>`), slug);
 });
 
 test('card CTAs carry ?from= context into the app', () => {
@@ -113,7 +113,7 @@ test('worry pages have SEO essentials, CTAs into the app, credit and no JS', () 
   const sm = read('dist/sitemap.xml');
   for (const slug of worries) {
     const html = read(`dist/cards/worry-${slug}.html`);
-    assert.match(html, new RegExp(`<link rel="canonical" href="https://decisionprocess\\.net/cards/worry-${slug}\\.html"`), slug);
+    assert.match(html, new RegExp(`<link rel="canonical" href="https://decisionprocess\\.net/cards/worry-${slug}"`), slug);
     assert.match(html, /<meta name="description" content="[^"]{20,}"/, slug);
     assert.match(html, /"@type":\s*"Article"/, slug);
     assert.match(html, /"@type":\s*"BreadcrumbList"/, slug);
@@ -123,10 +123,10 @@ test('worry pages have SEO essentials, CTAs into the app, credit and no JS', () 
     assert.equal(froms.length, 2, `${slug} from links`);
     for (const f of froms) assert.ok(ids.includes(f), `${slug} from=${f}`);
     assert.match(html, /images: sixseeds\/tarot-api, public domain/, slug);
-    assert.match(html, /href="\.\/worries\.html"/, slug);
+    assert.match(html, /href="\.\/worries"/, slug);
     assert.doesNotMatch(html, /<script(?![^>]*application\/ld\+json)/, slug);
     assert.doesNotMatch(html, /sk_live|sk_test|whsec_|service_role/, slug);
-    assert.match(sm, new RegExp(`<loc>https://decisionprocess\\.net/cards/worry-${slug}\\.html</loc>`), slug);
+    assert.match(sm, new RegExp(`<loc>https://decisionprocess\\.net/cards/worry-${slug}</loc>`), slug);
   }
 });
 
@@ -134,10 +134,10 @@ test('worries index lists all worry pages and is linked from cards index', () =>
   const html = read('dist/cards/worries.html');
   assert.match(html, /"@type":\s*"ItemList"/);
   assert.equal(html.split(CTA).length - 1, 1, 'worries CTA count');
-  for (const slug of worries) assert.match(html, new RegExp(`href="\\./worry-${slug}\\.html"`), slug);
+  for (const slug of worries) assert.match(html, new RegExp(`href="\\./worry-${slug}"`), slug);
   assert.doesNotMatch(html, /<script(?![^>]*application\/ld\+json)/);
-  assert.match(read('dist/cards/index.html'), /href="\.\/worries\.html"/);
-  assert.match(read('dist/sitemap.xml'), /<loc>https:\/\/decisionprocess\.net\/cards\/worries\.html<\/loc>/);
+  assert.match(read('dist/cards/index.html'), /href="\.\/worries"/);
+  assert.match(read('dist/sitemap.xml'), /<loc>https:\/\/decisionprocess\.net\/cards\/worries<\/loc>/);
 });
 
 function jpegSize(buf) {
@@ -165,4 +165,26 @@ test('card and worry pages point og:image at a generated 1200x630 JPEG under 250
     assert.match(html, /property="og:image:width" content="1200"/, page);
     assert.match(html, /property="og:image:height" content="630"/, page);
   }
+});
+
+test('sitemap lists extensionless URLs only and keeps the same 101 entries', () => {
+  const sm = read('dist/sitemap.xml');
+  const locs = [...sm.matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1]);
+  assert.equal(locs.length, 101);
+  assert.ok(locs.every((u) => !u.endsWith('.html')), 'no .html in sitemap');
+  assert.ok(locs.includes('https://decisionprocess.net/cards/ar00'));
+  assert.ok(locs.includes('https://decisionprocess.net/privacy'));
+});
+
+test('404 page is standalone, noindex and uses root-absolute links', () => {
+  const html = read('dist/404.html');
+  assert.match(html, /<meta name="robots" content="noindex">/);
+  assert.match(html, /<title>ページが見つかりません - DECIDE<\/title>/);
+  assert.match(html, /href="\/"/);
+  assert.match(html, /href="\/cards\/"/);
+  assert.match(html, /href="\/cards\/worries"/);
+  assert.doesNotMatch(html, /(?:href|src)="\.\.?\//, 'no relative URLs');
+  assert.doesNotMatch(html, /rel="canonical"/);
+  assert.doesNotMatch(html, /<script/);
+  assert.doesNotMatch(read('dist/sitemap.xml'), /404/);
 });

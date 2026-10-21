@@ -1,0 +1,1903 @@
+TAP version 13
+# Subtest: A-1: story share URL omits title/body unless opted in
+ok 1 - A-1: story share URL omits title/body unless opted in
+  ---
+  duration_ms: 0.903666
+  type: 'test'
+  ...
+# Subtest: A-1: story share defaults to excluding title and body
+ok 2 - A-1: story share defaults to excluding title and body
+  ---
+  duration_ms: 0.46075
+  type: 'test'
+  ...
+# Subtest: A-1: opting in warns that title and body are shown
+ok 3 - A-1: opting in warns that title and body are shown
+  ---
+  duration_ms: 0.266792
+  type: 'test'
+  ...
+# Subtest: A-1: story share modal has an OFF-by-default opt-in toggle wired up
+ok 4 - A-1: story share modal has an OFF-by-default opt-in toggle wired up
+  ---
+  duration_ms: 1.991125
+  type: 'test'
+  ...
+# Subtest: 下書きは sessionStorage に保存され、再読込後も復元される
+ok 5 - 下書きは sessionStorage に保存され、再読込後も復元される
+  ---
+  duration_ms: 5.791917
+  type: 'test'
+  ...
+# Subtest: 保存済み本文と同じ下書きは破棄され、clear で消える
+ok 6 - 保存済み本文と同じ下書きは破棄され、clear で消える
+  ---
+  duration_ms: 0.370792
+  type: 'test'
+  ...
+# Subtest: 壊れた JSON や使えない sessionStorage でも落ちず、メモリ上で下書きを保持する
+ok 7 - 壊れた JSON や使えない sessionStorage でも落ちず、メモリ上で下書きを保持する
+  ---
+  duration_ms: 2.778584
+  type: 'test'
+  ...
+# Subtest: commitLogChange は保存失敗時に元の値へ戻し、無かったキーは削除する
+ok 8 - commitLogChange は保存失敗時に元の値へ戻し、無かったキーは削除する
+  ---
+  duration_ms: 0.817083
+  type: 'test'
+  ...
+# Subtest: commitLogChange は保存成功時に変更を残す
+ok 9 - commitLogChange は保存成功時に変更を残す
+  ---
+  duration_ms: 0.76125
+  type: 'test'
+  ...
+# Subtest: writeRemind は毎回 remindUpdatedAt を ISO で刻み、解除は明示的な null にする
+ok 10 - writeRemind は毎回 remindUpdatedAt を ISO で刻み、解除は明示的な null にする
+  ---
+  duration_ms: 7.498458
+  type: 'test'
+  ...
+# Subtest: 保存失敗時のリマインド変更は remindUpdatedAt ごと元に戻る
+ok 11 - 保存失敗時のリマインド変更は remindUpdatedAt ごと元に戻る
+  ---
+  duration_ms: 0.429166
+  type: 'test'
+  ...
+# Subtest: UI 経路: 下書きの復元・入力・旧関数の撤去
+ok 12 - UI 経路: 下書きの復元・入力・旧関数の撤去
+  ---
+  duration_ms: 0.279416
+  type: 'test'
+  ...
+# Subtest: UI 経路: 削除は保存成功後にだけ墓標を送る
+ok 13 - UI 経路: 削除は保存成功後にだけ墓標を送る
+  ---
+  duration_ms: 0.638417
+  type: 'test'
+  ...
+# Subtest: UI 経路: 振り返り期限モーダルと WebMCP は保存失敗を成功扱いしない
+ok 14 - UI 経路: 振り返り期限モーダルと WebMCP は保存失敗を成功扱いしない
+  ---
+  duration_ms: 0.9645
+  type: 'test'
+  ...
+# Subtest: disabled worker and exhausted quota neither claim nor send
+ok 15 - disabled worker and exhausted quota neither claim nor send
+  ---
+  duration_ms: 5.022792
+  type: 'test'
+  ...
+# Subtest: connection check does not claim or send; wrong account is rejected
+ok 16 - connection check does not claim or send; wrong account is rejected
+  ---
+  duration_ms: 2.156
+  type: 'test'
+  ...
+# Subtest: setup test sends only to the configured sender itself without claiming any jobs
+ok 17 - setup test sends only to the configured sender itself without claiming any jobs
+  ---
+  duration_ms: 0.92325
+  type: 'test'
+  ...
+# Subtest: canonical message is sent only after reservation and then acknowledged
+ok 18 - canonical message is sent only after reservation and then acknowledged
+  ---
+  duration_ms: 1.153375
+  type: 'test'
+  ...
+# Subtest: canceled and previously reserved deliveries never send
+ok 19 - canceled and previously reserved deliveries never send
+  ---
+  duration_ms: 1.763
+  type: 'test'
+  ...
+# Subtest: ambiguous reservation response never causes a send
+ok 20 - ambiguous reservation response never causes a send
+  ---
+  duration_ms: 1.090042
+  type: 'test'
+  ...
+# Subtest: ambiguous MailApp error is recorded and not resent
+ok 21 - ambiguous MailApp error is recorded and not resent
+  ---
+  duration_ms: 1.266
+  type: 'test'
+  ...
+# Subtest: lost completion response retries only completion, never the email
+ok 22 - lost completion response retries only completion, never the email
+  ---
+  duration_ms: 0.661875
+  type: 'test'
+  ...
+# Subtest: markdown escapes raw HTML and only allows safe links
+ok 23 - markdown escapes raw HTML and only allows safe links
+  ---
+  duration_ms: 2.383667
+  type: 'test'
+  ...
+# Subtest: markdown renders headings, lists and quotes
+ok 24 - markdown renders headings, lists and quotes
+  ---
+  duration_ms: 1.013333
+  type: 'test'
+  ...
+# Subtest: front matter parses arrays, booleans and quotes
+ok 25 - front matter parses arrays, booleans and quotes
+  ---
+  duration_ms: 0.246417
+  type: 'test'
+  ...
+# Subtest: loadArticles rejects bad front matter and hides drafts
+ok 26 - loadArticles rejects bad front matter and hides drafts
+  ---
+  duration_ms: 5.798042
+  type: 'test'
+  ...
+# Subtest: source articles are valid and drafts meet the writing guide
+ok 27 - source articles are valid and drafts meet the writing guide
+  ---
+  duration_ms: 0.288417
+  type: 'test'
+  ...
+# Subtest: normal build does not publish drafts
+ok 28 - normal build does not publish drafts
+  ---
+  duration_ms: 2.20075
+  type: 'test'
+  ...
+# Subtest: published articles have SEO essentials, CTAs, OGP and no JS
+ok 29 - published articles have SEO essentials, CTAs, OGP and no JS
+  ---
+  duration_ms: 0.264625
+  type: 'test'
+  ...
+# Subtest: 未ログインで設定を描画しても GIS を読み込まず、自前の「Google でログイン」ボタンを出す
+ok 30 - 未ログインで設定を描画しても GIS を読み込まず、自前の「Google でログイン」ボタンを出す
+  ---
+  duration_ms: 152.475417
+  type: 'test'
+  ...
+# Subtest: renderGoogleButton（UNLIMITED案内から呼ばれる）も GIS を読み込まない
+ok 31 - renderGoogleButton（UNLIMITED案内から呼ばれる）も GIS を読み込まない
+  ---
+  duration_ms: 152.291042
+  type: 'test'
+  ...
+# Subtest: ボタンを押すと GIS を読み込み、One Tap を表示して nonce 付き IDトークンでログインする
+ok 32 - ボタンを押すと GIS を読み込み、One Tap を表示して nonce 付き IDトークンでログインする
+  ---
+  duration_ms: 103.882083
+  type: 'test'
+  ...
+# Subtest: One Tap を表示できないときはリダイレクト方式でログインを続ける
+ok 33 - One Tap を表示できないときはリダイレクト方式でログインを続ける
+  ---
+  duration_ms: 1.504333
+  type: 'test'
+  ...
+# Subtest: 利用者が One Tap を閉じた場合はリダイレクトしない
+ok 34 - 利用者が One Tap を閉じた場合はリダイレクトしない
+  ---
+  duration_ms: 1.351416
+  type: 'test'
+  ...
+# Subtest: GIS の読み込みに失敗したらリダイレクト方式へフォールバックする
+ok 35 - GIS の読み込みに失敗したらリダイレクト方式へフォールバックする
+  ---
+  duration_ms: 101.352708
+  type: 'test'
+  ...
+# Subtest: GOOGLE_CLIENT_ID 未設定なら GIS を読まずにリダイレクトする
+ok 36 - GOOGLE_CLIENT_ID 未設定なら GIS を読まずにリダイレクトする
+  ---
+  duration_ms: 0.451416
+  type: 'test'
+  ...
+# Subtest: フロントにシークレットを置かない
+ok 37 - フロントにシークレットを置かない
+  ---
+  duration_ms: 45.517583
+  type: 'test'
+  ...
+# Subtest: index.html は supabase → config → auth → app の順で読み込む
+ok 38 - index.html は supabase → config → auth → app の順で読み込む
+  ---
+  duration_ms: 1.656584
+  type: 'test'
+  ...
+# Subtest: Service Worker が config.js と auth.js をキャッシュする
+ok 39 - Service Worker が config.js と auth.js をキャッシュする
+  ---
+  duration_ms: 0.12025
+  type: 'test'
+  ...
+# Subtest: app.js への変更はフックのみ
+ok 40 - app.js への変更はフックのみ
+  ---
+  duration_ms: 1.433208
+  type: 'test'
+  ...
+# Subtest: ログイン案内とアカウント削除の文言
+ok 41 - ログイン案内とアカウント削除の文言
+  ---
+  duration_ms: 0.1435
+  type: 'test'
+  ...
+# Subtest: config.js は URL と anon キーだけ
+ok 42 - config.js は URL と anon キーだけ
+  ---
+  duration_ms: 0.084083
+  type: 'test'
+  ...
+# Subtest: プライバシーポリシーがログインと Supabase に触れている
+ok 43 - プライバシーポリシーがログインと Supabase に触れている
+  ---
+  duration_ms: 0.093125
+  type: 'test'
+  ...
+# Subtest: Google ログインは GIS → signInWithIdToken（nonce は SHA-256 ハッシュを Google へ）
+ok 44 - Google ログインは GIS → signInWithIdToken（nonce は SHA-256 ハッシュを Google へ）
+  ---
+  duration_ms: 0.228417
+  type: 'test'
+  ...
+# Subtest: 未ログインで購入するとログイン案内のペイウォールを出し、決済APIは呼ばない
+ok 45 - 未ログインで購入するとログイン案内のペイウォールを出し、決済APIは呼ばない
+  ---
+  duration_ms: 3.886792
+  type: 'test'
+  ...
+# Subtest: ログイン中のペイウォールには購入ボタンが出る
+ok 46 - ログイン中のペイウォールには購入ボタンが出る
+  ---
+  duration_ms: 0.683542
+  type: 'test'
+  ...
+# Subtest: 設定が無い・認証が無効なら「準備中」を表示する
+ok 47 - 設定が無い・認証が無効なら「準備中」を表示する
+  ---
+  duration_ms: 1.31275
+  type: 'test'
+  ...
+# Subtest: 成功時はユーザーのトークンと anon キーで create-checkout を呼び、Stripe の URL へ遷移する
+ok 48 - 成功時はユーザーのトークンと anon キーで create-checkout を呼び、Stripe の URL へ遷移する
+  ---
+  duration_ms: 1.673416
+  type: 'test'
+  ...
+# Subtest: すでにPRO（キャッシュ）なら決済APIを呼ばない
+ok 49 - すでにPRO（キャッシュ）なら決済APIを呼ばない
+  ---
+  duration_ms: 2.751
+  type: 'test'
+  ...
+# Subtest: サーバーが 409 を返したら「すでに購入済みです」と表示し遷移しない
+ok 50 - サーバーが 409 を返したら「すでに購入済みです」と表示し遷移しない
+  ---
+  duration_ms: 0.935875
+  type: 'test'
+  ...
+# Subtest: https 以外の URL やエラー応答では遷移しない
+ok 51 - https 以外の URL やエラー応答では遷移しない
+  ---
+  duration_ms: 5.882416
+  type: 'test'
+  ...
+# Subtest: トークンが取れなければ再ログインを促す
+ok 52 - トークンが取れなければ再ログインを促す
+  ---
+  duration_ms: 0.497417
+  type: 'test'
+  ...
+# Subtest: 通信エラー時はメッセージを出し、ボタンを再び押せるようにする
+ok 53 - 通信エラー時はメッセージを出し、ボタンを再び押せるようにする
+  ---
+  duration_ms: 1.3235
+  type: 'test'
+  ...
+# Subtest: 連打しても決済APIは1回しか呼ばない
+ok 54 - 連打しても決済APIは1回しか呼ばない
+  ---
+  duration_ms: 8.318542
+  type: 'test'
+  ...
+# Subtest: キャンセルで戻ったら ?checkout=cancel を消してトーストを出す
+ok 55 - キャンセルで戻ったら ?checkout=cancel を消してトーストを出す
+  ---
+  duration_ms: 2.249958
+  type: 'test'
+  ...
+# Subtest: success.js：plan_type が PRO になったら done を返し、キャッシュを更新する
+ok 56 - success.js：plan_type が PRO になったら done を返し、キャッシュを更新する
+  ---
+  duration_ms: 2.81225
+  type: 'test'
+  ...
+# Subtest: success.js：時間内に反映されなければ timeout
+ok 57 - success.js：時間内に反映されなければ timeout
+  ---
+  duration_ms: 0.482125
+  type: 'test'
+  ...
+# Subtest: success.js：未ログインは login、Supabase 未設定は unavailable
+ok 58 - success.js：未ログインは login、Supabase 未設定は unavailable
+  ---
+  duration_ms: 0.709542
+  type: 'test'
+  ...
+# Subtest: 法務ページがあり、購入完了ページとプライバシーポリシーからリンクされている
+ok 59 - 法務ページがあり、購入完了ページとプライバシーポリシーからリンクされている
+  ---
+  duration_ms: 0.361833
+  type: 'test'
+  ...
+# Subtest: dist/ に Stripe の秘密鍵・Webhook secret・service_role キーが含まれていない
+ok 60 - dist/ に Stripe の秘密鍵・Webhook secret・service_role キーが含まれていない
+  ---
+  duration_ms: 42.496083
+  type: 'test'
+  ...
+# Subtest: all 97 pages have synchronized structured data, crawlable navigation and persistent CTAs
+ok 61 - all 97 pages have synchronized structured data, crawlable navigation and persistent CTAs
+  ---
+  duration_ms: 224.165959
+  type: 'test'
+  ...
+# Subtest: reading links survive initial and runtime home rendering without replacing existing actions
+ok 62 - reading links survive initial and runtime home rendering without replacing existing actions
+  ---
+  duration_ms: 1.959334
+  type: 'test'
+  ...
+# Subtest: app shell, paywall and standalone pages link to pages without .html
+ok 63 - app shell, paywall and standalone pages link to pages without .html
+  ---
+  duration_ms: 1.609833
+  type: 'test'
+  ...
+# Subtest: full source generation preserves enhancements and keeps proposals outside dist and sitemap
+ok 64 - full source generation preserves enhancements and keeps proposals outside dist and sitemap
+  ---
+  duration_ms: 302.561625
+  type: 'test'
+  ...
+# Subtest: every card HTML has unique editorial metadata and synchronized social previews
+ok 65 - every card HTML has unique editorial metadata and synchronized social previews
+  ---
+  duration_ms: 26.36475
+  type: 'test'
+  ...
+# Subtest: metadata updater adds missing tags, removes duplicates, escapes copy and preserves page behavior
+ok 66 - metadata updater adds missing tags, removes duplicates, escapes copy and preserves page behavior
+  ---
+  duration_ms: 0.322083
+  type: 'test'
+  ...
+# Subtest: 78 card pages and index exist
+ok 67 - 78 card pages and index exist
+  ---
+  duration_ms: 2.934792
+  type: 'test'
+  ...
+# Subtest: each card page has SEO essentials, CTAs, credit and alt
+ok 68 - each card page has SEO essentials, CTAs, credit and alt
+  ---
+  duration_ms: 11.4385
+  type: 'test'
+  ...
+# Subtest: app index is indexable and links to cards
+ok 69 - app index is indexable and links to cards
+  ---
+  duration_ms: 0.134167
+  type: 'test'
+  ...
+# Subtest: service worker bypasses /cards/ and is bumped
+ok 70 - service worker bypasses /cards/ and is bumped
+  ---
+  duration_ms: 0.128042
+  type: 'test'
+  ...
+# Subtest: sitemap and robots
+ok 71 - sitemap and robots
+  ---
+  duration_ms: 0.14475
+  type: 'test'
+  ...
+# Subtest: no secrets in card pages
+ok 72 - no secrets in card pages
+  ---
+  duration_ms: 6.750459
+  type: 'test'
+  ...
+# Subtest: category pages exist with SEO essentials and one CTA
+ok 73 - category pages exist with SEO essentials and one CTA
+  ---
+  duration_ms: 0.505375
+  type: 'test'
+  ...
+# Subtest: card pages link to their category and neighbours
+ok 74 - card pages link to their category and neighbours
+  ---
+  duration_ms: 7.455833
+  type: 'test'
+  ...
+# Subtest: sitemap includes category pages
+ok 75 - sitemap includes category pages
+  ---
+  duration_ms: 0.940292
+  type: 'test'
+  ...
+# Subtest: card CTAs carry ?from= context into the app
+ok 76 - card CTAs carry ?from= context into the app
+  ---
+  duration_ms: 9.625458
+  type: 'test'
+  ...
+# Subtest: card-entry.js validates from and is loaded/cached by the app
+ok 77 - card-entry.js validates from and is loaded/cached by the app
+  ---
+  duration_ms: 5.028708
+  type: 'test'
+  ...
+# Subtest: worry pages have SEO essentials, CTAs into the app, credit and no JS
+ok 78 - worry pages have SEO essentials, CTAs into the app, credit and no JS
+  ---
+  duration_ms: 2.689833
+  type: 'test'
+  ...
+# Subtest: worries index lists all worry pages and is linked from cards index
+ok 79 - worries index lists all worry pages and is linked from cards index
+  ---
+  duration_ms: 0.550416
+  type: 'test'
+  ...
+# Subtest: card and worry pages point og:image at a generated 1200x630 JPEG under 250KB
+ok 80 - card and worry pages point og:image at a generated 1200x630 JPEG under 250KB
+  ---
+  duration_ms: 43.759167
+  type: 'test'
+  ...
+# Subtest: sitemap lists extensionless URLs only and keeps the same 101 entries
+ok 81 - sitemap lists extensionless URLs only and keeps the same 101 entries
+  ---
+  duration_ms: 0.223084
+  type: 'test'
+  ...
+# Subtest: 404 page is standalone, noindex and uses root-absolute links
+ok 82 - 404 page is standalone, noindex and uses root-absolute links
+  ---
+  duration_ms: 0.442208
+  type: 'test'
+  ...
+# Subtest: 時間枠の境目(03:09:59.999 / 03:10:00.000)をまたぐ2リクエスト + find/create 間の遅延でも、作成は1回で同じURL
+ok 83 - 時間枠の境目(03:09:59.999 / 03:10:00.000)をまたぐ2リクエスト + find/create 間の遅延でも、作成は1回で同じURL
+  ---
+  duration_ms: 95.367041
+  type: 'test'
+  ...
+# Subtest: 20件同時でもセッションは1つ、全員が同じURL
+ok 84 - 20件同時でもセッションは1つ、全員が同じURL
+  ---
+  duration_ms: 84.252458
+  type: 'test'
+  ...
+# Subtest: 完了後のリクエストはロックに保存されたセッションをそのまま返す
+ok 85 - 完了後のリクエストはロックに保存されたセッションをそのまま返す
+  ---
+  duration_ms: 57.410125
+  type: 'test'
+  ...
+# Subtest: ロックのセッションがもう開いていない(支払済み/期限切れ)なら、期限内でも引き継いで新しいセッションを作る
+ok 86 - ロックのセッションがもう開いていない(支払済み/期限切れ)なら、期限内でも引き継いで新しいセッションを作る
+  ---
+  duration_ms: 140.77875
+  type: 'test'
+  ...
+# Subtest: 作成途中で落ちたロック(期限切れ)は次のリクエストが引き継げる
+ok 87 - 作成途中で落ちたロック(期限切れ)は次のリクエストが引き継げる
+  ---
+  duration_ms: 56.219833
+  type: 'test'
+  ...
+# Subtest: 期限切れのロックでも Stripe に開いているセッションがあればそれを再利用する
+ok 88 - 期限切れのロックでも Stripe に開いているセッションがあればそれを再利用する
+  ---
+  duration_ms: 78.505417
+  type: 'test'
+  ...
+# Subtest: 作成に失敗したらロックを解放し、次のリクエストはすぐ成功する
+ok 89 - 作成に失敗したらロックを解放し、次のリクエストはすぐ成功する
+  ---
+  duration_ms: 83.899
+  type: 'test'
+  ...
+# Subtest: 勝者が失敗しても、待っていたリクエストはロックを取り直して1つだけ作る
+ok 90 - 勝者が失敗しても、待っていたリクエストはロックを取り直して1つだけ作る
+  ---
+  duration_ms: 169.025291
+  type: 'test'
+  ...
+# Subtest: 商品が違えばロックは独立している
+ok 91 - 商品が違えばロックは独立している
+  ---
+  duration_ms: 55.393875
+  type: 'test'
+  ...
+# Subtest: 勝者が終わらないまま待ち時間を使い切ったら CheckoutBusyError(503)
+ok 92 - 勝者が終わらないまま待ち時間を使い切ったら CheckoutBusyError(503)
+  ---
+  duration_ms: 38.293542
+  type: 'test'
+  ...
+# Subtest: createCheckoutSession: 409(処理中)は同じキーで再試行する
+ok 93 - createCheckoutSession: 409(処理中)は同じキーで再試行する
+  ---
+  duration_ms: 2.457209
+  type: 'test'
+  ...
+# Subtest: createCheckoutSession: 同じキーで内容が違う(400)場合は開いているセッションを返すか、別キーで1回だけ作る
+ok 94 - createCheckoutSession: 同じキーで内容が違う(400)場合は開いているセッションを返すか、別キーで1回だけ作る
+  ---
+  duration_ms: 0.453625
+  type: 'test'
+  ...
+# Subtest: createCheckoutSession: その他の Stripe エラーはそのまま投げる(502になる)
+ok 95 - createCheckoutSession: その他の Stripe エラーはそのまま投げる(502になる)
+  ---
+  duration_ms: 0.268791
+  type: 'test'
+  ...
+# Subtest: 冪等キーはロックIDから決まり、時間枠を含まない
+ok 96 - 冪等キーはロックIDから決まり、時間枠を含まない
+  ---
+  duration_ms: 0.75875
+  type: 'test'
+  ...
+# Subtest: migration: 主キー(user_id, product)・原子的な取得・RLS有効でポリシーなし・anon/authenticated は権限なし
+ok 97 - migration: 主キー(user_id, product)・原子的な取得・RLS有効でポリシーなし・anon/authenticated は権限なし
+  ---
+  duration_ms: 0.783875
+  type: 'test'
+  ...
+# Subtest: index.ts: DBロック経由で作成し、時間枠キーを使わず、作成中は503(409は「購入済み」表示になるため使わない)
+ok 98 - index.ts: DBロック経由で作成し、時間枠キーを使わず、作成中は503(409は「購入済み」表示になるため使わない)
+  ---
+  duration_ms: 0.40025
+  type: 'test'
+  ...
+# Subtest: consultation sends selected wording/cards but excludes private fields by default
+ok 99 - consultation sends selected wording/cards but excludes private fields by default
+  ---
+  duration_ms: 3.217708
+  type: 'test'
+  ...
+# Subtest: share-only edits do not mutate original record and opt-in memo matches text and URL
+ok 100 - share-only edits do not mutate original record and opt-in memo matches text and URL
+  ---
+  duration_ms: 0.279667
+  type: 'test'
+  ...
+# Subtest: ambiguous old decisions never infer A/B, one-card sharing never invents second card
+ok 101 - ambiguous old decisions never infer A/B, one-card sharing never invents second card
+  ---
+  duration_ms: 0.116667
+  type: 'test'
+  ...
+# Subtest: consultation reader rejects malformed choices/selection while old links stay valid
+ok 102 - consultation reader rejects malformed choices/selection while old links stay valid
+  ---
+  duration_ms: 0.155292
+  type: 'test'
+  ...
+# Subtest: recipient model carries only opted-in memo and same selected choice
+ok 103 - recipient model carries only opted-in memo and same selected choice
+  ---
+  duration_ms: 0.245875
+  type: 'test'
+  ...
+# Subtest: length limits hold without breaking an emoji at the boundary
+ok 104 - length limits hold without breaking an emoji at the boundary
+  ---
+  duration_ms: 0.109541
+  type: 'test'
+  ...
+# Subtest: shared low-score result recommends hold instead of endorsing a choice
+ok 105 - shared low-score result recommends hold instead of endorsing a choice
+  ---
+  duration_ms: 0.29375
+  type: 'test'
+  ...
+# Subtest: sharing always renders a 1080 by 1920 image even with an old square-format draft
+ok 106 - sharing always renders a 1080 by 1920 image even with an old square-format draft
+  ---
+  duration_ms: 1.453458
+  type: 'test'
+  ...
+# Subtest: two-card draw uses A/B plates, an OR emblem and a hold-to-reveal CTA
+ok 107 - two-card draw uses A/B plates, an OR emblem and a hold-to-reveal CTA
+  ---
+  duration_ms: 0.518959
+  type: 'test'
+  ...
+# Subtest: reveal requires a hold, but keyboard and reduced motion open directly
+ok 108 - reveal requires a hold, but keyboard and reduced motion open directly
+  ---
+  duration_ms: 0.425
+  type: 'test'
+  ...
+# Subtest: two-card editorial styles exist without touching the card faces
+ok 109 - two-card editorial styles exist without touching the card faces
+  ---
+  duration_ms: 0.561084
+  type: 'test'
+  ...
+# Subtest: two-card instruction sits above OPTION A instead of over the reveal button
+ok 110 - two-card instruction sits above OPTION A instead of over the reveal button
+  ---
+  duration_ms: 1.100667
+  type: 'test'
+  ...
+# Subtest: only the private worker secret and configured sending account can access the gateway
+ok 111 - only the private worker secret and configured sending account can access the gateway
+  ---
+  duration_ms: 28.008417
+  type: 'test'
+  ...
+# Subtest: status is safe while disabled and does not claim or dispatch mail
+ok 112 - status is safe while disabled and does not claim or dispatch mail
+  ---
+  duration_ms: 0.81925
+  type: 'test'
+  ...
+# Subtest: claim returns only server identifiers; server fixes the sender and site
+ok 113 - claim returns only server identifiers; server fixes the sender and site
+  ---
+  duration_ms: 0.929833
+  type: 'test'
+  ...
+# Subtest: canceled/disabled/already reserved deliveries cannot be sent
+ok 114 - canceled/disabled/already reserved deliveries cannot be sent
+  ---
+  duration_ms: 0.698792
+  type: 'test'
+  ...
+# Subtest: reservation returns canonical DB payload and never uses caller recipients/body
+ok 115 - reservation returns canonical DB payload and never uses caller recipients/body
+  ---
+  duration_ms: 1.836958
+  type: 'test'
+  ...
+# Subtest: DB failures and invalid input fail closed
+ok 116 - DB failures and invalid input fail closed
+  ---
+  duration_ms: 1.950625
+  type: 'test'
+  ...
+# Subtest: completion can be recorded while disabled; invalid lease/outcome is rejected
+ok 117 - completion can be recorded while disabled; invalid lease/outcome is rejected
+  ---
+  duration_ms: 1.273833
+  type: 'test'
+  ...
+# Subtest: mail stays unavailable until configured; no server calls or false ON state
+ok 118 - mail stays unavailable until configured; no server calls or false ON state
+  ---
+  duration_ms: 2.326166
+  type: 'test'
+  ...
+# Subtest: opt-in uploads pending id/time/title, excluding review, memo and invalid dates
+ok 119 - opt-in uploads pending id/time/title, excluding review, memo and invalid dates
+  ---
+  duration_ms: 2.825875
+  type: 'test'
+  ...
+# Subtest: review, cancellation and deletion replace the device snapshot; unchanged snapshots are skipped
+ok 120 - review, cancellation and deletion replace the device snapshot; unchanged snapshots are skipped
+  ---
+  duration_ms: 0.9415
+  type: 'test'
+  ...
+# Subtest: failed ON remains OFF; failed OFF remains ON with a visible error
+ok 121 - failed ON remains OFF; failed OFF remains ON with a visible error
+  ---
+  duration_ms: 2.548875
+  type: 'test'
+  ...
+# Subtest: failed schedule sync retries without losing a cancellation
+ok 122 - failed schedule sync retries without losing a cancellation
+  ---
+  duration_ms: 0.862458
+  type: 'test'
+  ...
+# Subtest: account switch gets a new device binding and does not enroll automatically
+ok 123 - account switch gets a new device binding and does not enroll automatically
+  ---
+  duration_ms: 0.794667
+  type: 'test'
+  ...
+# Subtest: sign-out must cancel server schedules; failure is surfaced instead of claiming OFF
+ok 124 - sign-out must cancel server schedules; failure is surfaced instead of claiming OFF
+  ---
+  duration_ms: 0.690417
+  type: 'test'
+  ...
+# Subtest: known OFF setting never blocks sign-out during a network failure or creates an unnecessary enrollment
+ok 125 - known OFF setting never blocks sign-out during a network failure or creates an unnecessary enrollment
+  ---
+  duration_ms: 0.616292
+  type: 'test'
+  ...
+# Subtest: a large history fails explicitly rather than silently dropping scheduled reminders
+ok 126 - a large history fails explicitly rather than silently dropping scheduled reminders
+  ---
+  duration_ms: 1.723125
+  type: 'test'
+  ...
+# Subtest: 無料枠は ドロー10回・ログ10件
+ok 127 - 無料枠は ドロー10回・ログ10件
+  ---
+  duration_ms: 1.557125
+  type: 'test'
+  ...
+# Subtest: canDraw: 10回目までは可、11回目はブロック
+ok 128 - canDraw: 10回目までは可、11回目はブロック
+  ---
+  duration_ms: 0.630917
+  type: 'test'
+  ...
+# Subtest: canDraw: 保存済みのドロー回数を引き継ぐ（ログ削除で戻らない）
+ok 129 - canDraw: 保存済みのドロー回数を引き継ぐ（ログ削除で戻らない）
+  ---
+  duration_ms: 2.476208
+  type: 'test'
+  ...
+# Subtest: canSaveLog: 現在の保存件数で判定
+ok 130 - canSaveLog: 現在の保存件数で判定
+  ---
+  duration_ms: 1.839042
+  type: 'test'
+  ...
+# Subtest: hasProAccess: plan_type が free 以外 かつ 同じユーザーのキャッシュ
+ok 131 - hasProAccess: plan_type が free 以外 かつ 同じユーザーのキャッシュ
+  ---
+  duration_ms: 5.426584
+  type: 'test'
+  ...
+# Subtest: PRO は ドロー・保存とも無制限
+ok 132 - PRO は ドロー・保存とも無制限
+  ---
+  duration_ms: 1.035917
+  type: 'test'
+  ...
+# Subtest: 未ログインなら PRO キャッシュがあっても無料扱い
+ok 133 - 未ログインなら PRO キャッシュがあっても無料扱い
+  ---
+  duration_ms: 1.011208
+  type: 'test'
+  ...
+# Subtest: PRO キャッシュが7日を過ぎても購入済みは無料扱いに落とさない（needsOnline で再確認を促す）
+ok 134 - PRO キャッシュが7日を過ぎても購入済みは無料扱いに落とさない（needsOnline で再確認を促す）
+  ---
+  duration_ms: 6.230458
+  type: 'test'
+  ...
+# Subtest: フォアグラウンド復帰で plan_type を取り直し、返金済みなら free に戻る
+ok 135 - フォアグラウンド復帰で plan_type を取り直し、返金済みなら free に戻る
+  ---
+  duration_ms: 7.791917
+  type: 'test'
+  ...
+# Subtest: needsOnline: 購入済みのキャッシュが7日を過ぎたら true、再確認できたら false
+ok 136 - needsOnline: 購入済みのキャッシュが7日を過ぎたら true、再確認できたら false
+  ---
+  duration_ms: 3.1055
+  type: 'test'
+  ...
+# Subtest: mountSettings: 再確認が必要なときだけ設定画面に通知欄を出す
+ok 137 - mountSettings: 再確認が必要なときだけ設定画面に通知欄を出す
+  ---
+  duration_ms: 5.783208
+  type: 'test'
+  ...
+# Subtest: isProPlan / mergeDraws（大きい方を採用・加算しない）
+ok 138 - isProPlan / mergeDraws（大きい方を採用・加算しない）
+  ---
+  duration_ms: 0.419708
+  type: 'test'
+  ...
+# Subtest: isProActive: 買い切り or 招待特典の期限内
+ok 139 - isProActive: 買い切り or 招待特典の期限内
+  ---
+  duration_ms: 0.331291
+  type: 'test'
+  ...
+# Subtest: 招待特典: UNLIMITEDは使えるが購入済み扱いにはしない
+ok 140 - 招待特典: UNLIMITEDは使えるが購入済み扱いにはしない
+  ---
+  duration_ms: 0.366875
+  type: 'test'
+  ...
+# Subtest: 招待特典: 期限切れなら無料枠に戻る／購入済みなら期限は出さない
+ok 141 - 招待特典: 期限切れなら無料枠に戻る／購入済みなら期限は出さない
+  ---
+  duration_ms: 2.048958
+  type: 'test'
+  ...
+# Subtest: app.js のフックは最小限
+ok 142 - app.js のフックは最小限
+  ---
+  duration_ms: 0.623584
+  type: 'test'
+  ...
+# Subtest: index.html は auth → entitlements → app の順で読み込む
+ok 143 - index.html は auth → entitlements → app の順で読み込む
+  ---
+  duration_ms: 0.611542
+  type: 'test'
+  ...
+# Subtest: Service Worker が entitlements.js をキャッシュする
+ok 144 - Service Worker が entitlements.js をキャッシュする
+  ---
+  duration_ms: 1.225834
+  type: 'test'
+  ...
+# Subtest: 既存の localStorage キーは変更しない
+ok 145 - 既存の localStorage キーは変更しない
+  ---
+  duration_ms: 1.147458
+  type: 'test'
+  ...
+# Subtest: returning from completion and reopening the pending log shows review details
+ok 146 - returning from completion and reopening the pending log shows review details
+  ---
+  duration_ms: 1.504958
+  type: 'test'
+  ...
+# Subtest: 新しい解除（null）が古い予定に勝ち、null のまま残る
+ok 147 - 新しい解除（null）が古い予定に勝ち、null のまま残る
+  ---
+  duration_ms: 2.385667
+  type: 'test'
+  ...
+# Subtest: 新しい延期が古い予定に勝つ（remindDays もまとめて新しい側）
+ok 148 - 新しい延期が古い予定に勝つ（remindDays もまとめて新しい側）
+  ---
+  duration_ms: 0.430208
+  type: 'test'
+  ...
+# Subtest: ほかの項目が新しくても、通知予定は remindUpdatedAt で選ぶ
+ok 149 - ほかの項目が新しくても、通知予定は remindUpdatedAt で選ぶ
+  ---
+  duration_ms: 0.163792
+  type: 'test'
+  ...
+# Subtest: 古い解除は新しい予定に負ける
+ok 150 - 古い解除は新しい予定に負ける
+  ---
+  duration_ms: 0.149917
+  type: 'test'
+  ...
+# Subtest: remindUpdatedAt のない古いログは updatedAt で比べる
+ok 151 - remindUpdatedAt のない古いログは updatedAt で比べる
+  ---
+  duration_ms: 0.207583
+  type: 'test'
+  ...
+# Subtest: 片方だけが remindUpdatedAt を持つときも日時どうしで比べる
+ok 152 - 片方だけが remindUpdatedAt を持つときも日時どうしで比べる
+  ---
+  duration_ms: 0.145708
+  type: 'test'
+  ...
+# Subtest: 予定の項目がない側が新しくても、相手側の予定を消さない
+ok 153 - 予定の項目がない側が新しくても、相手側の予定を消さない
+  ---
+  duration_ms: 0.194667
+  type: 'test'
+  ...
+# Subtest: 同じ内容なら changed にならない
+ok 154 - 同じ内容なら changed にならない
+  ---
+  duration_ms: 0.056208
+  type: 'test'
+  ...
+# P1 scoring: OK (24024 ordered combinations)
+# equal: どちらも選択としておすすめです / 差がつかないときは、「決め手になる違い」を深掘りしましょう。
+# differenceOne: 選択肢Bを選択としておすすめします / どちらも追い風です。差は小さいので、本音で選んで大丈夫です。
+# differenceTwoOrMore: 選択肢Bを選択としておすすめします
+# bothLow: 今回は、保留をおすすめします。 / どちらも今は慎重に。急がず条件を整える時期かもしれません。
+# bothHigh: 選択肢Bを選択としておすすめします / どちらも追い風です。差は小さいので、本音で選んで大丈夫です。
+# Subtest: tests/p1-scoring.test.mjs
+ok 19 - tests/p1-scoring.test.mjs
+  ---
+  duration_ms: 98.129958
+  type: 'test'
+  ...
+# Subtest: all requested genres and pair presets are available
+ok 156 - all requested genres and pair presets are available
+  ---
+  duration_ms: 2.226
+  type: 'test'
+  ...
+# Subtest: options are optional, capped at 30, and recent values are unique/max four
+ok 157 - options are optional, capped at 30, and recent values are unique/max four
+  ---
+  duration_ms: 0.193625
+  type: 'test'
+  ...
+# Subtest: automatic titles follow priority and manual title is preserved in save code
+ok 158 - automatic titles follow priority and manual title is preserved in save code
+  ---
+  duration_ms: 2.802333
+  type: 'test'
+  ...
+# Subtest: history labels expose genre/options and old records remain compatible
+ok 159 - history labels expose genre/options and old records remain compatible
+  ---
+  duration_ms: 0.686084
+  type: 'test'
+  ...
+# Subtest: new fields save and export/import paths preserve optional fields without changing schema
+ok 160 - new fields save and export/import paths preserve optional fields without changing schema
+  ---
+  duration_ms: 0.317542
+  type: 'test'
+  ...
+# Subtest: share payload remains limited to existing fields and never serializes genre/options
+ok 161 - share payload remains limited to existing fields and never serializes genre/options
+  ---
+  duration_ms: 0.301167
+  type: 'test'
+  ...
+# Subtest: user-facing values are escaped or assigned with textContent/value
+ok 162 - user-facing values are escaped or assigned with textContent/value
+  ---
+  duration_ms: 0.33225
+  type: 'test'
+  ...
+# Subtest: mobile-safe inputs have required Japanese keyboard attributes
+ok 163 - mobile-safe inputs have required Japanese keyboard attributes
+  ---
+  duration_ms: 0.086875
+  type: 'test'
+  ...
+# Subtest: stored choice values are displayed as A/B
+ok 164 - stored choice values are displayed as A/B
+  ---
+  duration_ms: 0.31625
+  type: 'test'
+  ...
+# Subtest: tutorial uses its own key and requires no marker, no logs and no shared link
+ok 165 - tutorial uses its own key and requires no marker, no logs and no shared link
+  ---
+  duration_ms: 1.076042
+  type: 'test'
+  ...
+# Subtest: intro explains a concrete unsaved trial in an accessible three-step dialog
+ok 166 - intro explains a concrete unsaved trial in an accessible three-step dialog
+  ---
+  duration_ms: 0.320458
+  type: 'test'
+  ...
+# Subtest: tutorial draw uses 22 major cards and keeps deck mode unchanged
+ok 167 - tutorial draw uses 22 major cards and keeps deck mode unchanged
+  ---
+  duration_ms: 0.093541
+  type: 'test'
+  ...
+# Subtest: keywords, hearing highlight, completion and replay are wired
+ok 168 - keywords, hearing highlight, completion and replay are wired
+  ---
+  duration_ms: 0.225459
+  type: 'test'
+  ...
+# Subtest: callouts are live statuses with 44px controls and 15px text
+ok 169 - callouts are live statuses with 44px controls and 15px text
+  ---
+  duration_ms: 0.378917
+  type: 'test'
+  ...
+# Subtest: intro has no page number and steps are numbered DRAW 01, DECIDE 02, LOOK BACK 03
+ok 170 - intro has no page number and steps are numbered DRAW 01, DECIDE 02, LOOK BACK 03
+  ---
+  duration_ms: 0.145625
+  type: 'test'
+  ...
+# Subtest: LOOK BACK shows a sample log and an unsaved trial review before completion
+ok 171 - LOOK BACK shows a sample log and an unsaved trial review before completion
+  ---
+  duration_ms: 0.7815
+  type: 'test'
+  ...
+# Subtest: DECIDE log step shows what a log records and why, without saving
+ok 172 - DECIDE log step shows what a log records and why, without saving
+  ---
+  duration_ms: 0.418125
+  type: 'test'
+  ...
+# Subtest: safeSetItem catches storage exceptions and persist returns a result
+ok 173 - safeSetItem catches storage exceptions and persist returns a result
+  ---
+  duration_ms: 1.541417
+  type: 'test'
+  ...
+# Subtest: save failure keeps the pending record and offers a one-record export
+ok 174 - save failure keeps the pending record and offers a one-record export
+  ---
+  duration_ms: 0.344209
+  type: 'test'
+  ...
+# Subtest: iOS standalone and in-app browser conditions are present
+ok 175 - iOS standalone and in-app browser conditions are present
+  ---
+  duration_ms: 0.068917
+  type: 'test'
+  ...
+# Subtest: A2HS copy, help steps, and two-day suppression are wired
+ok 176 - A2HS copy, help steps, and two-day suppression are wired
+  ---
+  duration_ms: 0.165084
+  type: 'test'
+  ...
+# Subtest: backup reminder requires three logs and uses fourteen-day suppression
+ok 177 - backup reminder requires three logs and uses fourteen-day suppression
+  ---
+  duration_ms: 0.076916
+  type: 'test'
+  ...
+# Subtest: persistent storage is requested once after the first successful record
+ok 178 - persistent storage is requested once after the first successful record
+  ---
+  duration_ms: 0.066
+  type: 'test'
+  ...
+# Subtest: all required local-only storage events are dispatched
+ok 179 - all required local-only storage events are dispatched
+  ---
+  duration_ms: 0.192792
+  type: 'test'
+  ...
+# Subtest: settings show failure and Safari-specific guidance
+ok 180 - settings show failure and Safari-specific guidance
+  ---
+  duration_ms: 0.095333
+  type: 'test'
+  ...
+# Subtest: touched detail user fields use textContent or value, not innerHTML interpolation
+ok 181 - touched detail user fields use textContent or value, not innerHTML interpolation
+  ---
+  duration_ms: 1.725708
+  type: 'test'
+  ...
+# Subtest: P13 copy, headings, defaults, and duplicate delete semantics
+ok 182 - P13 copy, headings, defaults, and duplicate delete semantics
+  ---
+  duration_ms: 0.671375
+  type: 'test'
+  ...
+# Subtest: shared result wording covers match, mismatch, and tie
+ok 183 - shared result wording covers match, mismatch, and tie
+  ---
+  duration_ms: 0.1435
+  type: 'test'
+  ...
+# Subtest: declared small text and requested tap targets meet minimums
+ok 184 - declared small text and requested tap targets meet minimums
+  ---
+  duration_ms: 1.622042
+  type: 'test'
+  ...
+# Subtest: light palette reaches 4.5:1 without changing dark palette declarations
+ok 185 - light palette reaches 4.5:1 without changing dark palette declarations
+  ---
+  duration_ms: 0.991333
+  type: 'test'
+  ...
+# Subtest: result focus and short viewport rules are scoped to display only
+ok 186 - result focus and short viewport rules are scoped to display only
+  ---
+  duration_ms: 2.174833
+  type: 'test'
+  ...
+# Subtest: all original cards have 320px and 480px WebP variants
+ok 187 - all original cards have 320px and 480px WebP variants
+  ---
+  duration_ms: 1.907958
+  type: 'test'
+  ...
+# Subtest: card markup uses WebP source, JPG fallback and dimensions
+ok 188 - card markup uses WebP source, JPG fallback and dimensions
+  ---
+  duration_ms: 0.123
+  type: 'test'
+  ...
+# Subtest: reveal begins image loading without waiting to show the result
+ok 189 - reveal begins image loading without waiting to show the result
+  ---
+  duration_ms: 0.140125
+  type: 'test'
+  ...
+# Subtest: worker caches shell and up to 100 card images and activates right away
+ok 190 - worker caches shell and up to 100 card images and activates right away
+  ---
+  duration_ms: 0.124917
+  type: 'test'
+  ...
+# Subtest: page reloads once when an updated worker takes control
+ok 191 - page reloads once when an updated worker takes control
+  ---
+  duration_ms: 0.139083
+  type: 'test'
+  ...
+# Subtest: all 78 cards have complete copy for both orientations and five themes
+ok 192 - all 78 cards have complete copy for both orientations and five themes
+  ---
+  duration_ms: 1.527666
+  type: 'test'
+  ...
+# Subtest: requested representative copy is present
+ok 193 - requested representative copy is present
+  ---
+  duration_ms: 0.235625
+  type: 'test'
+  ...
+# Subtest: editorial updates preserve card identities, scores and data structure
+ok 194 - editorial updates preserve card identities, scores and data structure
+  ---
+  duration_ms: 1.320709
+  type: 'test'
+  ...
+# Subtest: document and social metadata use the unified heading and v3 image
+ok 195 - document and social metadata use the unified heading and v3 image
+  ---
+  duration_ms: 0.903667
+  type: 'test'
+  ...
+# Subtest: app sharing uses the same heading for title and text
+ok 196 - app sharing uses the same heading for title and text
+  ---
+  duration_ms: 0.155708
+  type: 'test'
+  ...
+# Subtest: new PNG is intact at 1200 by 630 and the previous image remains
+ok 197 - new PNG is intact at 1200 by 630 and the previous image remains
+  ---
+  duration_ms: 0.747458
+  type: 'test'
+  ...
+# Subtest: mobile sheets reserve iPhone top and bottom safe areas
+ok 198 - mobile sheets reserve iPhone top and bottom safe areas
+  ---
+  duration_ms: 0.575583
+  type: 'test'
+  ...
+# Subtest: mobile sheet header and close controls stay reachable
+ok 199 - mobile sheet header and close controls stay reachable
+  ---
+  duration_ms: 0.822208
+  type: 'test'
+  ...
+# Subtest: card detail supports close icon, bottom button, backdrop and handle swipe
+ok 200 - card detail supports close icon, bottom button, backdrop and handle swipe
+  ---
+  duration_ms: 0.233875
+  type: 'test'
+  ...
+# Subtest: background scroll is fixed only while a modal is open
+ok 201 - background scroll is fixed only while a modal is open
+  ---
+  duration_ms: 0.156708
+  type: 'test'
+  ...
+# Subtest: long and landscape layouts remain scrollable without full-screen clipping
+ok 202 - long and landscape layouts remain scrollable without full-screen clipping
+  ---
+  duration_ms: 0.122875
+  type: 'test'
+  ...
+# Subtest: dark mode and reduced-motion rules remain present
+ok 203 - dark mode and reduced-motion rules remain present
+  ---
+  duration_ms: 0.048375
+  type: 'test'
+  ...
+# Subtest: touched sheet user text is assigned via textContent
+ok 204 - touched sheet user text is assigned via textContent
+  ---
+  duration_ms: 0.270292
+  type: 'test'
+  ...
+# Subtest: six lessons contain complete reading content
+ok 205 - six lessons contain complete reading content
+  ---
+  duration_ms: 0.430958
+  type: 'test'
+  ...
+# Subtest: all 78 cards have searchable meanings, keywords and themes
+ok 206 - all 78 cards have searchable meanings, keywords and themes
+  ---
+  duration_ms: 0.164667
+  type: 'test'
+  ...
+# Subtest: learning state is separate and learning asset loads on entry
+ok 207 - learning state is separate and learning asset loads on entry
+  ---
+  duration_ms: 0.151208
+  type: 'test'
+  ...
+# P2 card content: OK (780 combinations rendered)
+# Subtest: tests/p2-card-content.test.mjs
+ok 29 - tests/p2-card-content.test.mjs
+  ---
+  duration_ms: 30.439333
+  type: 'test'
+  ...
+# Subtest: Obsidian note is readable and reimports every log field exactly
+ok 209 - Obsidian note is readable and reimports every log field exactly
+  ---
+  duration_ms: 0.9135
+  type: 'test'
+  ...
+# Subtest: old JSON backups still import and Markdown shares the same import validation
+ok 210 - old JSON backups still import and Markdown shares the same import validation
+  ---
+  duration_ms: 0.205
+  type: 'test'
+  ...
+# Subtest: the single celestial card back defines the visual identity
+ok 211 - the single celestial card back defines the visual identity
+  ---
+  duration_ms: 0.37575
+  type: 'test'
+  ...
+# Subtest: period stats show the newest six months first even when logs are newest-first
+ok 212 - period stats show the newest six months first even when logs are newest-first
+  ---
+  duration_ms: 2.53275
+  type: 'test'
+  ...
+# Subtest: period stats ignore invalid dates and do not depend on input order
+ok 213 - period stats ignore invalid dates and do not depend on input order
+  ---
+  duration_ms: 0.370417
+  type: 'test'
+  ...
+# Subtest: stats has three tabs and no emotion tab
+ok 214 - stats has three tabs and no emotion tab
+  ---
+  duration_ms: 1.017667
+  type: 'test'
+  ...
+# Subtest: learn data is precached so the learn screen works offline
+ok 215 - learn data is precached so the learn screen works offline
+  ---
+  duration_ms: 0.795875
+  type: 'test'
+  ...
+# Subtest: log ids are always escaped in HTML attributes
+ok 216 - log ids are always escaped in HTML attributes
+  ---
+  duration_ms: 0.236167
+  type: 'test'
+  ...
+# Subtest: stored logs load leniently while imports stay strict
+ok 217 - stored logs load leniently while imports stay strict
+  ---
+  duration_ms: 0.182083
+  type: 'test'
+  ...
+# Subtest: invalid deck modes fall back to a known preset
+ok 218 - invalid deck modes fall back to a known preset
+  ---
+  duration_ms: 0.079083
+  type: 'test'
+  ...
+# Subtest: share and image failures are handled
+ok 219 - share and image failures are handled
+  ---
+  duration_ms: 0.391625
+  type: 'test'
+  ...
+# Subtest: missing related lessons are skipped
+ok 220 - missing related lessons are skipped
+  ---
+  duration_ms: 0.059209
+  type: 'test'
+  ...
+# Subtest: service worker precache bypasses the HTTP cache
+ok 221 - service worker precache bypasses the HTTP cache
+  ---
+  duration_ms: 0.084916
+  type: 'test'
+  ...
+# Subtest: \#15 引いた回数はカードを実際にめくったときだけ数える
+ok 222 - \#15 引いた回数はカードを実際にめくったときだけ数える
+  ---
+  duration_ms: 1.54475
+  type: 'test'
+  ...
+# Subtest: \#12 A/B の判断ボタンに入力した選択肢を表示する
+ok 223 - \#12 A/B の判断ボタンに入力した選択肢を表示する
+  ---
+  duration_ms: 2.776625
+  type: 'test'
+  ...
+# Subtest: \#17 リマインドを選び直したら今日から数える
+ok 224 - \#17 リマインドを選び直したら今日から数える
+  ---
+  duration_ms: 0.4275
+  type: 'test'
+  ...
+# Subtest: \#10 送信に失敗したリマインドは送信済みにしない
+ok 225 - \#10 送信に失敗したリマインドは送信済みにしない
+  ---
+  duration_ms: 0.416166
+  type: 'test'
+  ...
+# Subtest: \#8 通知の宛先は持ち主を覚え、ログアウト時に外す
+ok 226 - \#8 通知の宛先は持ち主を覚え、ログアウト時に外す
+  ---
+  duration_ms: 0.9735
+  type: 'test'
+  ...
+# Subtest: \#8 ログアウト・アカウント削除はセッションがあるうちに通知の宛先を外す
+ok 227 - \#8 ログアウト・アカウント削除はセッションがあるうちに通知の宛先を外す
+  ---
+  duration_ms: 0.499375
+  type: 'test'
+  ...
+# Subtest: \#8 予定は端末（endpoint）ごとに持ち、ほかの端末の予定に触れない
+ok 228 - \#8 予定は端末（endpoint）ごとに持ち、ほかの端末の予定に触れない
+  ---
+  duration_ms: 0.44425
+  type: 'test'
+  ...
+# Subtest: \#9 別アカウントでログインしたら同期を止めて確認する
+ok 229 - \#9 別アカウントでログインしたら同期を止めて確認する
+  ---
+  duration_ms: 0.154792
+  type: 'test'
+  ...
+# Subtest: \#3 開いている決済セッションがあれば作り直さずに返す
+ok 230 - \#3 開いている決済セッションがあれば作り直さずに返す
+  ---
+  duration_ms: 0.113084
+  type: 'test'
+  ...
+# Subtest: \#11 購入を1件ずつ記録し、利用者からは読めない
+ok 231 - \#11 購入を1件ずつ記録し、利用者からは読めない
+  ---
+  duration_ms: 0.23375
+  type: 'test'
+  ...
+# Subtest: \#11 二重購入を通知し、片方の返金ではPROを外さない
+ok 232 - \#11 二重購入を通知し、片方の返金ではPROを外さない
+  ---
+  duration_ms: 0.284875
+  type: 'test'
+  ...
+# Subtest: \#13 決定後の入力内容は要約＋変更するボタンで、開くとフォーカスが移る
+ok 233 - \#13 決定後の入力内容は要約＋変更するボタンで、開くとフォーカスが移る
+  ---
+  duration_ms: 0.601416
+  type: 'test'
+  ...
+# Subtest: 準備のジャンル選択は1枚ならドロー、2枚なら選択肢へ進み、選択肢内の変更では移動しない
+ok 234 - 準備のジャンル選択は1枚ならドロー、2枚なら選択肢へ進み、選択肢内の変更では移動しない
+  ---
+  duration_ms: 1.090042
+  type: 'test'
+  ...
+# Subtest: \#14 準備画面は組合せ候補を常時表示し、スキップと主操作を下部にまとめる
+ok 235 - \#14 準備画面は組合せ候補を常時表示し、スキップと主操作を下部にまとめる
+  ---
+  duration_ms: 0.287292
+  type: 'test'
+  ...
+# Subtest: \#14 AとBが同じときは軽いヒントだけ出す（ブロックしない）
+ok 236 - \#14 AとBが同じときは軽いヒントだけ出す（ブロックしない）
+  ---
+  duration_ms: 0.075
+  type: 'test'
+  ...
+# Subtest: \#14 候補タップはフォームを作り直さない
+ok 237 - \#14 候補タップはフォームを作り直さない
+  ---
+  duration_ms: 0.159958
+  type: 'test'
+  ...
+# Subtest: \#16 プッシュ通知は常に状態行を出す
+ok 238 - \#16 プッシュ通知は常に状態行を出す
+  ---
+  duration_ms: 0.629417
+  type: 'test'
+  ...
+# Subtest: \#16 通知まわりは「通知」見出しの下にまとまる
+ok 239 - \#16 通知まわりは「通知」見出しの下にまとまる
+  ---
+  duration_ms: 0.501625
+  type: 'test'
+  ...
+# Subtest: \#18 読み込み確認は追加取り込みと件数の内訳を示す
+ok 240 - \#18 読み込み確認は追加取り込みと件数の内訳を示す
+  ---
+  duration_ms: 0.13575
+  type: 'test'
+  ...
+# Subtest: \#20 Google のスクリプトは静的に読み込まない
+ok 241 - \#20 Google のスクリプトは静的に読み込まない
+  ---
+  duration_ms: 0.976333
+  type: 'test'
+  ...
+# Subtest: \#21 結果はおすすめを明示し、補足解説を表示しない
+ok 242 - \#21 結果はおすすめを明示し、補足解説を表示しない
+  ---
+  duration_ms: 0.332083
+  type: 'test'
+  ...
+# Subtest: \#22 同期ONのときは状態行を出し、失敗時に再試行できる
+ok 243 - \#22 同期ONのときは状態行を出し、失敗時に再試行できる
+  ---
+  duration_ms: 0.184958
+  type: 'test'
+  ...
+# Subtest: \#23 横向きはヒント表示のみ（操作を塞がない）
+ok 244 - \#23 横向きはヒント表示のみ（操作を塞がない）
+  ---
+  duration_ms: 0.467125
+  type: 'test'
+  ...
+# Subtest: \#23 1枚引きの山札は中央だけフォーカス可・他は読み上げ対象外
+ok 245 - \#23 1枚引きの山札は中央だけフォーカス可・他は読み上げ対象外
+  ---
+  duration_ms: 0.047333
+  type: 'test'
+  ...
+# Subtest: \#23 ラベルとトグルの読み上げ
+ok 246 - \#23 ラベルとトグルの読み上げ
+  ---
+  duration_ms: 0.111708
+  type: 'test'
+  ...
+# Subtest: \#23 カード裏が1種類のときは選択UIでなく説明文
+ok 247 - \#23 カード裏が1種類のときは選択UIでなく説明文
+  ---
+  duration_ms: 0.059084
+  type: 'test'
+  ...
+# Subtest: \#23 設定は目的別の見出しでまとまる
+ok 248 - \#23 設定は目的別の見出しでまとまる
+  ---
+  duration_ms: 0.338
+  type: 'test'
+  ...
+# Subtest: DECIDE confirmation moves once after the stamp settles, and cancels after leaving
+ok 249 - DECIDE confirmation moves once after the stamp settles, and cancels after leaving
+  ---
+  duration_ms: 1.178084
+  type: 'test'
+  ...
+# Subtest: low-score comparison omits the recommendation badge and card emphasis
+ok 250 - low-score comparison omits the recommendation badge and card emphasis
+  ---
+  duration_ms: 0.421208
+  type: 'test'
+  ...
+# P8 shared result: OK (156 card orientations rendered)
+# Subtest: tests/p8-shared.test.mjs
+ok 36 - tests/p8-shared.test.mjs
+  ---
+  duration_ms: 36.894166
+  type: 'test'
+  ...
+# P9 interview flow: OK (one/two, all prompt depletion states)
+# Subtest: tests/p9-interview.test.mjs
+ok 37 - tests/p9-interview.test.mjs
+  ---
+  duration_ms: 34.494042
+  type: 'test'
+  ...
+# Subtest: urlBase64ToUint8Array: base64url をバイト列にする
+ok 253 - urlBase64ToUint8Array: base64url をバイト列にする
+  ---
+  duration_ms: 0.679875
+  type: 'test'
+  ...
+# Subtest: sanitizeItems: 形のちがうものを落とし、重複を消して新しい順にする
+ok 254 - sanitizeItems: 形のちがうものを落とし、重複を消して新しい順にする
+  ---
+  duration_ms: 1.039834
+  type: 'test'
+  ...
+# Subtest: sanitizeItems: 最大500件
+ok 255 - sanitizeItems: 最大500件
+  ---
+  duration_ms: 3.153083
+  type: 'test'
+  ...
+# Subtest: settingHtml: iPhoneでホーム画面に追加していないときは案内だけ
+ok 256 - settingHtml: iPhoneでホーム画面に追加していないときは案内だけ
+  ---
+  duration_ms: 0.259334
+  type: 'test'
+  ...
+# Subtest: settingHtml: ON/OFF ボタンを出す
+ok 257 - settingHtml: ON/OFF ボタンを出す
+  ---
+  duration_ms: 0.234833
+  type: 'test'
+  ...
+# Subtest: renderSettings: 公開鍵なしでは何も出さない・未ログインならログインの案内
+ok 258 - renderSettings: 公開鍵なしでは何も出さない・未ログインならログインの案内
+  ---
+  duration_ms: 1.948167
+  type: 'test'
+  ...
+# Subtest: statusLabel: 状態ごとの表示
+ok 259 - statusLabel: 状態ごとの表示
+  ---
+  duration_ms: 0.728375
+  type: 'test'
+  ...
+# Subtest: isOn: はじめは OFF
+ok 260 - isOn: はじめは OFF
+  ---
+  duration_ms: 0.561666
+  type: 'test'
+  ...
+# Subtest: メール移行後は設定・再登録・予定同期を止め、旧購読を解除する
+ok 261 - メール移行後は設定・再登録・予定同期を止め、旧購読を解除する
+  ---
+  duration_ms: 1.843875
+  type: 'test'
+  ...
+# Subtest: quickstart uses the editorial plates and a pick animation
+ok 262 - quickstart uses the editorial plates and a pick animation
+  ---
+  duration_ms: 0.826583
+  type: 'test'
+  ...
+# Subtest: quickstart styles keep the card backs intact
+ok 263 - quickstart styles keep the card backs intact
+  ---
+  duration_ms: 0.344417
+  type: 'test'
+  ...
+# Subtest: shell cache was bumped for the quickstart redesign
+ok 264 - shell cache was bumped for the quickstart redesign
+  ---
+  duration_ms: 0.562333
+  type: 'test'
+  ...
+# Subtest: quickstart shows the app name as a brand header
+ok 265 - quickstart shows the app name as a brand header
+  ---
+  duration_ms: 0.706208
+  type: 'test'
+  ...
+# Subtest: normalizeCode: 大文字にそろえ、形がちがうものは空にする
+ok 266 - normalizeCode: 大文字にそろえ、形がちがうものは空にする
+  ---
+  duration_ms: 1.163042
+  type: 'test'
+  ...
+# Subtest: inviteUrl: ?ref=コード 付きのURLを作る
+ok 267 - inviteUrl: ?ref=コード 付きのURLを作る
+  ---
+  duration_ms: 0.169625
+  type: 'test'
+  ...
+# Subtest: sectionHtml: コードがあればボタン、なければ準備中
+ok 268 - sectionHtml: コードがあればボタン、なければ準備中
+  ---
+  duration_ms: 0.381459
+  type: 'test'
+  ...
+# Subtest: countHtml: 残り枠だけ表示し、5人に達したら出さない
+ok 269 - countHtml: 残り枠だけ表示し、5人に達したら出さない
+  ---
+  duration_ms: 0.292917
+  type: 'test'
+  ...
+# Subtest: takeRefFromUrl: ref を取り出し、ほかのパラメータは残す
+ok 270 - takeRefFromUrl: ref を取り出し、ほかのパラメータは残す
+  ---
+  duration_ms: 0.466458
+  type: 'test'
+  ...
+# Subtest: 読み込み時: ?ref= を保存してアドレスバーから消す
+ok 271 - 読み込み時: ?ref= を保存してアドレスバーから消す
+  ---
+  duration_ms: 0.663917
+  type: 'test'
+  ...
+# Subtest: renderSettings: 未ログインは何も出さない
+ok 272 - renderSettings: 未ログインは何も出さない
+  ---
+  duration_ms: 0.547333
+  type: 'test'
+  ...
+# Subtest: all imported WXR drafts have unique identities and text-only reading blocks
+ok 273 - all imported WXR drafts have unique identities and text-only reading blocks
+  ---
+  duration_ms: 1.815375
+  type: 'test'
+  ...
+# Subtest: reading renders imported text without raw source HTML and keeps article fetching separate
+ok 274 - reading renders imported text without raw source HTML and keeps article fetching separate
+  ---
+  duration_ms: 0.165583
+  type: 'test'
+  ...
+# Subtest: six rewritten lessons preserve progress IDs and explain technical terms with examples
+ok 275 - six rewritten lessons preserve progress IDs and explain technical terms with examples
+  ---
+  duration_ms: 0.324583
+  type: 'test'
+  ...
+# Subtest: defaultRemindAt: ONなら3日後、OFFや壊れた日時は null
+ok 276 - defaultRemindAt: ONなら3日後、OFFや壊れた日時は null
+  ---
+  duration_ms: 2.406333
+  type: 'test'
+  ...
+# Subtest: pendingItems: ふり返り前で予定のあるログの {id, remindAt} だけ
+ok 277 - pendingItems: ふり返り前で予定のあるログの {id, remindAt} だけ
+  ---
+  duration_ms: 0.413042
+  type: 'test'
+  ...
+# Subtest: dueItems: 予定時刻を過ぎて、まだ通知していないものだけ
+ok 278 - dueItems: 予定時刻を過ぎて、まだ通知していないものだけ
+  ---
+  duration_ms: 0.1015
+  type: 'test'
+  ...
+# Subtest: renderToggle: 保存した状態でON/OFF、通知に対応していない端末は案内
+ok 279 - renderToggle: 保存した状態でON/OFF、通知に対応していない端末は案内
+  ---
+  duration_ms: 1.011542
+  type: 'test'
+  ...
+# Subtest: normalize: 知らない名前はクラシックにする
+ok 280 - normalize: 知らない名前はクラシックにする
+  ---
+  duration_ms: 1.33475
+  type: 'test'
+  ...
+# Subtest: palette: クラシックはこれまでの黒×黄の色
+ok 281 - palette: クラシックはこれまでの黒×黄の色
+  ---
+  duration_ms: 0.225209
+  type: 'test'
+  ...
+# Subtest: pickerHtml: 4色のボタンを出し、選んだものだけ active
+ok 282 - pickerHtml: 4色のボタンを出し、選んだものだけ active
+  ---
+  duration_ms: 0.384541
+  type: 'test'
+  ...
+# Subtest: set/current: 選んだテーマを端末に保存する
+ok 283 - set/current: 選んだテーマを端末に保存する
+  ---
+  duration_ms: 1.43475
+  type: 'test'
+  ...
+# Subtest: SNSシェア：Instagram → X → LINE → Facebook の順に縦に並ぶ
+ok 284 - SNSシェア：Instagram → X → LINE → Facebook の順に縦に並ぶ
+  ---
+  duration_ms: 0.591208
+  type: 'test'
+  ...
+# Subtest: stats themes open a decision log list for that theme
+ok 285 - stats themes open a decision log list for that theme
+  ---
+  duration_ms: 0.886375
+  type: 'test'
+  ...
+# Subtest: details opened from stats return to stats
+ok 286 - details opened from stats return to stats
+  ---
+  duration_ms: 0.180667
+  type: 'test'
+  ...
+# Subtest: satisfaction rows are color-coded buttons that open the matching review log
+ok 287 - satisfaction rows are color-coded buttons that open the matching review log
+  ---
+  duration_ms: 1.707125
+  type: 'test'
+  ...
+# Subtest: pending reviews get their own block and theme/period tabs are ranked panels
+ok 288 - pending reviews get their own block and theme/period tabs are ranked panels
+  ---
+  duration_ms: 0.345292
+  type: 'test'
+  ...
+# Subtest: cache-first shell files changed => SHELL_CACHE must be bumped (残件A regression)
+ok 289 - cache-first shell files changed => SHELL_CACHE must be bumped (残件A regression)
+  ---
+  duration_ms: 4.0435
+  type: 'test'
+  ...
+# Subtest: shell cache is at least v125 and fingerprint covers the core code files
+ok 290 - shell cache is at least v125 and fingerprint covers the core code files
+  ---
+  duration_ms: 0.147792
+  type: 'test'
+  ...
+# Subtest: activate removes only old decide-shell-* caches and keeps the image cache and current shell
+ok 291 - activate removes only old decide-shell-* caches and keeps the image cache and current shell
+  ---
+  duration_ms: 13.648084
+  type: 'test'
+  ...
+# Subtest: update path never clears drafts/logs (localStorage) or the decide-remind IndexedDB
+ok 292 - update path never clears drafts/logs (localStorage) or the decide-remind IndexedDB
+  ---
+  duration_ms: 0.146333
+  type: 'test'
+  ...
+# Subtest: navigation answers the app shell only for the scope root
+ok 293 - navigation answers the app shell only for the scope root
+  ---
+  duration_ms: 1.310458
+  type: 'test'
+  ...
+# Subtest: (a) OFF のとき syncNow しても止まらず、ON にした後の syncNow は実際に送る
+ok 294 - (a) OFF のとき syncNow しても止まらず、ON にした後の syncNow は実際に送る
+  ---
+  duration_ms: 6.483791
+  type: 'test'
+  ...
+# Subtest: (b) 同期のあと（送信中も含む）に編集したログは未同期として数える
+ok 295 - (b) 同期のあと（送信中も含む）に編集したログは未同期として数える
+  ---
+  duration_ms: 7.784834
+  type: 'test'
+  ...
+# Subtest: (c) upsert 待ちのあいだにログアウトしたら、結果をログに書き戻さない
+ok 296 - (c) upsert 待ちのあいだにログアウトしたら、結果をログに書き戻さない
+  ---
+  duration_ms: 2.00475
+  type: 'test'
+  ...
+# Subtest: (d) A→OFF→B→ON→再読み込みでも、明示的に引き継ぐまで A のログを B として送らない
+ok 297 - (d) A→OFF→B→ON→再読み込みでも、明示的に引き継ぐまで A のログを B として送らない
+  ---
+  duration_ms: 4.709
+  type: 'test'
+  ...
+# Subtest: merge: 端末だけのログはアップロード、サーバーだけのログは取り込む
+ok 298 - merge: 端末だけのログはアップロード、サーバーだけのログは取り込む
+  ---
+  duration_ms: 0.789083
+  type: 'test'
+  ...
+# Subtest: merge: 新しい方が勝つ（振り返りがある方）
+ok 299 - merge: 新しい方が勝つ（振り返りがある方）
+  ---
+  duration_ms: 0.139916
+  type: 'test'
+  ...
+# Subtest: merge: 端末で消したログは墓標として送る
+ok 300 - merge: 端末で消したログは墓標として送る
+  ---
+  duration_ms: 0.057875
+  type: 'test'
+  ...
+# Subtest: merge: サーバーで消されたログは端末からも消す
+ok 301 - merge: サーバーで消されたログは端末からも消す
+  ---
+  duration_ms: 0.047541
+  type: 'test'
+  ...
+# Subtest: merge: 壊れたデータは無視する
+ok 302 - merge: 壊れたデータは無視する
+  ---
+  duration_ms: 0.12825
+  type: 'test'
+  ...
+# Subtest: markDeleted: 同期ONのときだけ墓標を記録する
+ok 303 - markDeleted: 同期ONのときだけ墓標を記録する
+  ---
+  duration_ms: 0.629084
+  type: 'test'
+  ...
+# Subtest: renderToggle: 未ログインは表示なし、PROはON表示、無料はPRO限定の案内
+ok 304 - renderToggle: 未ログインは表示なし、PROはON表示、無料はPRO限定の案内
+  ---
+  duration_ms: 2.351333
+  type: 'test'
+  ...
+# Subtest: autoEnable: PROでログイン中なら一度だけ自動でONにし、手動OFFのあとはONに戻さない
+ok 305 - autoEnable: PROでログイン中なら一度だけ自動でONにし、手動OFFのあとはONに戻さない
+  ---
+  duration_ms: 0.960042
+  type: 'test'
+  ...
+# Subtest: autoEnable: 無料プランや未ログインでは何もしない
+ok 306 - autoEnable: 無料プランや未ログインでは何もしない
+  ---
+  duration_ms: 1.491666
+  type: 'test'
+  ...
+# Subtest: merge: 古いログでも updatedAt が新しい方を優先する（リマインド変更など）
+ok 307 - merge: 古いログでも updatedAt が新しい方を優先する（リマインド変更など）
+  ---
+  duration_ms: 0.361417
+  type: 'test'
+  ...
+# Subtest: renderToggle: 同期ONのとき最終同期・失敗の状態を表示する
+ok 308 - renderToggle: 同期ONのとき最終同期・失敗の状態を表示する
+  ---
+  duration_ms: 1.562459
+  type: 'test'
+  ...
+# Subtest: standalone dock leaves the scrolling shell and follows the visible keyboard viewport
+ok 309 - standalone dock leaves the scrolling shell and follows the visible keyboard viewport
+  ---
+  duration_ms: 1.551125
+  type: 'test'
+  ...
+# Subtest: keyboard dismissal restores the full frame and resets native root without losing content position
+ok 310 - keyboard dismissal restores the full frame and resets native root without losing content position
+  ---
+  duration_ms: 0.281208
+  type: 'test'
+  ...
+# Subtest: any input blur repairs native drift even when viewport height and root scrollY are stale
+ok 311 - any input blur repairs native drift even when viewport height and root scrollY are stale
+  ---
+  duration_ms: 0.30475
+  type: 'test'
+  ...
+# Subtest: navigation scrolls the content while root repairs preserve it
+ok 312 - navigation scrolls the content while root repairs preserve it
+  ---
+  duration_ms: 0.262708
+  type: 'test'
+  ...
+# Subtest: standalone without VisualViewport still separates content and dock
+ok 313 - standalone without VisualViewport still separates content and dock
+  ---
+  duration_ms: 0.208083
+  type: 'test'
+  ...
+# Subtest: normal browser pages retain native document scrolling
+ok 314 - normal browser pages retain native document scrolling
+  ---
+  duration_ms: 0.283375
+  type: 'test'
+  ...
+1..314
+# tests 314
+# suites 0
+# pass 314
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1119.8905

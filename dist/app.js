@@ -554,9 +554,9 @@ function renderHome() {
           <button class="splash-atlas" data-action="open-learn">カード図鑑</button>
           <div class="home-reading-links" aria-label="カードと悩みを読む">
             <a href="./cards/">カード・悩み一覧</a>
-            <a href="./cards/worry-tenshoku.html">転職</a>
-            <a href="./cards/worry-renai.html">恋愛</a>
-            <a href="./cards/worry-okane.html">お金</a>
+            <a href="./cards/worry-tenshoku">転職</a>
+            <a href="./cards/worry-renai">恋愛</a>
+            <a href="./cards/worry-okane">お金</a>
           </div>
         </nav>
       </section>`;
@@ -1899,9 +1899,9 @@ function openSettings() {
     <h3 class="settings-group-title" data-settings-group="data">データとアカウント</h3>
     <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">バックアップ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-markdown">書き出す</button><button class="button secondary" data-action="import-markdown">読み込む</button></div><div class="sync-actions"><button class="sync-help-button" type="button" data-action="backup-help">バックアップについて</button></div><input id="import-file" type="file" accept="text/markdown,.md,text/plain,application/json,.json" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップ内容"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
      <section class="data-setting account-setting" data-account-setting aria-labelledby="account-setting-title" hidden></section>
-     <nav class="settings-links" aria-label="その他">${window.DECIDE_ENTITLEMENTS?.hasPurchased?.() ? '' : '<button class="settings-link settings-link-pro" data-action="open-paywall"><span><small>UNLIMITED EDITION</small>引き放題・残し放題にする</span><span class="settings-link-chevron" aria-hidden="true">›</span></button>'}<button class="settings-link" data-action="open-learn"><span>カード図鑑</span><span class="settings-link-chevron" aria-hidden="true">›</span></button><button class="settings-link" data-action="tutorial-replay"><span data-tutorial-label>使い方をもう一度見る</span><span class="settings-link-chevron" aria-hidden="true">›</span></button><a class="settings-link" href="./cards/worries.html" target="_blank" rel="noopener"><span>記事を読む</span><span class="settings-link-chevron" aria-hidden="true">›</span></a></nav>
+     <nav class="settings-links" aria-label="その他">${window.DECIDE_ENTITLEMENTS?.hasPurchased?.() ? '' : '<button class="settings-link settings-link-pro" data-action="open-paywall"><span><small>UNLIMITED EDITION</small>引き放題・残し放題にする</span><span class="settings-link-chevron" aria-hidden="true">›</span></button>'}<button class="settings-link" data-action="open-learn"><span>カード図鑑</span><span class="settings-link-chevron" aria-hidden="true">›</span></button><button class="settings-link" data-action="tutorial-replay"><span data-tutorial-label>使い方をもう一度見る</span><span class="settings-link-chevron" aria-hidden="true">›</span></button><a class="settings-link" href="./cards/worries" target="_blank" rel="noopener"><span>記事を読む</span><span class="settings-link-chevron" aria-hidden="true">›</span></a></nav>
      <button class="sheet-bottom-close" data-action="close-settings">設定を閉じる</button>
-     <nav class="settings-legal" aria-label="規約・お問い合わせ"><a href="./privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a><a href="./terms.html" target="_blank" rel="noopener">利用規約</a><a href="./tokushoho.html" target="_blank" rel="noopener">特定商取引法に基づく表記</a><a href="mailto:decisionprocess.decide@gmail.com">お問い合わせ</a></nav>
+     <nav class="settings-legal" aria-label="規約・お問い合わせ"><a href="./privacy" target="_blank" rel="noopener">プライバシーポリシー</a><a href="./terms" target="_blank" rel="noopener">利用規約</a><a href="./tokushoho" target="_blank" rel="noopener">特定商取引法に基づく表記</a><a href="mailto:decisionprocess.decide@gmail.com">お問い合わせ</a></nav>
      
   </section>`;
   window.DECIDE_AUTH?.renderSettings?.(wrap);

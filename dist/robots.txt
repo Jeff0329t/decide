@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /success.html
+Disallow: /success
 Sitemap: https://decisionprocess.net/sitemap.xml

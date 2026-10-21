@@ -21,7 +21,7 @@ test('markdown escapes raw HTML and only allows safe links', () => {
   assert.doesNotMatch(html, /<script/);
   assert.match(html, /&lt;script&gt;/);
   assert.doesNotMatch(html, /javascript:/);
-  assert.match(html, /<a href="\.\.\/cards\/ar00\.html">y<\/a>/);
+  assert.match(html, /<a href="\.\.\/cards\/ar00">y<\/a>/);
   assert.match(html, /<a href="https:\/\/example\.com\/a">z<\/a>/);
   assert.doesNotMatch(html, /メモ/);
   assert.equal(safeHref('//evil.example'), null);
@@ -83,7 +83,7 @@ test('normal build does not publish drafts', () => {
   const sm = read('dist/sitemap.xml');
   for (const a of drafts) {
     assert.ok(!existsSync(ARTICLES_DIST + `${a.slug}.html`), `draft page ${a.slug} must not be built`);
-    assert.doesNotMatch(sm, new RegExp(`/articles/${a.slug}\\.html`), a.slug);
+    assert.doesNotMatch(sm, new RegExp(`/articles/${a.slug}\\b`), a.slug);
   }
   if (existsSync(ARTICLES_DIST)) {
     for (const f of readdirSync(ARTICLES_DIST).filter((x) => x.endsWith('.html'))) {
@@ -113,11 +113,11 @@ test('published articles have SEO essentials, CTAs, OGP and no JS', () => {
   if (published.length) {
     assert.match(sm, /<loc>https:\/\/decisionprocess\.net\/articles\/<\/loc>/);
     const idx = read('dist/articles/index.html');
-    for (const a of published) assert.match(idx, new RegExp(`href="\\./${a.slug}\\.html"`), a.slug);
+    for (const a of published) assert.match(idx, new RegExp(`href="\\./${a.slug}"`), a.slug);
   }
   for (const a of published) {
     const html = read(`dist/articles/${a.slug}.html`);
-    assert.match(html, new RegExp(`<link rel="canonical" href="https://decisionprocess\\.net/articles/${a.slug}\\.html"`), a.slug);
+    assert.match(html, new RegExp(`<link rel="canonical" href="https://decisionprocess\\.net/articles/${a.slug}"`), a.slug);
     assert.match(html, /<meta name="description" content="[^"]{20,}"/, a.slug);
     assert.match(html, /"@type":\s*"Article"/, a.slug);
     assert.match(html, /"@type":\s*"BreadcrumbList"/, a.slug);
@@ -127,7 +127,7 @@ test('published articles have SEO essentials, CTAs, OGP and no JS', () => {
     for (const f of froms) assert.ok(ids.includes(f), `${a.slug} from=${f}`);
     assert.doesNotMatch(html, /<script(?![^>]*application\/ld\+json)/, a.slug);
     assert.doesNotMatch(html, /sk_live|sk_test|whsec_|service_role/, a.slug);
-    assert.match(sm, new RegExp(`<loc>https://decisionprocess\\.net/articles/${a.slug}\\.html</loc>`), a.slug);
+    assert.match(sm, new RegExp(`<loc>https://decisionprocess\\.net/articles/${a.slug}</loc>`), a.slug);
     const m = html.match(/property="og:image" content="([^"]+)"/);
     assert.ok(m, a.slug);
     const jpg = new URL(m[1].replace('https://decisionprocess.net/', '../dist/'), import.meta.url);

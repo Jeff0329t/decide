@@ -63,16 +63,16 @@ export function enhanceCardsPage(html, path) {
   const visible = `<nav class="crumbs" aria-label="パンくずリスト"><ol>${crumbs.map((c, i) => i === crumbs.length - 1
     ? `<li aria-current="page">${esc(c.name)}</li>` : `<li><a href="${i === 0 ? '../' : './'}">${esc(c.name)}</a></li>`).join('')}</ol></nav>`;
   html = html.replace(/<nav class="crumbs"[\s\S]*?<\/nav>/, visible);
-  const id = path.match(/\/((?:ar|cu|wa|sw|pe)\d{2})\.html$/)?.[1];
-  const slug = path.match(/\/worry-([a-z]+)\.html$/)?.[1];
+  const id = path.match(/\/((?:ar|cu|wa|sw|pe)\d{2})$/)?.[1];
+  const slug = path.match(/\/worry-([a-z]+)$/)?.[1];
   if (id) {
     const card = cards.find(c => c.id === id);
     const suit = cards.filter(c => c.arcana === card.arcana);
     const pos = suit.findIndex(c => c.id === id);
-    const neighbor = (c, direction) => c ? `<a href="./${c.id}.html" rel="${direction}"><small>${direction === 'prev' ? '← 前のカード' : '次のカード →'}</small>${esc(c.name)}</a>` : '';
+    const neighbor = (c, direction) => c ? `<a href="./${c.id}" rel="${direction}"><small>${direction === 'prev' ? '← 前のカード' : '次のカード →'}</small>${esc(c.name)}</a>` : '';
     const pager = `<nav aria-label="前後のカード"><ul class="pager">\n<li class="prev">${neighbor(suit[pos - 1], 'prev')}</li>\n<li class="next">${neighbor(suit[pos + 1], 'next')}</li>\n</ul></nav>`;
     html = html.replace(/<nav aria-label="前後のカード">[\s\S]*?<\/nav>/, pager);
-    const section = `<!-- related-worries:start -->\n<section>\n<h2>このカードの視点で考えたい悩み</h2>\n<p>${id === 'cu12' ? '想いを伝えるか、相手の提案を受けるか。近いテーマから、迷いを整理するヒントを探せます。' : 'いまの迷いに近いテーマから、考え方と自分への問いかけを探せます。'}</p>\n<ul class="cats" aria-label="関連する悩み">\n${worryLinks[id].map(s => `<li><a href="./worry-${s}.html">${esc(worryBySlug.get(s).h1)}</a></li>`).join('\n')}\n</ul>\n<p class="note"><a href="./">${INDEX_LINK}</a></p>\n</section>\n<!-- related-worries:end -->`;
+    const section = `<!-- related-worries:start -->\n<section>\n<h2>このカードの視点で考えたい悩み</h2>\n<p>${id === 'cu12' ? '想いを伝えるか、相手の提案を受けるか。近いテーマから、迷いを整理するヒントを探せます。' : 'いまの迷いに近いテーマから、考え方と自分への問いかけを探せます。'}</p>\n<ul class="cats" aria-label="関連する悩み">\n${worryLinks[id].map(s => `<li><a href="./worry-${s}">${esc(worryBySlug.get(s).h1)}</a></li>`).join('\n')}\n</ul>\n<p class="note"><a href="./">${INDEX_LINK}</a></p>\n</section>\n<!-- related-worries:end -->`;
     if (html.includes('<!-- related-worries:start -->')) html = html.replace(/<!-- related-worries:start -->[\s\S]*?<!-- related-worries:end -->/, section);
     else html = html.replace('</article>', section + '\n</article>');
   }

@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'decide-shell-editorial-v191';
+const SHELL_CACHE = 'decide-shell-editorial-v193';
 const IMAGE_CACHE = 'decide-card-images-p14-v1';
 const IMAGE_LIMIT = 100;
 const CARD_SHELL_FILES = [
@@ -77,8 +77,9 @@ self.addEventListener('fetch', event => {
   if (url.origin !== SCOPE.origin) return;
   if (url.pathname.includes('/cards/') || url.pathname.includes('/articles/') || url.pathname.endsWith('/sitemap.xml') || url.pathname.endsWith('/robots.txt')) return;
   if (request.mode === 'navigate') {
-    // Standalone pages such as privacy.html must not be answered with the app shell.
-    if (/\.html$/.test(url.pathname) && !url.pathname.endsWith('/index.html')) return;
+    // Only the app itself gets the shell. Standalone pages (privacy, success, 404 …) go to the network,
+    // also when the host redirects privacy.html to /privacy.
+    if (url.pathname !== SCOPE.pathname && url.pathname !== SCOPE.pathname + 'index.html') return;
     event.respondWith(caches.match(new URL('./', SCOPE).href).then(saved => saved || fetch(request)));
     return;
   }
