@@ -57,7 +57,11 @@ main p{text-wrap:pretty;line-break:strict}
 .wtile-more:active{opacity:.85}
 .grid a{margin:-4px;padding:4px}
 .grid a:active,.grid a.is-pressed{transform:scale(.96);background:var(--accent);color:#111}
-.wcards a:active,.wcards a.is-pressed{background:#f7e88a}
+/* same as the app's reading links: yellow while going, a quick shrink only under the finger */
+.wcards a:active{scale:.985}
+.wcards a:active,.wcards a.is-pressed{background:var(--accent);color:#111}
+/* the chosen state shows at once: the page change only waits 150ms */
+a.is-pressed{transition-duration:0s}
 .wtile-cards a.is-pressed{background:var(--accent);color:#111}
 .crumbs a:active,.alist a:active,.note a:active{opacity:.55}
 @media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
@@ -79,9 +83,12 @@ html:active-view-transition-type(back)::view-transition-new(root){animation-name
 // Card tiles and rows stay lit from the tap until the next page opens (cleared on 戻る via pageshow),
 // so a slow page load never looks like a missed tap. Page changes slide like the app's screens:
 // forward from the right, back (戻る links or history) from the left, and a tapped card's picture
-// grows into the card page's hero. Lives in <head> so pagereveal is heard before the first frame.
-// Progressive enhancement: without JS or view transitions the links work as plain links.
-const PRESS_JS = `<script data-press>(function(){var S='.wjump a,.cats a,.pager a,.grid a,.wcards a,.wtile-cards a';function clear(){[].forEach.call(document.querySelectorAll('.is-pressed'),function(x){x.classList.remove('is-pressed');var i=x.querySelector('img');if(i)i.style.viewTransitionName=''})}function back(e){var a=e&&e.activation;return a&&a.navigationType==='traverse'&&a.from&&a.entry&&a.entry.index<a.from.index}document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('a');if(!t||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;try{sessionStorage.setItem('feel-dir',t.matches('.back,[data-go="back"]')?'back':'')}catch(_){}if(!t.matches(S))return;clear();t.classList.add('is-pressed')});window.addEventListener('pageshow',clear);window.addEventListener('pageswap',function(e){if(!e.viewTransition)return;var b=back(e);try{b=b||sessionStorage.getItem('feel-dir')==='back'}catch(_){}if(b){e.viewTransition.types.add('back');return}var i=document.querySelector('.is-pressed img');if(i)i.style.viewTransitionName='card-art'});window.addEventListener('pagereveal',function(e){if(!e.viewTransition)return;var b=back(window.navigation);try{b=b||sessionStorage.getItem('feel-dir')==='back';sessionStorage.removeItem('feel-dir')}catch(_){}if(b){e.viewTransition.types.add('back');return}var h=document.querySelector('.hero img');if(!h)return;h.style.viewTransitionName='card-art';e.viewTransition.finished.finally(function(){h.style.viewTransitionName=''})})})();</script>`;
+// grows into the card page's hero. 戻る (top pill and bottom nav) retraces the reader's last step
+// when that step was on this site, e.g. the splash's 転職 link returns to the splash; opened directly,
+// it falls through to its href, the parent list. Lives in <head> so pagereveal is heard before the
+// first frame. The page change waits a beat (150ms) after a tile or row lights up so the choice is seen
+// before the slide starts. Progressive enhancement: without JS or view transitions the links work as plain links.
+const PRESS_JS = `<script data-press>(function(){var S='.wjump a,.cats a,.pager a,.grid a,.wcards a,.wtile-cards a';function clear(){[].forEach.call(document.querySelectorAll('.is-pressed'),function(x){x.classList.remove('is-pressed');var i=x.querySelector('img');if(i)i.style.viewTransitionName=''})}function canBack(){var n=window.navigation;if(n&&n.currentEntry){var p=n.entries()[n.currentEntry.index-1];return !!p&&new URL(p.url).origin===location.origin}try{return history.length>1&&!!document.referrer&&new URL(document.referrer).origin===location.origin}catch(_){return false}}function back(e){var a=e&&e.activation;return a&&a.navigationType==='traverse'&&a.from&&a.entry&&a.entry.index<a.from.index}document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('a');if(!t||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;var b=t.matches('.back,[data-go="back"]');try{sessionStorage.setItem('feel-dir',b?'back':'')}catch(_){}if(b&&canBack()){e.preventDefault();history.back();return}if(!t.matches(S))return;clear();t.classList.add('is-pressed');if(t.target||t.origin!==location.origin)return;e.preventDefault();setTimeout(function(){location.href=t.href},150)});window.addEventListener('pageshow',clear);window.addEventListener('pageswap',function(e){if(!e.viewTransition)return;var b=back(e);try{b=b||sessionStorage.getItem('feel-dir')==='back'}catch(_){}if(b){e.viewTransition.types.add('back');return}var i=document.querySelector('.is-pressed img');if(i)i.style.viewTransitionName='card-art'});window.addEventListener('pagereveal',function(e){if(!e.viewTransition)return;var b=back(window.navigation);try{b=b||sessionStorage.getItem('feel-dir')==='back';sessionStorage.removeItem('feel-dir')}catch(_){}if(b){e.viewTransition.types.add('back');return}var h=document.querySelector('.hero img');if(!h)return;h.style.viewTransitionName='card-art';e.viewTransition.finished.finally(function(){h.style.viewTransitionName=''})})})();</script>`;
 
 export function applyReadingFeel(html) {
   html = html.replace(/\/\* reading-feel:start \*\/[\s\S]*?\/\* reading-feel:end \*\//, '').replace(/\n<\/style>/, '</style>');

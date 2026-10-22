@@ -136,6 +136,9 @@ test('card tiles, worry card rows, theme buttons and worry chips keep a pressed 
     assert.match(html, /prefers-reduced-motion:reduce\)\{[^}]*\}@view-transition\{navigation:none\}/, file);
     assert.match(html, /<script data-press>[\s\S]*?<\/script>\n<\/head>/, file);
     assert.match(scripts[0], /pagereveal/, file);
+    assert.match(scripts[0], /history\.back\(\)/, file);
+    assert.match(scripts[0], /setTimeout\(function\(\)\{location\.href=t\.href\},150\)/, file);
+    assert.match(html, /<a class="back" href="[^"]+"/, file);
   }
   // Each related-card row is one link: picture, name and reason all open the card page.
   const rows = [...read('dist/cards/worry-tenshoku.html').matchAll(/<li><a href="\.\/(\w+)">([\s\S]*?)<\/a><\/li>/g)].filter((m) => m[2].includes('<h3>'));
