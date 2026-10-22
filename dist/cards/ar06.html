@@ -132,6 +132,8 @@ main p{text-wrap:pretty;line-break:strict}
 .grid a:active,.grid a.is-pressed{transform:scale(.96);background:var(--accent);color:#111}
 .wcards a:active,.wcards a.is-pressed{background:var(--accent);box-shadow:inset 5px 0 0 #111}
 .wcards a.is-pressed img{outline:3px solid #111;outline-offset:2px}
+/* the chosen state shows at once: the page change only waits 150ms */
+a.is-pressed{transition-duration:0s}
 .wtile-cards a.is-pressed{background:var(--accent);color:#111}
 .crumbs a:active,.alist a:active,.note a:active{opacity:.55}
 @media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
