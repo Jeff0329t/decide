@@ -73,7 +73,7 @@ for(const legacyName of ['MAJOR'+'_READINGS','SUIT'+'_READINGS','RANK'+'_READING
 }
 assert.match(appSource,/このリンクは読み込めませんでした/);
 assert.match(appSource,/リンクが途中で切れているか、古い形式かもしれません。/);
-assert.match(appSource,/DECIDEを使ってみる/);
+assert.match(appSource,/DECIDE\.を使ってみる/);
 assert.match(appSource,/view==='history' \|\| view==='detail'/);
 assert.match(appSource,/setAttribute\('aria-current','page'\)/);
 assert.match(appSource,/try \{[\s\S]*renderSharedResult\(\)[\s\S]*catch\(error\)/);

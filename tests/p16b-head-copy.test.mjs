@@ -6,7 +6,7 @@ const html=fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8')
 const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8');
 const image=fs.readFileSync(new URL('../dist/og-image-v3.png',import.meta.url));
 const oldImage=fs.readFileSync(new URL('../dist/og-image.png',import.meta.url));
-const heading='DECIDE — 心から納得いく決断を。';
+const heading='DECIDE. — 心から納得いく決断を。';
 const legacy=['別の','角度'].join('');
 
 test('document and social metadata use the unified heading and v3 image',()=>{
@@ -19,9 +19,9 @@ test('document and social metadata use the unified heading and v3 image',()=>{
 });
 
 test('app sharing uses the same heading for title and text',()=>{
-  const appShare=app.slice(app.indexOf("return {title:'DECIDE — 心から納得いく決断を。'"),app.indexOf('function openShare'));
-  assert.match(appShare,/title:'DECIDE — 心から納得いく決断を。'/);
-  assert.match(appShare,/text:'DECIDE — 心から納得いく決断を。'/);
+  const appShare=app.slice(app.indexOf("return {title:'DECIDE. — 心から納得いく決断を。'"),app.indexOf('function openShare'));
+  assert.match(appShare,/title:'DECIDE. — 心から納得いく決断を。'/);
+  assert.match(appShare,/text:'DECIDE. — 心から納得いく決断を。'/);
   assert.ok(!appShare.includes(legacy));
 });
 

@@ -179,7 +179,7 @@ test('sitemap lists extensionless URLs only and keeps the same 101 entries', () 
 test('404 page is standalone, noindex and uses root-absolute links', () => {
   const html = read('dist/404.html');
   assert.match(html, /<meta name="robots" content="noindex">/);
-  assert.match(html, /<title>ページが見つかりません - DECIDE<\/title>/);
+  assert.match(html, /<title>ページが見つかりません - DECIDE.<\/title>/);
   assert.match(html, /href="\/"/);
   assert.match(html, /href="\/cards\/"/);
   assert.match(html, /href="\/cards\/worries"/);

@@ -23,7 +23,7 @@ test('P13 copy, headings, defaults, and duplicate delete semantics',()=>{
   const queen=cards.cards.find(card=>card.id==='pe13');
   assert.match(queen.upright.themes.blind,/食事や休み/);
   assert.match(app,/feedback: savedSettings\.feedback === true/);
-  assert.match(app,/ひとつの迷いを考える/);
+  assert.match(app,/ひとつのことを決める/);
   assert.match(app,/2つの選択肢を比べる/);
   assert.match(app,/class="map-heading"[^]*<h1>/);
   assert.match(app,/class="swipe-delete"[^>]*aria-hidden="true" tabindex="-1"/);

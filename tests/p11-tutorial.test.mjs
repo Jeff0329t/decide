@@ -48,8 +48,8 @@ test('keywords, hearing highlight, completion and replay are wired',()=>{
   assert.match(app,/button\.setAttribute\('aria-pressed',String\(tutorial\.selectedKeyword===index\)\)/);
   assert.match(app,/tutorial\.phase='reflection'/);
   assert.match(app,/reflection\.classList\.add\('tutorial-highlight'\)/);
-  assert.match(app,/done\.textContent='自分の迷いで始める'/);
-  assert.match(app,/toast\('小さな迷いから、始めてみましょう'\)/);
+  assert.match(app,/done\.textContent='さっそく始める'/);
+  assert.match(app,/toast\('小さなことから、決めてみましょう'\)/);
   assert.match(app,/data-action="tutorial-replay"/);
   assert.match(app,/localStorage\.removeItem\(TUTORIAL_KEY\)/);
   assert.match(app,/tutorialEvent\(action, step\) \{ window\.dispatchEvent\(new CustomEvent\('decide:tutorial',\{detail:\{action,step\}\}\)\)/);

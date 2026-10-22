@@ -27,7 +27,7 @@
     const strong=document.createElement('strong');
     strong.textContent=`${label}の視点で考える`;
     const sub=document.createElement('span');
-    sub.textContent='いま抱えている迷いを、この視点に当てはめながら整理してみましょう。';
+    sub.textContent='いま決めたいことを、この視点に当てはめながら整理してみましょう。';
     text.append(strong,sub);
     const close=document.createElement('button');
     close.type='button';

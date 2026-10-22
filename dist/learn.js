@@ -151,7 +151,7 @@
     copyBox.append(section('このカードが表すこと',copy.story),section('絵に描かれているもの',copy.background));
     const meaning=el('section');meaning.append(el('h3','','カードの意味'));
     const keywords=el('div','keyword-chips');copy[direction].keywords.forEach(word=>keywords.append(el('i','',word)));meaning.append(keywords,el('p','direction-meaning',copy[direction].meaning));copyBox.append(meaning);
-    const themes=el('section','theme-reading');themes.append(el('h3','','迷ったときに考えるヒント'));
+    const themes=el('section','theme-reading');themes.append(el('h3','','決めるときに考えるヒント'));
     const themeTabs=el('div','theme-tabs');themeTabs.setAttribute('role','tablist');themeTabs.setAttribute('aria-label','テーマを選ぶ');
     Object.entries(cardThemeLabels).forEach(([key,label])=>{const b=btn(label,'theme');b.dataset.theme=key;b.setAttribute('role','tab');b.setAttribute('aria-selected',String(key==='blind'));themeTabs.append(b);});
     const themePanel=el('div','theme-panel');themePanel.setAttribute('role','tabpanel');themePanel.append(el('b','',cardThemeLabels.blind),el('p','',copy[direction].themes.blind));
@@ -236,8 +236,8 @@
       return figureBox('同じ「星」のカードの、2つの向き','learn-figure-orientation',row);
     },
     flow(){
-      const steps=el('ol','learn-flow');[['引く','迷いを1つ決めて、カードを引く'],['読む','説明を読んで、どう感じたか確かめる'],['決める','進む・見送る・保留するを選ぶ'],['ふり返る','あとでログに、どうだったかを残す']].forEach(([title,text],i)=>{const li=el('li');li.append(el('span','learn-flow-no',i+1),el('b','',title),el('span','learn-flow-text',text));steps.append(li);});
-      return figureBox('DECIDEの使い方の流れ','learn-figure-flow',steps);
+      const steps=el('ol','learn-flow');[['引く','決めたいことを1つ思い浮かべて、カードを引く'],['読む','説明を読んで、どう感じたか確かめる'],['決める','進む・見送る・保留するを選ぶ'],['ふり返る','あとでログに、どうだったかを残す']].forEach(([title,text],i)=>{const li=el('li');li.append(el('span','learn-flow-no',i+1),el('b','',title),el('span','learn-flow-text',text));steps.append(li);});
+      return figureBox('DECIDE.の使い方の流れ','learn-figure-flow',steps);
     },
   };
   function renderLesson(pane) {

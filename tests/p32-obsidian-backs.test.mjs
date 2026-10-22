@@ -18,12 +18,12 @@ test('Obsidian note is readable and reimports every log field exactly',()=>{
     option1:'残る',option2:'転職',decision:'選択肢2',review:'良かった',nodes:[{question:'',card:{name:'愚者',orientation:'reversed',image:'./assets/rider-waite/ar00.jpg'}}]
   }]};
   const markdown=backup.render(payload);
-  assert.match(markdown,/# DECIDE 決定ログ/);
+  assert.match(markdown,/# DECIDE\. 決定ログ/);
   assert.match(markdown,/### メモ/);
   assert.match(markdown,/Obsidianで同期すると/);
   assert.equal(JSON.stringify(backup.parse(markdown)),JSON.stringify(payload));
   assert.equal(JSON.stringify(backup.parse(markdown.replace('転職 \\#相談','別の見出し'))),JSON.stringify(payload));
-  assert.throws(()=>backup.parse('# another note'),/DECIDEのMarkdown/);
+  assert.throws(()=>backup.parse('# another note'),/DECIDE\.のMarkdown/);
   assert.throws(()=>backup.parse(markdown.replace(/<!-- DECIDE-BACKUP-V1[\s\S]*$/, '<!-- DECIDE-BACKUP-V1\ninvalid\nEND-DECIDE-BACKUP-V1 -->')),/バックアップデータを読み取れませんでした/);
 });
 

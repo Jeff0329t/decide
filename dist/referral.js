@@ -167,7 +167,7 @@
     const nav = typeof navigator !== 'undefined' ? navigator : null;
     if(nav?.share) {
       try {
-        await nav.share({ title: 'DECIDE.', text: '迷ったときに、タロットで決断を整理するアプリ。', url });
+        await nav.share({ title: 'DECIDE.', text: 'タロットで、決断を整理するアプリ。', url });
         return;
       } catch(error) {
         if(error?.name === 'AbortError') return;

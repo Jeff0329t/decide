@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const appSource = readFileSync(new URL('../dist/app.js', import.meta.url), 'utf8');
-const storyBranch = appSource.slice(appSource.indexOf("if (type === 'story' && log) {"), appSource.indexOf("return {title:'DECIDE — 心から納得いく決断を。'"));
+const storyBranch = appSource.slice(appSource.indexOf("if (type === 'story' && log) {"), appSource.indexOf("return {title:'DECIDE. — 心から納得いく決断を。'"));
 
 test('A-1: story share URL omits title/body unless opted in', () => {
   assert.match(appSource, /function sharedResultUrl\(log,type,\{includeContent=false\}=\{\}\)/);
