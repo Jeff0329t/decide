@@ -119,10 +119,12 @@ a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 main p{text-wrap:pretty;line-break:strict}
 .cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
 .cta a:active{transform:scale(.96)}
-.pager a:active,.cats a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.pager a:active,.pager a.is-pressed,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+/* .cats marks the current page in yellow, so a pressed chip turns black to stay distinct */
+.cats a:active,.cats a.is-pressed{transform:translate(1px,1px);background:#111;color:var(--accent)}
 .wjump a:active,.wjump a.is-pressed{transform:translate(2px,2px);box-shadow:0 0 0 #111;background:var(--accent);color:#111}
 .wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:2px 2px 0 #111}
-.pager a:active{box-shadow:1px 1px 0 #111}
+.pager a:active,.pager a.is-pressed{box-shadow:1px 1px 0 #111}
 .wtile{transition:transform .12s ease,box-shadow .12s ease}
 .wtile-head:active{background:#f7e88a}
 .wtile-more:active{opacity:.85}
@@ -183,7 +185,7 @@ main p{text-wrap:pretty;line-break:strict}
 <p>解釈は決断を考えるための一つの視点です。占いの結果や将来を保証するものではありません。</p>
 <p class="meta"><a href="../tokushoho">特定商取引法に基づく表記</a> ／ <a href="../terms">利用規約</a> ／ <a href="../privacy">プライバシーポリシー</a> ／ <a href="../">DECIDE. に戻る</a></p>
 </footer>
-<script data-press>(function(){var S='.wjump a,.grid a,.wcards a,.wtile-cards a';function clear(){[].forEach.call(document.querySelectorAll('.is-pressed'),function(x){x.classList.remove('is-pressed')})}document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest(S);if(!a||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;clear();a.classList.add('is-pressed')});window.addEventListener('pageshow',clear)})();</script>
+<script data-press>(function(){var S='.wjump a,.cats a,.pager a,.grid a,.wcards a,.wtile-cards a';function clear(){[].forEach.call(document.querySelectorAll('.is-pressed'),function(x){x.classList.remove('is-pressed')})}document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest(S);if(!a||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;clear();a.classList.add('is-pressed')});window.addEventListener('pageshow',clear)})();</script>
 <!-- app-nav:start -->
 <style>body{padding-bottom:calc(68px + env(safe-area-inset-bottom))}
 .app-nav{position:fixed;z-index:20;left:50%;bottom:0;transform:translateX(-50%);width:min(760px,100%);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:7px max(8px,env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));background:rgba(4,4,4,.96);border-top:1px solid rgba(255,255,255,.18);font-family:Inter,"Hiragino Sans","Yu Gothic UI","Yu Gothic",sans-serif}

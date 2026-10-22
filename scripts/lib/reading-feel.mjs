@@ -46,10 +46,12 @@ a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 main p{text-wrap:pretty;line-break:strict}
 .cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
 .cta a:active{transform:scale(.96)}
-.pager a:active,.cats a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.pager a:active,.pager a.is-pressed,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+/* .cats marks the current page in yellow, so a pressed chip turns black to stay distinct */
+.cats a:active,.cats a.is-pressed{transform:translate(1px,1px);background:#111;color:var(--accent)}
 .wjump a:active,.wjump a.is-pressed{transform:translate(2px,2px);box-shadow:0 0 0 #111;background:var(--accent);color:#111}
 .wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:2px 2px 0 #111}
-.pager a:active{box-shadow:1px 1px 0 #111}
+.pager a:active,.pager a.is-pressed{box-shadow:1px 1px 0 #111}
 .wtile{transition:transform .12s ease,box-shadow .12s ease}
 .wtile-head:active{background:#f7e88a}
 .wtile-more:active{opacity:.85}
@@ -64,7 +66,7 @@ main p{text-wrap:pretty;line-break:strict}
 
 // Card tiles and rows stay lit from the tap until the next page opens (cleared on 戻る via pageshow),
 // so a slow page load never looks like a missed tap. Progressive enhancement: the links work without it.
-const PRESS_JS = `<script data-press>(function(){var S='.wjump a,.grid a,.wcards a,.wtile-cards a';function clear(){[].forEach.call(document.querySelectorAll('.is-pressed'),function(x){x.classList.remove('is-pressed')})}document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest(S);if(!a||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;clear();a.classList.add('is-pressed')});window.addEventListener('pageshow',clear)})();</script>`;
+const PRESS_JS = `<script data-press>(function(){var S='.wjump a,.cats a,.pager a,.grid a,.wcards a,.wtile-cards a';function clear(){[].forEach.call(document.querySelectorAll('.is-pressed'),function(x){x.classList.remove('is-pressed')})}document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest(S);if(!a||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;clear();a.classList.add('is-pressed')});window.addEventListener('pageshow',clear)})();</script>`;
 
 export function applyReadingFeel(html) {
   html = html.replace(/\/\* reading-feel:start \*\/[\s\S]*?\/\* reading-feel:end \*\//, '').replace(/\n<\/style>/, '</style>');

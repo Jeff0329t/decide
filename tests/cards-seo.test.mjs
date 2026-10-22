@@ -119,7 +119,7 @@ test('worry pages have SEO essentials, CTAs into the app, credit and no JS', () 
   }
 });
 
-test('card tiles, worry card rows and theme buttons keep a pressed state until the next page opens', () => {
+test('card tiles, worry card rows, theme buttons and worry chips keep a pressed state until the next page opens', () => {
   for (const file of ['major', 'worries', 'worry-tenshoku', 'cu08']) {
     const html = read(`dist/cards/${file}.html`);
     // Only the tap-feedback enhancement may run; the page itself must not need JS.
@@ -130,6 +130,8 @@ test('card tiles, worry card rows and theme buttons keep a pressed state until t
     assert.doesNotMatch(scripts[0], /innerHTML|insertAdjacent|createElement|textContent/, file);
     assert.match(html, /\.grid a\.is-pressed/, file);
     assert.match(html, /\.wcards a\.is-pressed/, file);
+    assert.match(html, /\.cats a\.is-pressed/, file);
+    assert.match(scripts[0], /\.cats a/, file);
   }
   // Each related-card row is one link: picture, name and reason all open the card page.
   const rows = [...read('dist/cards/worry-tenshoku.html').matchAll(/<li><a href="\.\/(\w+)">([\s\S]*?)<\/a><\/li>/g)].filter((m) => m[2].includes('<h3>'));
