@@ -1129,7 +1129,7 @@ function confirmDecisionStep(button) {
   else setTimeout(proceed,420);
 }
 function renderReflection() {
-  if(activeSession.mode==='two')return renderTwoDecision();
+  if(!activeSession.tutorial)return renderDecisionButtons();
   const question=activeSession.mode==='two'?'この結果、しっくりきましたか？':'このカード、しっくりきましたか？';
   return `<section class="reflection-card"><h3>${question}</h3><div class="reflection-actions"><button class="button decide-confirm" data-action="decide" aria-label="DECIDE.">${decideWordmark()}</button></div></section>`;
 }
@@ -1164,41 +1164,30 @@ function decisionSummaryHtml() {
   return filled.length ? filled.join('') : `<span class="decision-summary-empty">${activeSession?.mode==='two'?'ジャンル・選択肢は未設定':'ジャンルは未設定'}</span>`;
 }
 function renderDecision() {
-  if (!activeSession) return navigate('home');
-  if (activeSession.mode === 'two') return selectedDecision ? renderDecisionMemo() : navigate('session');
-  const options = ['進む','見送る','保留する'];
-  app.innerHTML = `
-    <section class="screen decide-screen">
-      <button class="text-back" data-action="session">← マップに戻る</button>
-      <p class="eyebrow">Decide</p><div class="decide-title"><span class="decide-kicker">THE FINAL CALL</span><h1>今回は、<wbr>どうする？</h1><span class="decide-sub">YOU DECIDE, NOT THE CARDS.</span></div>
-      <p class="lead">カードではなく、<wbr>あなたが決めます。<wbr>いちばん納得できるものを<wbr>選んでください。</p>
-      <div class="decision-options">${options.map((o,i) => `<button class="decision-option ${selectedDecision === o ? 'selected' : ''}" data-action="select-decision" data-value="${o}" aria-pressed="${selectedDecision === o}"><b class="decision-index">${['GO','PASS','HOLD'][i]}</b><span>${DECIDE_DECISION.choiceText(o)}<small data-option-text="${o}"${decisionOptionText(o) ? '' : ' hidden'}>${esc(decisionOptionText(o))}</small></span><i>${selectedDecision === o ? '✓' : ''}</i></button>`).join('')}</div>
-      <form id="save-form" class="save-form">
-        <label>ひとことメモ <span>任意</span><textarea name="memo" maxlength="240" rows="2" lang="ja" placeholder="決め手や、今の気持ち"></textarea></label>
-        <button class="button" type="submit" data-save-decision ${selectedDecision ? '' : 'disabled'}>決定を記録する</button>
-        <p class="timestamp">${formatDate(new Date().toISOString(), true)} の記録として保存</p>
-        ${decisionMetaHtml()}
-      </form>
-    </section>`;
-  restoreDecisionDraft();
+  if (!activeSession || !selectedDecision) return navigate(activeSession ? 'session' : 'home');
+  renderDecisionMemo();
 }
 
-// 2択は、カードの比較の下で「どれにするか」を選び、そのまま一言メモへ進む
-function twoChoiceText(value) {
-  if(value==='保留する')return '保留する';
+// カードを見たその場で3つから選び、そのまま一言メモへ進む
+function decisionChoices() {
+  return activeSession?.mode==='two' ? [['選択肢1','A'],['選択肢2','B'],['保留する','HOLD']] : [['進む','GO'],['見送る','PASS'],['保留する','HOLD']];
+}
+function decisionChoiceText(value) {
+  if(activeSession?.mode!=='two' || value==='保留する')return value;
   return decisionOptionText(value) || DECIDE_DECISION.choiceText(value);
 }
-function twoChoiceLabel(value) {
+function decisionChoiceLabel(value) {
+  if(activeSession?.mode!=='two')return value;
   if(value==='保留する')return '保留にする';
   const text=decisionOptionText(value);
   return text ? `『${text}』にする` : `${DECIDE_DECISION.choiceText(value)}にする`;
 }
-function renderTwoDecision() {
-  return `<section class="reflection-card two-decide"><h3>今回は、どうする？</h3><div class="reflection-actions">${['選択肢1','選択肢2','保留する'].map((o,i) => `<button class="button two-decide-option${selectedDecision === o ? ' selected' : ''}" data-action="choose-decision" data-value="${o}" aria-pressed="${selectedDecision === o}"><b class="decision-index">${['A','B','HOLD'][i]}</b><span>${esc(twoChoiceText(o))}</span></button>`).join('')}</div></section>`;
+function renderDecisionButtons() {
+  return `<section class="reflection-card decide-choices"><h3>今回は、どうする？</h3><div class="reflection-actions">${decisionChoices().map(([o,index]) => `<button class="button decide-choice${selectedDecision === o ? ' selected' : ''}" data-action="choose-decision" data-value="${o}" aria-pressed="${selectedDecision === o}"><b class="decision-index">${index}</b><span>${esc(decisionChoiceText(o))}</span></button>`).join('')}</div></section>`;
 }
 function chooseDecision(button) {
   const value=button.dataset.value;
-  if(!activeSession || currentView!=='session' || !['選択肢1','選択肢2','保留する'].includes(value) || button.closest('.is-choosing'))return;
+  if(!activeSession || currentView!=='session' || !decisionChoices().some(([o])=>o===value) || button.closest('.is-choosing'))return;
   const session=activeSession;
   captureDecisionDraft(); sensoryFeedback('tick'); selectedDecision=value;
   button.closest('.reflection-actions')?.classList.add('is-choosing');
@@ -1208,12 +1197,12 @@ function chooseDecision(button) {
   else setTimeout(proceed,320);
 }
 function renderDecisionMemo() {
-  const index={'選択肢1':'A','選択肢2':'B','保留する':'HOLD'}[selectedDecision];
+  const index=decisionChoices().find(([o])=>o===selectedDecision)?.[1]||'';
   app.innerHTML = `
-    <section class="screen decide-screen decide-two-memo">
+    <section class="screen decide-screen decide-memo">
       <button class="text-back" data-action="decide-rechoose">← 選び直す</button>
       <div class="decide-title"><span class="decide-kicker">ONE LINE MEMO</span><h1>一言メモを<wbr>残す</h1></div>
-      <p class="decide-chosen"><b class="decision-index">${index}</b><span data-chosen-label>${esc(twoChoiceLabel(selectedDecision))}</span></p>
+      <p class="decide-chosen"><b class="decision-index">${index}</b><span data-chosen-label>${esc(decisionChoiceLabel(selectedDecision))}</span></p>
       <form id="save-form" class="save-form">
         <label>ひとことメモ <span>任意</span><textarea name="memo" maxlength="240" rows="3" lang="ja" placeholder="決め手や、今の気持ち"></textarea></label>
         <button class="button" type="submit" data-save-decision>メモを残して記録する</button>
@@ -1241,12 +1230,6 @@ function decisionMetaHtml() {
         </section>`;
 }
 
-function selectDecision(value) {
-  captureDecisionDraft(); sensoryFeedback('tap'); selectedDecision=value;
-  document.querySelectorAll('[data-action="select-decision"]').forEach(button=>{ const selected=button.dataset.value===value; button.classList.toggle('selected',selected); button.setAttribute('aria-pressed',String(selected)); const mark=button.querySelector('i'); if(mark)mark.textContent=selected?'✓':''; });
-  const submit=document.querySelector('[data-save-decision]'); if(submit)submit.disabled=false;
-}
-
 function toggleDecisionMeta(button) {
   const editor=document.getElementById('decision-meta-editor'); if(!editor)return;
   const open=editor.hidden; editor.hidden=!open; button.setAttribute('aria-expanded',String(open)); button.textContent=open?'閉じる':'変更する';
@@ -1257,7 +1240,7 @@ function updateDraftDisplays() {
   const hint=document.querySelector('[data-same-option-hint]');
   if(hint)hint.hidden=!(decisionDraft.option1 && decisionDraft.option1===decisionDraft.option2);
   const summary=document.querySelector('[data-decision-summary]'); if(summary)summary.innerHTML=decisionSummaryHtml();
-  const chosen=document.querySelector('[data-chosen-label]'); if(chosen && selectedDecision)chosen.textContent=twoChoiceLabel(selectedDecision);
+  const chosen=document.querySelector('[data-chosen-label]'); if(chosen && selectedDecision)chosen.textContent=decisionChoiceLabel(selectedDecision);
   document.querySelectorAll('[data-option-text]').forEach(small=>{ const text=decisionOptionText(small.dataset.optionText); small.textContent=text; small.hidden=!text; });
   const pairs=DECIDE_DECISION.PAIRS[decisionDraft.genre]||[];
   document.querySelectorAll('[data-action="select-pair"]').forEach(button=>{ const pair=pairs[Number(button.dataset.pairIndex)]||[]; const selected=pair[0]===decisionDraft.option1 && pair[1]===decisionDraft.option2; button.classList.toggle('selected',selected); button.setAttribute('aria-pressed',String(selected)); });
@@ -2185,7 +2168,6 @@ document.addEventListener('click', event => {
   else if (action === 'flip-both') { if(event.detail===0 || prefersReducedMotion()) flipBoth(); else if(!revealHold) nudgeRevealHold(el); }
   else if (action === 'select-back') selectBack(el.dataset.value);
   else if (action === 'decide') confirmDecisionStep(el);
-  else if (action === 'select-decision') selectDecision(el.dataset.value);
   else if (action === 'choose-decision') chooseDecision(el);
   else if (action === 'decide-rechoose') { captureDecisionDraft(); navigate('session'); }
   else if (action === 'skip-memo') skipDecisionMemo(el);

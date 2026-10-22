@@ -10,33 +10,43 @@ const fnSource = name => {
   const next = app.indexOf('\nfunction ', start + 1);
   return app.slice(start, next < 0 ? undefined : next);
 };
+const make = (name, deps = {}) => new Function(...Object.keys(deps), `${fnSource(name)}; return ${name};`)(...Object.values(deps));
+const choiceText = s => s.replace(/選択肢([12])/, (_, n) => `選択肢${'AB'[n - 1]}`);
 
-test('2択の比較結果では「DECIDE.」の代わりに3つのボタンを出す', () => {
-  assert.match(fnSource('renderReflection'), /if\(activeSession\.mode==='two'\)return renderTwoDecision\(\);/);
-  const two = fnSource('renderTwoDecision');
-  assert.match(two, /今回は、どうする？/);
-  assert.match(two, /\['選択肢1','選択肢2','保留する'\]/);
-  assert.match(two, /data-action="choose-decision"/);
-  assert.match(two, /\$\{esc\(twoChoiceText\(o\)\)\}/);
-  assert.doesNotMatch(two, /data-action="decide"|decideWordmark/);
+test('カードの結果では「DECIDE.」の代わりに3つのボタンを出す（チュートリアル以外）', () => {
+  assert.match(fnSource('renderReflection'), /if\(!activeSession\.tutorial\)return renderDecisionButtons\(\);/);
+  const buttons = fnSource('renderDecisionButtons');
+  assert.match(buttons, /今回は、どうする？/);
+  assert.match(buttons, /decisionChoices\(\)\.map/);
+  assert.match(buttons, /data-action="choose-decision"/);
+  assert.match(buttons, /\$\{esc\(decisionChoiceText\(o\)\)\}/);
+  assert.doesNotMatch(buttons, /data-action="decide"|decideWordmark/);
   // 別の「今回は、どうする？」画面は挟まず、メモ画面だけになる
-  assert.match(fnSource('renderDecision'), /activeSession\.mode === 'two'\) return selectedDecision \? renderDecisionMemo\(\) : navigate\('session'\)/);
-  assert.equal(app.includes('renderDecisionChoices'), false);
+  assert.match(fnSource('renderDecision'), /if \(!activeSession \|\| !selectedDecision\) return navigate/);
+  assert.match(fnSource('renderDecision'), /renderDecisionMemo\(\);/);
+  assert.equal(app.includes('function selectDecision('), false);
 });
 
-test('ボタンには入力された選択肢の文言をそのまま出す', () => {
-  const make = name => new Function('decisionOptionText', 'DECIDE_DECISION', `${fnSource(name)}; return ${name};`);
-  const choiceText = s => s.replace(/選択肢([12])/, (_, n) => `選択肢${'AB'[n - 1]}`);
+test('3つの選択肢は、2択ならA・B・保留、1枚引きなら進む・見送る・保留', () => {
+  const choices = mode => make('decisionChoices', { activeSession: { mode } })().map(([value]) => value);
+  assert.deepEqual(choices('two'), ['選択肢1', '選択肢2', '保留する']);
+  assert.deepEqual(choices('one'), ['進む', '見送る', '保留する']);
+});
+
+test('2択のボタンには入力された選択肢の文言をそのまま出す', () => {
   const filled = v => ({ '選択肢1': '引き受ける', '選択肢2': '断る' })[v] || '';
-  const text = make('twoChoiceText')(filled, { choiceText });
+  const deps = (mode, optionText) => ({ activeSession: { mode }, decisionOptionText: optionText, DECIDE_DECISION: { choiceText } });
+  const text = make('decisionChoiceText', deps('two', filled));
   assert.equal(text('選択肢1'), '引き受ける');
   assert.equal(text('選択肢2'), '断る');
   assert.equal(text('保留する'), '保留する');
-  assert.equal(make('twoChoiceText')(() => '', { choiceText })('選択肢1'), '選択肢A');
-  const label = make('twoChoiceLabel')(filled, { choiceText });
+  assert.equal(make('decisionChoiceText', deps('two', () => ''))('選択肢1'), '選択肢A');
+  assert.equal(make('decisionChoiceText', deps('one', () => ''))('見送る'), '見送る');
+  const label = make('decisionChoiceLabel', deps('two', filled));
   assert.equal(label('選択肢1'), '『引き受ける』にする');
   assert.equal(label('保留する'), '保留にする');
-  assert.equal(make('twoChoiceLabel')(() => '', { choiceText })('選択肢2'), '選択肢Bにする');
+  assert.equal(make('decisionChoiceLabel', deps('two', () => ''))('選択肢2'), '選択肢Bにする');
+  assert.equal(make('decisionChoiceLabel', deps('one', () => ''))('進む'), '進む');
 });
 
 test('選ぶと一言メモ画面へ進み、記録とスキップを選べる', () => {
@@ -64,16 +74,9 @@ test('スキップはメモを空にして、いつもの保存処理で記録�
   assert.match(fnSource('saveDecision'), /decision:selectedDecision/);
 });
 
-test('メモ画面の「戻る」「選び直す」は比較結果に戻る', () => {
+test('メモ画面の「戻る」「選び直す」はカードの結果に戻る', () => {
   assert.match(app, /action === 'decide-rechoose'\) \{ captureDecisionDraft\(\); navigate\('session'\); \}/);
   assert.match(app, /if\(currentView==='decide'\)\{ captureDecisionDraft\(\); return navigate\('session'\); \}/);
-});
-
-test('1枚引きの決定画面はこれまでどおり', () => {
-  const one = fnSource('renderDecision');
-  assert.match(one, /const options = \['進む','見送る','保留する'\]/);
-  assert.match(one, /data-action="select-decision"/);
-  assert.match(one, /決定を記録する/);
 });
 
 test('記録したあとは「記録しました」のポップアップを出さない', () => {
