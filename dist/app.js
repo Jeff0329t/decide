@@ -2294,3 +2294,18 @@ setTimeout(restoreBlockedSave,1200);
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible')setTimeout(restoreBlockedSave,800); });
 if(shouldAutoStartTutorial())requestAnimationFrame(startTutorialIntro);
 else setTimeout(checkDueReview,900);
+
+/* Touch feel: switches inside a screen keep the page still and give the new choice a small pop. Runs after the click handlers (window bubbles last). */
+const SOFT_SWITCH='[data-action^="stats-"],[data-action="history-mode"],[data-action="deck-preset"],[data-learn="tab"],[data-learn="filter"],[data-learn="article-filter"]';
+const SOFT_TAB=new Set(['stats-tab','history-mode','tab']);
+window.addEventListener('click',event=>{
+  const trigger=event.target.closest?.(SOFT_SWITCH); if(!trigger)return;
+  const key=trigger.dataset.action?'action':'learn', name=trigger.dataset[key];
+  const valueOf=node=>node.dataset.value??node.dataset.tab??node.dataset.category??node.dataset.filter;
+  const screen=app.querySelector(':scope > .screen');
+  if(screen){ screen.classList.add('soft-enter'); if(SOFT_TAB.has(name))screen.classList.add('soft-tab'); }
+  const twin=[...document.querySelectorAll(`[data-${key}="${name}"]`)].find(node=>valueOf(node)===valueOf(trigger));
+  if(!twin || !(twin.matches('.selected,.on,[aria-selected="true"],[aria-pressed="true"],[aria-checked="true"]')))return;
+  twin.classList.remove('just-picked'); void twin.offsetWidth; twin.classList.add('just-picked');
+  twin.addEventListener('animationend',()=>twin.classList.remove('just-picked'),{once:true});
+});
