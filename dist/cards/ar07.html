@@ -94,7 +94,22 @@ main p{margin:0 0 1em}
 .wtile-q{margin:0;padding:8px 12px;background:var(--soft);border-radius:8px;font-size:.86rem}
 .wtile-cards{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
 .wtile-cards a{display:inline-block;padding:1px 10px;border:1px solid var(--line);border-radius:999px;font-size:.78rem;text-decoration:none;background:var(--soft)}
-.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}</style>
+.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}
+/* reading-feel:start */
+a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+main p{text-wrap:pretty;line-break:strict}
+main h2{border-top:0;padding:2px 0 2px 12px;border-left:6px solid var(--accent);margin-top:40px}
+.cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
+.cta a:active{transform:scale(.96)}
+.pager a:active,.cats a:active,.wjump a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:1px 1px 0 #111}
+.wtile{transition:transform .12s ease,box-shadow .12s ease}
+.wtile-head:active,.wtile-more:active{background:#f7e88a}
+.grid a:active,.wcards a:active{transform:scale(.96)}
+.crumbs a:active,.alist a:active,.note a:active{opacity:.55}
+@media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* reading-feel:end */</style>
 <title>戦車の意味と進む目標の決め方｜タロット正位置・逆位置｜DECIDE.</title>
 <meta name="description" content="期限のある挑戦で迷う人へ。タロット「戦車」の正位置・逆位置と象徴を解説。ゴールを言葉にし、今の行動が目標につながるか確かめます。自分への問いかけから、納得できる決断のヒントを探します。">
 <meta property="og:title" content="戦車の意味と進む目標の決め方｜タロット正位置・逆位置｜DECIDE.">
@@ -147,9 +162,11 @@ main p{margin:0 0 1em}
 <section>
 <h2>決断・迷いにおけるヒント</h2>
 <h3>決断の場面での読み方</h3>
-<p>戦車は、相反する力を意志で束ね、前へ進む推進力の札です。白と黒のスフィンクスが別の方向を向いているのに、御者は手綱なしで車を進めています。迷いの中にある複数の気持ちを無理に消すのではなく、目的という一本の軸でまとめ上げる姿勢が求められています。正位置なら、決めたら迷わず期限を設けて動くとき。勢いが味方してくれます。</p>
+<p>戦車は、相反する力を意志で束ね、前へ進む推進力の札です。白と黒のスフィンクスが別の方向を向いているのに、御者は手綱なしで車を進めています。</p>
+<p>迷いの中にある複数の気持ちを無理に消すのではなく、目的という一本の軸でまとめ上げる姿勢が求められています。正位置なら、決めたら迷わず期限を設けて動くとき。勢いが味方してくれます。</p>
 <h3>よくある迷いとの向き合い方</h3>
-<p>競争や締め切りのある場面、「今動かないと間に合わない」と感じるときに心強いカードです。ただ逆位置では、焦りから方向を確かめずにアクセルを踏んでいる恐れがあります。ゴールがどこかを一度言葉にし、そこに向かう道筋が今の行動とつながっているかを確認してから進みましょう。</p>
+<p>競争や締め切りのある場面、「今動かないと間に合わない」と感じるときに心強いカードです。ただ逆位置では、焦りから方向を確かめずにアクセルを踏んでいる恐れがあります。</p>
+<p>ゴールがどこかを一度言葉にし、そこに向かう道筋が今の行動とつながっているかを確認してから進みましょう。</p>
 <h3>決断前に自分に問いかけたいこと</h3>
 <p>向かいたい方向は一つに定まっているか。白と黒の二頭のスフィンクスのように、相反する気持ちを両方とも手綱で扱えているか。勢いだけで進もうとしていないか。ゴールに着いたとき何を得ていたいか。</p>
 <p class="note">「進めやすさ」は、その選択肢を「いま進める」ときの追い風の強さ。運勢の良し悪しではない。</p>

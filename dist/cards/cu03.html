@@ -94,7 +94,22 @@ main p{margin:0 0 1em}
 .wtile-q{margin:0;padding:8px 12px;background:var(--soft);border-radius:8px;font-size:.86rem}
 .wtile-cards{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
 .wtile-cards a{display:inline-block;padding:1px 10px;border:1px solid var(--line);border-radius:999px;font-size:.78rem;text-decoration:none;background:var(--soft)}
-.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}</style>
+.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}
+/* reading-feel:start */
+a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+main p{text-wrap:pretty;line-break:strict}
+main h2{border-top:0;padding:2px 0 2px 12px;border-left:6px solid var(--accent);margin-top:40px}
+.cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
+.cta a:active{transform:scale(.96)}
+.pager a:active,.cats a:active,.wjump a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:1px 1px 0 #111}
+.wtile{transition:transform .12s ease,box-shadow .12s ease}
+.wtile-head:active,.wtile-more:active{background:#f7e88a}
+.grid a:active,.wcards a:active{transform:scale(.96)}
+.crumbs a:active,.alist a:active,.note a:active{opacity:.55}
+@media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* reading-feel:end */</style>
 <title>カップの3の意味と仲間の選び方｜タロット正位置・逆位置｜DECIDE.</title>
 <meta name="description" content="仲間との活動や集まりへの参加で迷う人へ。タロット「カップの3」の正位置・逆位置と象徴を解説。誰と時間を過ごしたいかを確かめ、無理のない付き合い方を考えます。自分への問いかけから、納得できる決断のヒントを探します。">
 <meta property="og:title" content="カップの3の意味と仲間の選び方｜タロット正位置・逆位置｜DECIDE.">
@@ -147,9 +162,12 @@ main p{margin:0 0 1em}
 <section>
 <h2>決断・迷いにおけるヒント</h2>
 <h3>決断の場面での読み方</h3>
-<p>カップの3では、三人の女性が杯を高く掲げて収穫を祝っています。一人で成し遂げるより、仲間と喜びを分かち合うことに価値がある場面です。決断の場面では、その選択によって誰と時間を過ごすことになるかを考えてみてください。同じ条件でも、気の合う仲間がいる環境のほうが力を発揮できることは少なくありません。迷ったら信頼できる友人に話してみると、自分の本当の気持ちが会話の中で浮かび上がります。</p>
+<p>カップの3では、三人の女性が杯を高く掲げて収穫を祝っています。一人で成し遂げるより、仲間と喜びを分かち合うことに価値がある場面です。</p>
+<p>決断の場面では、その選択によって誰と時間を過ごすことになるかを考えてみてください。同じ条件でも、気の合う仲間がいる環境のほうが力を発揮できることは少なくありません。</p>
+<p>迷ったら信頼できる友人に話してみると、自分の本当の気持ちが会話の中で浮かび上がります。</p>
 <h3>よくある迷いとの向き合い方</h3>
-<p>コミュニティへの参加や、仲間と一緒に何かを始めるかで迷うときに出やすいカードです。逆位置なら、楽しさに流されて大事なことを後回しにしていないか、噂話に振り回されていないか確かめを。輪の中にいても、自分の判断軸は手放さないでおきましょう。</p>
+<p>コミュニティへの参加や、仲間と一緒に何かを始めるかで迷うときに出やすいカードです。逆位置なら、楽しさに流されて大事なことを後回しにしていないか、噂話に振り回されていないか確かめを。</p>
+<p>輪の中にいても、自分の判断軸は手放さないでおきましょう。</p>
 <h3>決断前に自分に問いかけたいこと</h3>
 <p>その選択で、誰と時間を過ごすことになるか。喜びを分かち合いたい仲間はそこにいるか。楽しさに流されて大事なことを後回しにしていないか。輪の中でも、自分の判断軸を保てるか。</p>
 <p class="note">「進めやすさ」は、その選択肢を「いま進める」ときの追い風の強さ。運勢の良し悪しではない。</p>

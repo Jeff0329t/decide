@@ -94,7 +94,22 @@ main p{margin:0 0 1em}
 .wtile-q{margin:0;padding:8px 12px;background:var(--soft);border-radius:8px;font-size:.86rem}
 .wtile-cards{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
 .wtile-cards a{display:inline-block;padding:1px 10px;border:1px solid var(--line);border-radius:999px;font-size:.78rem;text-decoration:none;background:var(--soft)}
-.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}</style>
+.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}
+/* reading-feel:start */
+a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+main p{text-wrap:pretty;line-break:strict}
+main h2{border-top:0;padding:2px 0 2px 12px;border-left:6px solid var(--accent);margin-top:40px}
+.cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
+.cta a:active{transform:scale(.96)}
+.pager a:active,.cats a:active,.wjump a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:1px 1px 0 #111}
+.wtile{transition:transform .12s ease,box-shadow .12s ease}
+.wtile-head:active,.wtile-more:active{background:#f7e88a}
+.grid a:active,.wcards a:active{transform:scale(.96)}
+.crumbs a:active,.alist a:active,.note a:active{opacity:.55}
+@media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* reading-feel:end */</style>
 <title>ソードの6の意味と環境を変える決断｜タロット｜DECIDE.</title>
 <meta name="description" content="今の環境から移るかで迷う人へ。タロット「ソードの6」の正位置・逆位置と象徴を解説。離れることで軽くなる負担と移行の準備を整理し、次の場所を考えます。自分への問いかけから、納得できる決断のヒントを探します。">
 <meta property="og:title" content="ソードの6の意味と環境を変える決断｜タロット｜DECIDE.">
@@ -147,9 +162,12 @@ main p{margin:0 0 1em}
 <section>
 <h2>決断・迷いにおけるヒント</h2>
 <h3>決断の場面での読み方</h3>
-<p>ソードの6は、船頭が静かに舟を漕ぎ、荒れた水面から穏やかな岸へ人を運ぶ場面です。困難から抜け出し、少しずつ状況が良くなっていく移行期を表します。決断の場面では、一気に問題を解決しようとするより、まず今の場所から離れることに意味があると教えてくれます。舟に剣が立てられたままなのは、過去の悩みを全部捨てなくても進めるという意味でもあります。信頼できる人の助けを借りることも大切です。</p>
+<p>ソードの6は、船頭が静かに舟を漕ぎ、荒れた水面から穏やかな岸へ人を運ぶ場面です。困難から抜け出し、少しずつ状況が良くなっていく移行期を表します。</p>
+<p>決断の場面では、一気に問題を解決しようとするより、まず今の場所から離れることに意味があると教えてくれます。</p>
+<p>舟に剣が立てられたままなのは、過去の悩みを全部捨てなくても進めるという意味でもあります。信頼できる人の助けを借りることも大切です。</p>
 <h3>よくある迷いとの向き合い方</h3>
-<p>環境を変えるか迷っているとき、このカードは穏やかな旅立ちを後押しします。逆位置なら、出発が遅れているか、過去を引きずっている状態かもしれません。完璧な準備を待つより、舟に乗れる最低限の準備だけ整えて動くことを考えましょう。</p>
+<p>環境を変えるか迷っているとき、このカードは穏やかな旅立ちを後押しします。逆位置なら、出発が遅れているか、過去を引きずっている状態かもしれません。</p>
+<p>完璧な準備を待つより、舟に乗れる最低限の準備だけ整えて動くことを考えましょう。</p>
 <h3>決断前に自分に問いかけたいこと</h3>
 <p>今の場所から離れることで、何が楽になるか。完璧な準備を待たずに動き出せるか。過去の悩みを抱えたままでも、進める道はないか。舟を漕いでくれる信頼できる人はいるか。</p>
 <p class="note">「進めやすさ」は、その選択肢を「いま進める」ときの追い風の強さ。運勢の良し悪しではない。</p>

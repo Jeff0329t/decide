@@ -94,7 +94,22 @@ main p{margin:0 0 1em}
 .wtile-q{margin:0;padding:8px 12px;background:var(--soft);border-radius:8px;font-size:.86rem}
 .wtile-cards{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
 .wtile-cards a{display:inline-block;padding:1px 10px;border:1px solid var(--line);border-radius:999px;font-size:.78rem;text-decoration:none;background:var(--soft)}
-.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}</style>
+.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}
+/* reading-feel:start */
+a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+main p{text-wrap:pretty;line-break:strict}
+main h2{border-top:0;padding:2px 0 2px 12px;border-left:6px solid var(--accent);margin-top:40px}
+.cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
+.cta a:active{transform:scale(.96)}
+.pager a:active,.cats a:active,.wjump a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:1px 1px 0 #111}
+.wtile{transition:transform .12s ease,box-shadow .12s ease}
+.wtile-head:active,.wtile-more:active{background:#f7e88a}
+.grid a:active,.wcards a:active{transform:scale(.96)}
+.crumbs a:active,.alist a:active,.note a:active{opacity:.55}
+@media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* reading-feel:end */</style>
 <title>カップの8の意味と離れる決断｜タロット正位置・逆位置｜DECIDE.</title>
 <meta name="description" content="安定した仕事や関係を離れるかで迷う人へ。タロット「カップの8」の正位置・逆位置と象徴を解説。離れたい理由と本当に求めるものを整理し、区切りのつけ方を考えます。自分への問いかけから、納得できる決断のヒントを探します。">
 <meta property="og:title" content="カップの8の意味と離れる決断｜タロット正位置・逆位置｜DECIDE.">
@@ -147,9 +162,12 @@ main p{margin:0 0 1em}
 <section>
 <h2>決断・迷いにおけるヒント</h2>
 <h3>決断の場面での読み方</h3>
-<p>カップの8の人物は、きれいに積み上げた杯を残して、月夜の山へ歩き出します。失敗したからではなく、満たされない何かを求めて自ら去る姿です。決断の場面では、外から見れば恵まれた状況でも、心が離れているなら次へ進んでよいと教えてくれます。ただし去る前に、自分が何を求めているのかを一言で言えるか確かめてみましょう。目的が曖昧なまま離れると、同じ空虚さを次の場所へ持ち越しがちです。</p>
+<p>カップの8の人物は、きれいに積み上げた杯を残して、月夜の山へ歩き出します。失敗したからではなく、満たされない何かを求めて自ら去る姿です。</p>
+<p>決断の場面では、外から見れば恵まれた状況でも、心が離れているなら次へ進んでよいと教えてくれます。ただし去る前に、自分が何を求めているのかを一言で言えるか確かめてみましょう。</p>
+<p>目的が曖昧なまま離れると、同じ空虚さを次の場所へ持ち越しがちです。</p>
 <h3>よくある迷いとの向き合い方</h3>
-<p>安定した仕事や関係を手放すべきか迷うとき、このカードは「卒業」の時期が来ていることを示します。逆位置なら、惰性で留まっているのか、まだ学ぶことがあるのかを見極めて。戻ることが後退とは限らず、やり残しを片づけるための選択であることもあります。</p>
+<p>安定した仕事や関係を手放すべきか迷うとき、このカードは「卒業」の時期が来ていることを示します。逆位置なら、惰性で留まっているのか、まだ学ぶことがあるのかを見極めて。</p>
+<p>戻ることが後退とは限らず、やり残しを片づけるための選択であることもあります。</p>
 <h3>決断前に自分に問いかけたいこと</h3>
 <p>離れたい理由を、一言で言えるか。求めているものは、次の場所に本当にあるのか。積み上げてきたものを置いていく覚悟はあるか。まだここで学べることが残っていないか。</p>
 <p class="note">「進めやすさ」は、その選択肢を「いま進める」ときの追い風の強さ。運勢の良し悪しではない。</p>
