@@ -2323,3 +2323,11 @@ window.addEventListener('click',event=>{
   twin.classList.remove('just-picked'); void twin.offsetWidth; twin.classList.add('just-picked');
   twin.addEventListener('animationend',()=>twin.classList.remove('just-picked'),{once:true});
 });
+
+/* 横向きの案内：×で閉じたら、この端末では次から出さない */
+const ROTATE_HINT_KEY='decide.rotateHint.dismissed';
+try{ if(localStorage.getItem(ROTATE_HINT_KEY)) document.documentElement.classList.add('rotate-hint-off'); }catch{}
+document.querySelector('.rotate-lock-close')?.addEventListener('click',()=>{
+  document.documentElement.classList.add('rotate-hint-off');
+  safeSetItem(ROTATE_HINT_KEY,'1');
+});

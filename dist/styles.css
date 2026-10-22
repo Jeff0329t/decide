@@ -4146,11 +4146,15 @@ body.learn-active .learn-screen[data-learn-tab="lessons"] {
 .rotate-lock { display: none; }
 @media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
   .rotate-lock { display: block; position: fixed; left: 12px; right: 12px; bottom: max(10px, env(safe-area-inset-bottom)); z-index: 9999; pointer-events: none; }
-  .rotate-lock-card { display: flex; align-items: center; gap: 10px; margin: 0 auto; max-width: 420px; background: #f4efe3; color: #0b0b0b; border: 2px solid #0b0b0b; box-shadow: 4px 4px 0 #f1d527; padding: 8px 14px; }
+  .rotate-lock-card { display: flex; align-items: center; gap: 10px; margin: 0 auto; max-width: 460px; background: #f4efe3; color: #0b0b0b; border: 2px solid #0b0b0b; box-shadow: 4px 4px 0 #f1d527; padding: 8px 14px; }
   .rotate-lock-icon { display: inline-grid; place-items: center; flex: none; width: 28px; height: 28px; background: #f1d527; border: 2px solid #0b0b0b; font-size: 1rem; font-weight: 900; }
-  .rotate-lock-card p { margin: 0; font-family: var(--serif, serif); font-size: .9rem; font-weight: 800; letter-spacing: .06em; }
-  .rotate-lock-card small { font-size: .78rem; letter-spacing: .04em; opacity: .75; }
+  .rotate-lock-card p { margin: 0; white-space: nowrap; font-family: var(--serif, serif); font-size: .9rem; font-weight: 800; letter-spacing: .06em; }
+  .rotate-lock-card small { white-space: nowrap; font-size: .78rem; letter-spacing: .04em; opacity: .75; }
+  .rotate-lock-close { pointer-events: auto; display: inline-grid; place-items: center; flex: none; margin-left: auto; width: 32px; height: 32px; padding: 0; background: transparent; color: #0b0b0b; border: 2px solid #0b0b0b; font-size: 1.1rem; font-weight: 900; line-height: 1; cursor: pointer; }
+  .rotate-lock-close:active { background: #f1d527; }
 }
+/* ×で閉じたら次からは出さない */
+.rotate-hint-off .rotate-lock { display: none; }
 
 /* 削除ボタン：赤い目立つボタン */
 .danger-zone .danger-button { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 52px; background: #c8321e; color: #fff; border: 2px solid #0b0b0b; box-shadow: 4px 4px 0 #0b0b0b; font-weight: 800; font-size: 15px; letter-spacing: .04em; }
