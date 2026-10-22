@@ -48,7 +48,7 @@ assert.equal(cases.bothLow.note,'どちらも今は慎重に。急がず条件�
 assert.equal(cases.bothHigh.note,'どちらも追い風です。差は小さいので、本音で選んで大丈夫です。');
 
 for(const file of ['../dist/app.js','../dist/scoring.js','../dist/assets/cards.json'])assert.doesNotMatch(readFileSync(new URL(file,import.meta.url),'utf8'),/優勢/);
-assert.match(readFileSync(new URL('../dist/app.js',import.meta.url),'utf8'),/\['選択肢1','選択肢2','保留する'\]/);
+assert.match(readFileSync(new URL('../dist/app.js',import.meta.url),'utf8'),/\[\['選択肢1','A'\],\['選択肢2','B'\],\['保留する','HOLD'\]\]/);
 const appSource=readFileSync(new URL('../dist/app.js',import.meta.url),'utf8');
 assert.match(appSource,/aria-label="\$\{esc\(label\)\}、5段階中\$\{score\}"/);
 assert.match(appSource,/if\(mode==='two'\)preloadCardImages\(drawOptions\)/);
