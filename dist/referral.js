@@ -93,6 +93,8 @@
       if(data === 'ok') {
         notify('UNLIMITEDを3日間プレゼントしました');
         window.DECIDE_ENTITLEMENTS?.refresh?.();
+      } else if(data === 'not_new') {
+        notify('招待の特典は、招待リンクから新しく始めた方が対象です');
       }
     } catch(error) {
       // 次回もう一度

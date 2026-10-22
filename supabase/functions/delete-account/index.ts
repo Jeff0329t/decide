@@ -1,6 +1,6 @@
-// Deletes the caller's own account (auth.users row; profiles row cascades).
+// Deletes the caller's own account (auth.users row; profiles, synced logs, purchases, reminders and referrals cascade).
 // The caller is identified only by their Supabase JWT. The service role key lives in Edge Function secrets, never in the front end.
-// Decision logs are stored only on the user's device and are not touched here.
+// Decision logs on the user's device are not touched here.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const SITE_URL = (Deno.env.get('SITE_URL') ?? 'https://decisionprocess.net').replace(/\/$/, '');

@@ -18,9 +18,11 @@
   const isOn = () => available() && loaded && enabled && owner === auth()?.getUser?.()?.id;
   function items() {
     const logs = window.DECIDE_APP_BRIDGE?.getLogs?.() || [];
-    const pending = logs.filter(log => log && typeof log.id === 'string' && log.id.length > 0 && log.id.length <= 100 && !log.review && Number.isFinite(Date.parse(log.remindAt)));
-    if(pending.length > 500) throw new Error('too-many-logs');
-    return pending
+    // サーバーは7日より前の予定を送らず、1回に500件までしか受け付けない。
+    // 送られうる予定を日付の近い順に500件までにする（エラーにすると、ほかの予定も登録できず再試行が続く）。
+    const since = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    return logs.filter(log => log && typeof log.id === 'string' && log.id.length > 0 && log.id.length <= 100 && !log.review && Date.parse(log.remindAt) > since)
+      .sort((a,b) => Date.parse(a.remindAt) - Date.parse(b.remindAt)).slice(0, 500)
       .map(log => ({ id: log.id, remindAt: new Date(log.remindAt).toISOString(), title: String(log.title || '').replace(/[\r\n\t]+/g, ' ').trim().slice(0,60) }))
       .sort((a,b) => a.id.localeCompare(b.id));
   }

@@ -44,15 +44,15 @@ test('mail stays unavailable until configured; no server calls or false ON state
 });
 test('opt-in uploads pending id/time/title, excluding review, memo and invalid dates', async () => {
   const h=await load();
-  h.setLogs([{id:'a',remindAt:'2026-11-01T10:00:00+09:00',title:'転職するか',memo:'SECRET'},
-    {id:'b',remindAt:'2026-11-01',review:'良かった'}, {id:'bad',remindAt:'invalid'}]);
+  h.setLogs([{id:'a',remindAt:'2099-11-01T10:00:00+09:00',title:'転職するか',memo:'SECRET'},
+    {id:'b',remindAt:'2099-11-01',review:'良かった'}, {id:'bad',remindAt:'invalid'}]);
   await h.api.toggle();
   assert.equal(h.api.isOn(),true);
-  assert.deepEqual(h.calls.at(-1).args.items,[{id:'a',remindAt:'2026-11-01T01:00:00.000Z',title:'転職するか'}]);
+  assert.deepEqual(h.calls.at(-1).args.items,[{id:'a',remindAt:'2099-11-01T01:00:00.000Z',title:'転職するか'}]);
   assert.doesNotMatch(JSON.stringify(h.calls), /SECRET/);
 });
 test('review, cancellation and deletion replace the device snapshot; unchanged snapshots are skipped', async () => {
-  const h=await load(); h.setLogs([{id:'a',remindAt:'2026-11-01'}]); await h.api.toggle();
+  const h=await load(); h.setLogs([{id:'a',remindAt:'2099-11-01'}]); await h.api.toggle();
   const before=h.calls.length;
   await h.api.syncNow(); assert.equal(h.calls.length,before);
   h.setLogs([{id:'a',remindAt:null}]); await h.api.syncNow();
@@ -65,7 +65,7 @@ test('failed ON remains OFF; failed OFF remains ON with a visible error', async 
   assert.match(h.api.renderSettings(),/変更を保存できませんでした/);
 });
 test('failed schedule sync retries without losing a cancellation', async () => {
-  const h=await load(); h.setLogs([{id:'a',remindAt:'2026-11-01'}]); await h.api.toggle();
+  const h=await load(); h.setLogs([{id:'a',remindAt:'2099-11-01'}]); await h.api.toggle();
   h.setLogs([]); h.setFail(true); await h.api.syncNow();
   assert.ok(h.timers.size>0);
   h.setFail(false); await h.runTimers();
@@ -87,14 +87,17 @@ test('known OFF setting never blocks sign-out during a network failure or create
   const h=await load(); const before=h.calls.length; h.setFail(true);
   assert.equal(await h.api.disableForSignOut(),true); assert.equal(h.calls.length,before);
 });
-test('a large history fails explicitly rather than silently dropping scheduled reminders', async () => {
-  const h=await load(); h.setLogs(Array.from({length:501},(_,i)=>({id:`id${i}`,remindAt:'2026-11-01'})));
-  await h.api.toggle(); assert.equal(h.api.isOn(),false);
-  assert.equal(h.calls.filter(c=>c.name==='set_email_reminders').length,0);
+test('a large history registers the 500 nearest reminders instead of failing and retrying forever', async () => {
+  const day=24*60*60*1000, at=n=>new Date(Date.now()+n*day).toISOString();
+  const h=await load(); h.setLogs([{id:'old',remindAt:at(-8)},...Array.from({length:501},(_,i)=>({id:`id${i}`,remindAt:at(i+1)}))]);
+  await h.api.toggle(); assert.equal(h.api.isOn(),true);
+  const items=h.calls.filter(c=>c.name==='set_email_reminders').at(-1).args.items;
+  assert.equal(items.length,500);
+  assert.ok(!items.some(item=>item.id==='old' || item.id==='id500'));
 });
 
 test('stop-all turns this device OFF and covers devices that are no longer at hand', async () => {
-  const h=await load(); h.setLogs([{id:'a',remindAt:'2026-11-01'}]); await h.api.toggle(); assert.equal(h.api.isOn(),true);
+  const h=await load(); h.setLogs([{id:'a',remindAt:'2099-11-01'}]); await h.api.toggle(); assert.equal(h.api.isOn(),true);
   await h.api.stopAll();
   assert.equal(h.calls.at(-1).name,'disable_all_email_reminders'); assert.equal(h.api.isOn(),false);
   assert.match(h.api.renderSettings(),/data-email-remind-action="stop-all"/);
