@@ -5,10 +5,11 @@
   let data=null, pending=null, tab='cards', filter='all', query='', lessonId=null;
   let articles=null, articlePending=null, articleError=false, articleId=null, articleQuery='', articleCategory='all', articleLimit=12, articleListScroll=0;
   const TABS=[['cards','図鑑'],['lessons','学ぶ'],['articles','関連記事']];
-  let viewed=[], read={}, visible=[], cardIndex=-1, direction='upright', returnTile=null, observer=null;
+  let viewed=[], read={}, articlesRead=[], visible=[], cardIndex=-1, direction='upright', returnTile=null, observer=null;
   const state=load(KEY,{});
   if(Array.isArray(state.viewed))viewed=[...new Set(state.viewed.filter(id=>typeof id==='string'))];
   if(state.lessons && typeof state.lessons==='object' && !Array.isArray(state.lessons))read={...state.lessons};
+  if(Array.isArray(state.articles))articlesRead=[...new Set(state.articles.filter(id=>typeof id==='string'))];
 
   function el(tag, cls='', value=null) {
     const node=document.createElement(tag);
@@ -20,7 +21,7 @@
     const node=el('button',cls,label); node.type='button'; node.dataset.learn=action; return node;
   }
   function signal(action,id='') { window.dispatchEvent(new CustomEvent('decide:learn',{detail:{action,id}})); }
-  function save() { safeSetItem(KEY,JSON.stringify({viewed,lessons:read})); }
+  function save() { safeSetItem(KEY,JSON.stringify({viewed,lessons:read,articles:articlesRead})); }
   function fetchData() {
     if(pending)return pending;
     pending=Promise.all([loadCardContent(),fetch('./assets/learn.json').then(r=>{if(!r.ok)throw Error('load');return r.json();})])
@@ -218,14 +219,16 @@
   }
   function fillArticleList(list) {
     const matches=articleMatches();list.replaceChildren();
-    const count=list.parentElement?.querySelector('[data-article-count]');if(count)count.textContent=`${matches.length}件の記事`;
+    const count=list.parentElement?.querySelector('[data-article-count]');if(count)count.textContent=`${matches.length}件の記事${articleQuery.trim()?`（「${articleQuery.trim()}」で検索）`:''}`;
     if(!matches.length){list.append(el('p','learn-empty','見つかりませんでした。別の言葉で探してみてください。'));return;}
     matches.slice(0,articleLimit).forEach(article=>{
       const button=btn('','article','learn-article-item');button.dataset.id=article.id;
       const category=articles.categories.find(c=>c.id===article.category)?.label || '';
-      button.append(el('small','learn-article-meta',`${category} ・ 約${article.minutes}分`),el('strong','',article.title),el('p','',article.summary));list.append(button);
+      const meta=el('small','learn-article-meta');meta.append(el('span','learn-article-tag',category),el('span','',`約${article.minutes}分`));
+      if(articlesRead.includes(article.id)){meta.append(el('span','learn-article-done','読んだ'));button.classList.add('is-read');}
+      button.append(meta,el('strong','',article.title),el('p','',article.summary));list.append(button);
     });
-    if(matches.length>articleLimit)list.append(btn('もっと見る','article-more','button secondary learn-article-more'));
+    if(matches.length>articleLimit)list.append(btn(`もっと見る（あと${matches.length-articleLimit}件）`,'article-more','button secondary learn-article-more'));
   }
   function renderArticles(root) {
     const pane=el('div','learn-articles');pane.setAttribute('role','tabpanel');root.append(pane);
@@ -237,13 +240,26 @@
     const article=articleId && articles.articles.find(a=>a.id===articleId);
     if(article){
       pane.classList.add('learn-article-reader');
-      pane.append(btn('← 記事の一覧へ','article-list','learn-lesson-back'),el('h2','',article.title));
+      const category=articles.categories.find(c=>c.id===article.category)?.label || '';
+      const progress=el('div','learn-read-progress');progress.setAttribute('aria-hidden','true');progress.append(el('span'));
+      const meta=el('p','learn-article-meta');meta.append(el('span','learn-article-tag',category),el('span','',`約${article.minutes}分で読めます`));
+      pane.append(progress,btn('← 記事の一覧へ','article-list','learn-lesson-back'),meta,el('h2','',article.title));
       const body=el('article','learn-article-body');
       article.blocks.forEach(block=>body.append(el(block.type==='li'?'p':block.type,'',block.type==='li'?`・${block.text}`:block.text)));
-      pane.append(body,btn('記事の一覧へ戻る','article-list','button secondary'));return;
+      pane.append(body);
+      const next=articles.articles.filter(a=>a.id!==article.id && a.category===article.category);
+      const picks=[...next.filter(a=>!articlesRead.includes(a.id)),...next.filter(a=>articlesRead.includes(a.id))].slice(0,2);
+      if(picks.length){
+        const more=el('section','learn-article-next');more.append(el('h3','','つづけて読む'));
+        picks.forEach(a=>{const b=btn('','article','learn-article-item');b.dataset.id=a.id;b.append(el('small','learn-article-meta',`約${a.minutes}分`),el('strong','',a.title));more.append(b);});
+        pane.append(more);
+      }
+      pane.append(btn('記事の一覧へ戻る','article-list','button secondary'));
+      if(!articlesRead.includes(article.id)){articlesRead.push(article.id);save();}
+      return;
     }
     pane.append(el('p','learn-articles-intro','気になる話から読んでみましょう。'));
-    const filters=el('div','learn-filters');filters.setAttribute('aria-label','記事のテーマ');
+    const filters=el('div','learn-filters learn-article-filters');filters.setAttribute('aria-label','記事のテーマ');
     [['all','すべて'],...articles.categories.map(c=>[c.id,c.label])].forEach(([id,label])=>{
       const button=btn(label,'article-filter','learn-filter');button.dataset.category=id;button.setAttribute('aria-pressed',String(articleCategory===id));filters.append(button);
     });pane.append(filters);
@@ -275,9 +291,9 @@
     if(action==='related'){closeModal('#card-modal');tab='lessons';lessonId=target.dataset.id;setTimeout(()=>{render();scrollAppTo(0);signal('lesson',lessonId);},190);return;}
     if(action==='tab'){tab=target.dataset.tab;lessonId=null;articleId=null;render();return;}
     if(action==='article-retry'){fetchArticles();render();return;}
-    if(action==='article'){articleListScroll=appScrollTop();articleId=target.dataset.id;lastArticleId=articleId;render();scrollAppTo(0);app.focus({preventScroll:true});return;}
+    if(action==='article'){if(!articleId)articleListScroll=appScrollTop();articleId=target.dataset.id;lastArticleId=articleId;render();scrollAppTo(0);app.focus({preventScroll:true});updateReadProgress();return;}
     if(action==='article-list'){showArticleList();return;}
-    if(action==='article-filter'){articleCategory=target.dataset.category;articleLimit=12;render();document.querySelector('[data-learn="article-filter"][aria-pressed="true"]')?.focus({preventScroll:true});return;}
+    if(action==='article-filter'){articleCategory=target.dataset.category;articleLimit=12;document.querySelectorAll('[data-learn="article-filter"]').forEach(b=>b.setAttribute('aria-pressed',String(b===target)));target.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});fillArticleList(document.querySelector('[data-article-list]'));return;}
     if(action==='article-more'){const previous=articleLimit;articleLimit+=12;const list=document.querySelector('[data-article-list]');fillArticleList(list);list.querySelectorAll('[data-learn="article"]')[previous]?.focus({preventScroll:true});return;}
     if(action==='filter'){filter=target.dataset.filter;document.querySelectorAll('.learn-filter').forEach(b=>b.setAttribute('aria-pressed',String(b===target)));fillGrid(document.querySelector('[data-learn-grid]'));return;}
     if(action==='lesson'){lessonId=target.dataset.id;render();scrollAppTo(0);signal('lesson',lessonId);return;}
@@ -293,5 +309,12 @@
     const tabButton=event.target.closest?.('.learn-tab');if(!tabButton || !['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
     event.preventDefault();const index=TABS.findIndex(([id])=>id===tab);const next=event.key==='Home'?0:event.key==='End'?TABS.length-1:(index+(event.key==='ArrowRight'?1:-1)+TABS.length)%TABS.length;tab=TABS[next][0];lessonId=null;articleId=null;render();document.querySelector(`.learn-tab[data-tab="${tab}"]`)?.focus();
   });
+  function updateReadProgress() {
+    const bar=document.querySelector('.learn-read-progress span');if(!bar)return;
+    const scroller=document.documentElement.classList.contains('standalone-shell')?document.querySelector('.app-shell'):document.documentElement;
+    const range=scroller.scrollHeight-scroller.clientHeight;
+    bar.style.transform=`scaleX(${range>0?Math.min(1,Math.max(0,appScrollTop()/range)):1})`;
+  }
+  document.addEventListener('scroll',updateReadProgress,{capture:true,passive:true});
   window.DECIDE_LEARN={open,render,close:goBack};
 })();
