@@ -3526,10 +3526,15 @@ body.ritual-enter .thumb-prepare .prepare-controls { animation: ritual-rise .7s 
 .review-panel .remind-picker { margin-top: 16px; }
 .remind-kicker { position: absolute; top: -12px; left: 12px; margin: 0; padding: 2px 9px; background: #0b0b0b; color: #f1d527; font-family: Didot,"Bodoni 72",serif; font-size: .75rem; font-weight: 700; letter-spacing: .28em; transform: rotate(-2deg); }
 .remind-picker h2 { margin: 2px 0 10px; font-family: "Hiragino Mincho ProN","Yu Mincho",serif; font-size: 1.05rem; font-weight: 900; color: #0b0b0b; }
-.remind-options { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 6px; }
+.remind-options { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; }
 .remind-options button { min-height: 44px; padding: 4px 2px; border: 2px solid #0b0b0b; border-radius: 0; background: #fff; color: #0b0b0b; box-shadow: 2px 2px 0 #0b0b0b; font-family: "Hiragino Mincho ProN","Yu Mincho",serif; font-size: .8rem; font-weight: 800; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease, background .12s ease; }
 .remind-options button:active { transform: translate(2px,2px); box-shadow: 0 0 0 #0b0b0b; }
 .remind-options button.selected { background: #0b0b0b; color: #f1d527; box-shadow: 2px 2px 0 #f1d527; transform: rotate(-1.5deg); }
+/* The date choice looks like the other two; the real <input type="date"> covers it so a tap opens the calendar. */
+.remind-options .remind-date { position: relative; display: grid; place-content: center; text-align: center; min-height: 44px; padding: 4px 2px; border: 2px solid #0b0b0b; background: #fff; color: #0b0b0b; box-shadow: 2px 2px 0 #0b0b0b; font-family: "Hiragino Mincho ProN","Yu Mincho",serif; font-size: .8rem; font-weight: 800; cursor: pointer; }
+.remind-options .remind-date.selected { background: #0b0b0b; color: #f1d527; box-shadow: 2px 2px 0 #f1d527; transform: rotate(-1.5deg); }
+.remind-options .remind-date input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; opacity: 0; cursor: pointer; -webkit-appearance: none; appearance: none; }
+.remind-options .remind-date:focus-within { outline: 3px solid #f1d527; outline-offset: 2px; }
 .remind-status { margin: 9px 0 0; color: #6b6458; font-size: .75rem; line-height: 1.5; }
 .remind-status b { color: #0b0b0b; background: linear-gradient(transparent 55%, #f1d527 55%); }
 .remind-note { margin: 0 0 6px; font-size: .95rem; line-height: 1.7; }
@@ -4288,7 +4293,7 @@ body[data-view="decide"] .decide-screen .pair-chip.selected { background: #0b0b0
 #settings-modal .push-status{margin-top:8px;font-size:.75rem;color:#cfc7ba}
 
 /* #17 リマインド候補の日付 */
-.remind-options button small{display:block;font-size:.75rem;font-family:inherit;opacity:.78;margin-top:2px;letter-spacing:.02em}
+.remind-options button small,.remind-options .remind-date small{display:block;font-size:.75rem;font-family:inherit;opacity:.78;margin-top:2px;letter-spacing:.02em}
 .verdict-basis{margin:4px 0 0;font-size:.75rem;line-height:1.6;color:#5b5348}
 .verdict-questions{margin:10px 0 0;padding:9px 12px 9px 26px;border-radius:10px;background:rgba(255,255,255,.55);text-align:left;font-size:.8125rem;line-height:1.65;color:#29251e}
 .verdict-questions li+li{margin-top:4px}
