@@ -46,21 +46,46 @@ a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 main p{text-wrap:pretty;line-break:strict}
 .cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
 .cta a:active{transform:scale(.96)}
-.pager a:active,.cats a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.pager a:active,.pager a.is-pressed,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+/* .cats marks the current page in yellow, so a pressed chip turns black to stay distinct */
+.cats a:active,.cats a.is-pressed{transform:translate(1px,1px);background:#111;color:var(--accent)}
 .wjump a:active,.wjump a.is-pressed{transform:translate(2px,2px);box-shadow:0 0 0 #111;background:var(--accent);color:#111}
 .wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:2px 2px 0 #111}
-.pager a:active{box-shadow:1px 1px 0 #111}
+.pager a:active,.pager a.is-pressed{box-shadow:1px 1px 0 #111}
 .wtile{transition:transform .12s ease,box-shadow .12s ease}
 .wtile-head:active{background:#f7e88a}
 .wtile-more:active{opacity:.85}
-.grid a:active,.wcards a:active{transform:scale(.96)}
+.grid a{margin:-4px;padding:4px}
+.grid a:active,.grid a.is-pressed{transform:scale(.96);background:var(--accent);color:#111}
+.wcards a:active,.wcards a.is-pressed{background:#f7e88a}
+.wtile-cards a.is-pressed{background:var(--accent);color:#111}
 .crumbs a:active,.alist a:active,.note a:active{opacity:.55}
 @media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:feel-out .2s ease both}
+::view-transition-new(root){animation:feel-in .32s cubic-bezier(.2,.8,.2,1) both}
+html:active-view-transition-type(back)::view-transition-old(root){animation-name:feel-out-back}
+html:active-view-transition-type(back)::view-transition-new(root){animation-name:feel-in-back}
+::view-transition-group(card-art){animation-duration:.38s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+.app-nav{view-transition-name:app-nav}
+::view-transition-group(app-nav){animation:none}
+@keyframes feel-in{from{opacity:0;transform:translateX(28px)}}
+@keyframes feel-out{to{opacity:0;transform:translateX(-28px)}}
+@keyframes feel-in-back{from{opacity:0;transform:translateX(-28px)}}
+@keyframes feel-out-back{to{opacity:0;transform:translateX(28px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}@view-transition{navigation:none}}
 /* reading-feel:end */`;
+
+// Card tiles and rows stay lit from the tap until the next page opens (cleared on 戻る via pageshow),
+// so a slow page load never looks like a missed tap. Page changes slide like the app's screens:
+// forward from the right, back (戻る links or history) from the left, and a tapped card's picture
+// grows into the card page's hero. Lives in <head> so pagereveal is heard before the first frame.
+// Progressive enhancement: without JS or view transitions the links work as plain links.
+const PRESS_JS = `<script data-press>(function(){var S='.wjump a,.cats a,.pager a,.grid a,.wcards a,.wtile-cards a';function clear(){[].forEach.call(document.querySelectorAll('.is-pressed'),function(x){x.classList.remove('is-pressed');var i=x.querySelector('img');if(i)i.style.viewTransitionName=''})}function back(e){var a=e&&e.activation;return a&&a.navigationType==='traverse'&&a.from&&a.entry&&a.entry.index<a.from.index}document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('a');if(!t||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;try{sessionStorage.setItem('feel-dir',t.matches('.back,[data-go="back"]')?'back':'')}catch(_){}if(!t.matches(S))return;clear();t.classList.add('is-pressed')});window.addEventListener('pageshow',clear);window.addEventListener('pageswap',function(e){if(!e.viewTransition)return;var b=back(e);try{b=b||sessionStorage.getItem('feel-dir')==='back'}catch(_){}if(b){e.viewTransition.types.add('back');return}var i=document.querySelector('.is-pressed img');if(i)i.style.viewTransitionName='card-art'});window.addEventListener('pagereveal',function(e){if(!e.viewTransition)return;var b=back(window.navigation);try{b=b||sessionStorage.getItem('feel-dir')==='back';sessionStorage.removeItem('feel-dir')}catch(_){}if(b){e.viewTransition.types.add('back');return}var h=document.querySelector('.hero img');if(!h)return;h.style.viewTransitionName='card-art';e.viewTransition.finished.finally(function(){h.style.viewTransitionName=''})})})();</script>`;
 
 export function applyReadingFeel(html) {
   html = html.replace(/\/\* reading-feel:start \*\/[\s\S]*?\/\* reading-feel:end \*\//, '').replace(/\n<\/style>/, '</style>');
   html = html.replace('</style>', `\n${FEEL_CSS}</style>`);
+  html = html.replace(/\n?<script data-press>[\s\S]*?<\/script>/, '').replace('</head>', `${PRESS_JS}\n</head>`);
   return splitLongParagraphs(html);
 }

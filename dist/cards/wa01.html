@@ -65,11 +65,12 @@ dl.themes dd{margin:0;padding:0 0 10px;border-bottom:1px solid var(--line)}
 .pager a{display:block;padding:10px 12px;border:1.5px solid var(--ink);background:var(--card);box-shadow:3px 3px 0 var(--ink);font-weight:700;text-decoration:none;line-height:1.5}
 .pager small{display:block;color:var(--muted);font-size:.72rem;font-weight:400}
 .wcards{margin:12px 0 0;padding:0;list-style:none}
-.wcards li{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:start;padding:14px 0;border-bottom:1px solid var(--line)}
+.wcards li{border-bottom:1px solid var(--line)}
+.wcards a{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:start;margin:0 -8px;padding:14px 8px;color:inherit;text-decoration:none}
+.wcards a:focus-visible{outline:3px solid var(--ink);outline-offset:-3px}
 .wcards img{width:100%;height:auto;display:block;border:1px solid var(--ink);background:var(--ink)}
 .wcards h3{margin:0 0 4px}
-.wcards h3 a{text-decoration:none}
-.wcards h3 a::after{content:" →";font-family:Arial,sans-serif}
+.wcards h3::after{content:" →";font-family:Arial,sans-serif}
 .wcards p{margin:0 0 4px;font-size:.92rem;line-height:1.8}
 .cats{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;padding:0;list-style:none;font-size:.84rem}
 .cats a,.cats [aria-current]{display:inline-block;padding:4px 12px;border:1.5px solid var(--ink);background:var(--card);font-weight:700;line-height:1.6;text-decoration:none}
@@ -118,17 +119,34 @@ a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 main p{text-wrap:pretty;line-break:strict}
 .cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
 .cta a:active{transform:scale(.96)}
-.pager a:active,.cats a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.pager a:active,.pager a.is-pressed,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+/* .cats marks the current page in yellow, so a pressed chip turns black to stay distinct */
+.cats a:active,.cats a.is-pressed{transform:translate(1px,1px);background:#111;color:var(--accent)}
 .wjump a:active,.wjump a.is-pressed{transform:translate(2px,2px);box-shadow:0 0 0 #111;background:var(--accent);color:#111}
 .wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:2px 2px 0 #111}
-.pager a:active{box-shadow:1px 1px 0 #111}
+.pager a:active,.pager a.is-pressed{box-shadow:1px 1px 0 #111}
 .wtile{transition:transform .12s ease,box-shadow .12s ease}
 .wtile-head:active{background:#f7e88a}
 .wtile-more:active{opacity:.85}
-.grid a:active,.wcards a:active{transform:scale(.96)}
+.grid a{margin:-4px;padding:4px}
+.grid a:active,.grid a.is-pressed{transform:scale(.96);background:var(--accent);color:#111}
+.wcards a:active,.wcards a.is-pressed{background:#f7e88a}
+.wtile-cards a.is-pressed{background:var(--accent);color:#111}
 .crumbs a:active,.alist a:active,.note a:active{opacity:.55}
 @media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:feel-out .2s ease both}
+::view-transition-new(root){animation:feel-in .32s cubic-bezier(.2,.8,.2,1) both}
+html:active-view-transition-type(back)::view-transition-old(root){animation-name:feel-out-back}
+html:active-view-transition-type(back)::view-transition-new(root){animation-name:feel-in-back}
+::view-transition-group(card-art){animation-duration:.38s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+.app-nav{view-transition-name:app-nav}
+::view-transition-group(app-nav){animation:none}
+@keyframes feel-in{from{opacity:0;transform:translateX(28px)}}
+@keyframes feel-out{to{opacity:0;transform:translateX(-28px)}}
+@keyframes feel-in-back{from{opacity:0;transform:translateX(-28px)}}
+@keyframes feel-out-back{to{opacity:0;transform:translateX(28px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}@view-transition{navigation:none}}
 /* reading-feel:end */</style>
 <title>ワンドのエースの意味と挑戦の始め方｜タロット｜DECIDE.</title>
 <meta name="description" content="新しい企画や趣味で迷う人へ。タロット「ワンドのエース」の正位置・逆位置と象徴を解説。一時的な熱意と本当の望みを分け、小さく始める方法を考えます。自分への問いかけから、納得できる決断のヒントを探します。">
@@ -138,6 +156,7 @@ main p{text-wrap:pretty;line-break:strict}
 <meta name="twitter:description" content="新しい企画や趣味で迷う人へ。タロット「ワンドのエース」の正位置・逆位置と象徴を解説。一時的な熱意と本当の望みを分け、小さく始める方法を考えます。自分への問いかけから、納得できる決断のヒントを探します。">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"ワンドのエースの意味と挑戦の始め方｜タロット｜DECIDE.","description":"新しい企画や趣味で迷う人へ。タロット「ワンドのエース」の正位置・逆位置と象徴を解説。一時的な熱意と本当の望みを分け、小さく始める方法を考えます。自分への問いかけから、納得できる決断のヒントを探します。","image":"https://decisionprocess.net/assets/rider-waite/wa01.jpg","inLanguage":"ja","mainEntityOfPage":"https://decisionprocess.net/cards/wa01","datePublished":"2026-10-22","dateModified":"2026-10-22","author":{"@type":"Organization","name":"DECIDE."},"publisher":{"@type":"Organization","name":"DECIDE.","url":"https://decisionprocess.net/"},"url":"https://decisionprocess.net/cards/wa01"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"DECIDE.","item":"https://decisionprocess.net/"},{"@type":"ListItem","position":2,"name":"タロットカード78枚の意味","item":"https://decisionprocess.net/cards/"},{"@type":"ListItem","position":3,"name":"ワンドのエースの意味","item":"https://decisionprocess.net/cards/wa01"}]}</script>
+<script data-press>(function(){var S='.wjump a,.cats a,.pager a,.grid a,.wcards a,.wtile-cards a';function clear(){[].forEach.call(document.querySelectorAll('.is-pressed'),function(x){x.classList.remove('is-pressed');var i=x.querySelector('img');if(i)i.style.viewTransitionName=''})}function back(e){var a=e&&e.activation;return a&&a.navigationType==='traverse'&&a.from&&a.entry&&a.entry.index<a.from.index}document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('a');if(!t||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;try{sessionStorage.setItem('feel-dir',t.matches('.back,[data-go="back"]')?'back':'')}catch(_){}if(!t.matches(S))return;clear();t.classList.add('is-pressed')});window.addEventListener('pageshow',clear);window.addEventListener('pageswap',function(e){if(!e.viewTransition)return;var b=back(e);try{b=b||sessionStorage.getItem('feel-dir')==='back'}catch(_){}if(b){e.viewTransition.types.add('back');return}var i=document.querySelector('.is-pressed img');if(i)i.style.viewTransitionName='card-art'});window.addEventListener('pagereveal',function(e){if(!e.viewTransition)return;var b=back(window.navigation);try{b=b||sessionStorage.getItem('feel-dir')==='back';sessionStorage.removeItem('feel-dir')}catch(_){}if(b){e.viewTransition.types.add('back');return}var h=document.querySelector('.hero img');if(!h)return;h.style.viewTransitionName='card-art';e.viewTransition.finished.finally(function(){h.style.viewTransitionName=''})})})();</script>
 </head>
 <body>
 <main>

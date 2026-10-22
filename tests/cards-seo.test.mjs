@@ -28,7 +28,7 @@ test('each card page has SEO essentials, CTAs, credit and alt', () => {
     assert.match(html, /images: sixseeds\/tarot-api, public domain/, id);
     assert.match(html, /<img [^>]*alt="[^"]+"/, id);
     assert.match(html, /決断・迷いにおけるヒント/, id);
-    assert.doesNotMatch(html, /<script(?![^>]*application\/ld\+json)/, `${id} must not need JS`);
+    assert.doesNotMatch(html, /<script(?![^>]*(?:application\/ld\+json|data-press))/, `${id} must not need JS`);
   }
 });
 
@@ -64,7 +64,7 @@ test('category pages exist with SEO essentials and one CTA', () => {
     assert.match(html, /"@type":\s*"BreadcrumbList"/, slug);
     assert.match(html, /"@type":\s*"ItemList"/, slug);
     assert.equal(html.split(CTA).length - 1, 1, `${slug} CTA count`);
-    assert.doesNotMatch(html, /<script(?![^>]*application\/ld\+json)/, slug);
+    assert.doesNotMatch(html, /<script(?![^>]*(?:application\/ld\+json|data-press))/, slug);
   }
 });
 
@@ -113,10 +113,34 @@ test('worry pages have SEO essentials, CTAs into the app, credit and no JS', () 
     assert.deepEqual(ctaLinks, ['../?go=home'], `${slug} CTA`);
     assert.match(html, /images: sixseeds\/tarot-api, public domain/, slug);
     assert.match(html, /href="\.\/worries"/, slug);
-    assert.doesNotMatch(html, /<script(?![^>]*application\/ld\+json)/, slug);
+    assert.doesNotMatch(html, /<script(?![^>]*(?:application\/ld\+json|data-press))/, slug);
     assert.doesNotMatch(html, /sk_live|sk_test|whsec_|service_role/, slug);
     assert.match(sm, new RegExp(`<loc>https://decisionprocess\\.net/cards/worry-${slug}</loc>`), slug);
   }
+});
+
+test('card tiles, worry card rows, theme buttons and worry chips keep a pressed state until the next page opens', () => {
+  for (const file of ['major', 'worries', 'worry-tenshoku', 'cu08']) {
+    const html = read(`dist/cards/${file}.html`);
+    // Only the tap-feedback enhancement may run; the page itself must not need JS.
+    const scripts = [...html.matchAll(/<script(?![^>]*application\/ld\+json)[^>]*>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
+    assert.equal(scripts.length, 1, file);
+    assert.match(scripts[0], /is-pressed/, file);
+    assert.match(scripts[0], /pageshow/, file);
+    assert.doesNotMatch(scripts[0], /innerHTML|insertAdjacent|createElement|textContent/, file);
+    assert.match(html, /\.grid a\.is-pressed/, file);
+    assert.match(html, /\.wcards a\.is-pressed/, file);
+    assert.match(html, /\.cats a\.is-pressed/, file);
+    assert.match(scripts[0], /\.cats a/, file);
+    assert.match(html, /@view-transition\{navigation:auto\}/, file);
+    assert.match(html, /prefers-reduced-motion:reduce\)\{[^}]*\}@view-transition\{navigation:none\}/, file);
+    assert.match(html, /<script data-press>[\s\S]*?<\/script>\n<\/head>/, file);
+    assert.match(scripts[0], /pagereveal/, file);
+  }
+  // Each related-card row is one link: picture, name and reason all open the card page.
+  const rows = [...read('dist/cards/worry-tenshoku.html').matchAll(/<li><a href="\.\/(\w+)">([\s\S]*?)<\/a><\/li>/g)].filter((m) => m[2].includes('<h3>'));
+  assert.ok(rows.length >= 3);
+  for (const [, , inner] of rows) assert.match(inner, /<picture>[\s\S]*<h3>[^<]+<\/h3><p>[^<]+<\/p>/);
 });
 
 test('worries index lists all worry pages and is linked from cards index', () => {
@@ -124,11 +148,6 @@ test('worries index lists all worry pages and is linked from cards index', () =>
   assert.match(html, /"@type":\s*"ItemList"/);
   assert.equal(html.split(CTA).length - 1, 1, 'worries CTA count');
   for (const slug of worries) assert.match(html, new RegExp(`href="\\./worry-${slug}"`), slug);
-  // Only the tap-feedback enhancement for the theme buttons may run; the page itself must not need JS.
-  const scripts = [...html.matchAll(/<script(?![^>]*application\/ld\+json)[^>]*>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
-  assert.equal(scripts.length, 1);
-  assert.match(scripts[0], /is-pressed/);
-  assert.doesNotMatch(scripts[0], /innerHTML|insertAdjacent|createElement|textContent/);
   assert.match(read('dist/cards/index.html'), /href="\.\/worries"/);
   assert.match(read('dist/sitemap.xml'), /<loc>https:\/\/decisionprocess\.net\/cards\/worries<\/loc>/);
 });

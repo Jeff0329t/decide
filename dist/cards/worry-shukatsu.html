@@ -65,11 +65,12 @@ dl.themes dd{margin:0;padding:0 0 10px;border-bottom:1px solid var(--line)}
 .pager a{display:block;padding:10px 12px;border:1.5px solid var(--ink);background:var(--card);box-shadow:3px 3px 0 var(--ink);font-weight:700;text-decoration:none;line-height:1.5}
 .pager small{display:block;color:var(--muted);font-size:.72rem;font-weight:400}
 .wcards{margin:12px 0 0;padding:0;list-style:none}
-.wcards li{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:start;padding:14px 0;border-bottom:1px solid var(--line)}
+.wcards li{border-bottom:1px solid var(--line)}
+.wcards a{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:start;margin:0 -8px;padding:14px 8px;color:inherit;text-decoration:none}
+.wcards a:focus-visible{outline:3px solid var(--ink);outline-offset:-3px}
 .wcards img{width:100%;height:auto;display:block;border:1px solid var(--ink);background:var(--ink)}
 .wcards h3{margin:0 0 4px}
-.wcards h3 a{text-decoration:none}
-.wcards h3 a::after{content:" →";font-family:Arial,sans-serif}
+.wcards h3::after{content:" →";font-family:Arial,sans-serif}
 .wcards p{margin:0 0 4px;font-size:.92rem;line-height:1.8}
 .cats{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;padding:0;list-style:none;font-size:.84rem}
 .cats a,.cats [aria-current]{display:inline-block;padding:4px 12px;border:1.5px solid var(--ink);background:var(--card);font-weight:700;line-height:1.6;text-decoration:none}
@@ -118,17 +119,34 @@ a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 main p{text-wrap:pretty;line-break:strict}
 .cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
 .cta a:active{transform:scale(.96)}
-.pager a:active,.cats a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.pager a:active,.pager a.is-pressed,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+/* .cats marks the current page in yellow, so a pressed chip turns black to stay distinct */
+.cats a:active,.cats a.is-pressed{transform:translate(1px,1px);background:#111;color:var(--accent)}
 .wjump a:active,.wjump a.is-pressed{transform:translate(2px,2px);box-shadow:0 0 0 #111;background:var(--accent);color:#111}
 .wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:2px 2px 0 #111}
-.pager a:active{box-shadow:1px 1px 0 #111}
+.pager a:active,.pager a.is-pressed{box-shadow:1px 1px 0 #111}
 .wtile{transition:transform .12s ease,box-shadow .12s ease}
 .wtile-head:active{background:#f7e88a}
 .wtile-more:active{opacity:.85}
-.grid a:active,.wcards a:active{transform:scale(.96)}
+.grid a{margin:-4px;padding:4px}
+.grid a:active,.grid a.is-pressed{transform:scale(.96);background:var(--accent);color:#111}
+.wcards a:active,.wcards a.is-pressed{background:#f7e88a}
+.wtile-cards a.is-pressed{background:var(--accent);color:#111}
 .crumbs a:active,.alist a:active,.note a:active{opacity:.55}
 @media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:feel-out .2s ease both}
+::view-transition-new(root){animation:feel-in .32s cubic-bezier(.2,.8,.2,1) both}
+html:active-view-transition-type(back)::view-transition-old(root){animation-name:feel-out-back}
+html:active-view-transition-type(back)::view-transition-new(root){animation-name:feel-in-back}
+::view-transition-group(card-art){animation-duration:.38s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+.app-nav{view-transition-name:app-nav}
+::view-transition-group(app-nav){animation:none}
+@keyframes feel-in{from{opacity:0;transform:translateX(28px)}}
+@keyframes feel-out{to{opacity:0;transform:translateX(-28px)}}
+@keyframes feel-in-back{from{opacity:0;transform:translateX(-28px)}}
+@keyframes feel-out-back{to{opacity:0;transform:translateX(28px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}@view-transition{navigation:none}}
 /* reading-feel:end */</style>
 <title>就活で会社を選ぶ時の判断軸｜タロットで迷いを整理｜DECIDE.</title>
 <meta name="description" content="やりたい仕事が分からない、複数の内定から選べないと悩む人へ。周囲の評価と自分の本音を分け、働くうえで譲れない条件を整理。関連するタロットカードと問いかけから、自分に合う会社選びの軸を考えます。">
@@ -138,6 +156,7 @@ main p{text-wrap:pretty;line-break:strict}
 <meta name="twitter:description" content="やりたい仕事が分からない、複数の内定から選べないと悩む人へ。周囲の評価と自分の本音を分け、働くうえで譲れない条件を整理。関連するタロットカードと問いかけから、自分に合う会社選びの軸を考えます。">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"就活で会社を選ぶ時の判断軸｜タロットで迷いを整理｜DECIDE.","description":"やりたい仕事が分からない、複数の内定から選べないと悩む人へ。周囲の評価と自分の本音を分け、働くうえで譲れない条件を整理。関連するタロットカードと問いかけから、自分に合う会社選びの軸を考えます。","image":"https://decisionprocess.net/assets/rider-waite/wa03.jpg","inLanguage":"ja","mainEntityOfPage":"https://decisionprocess.net/cards/worry-shukatsu","datePublished":"2026-10-22","dateModified":"2026-10-22","author":{"@type":"Organization","name":"DECIDE."},"publisher":{"@type":"Organization","name":"DECIDE.","url":"https://decisionprocess.net/"},"url":"https://decisionprocess.net/cards/worry-shukatsu"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"DECIDE.","item":"https://decisionprocess.net/"},{"@type":"ListItem","position":2,"name":"タロットカード78枚の意味","item":"https://decisionprocess.net/cards/"},{"@type":"ListItem","position":3,"name":"就活で迷うとき","item":"https://decisionprocess.net/cards/worry-shukatsu"}]}</script>
+<script data-press>(function(){var S='.wjump a,.cats a,.pager a,.grid a,.wcards a,.wtile-cards a';function clear(){[].forEach.call(document.querySelectorAll('.is-pressed'),function(x){x.classList.remove('is-pressed');var i=x.querySelector('img');if(i)i.style.viewTransitionName=''})}function back(e){var a=e&&e.activation;return a&&a.navigationType==='traverse'&&a.from&&a.entry&&a.entry.index<a.from.index}document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('a');if(!t||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;try{sessionStorage.setItem('feel-dir',t.matches('.back,[data-go="back"]')?'back':'')}catch(_){}if(!t.matches(S))return;clear();t.classList.add('is-pressed')});window.addEventListener('pageshow',clear);window.addEventListener('pageswap',function(e){if(!e.viewTransition)return;var b=back(e);try{b=b||sessionStorage.getItem('feel-dir')==='back'}catch(_){}if(b){e.viewTransition.types.add('back');return}var i=document.querySelector('.is-pressed img');if(i)i.style.viewTransitionName='card-art'});window.addEventListener('pagereveal',function(e){if(!e.viewTransition)return;var b=back(window.navigation);try{b=b||sessionStorage.getItem('feel-dir')==='back';sessionStorage.removeItem('feel-dir')}catch(_){}if(b){e.viewTransition.types.add('back');return}var h=document.querySelector('.hero img');if(!h)return;h.style.viewTransitionName='card-art';e.viewTransition.finished.finally(function(){h.style.viewTransitionName=''})})})();</script>
 </head>
 <body>
 <main>
@@ -180,11 +199,11 @@ main p{text-wrap:pretty;line-break:strict}
 <p class="kicker sec-k">CARDS</p>
 <h2>この悩みに関係するカード</h2>
 <ul class="wcards">
-<li><a href="./wa03"><picture><source type="image/webp" srcset="../assets/rider-waite/wa03-320.webp 320w, ../assets/rider-waite/wa03-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/wa03.jpg" alt="ワンドの3（Three of Wands）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture></a><div><h3><a href="./wa03">ワンドの3</a></h3><p>高台から先を見渡し、これからの可能性を待つ段階のカード。</p></div></li>
-<li><a href="./ar01"><picture><source type="image/webp" srcset="../assets/rider-waite/ar01-320.webp 320w, ../assets/rider-waite/ar01-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/ar01.jpg" alt="魔術師（The Magician）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture></a><div><h3><a href="./ar01">魔術師</a></h3><p>今ある力と道具で、行動を始める意志を表します。</p></div></li>
-<li><a href="./pe08"><picture><source type="image/webp" srcset="../assets/rider-waite/pe08-320.webp 320w, ../assets/rider-waite/pe08-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/pe08.jpg" alt="ペンタクルの8（Eight of Pentacles）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture></a><div><h3><a href="./pe08">ペンタクルの8</a></h3><p>目の前の課題に取り組み、少しずつ力を積み重ねる姿勢。</p></div></li>
-<li><a href="./wa07"><picture><source type="image/webp" srcset="../assets/rider-waite/wa07-320.webp 320w, ../assets/rider-waite/wa07-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/wa07.jpg" alt="ワンドの7（Seven of Wands）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture></a><div><h3><a href="./wa07">ワンドの7</a></h3><p>不利な状況でも、自分の立場を守り抜く粘り強さ。</p></div></li>
-<li><a href="./ar07"><picture><source type="image/webp" srcset="../assets/rider-waite/ar07-320.webp 320w, ../assets/rider-waite/ar07-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/ar07.jpg" alt="戦車（The Chariot）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture></a><div><h3><a href="./ar07">戦車</a></h3><p>迷いを抱えたまま、意志をもって前へ進む力を示します。</p></div></li>
+<li><a href="./wa03"><picture><source type="image/webp" srcset="../assets/rider-waite/wa03-320.webp 320w, ../assets/rider-waite/wa03-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/wa03.jpg" alt="ワンドの3（Three of Wands）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><div><h3>ワンドの3</h3><p>高台から先を見渡し、これからの可能性を待つ段階のカード。</p></div></a></li>
+<li><a href="./ar01"><picture><source type="image/webp" srcset="../assets/rider-waite/ar01-320.webp 320w, ../assets/rider-waite/ar01-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/ar01.jpg" alt="魔術師（The Magician）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><div><h3>魔術師</h3><p>今ある力と道具で、行動を始める意志を表します。</p></div></a></li>
+<li><a href="./pe08"><picture><source type="image/webp" srcset="../assets/rider-waite/pe08-320.webp 320w, ../assets/rider-waite/pe08-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/pe08.jpg" alt="ペンタクルの8（Eight of Pentacles）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><div><h3>ペンタクルの8</h3><p>目の前の課題に取り組み、少しずつ力を積み重ねる姿勢。</p></div></a></li>
+<li><a href="./wa07"><picture><source type="image/webp" srcset="../assets/rider-waite/wa07-320.webp 320w, ../assets/rider-waite/wa07-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/wa07.jpg" alt="ワンドの7（Seven of Wands）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><div><h3>ワンドの7</h3><p>不利な状況でも、自分の立場を守り抜く粘り強さ。</p></div></a></li>
+<li><a href="./ar07"><picture><source type="image/webp" srcset="../assets/rider-waite/ar07-320.webp 320w, ../assets/rider-waite/ar07-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/ar07.jpg" alt="戦車（The Chariot）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><div><h3>戦車</h3><p>迷いを抱えたまま、意志をもって前へ進む力を示します。</p></div></a></li>
 </ul>
 </section>
 <aside class="cta" aria-label="次の一歩">

@@ -177,11 +177,12 @@ dl.themes dd{margin:0;padding:0 0 10px;border-bottom:1px solid var(--line)}
 .pager a{display:block;padding:10px 12px;border:1.5px solid var(--ink);background:var(--card);box-shadow:3px 3px 0 var(--ink);font-weight:700;text-decoration:none;line-height:1.5}
 .pager small{display:block;color:var(--muted);font-size:.72rem;font-weight:400}
 .wcards{margin:12px 0 0;padding:0;list-style:none}
-.wcards li{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:start;padding:14px 0;border-bottom:1px solid var(--line)}
+.wcards li{border-bottom:1px solid var(--line)}
+.wcards a{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:start;margin:0 -8px;padding:14px 8px;color:inherit;text-decoration:none}
+.wcards a:focus-visible{outline:3px solid var(--ink);outline-offset:-3px}
 .wcards img{width:100%;height:auto;display:block;border:1px solid var(--ink);background:var(--ink)}
 .wcards h3{margin:0 0 4px}
-.wcards h3 a{text-decoration:none}
-.wcards h3 a::after{content:" →";font-family:Arial,sans-serif}
+.wcards h3::after{content:" →";font-family:Arial,sans-serif}
 .wcards p{margin:0 0 4px;font-size:.92rem;line-height:1.8}
 .cats{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;padding:0;list-style:none;font-size:.84rem}
 .cats a,.cats [aria-current]{display:inline-block;padding:4px 12px;border:1.5px solid var(--ink);background:var(--card);font-weight:700;line-height:1.6;text-decoration:none}
@@ -612,7 +613,7 @@ function worryPage(w) {
 </aside>`;
   const cardRows = w.cards.map(({ id, reason }) => {
     const c = byId.get(id);
-    return `<li><a href="./${id}">${picture(c, { sizes: '96px' })}</a><div><h3><a href="./${id}">${esc(c.name)}</a></h3><p>${esc(reason)}</p></div></li>`;
+    return `<li><a href="./${id}">${picture(c, { sizes: '96px' })}<div><h3>${esc(c.name)}</h3><p>${esc(reason)}</p></div></a></li>`;
   }).join('\n');
   const body = `<main>
 ${crumbsHtml(crumbs)}
@@ -676,7 +677,6 @@ function firstQuestion(text) {
 }
 
 // タップしたテーマを次のページが開くまで押した状態で残す（iOS は :active がほぼ出ないため）
-const WJUMP_PRESS_JS = `(function(){var nav=document.querySelector('.wjump');if(!nav)return;nav.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a');if(!a||e.metaKey||e.ctrlKey||e.shiftKey)return;[].forEach.call(nav.querySelectorAll('.is-pressed'),function(x){x.classList.remove('is-pressed')});a.classList.add('is-pressed')});window.addEventListener('pageshow',function(){[].forEach.call(nav.querySelectorAll('.is-pressed'),function(x){x.classList.remove('is-pressed')})})})();`;
 
 function worriesIndex() {
   const path = '/cards/worries';
@@ -722,7 +722,6 @@ ${WORRIES_INTRO.map((p, i) => `<p${i === 0 ? ' class="lede"' : ''}>${esc(p)}</p>
 <nav aria-label="テーマから探す"><ul class="wjump">
 ${worries.map((w) => `<li><a href="./worry-${w.slug}">${esc(w.h1.replace(/(で|を|に)?(迷う|決められない|踏み切れない|始めるか迷う)とき$/, '').replace(/するか$/, '').replace(/るか$/, 'る'))}</a></li>`).join('\n')}
 </ul></nav>
-<script>${WJUMP_PRESS_JS}</script>
 ${sections}
 <div class="cta"><p>カードの意味を読んだら、次はあなた自身の選択肢で。</p><a href="${CTA_HREF}">${CTA_TEXT}</a></div>
 <p class="note"><a href="./">78枚すべてのカード解説を見る</a></p>
