@@ -16,13 +16,13 @@ function memoryStorage(initial = {}) {
 }
 
 // referral.js を最小限のブラウザ環境で読み込む（未ログイン）
-function load({ href = 'https://x.test/', auth } = {}) {
+function load({ href = 'https://x.test/', auth, toasts } = {}) {
   const localStorage = memoryStorage();
   const replaced = [];
   const url = new URL(href);
   const window = auth ? { DECIDE_AUTH: auth } : {};
   const sandbox = {
-    window, localStorage, URL, console,
+    window, localStorage, URL, console, ...(toasts ? { toast: text => toasts.push(text) } : {}),
     document: { addEventListener() {}, querySelector: () => null },
     location: { href, origin: url.origin, pathname: url.pathname },
     history: { state: null, replaceState(state, title, next) { replaced.push(next); } }
@@ -87,4 +87,15 @@ test('読み込み時: ?ref= を保存してアドレスバーから消す', () 
 test('renderSettings: 未ログインは何も出さない', () => {
   assert.equal(load().referral.renderSettings(), '');
   assert.equal(load({ auth: { getUser: () => null } }).referral.renderSettings(), '');
+});
+
+test('既存のアカウントで招待リンクを使うと、特典の対象外だと知らせて保存したコードを消す', async () => {
+  const toasts = [];
+  const user = { id: 'u1' };
+  const auth = { getUser: () => user, ready: () => Promise.resolve(user), onChange() {},
+    client: () => ({ rpc: async () => ({ data: 'not_new', error: null }) }) };
+  const { localStorage } = load({ href: 'https://x.test/?ref=ABCD2345', auth, toasts });
+  await new Promise(resolve => setTimeout(resolve, 0));
+  assert.deepEqual(toasts, ['招待の特典は、招待リンクから新しく始めた方が対象です']);
+  assert.equal(localStorage.getItem(STORE_KEY), null);
 });

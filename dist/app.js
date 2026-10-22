@@ -289,7 +289,9 @@ function confirmImport() {
     if(error){error.textContent='この端末では保存できませんでした。履歴は変更していません。空き容量やブラウザの設定を確認してください。';error.hidden=false;}
     return;
   }
-  logs=mergedLogs; pendingImport=null; window.DECIDE_SYNC?.schedule?.(); closeModal('#import-modal');
+  // 取り込んだ記録のリマインドも、保存時（persist）と同じくメールの予定へ反映する。
+  // 無料の保存上限はここでは見ない：自分のバックアップは取り込めるようにし、上限を超えている間は新しい保存だけを止める。
+  logs=mergedLogs; pendingImport=null; window.DECIDE_SYNC?.schedule?.(); window.DECIDE_EMAIL_REMINDERS?.schedule?.(); closeModal('#import-modal');
   if(currentView==='history')renderHistory(); toast(additions.length || updated ? `履歴を${additions.length}件追加${updated ? `・${updated}件更新` : ''}しました` : '新しい内容はありませんでした');
 }
 function esc(value='') { return String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
@@ -340,7 +342,10 @@ function randomCard(exclude=[]) {
   return { ...base, orientation: useReversed && Math.random() < .28 ? 'reversed' : 'upright' };
 }
 function shuffledDeck(source=settings.deckMode.startsWith('major') ? MAJOR : DECK, useReversed=settings.deckMode.endsWith('reversed')) {
-  return source.map(card=>({...card,orientation:useReversed && Math.random()<.28 ? 'reversed' : 'upright'})).sort(()=>Math.random()-.5);
+  const deck=source.map(card=>({...card,orientation:useReversed && Math.random()<.28 ? 'reversed' : 'upright'}));
+  // Fisher–Yates：どの並びも同じ確率になる（sort に乱数を渡す方法は並びが偏る）
+  for(let i=deck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+  return deck;
 }
 function meaning(card) {
   return orientationContent(card)?.meaning || '';
@@ -2291,7 +2296,7 @@ document.addEventListener('touchend',()=>{ if(!swipeState)return; document.query
 function registerWebMcp() {
   const context = document.modelContext; if (!context?.registerTool) return;
   const tools = [
-    { name:'start_decision_session', title:'カードを引く', description:'1枚引きまたは2枚引きの意思決定セッションを開始して画面に表示します。', inputSchema:{type:'object',properties:{mode:{type:'string',enum:['one','two']}},required:['mode'],additionalProperties:false}, annotations:{readOnlyHint:false,untrustedContentHint:false}, execute:({mode})=>{ if(!['one','two'].includes(mode)) throw new Error('mode must be one or two'); if(startSession(mode)===false) return {status:'blocked',reason:'free_limit'}; return {status:'started',mode,cards:activeSession.nodes.map(n=>n.card.name)}; } },
+    { name:'start_decision_session', title:'カードを引く', description:'1枚引きまたは2枚引きの意思決定セッションを開始して画面に表示します。カードはまだ引かず、ジャンル選びの画面を開きます。', inputSchema:{type:'object',properties:{mode:{type:'string',enum:['one','two']}},required:['mode'],additionalProperties:false}, annotations:{readOnlyHint:false,untrustedContentHint:false}, execute:({mode})=>{ if(!['one','two'].includes(mode)) throw new Error('mode must be one or two'); if(startSession(mode)===false) return {status:'blocked',reason:'free_limit'}; return {status:'started',mode,next:'choose_genre',message:'画面でジャンルを選んでから、利用者がカードを引きます。引いたカードは、記録を保存したあと list_decision_logs で確認できます。'}; } },
     { name:'list_decision_logs', title:'決定履歴を見る', description:'このブラウザに保存された決定ログを新しい順に読み取ります。', inputSchema:{type:'object',properties:{},additionalProperties:false}, annotations:{readOnlyHint:true,untrustedContentHint:false}, execute:()=>logs.map(l=>({id:l.id,date:l.createdAt,title:l.title,decision:l.decision,review:l.review})) },
     { name:'review_decision', title:'決定を振り返る', description:'保存済みの決定に後日の評価を記録します。', inputSchema:{type:'object',properties:{id:{type:'string'},review:{type:'string',enum:['良かった','まあ良かった','どちらとも言えない','違った']}},required:['id','review'],additionalProperties:false}, annotations:{readOnlyHint:false,untrustedContentHint:false}, execute:({id,review})=>{ const log=logs.find(l=>l.id===id); if(!log) throw new Error('log not found'); const saved=commitLogChange(log,['review','reviewedAt','updatedAt'],item=>{ item.review=review; item.reviewedAt=item.updatedAt=new Date().toISOString(); }); if(detailId===id && currentView==='detail') renderDetail(); return saved ? {status:'saved',id,review} : {status:'error',error:'save_failed',id,message:SAVE_FAILED_MESSAGE}; } }
   ];
@@ -2322,7 +2327,7 @@ if ('serviceWorker' in navigator) {
     location.reload();
   });
   window.addEventListener('load', () => {
-    // updateViaCache:'none' で GitHub Pages の HTTP キャッシュ（max-age=600）に関係なく sw.js を確認する
+    // updateViaCache:'none' で、ホスティング（Cloudflare Pages）の HTTP キャッシュに関係なく sw.js を確認する
     navigator.serviceWorker.register('./service-worker.js', {updateViaCache:'none'}).then(registration => {
       // 新版は自動では切り替えず待機させ、案内バーの「更新する」で切り替える
       const notify = () => { if (registration.waiting && navigator.serviceWorker.controller) showUpdateBar(registration); };
@@ -2353,6 +2358,8 @@ const cardsNavTarget=(()=>{
 })();
 if(cardsNavTarget){ homeStage='quickstart'; if(cardsNavTarget!=='home')currentView=cardsNavTarget; }
 render();
+// 通知・メールの設定欄は app.js より後に読み込まれる。?go=settings で最初から設定を開いたときは、読み込み後に描き直す
+if(currentView==='settings') document.addEventListener('DOMContentLoaded',()=>{ if(currentView==='settings')renderSettings(); },{once:true});
 // 解説ページへ移る前に今の画面を URL に残し、「戻る」で読み込み直しても同じ画面へ帰れるようにする
 document.addEventListener('click',event=>{
   const link=event.target.closest?.('a[href*="cards/"]');
