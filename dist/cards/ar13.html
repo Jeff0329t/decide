@@ -94,7 +94,22 @@ main p{margin:0 0 1em}
 .wtile-q{margin:0;padding:8px 12px;background:var(--soft);border-radius:8px;font-size:.86rem}
 .wtile-cards{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
 .wtile-cards a{display:inline-block;padding:1px 10px;border:1px solid var(--line);border-radius:999px;font-size:.78rem;text-decoration:none;background:var(--soft)}
-.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}</style>
+.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}
+/* reading-feel:start */
+a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+main p{text-wrap:pretty;line-break:strict}
+main h2{border-top:0;padding:2px 0 2px 12px;border-left:6px solid var(--accent);margin-top:40px}
+.cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
+.cta a:active{transform:scale(.96)}
+.pager a:active,.cats a:active,.wjump a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:1px 1px 0 #111}
+.wtile{transition:transform .12s ease,box-shadow .12s ease}
+.wtile-head:active,.wtile-more:active{background:#f7e88a}
+.grid a:active,.wcards a:active{transform:scale(.96)}
+.crumbs a:active,.alist a:active,.note a:active{opacity:.55}
+@media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* reading-feel:end */</style>
 <title>死神の意味と手放す決断のヒント｜タロット正位置・逆位置｜DECIDE.</title>
 <meta name="description" content="仕事や関係を手放すかで迷う人へ。タロット「死神」の正位置・逆位置と象徴を解説。役目を終えたものと変化への怖さを整理し、区切り方を考えます。自分への問いかけから、納得できる決断のヒントを探します。">
 <meta property="og:title" content="死神の意味と手放す決断のヒント｜タロット正位置・逆位置｜DECIDE.">
@@ -147,9 +162,11 @@ main p{margin:0 0 1em}
 <section>
 <h2>決断・迷いにおけるヒント</h2>
 <h3>決断の場面での読み方</h3>
-<p>死神は不吉な札と思われがちですが、本質は「終わりと再生」です。白馬に乗った骸骨の旗には白いバラが描かれ、終わりの先に新しい始まりがあることを示しています。決断の場面では、続けるか終えるかで迷っている事柄に、区切りをつける勇気を与えてくれます。終わらせることで生まれる時間や余力を、何に使いたいかを考えてみると判断しやすくなります。</p>
+<p>死神は不吉な札と思われがちですが、本質は「終わりと再生」です。白馬に乗った骸骨の旗には白いバラが描かれ、終わりの先に新しい始まりがあることを示しています。</p>
+<p>決断の場面では、続けるか終えるかで迷っている事柄に、区切りをつける勇気を与えてくれます。終わらせることで生まれる時間や余力を、何に使いたいかを考えてみると判断しやすくなります。</p>
 <h3>よくある迷いとの向き合い方</h3>
-<p>長く続けてきた仕事や関係、習慣を手放すかどうかで迷っているときに出やすいカードです。正位置なら、すでに役目を終えたものに感謝して区切りをつけるとき。逆位置では、変化を恐れて先送りを重ねている可能性があります。終わりを決めないことも一つの選択だと自覚しておきましょう。</p>
+<p>長く続けてきた仕事や関係、習慣を手放すかどうかで迷っているときに出やすいカードです。正位置なら、すでに役目を終えたものに感謝して区切りをつけるとき。</p>
+<p>逆位置では、変化を恐れて先送りを重ねている可能性があります。終わりを決めないことも一つの選択だと自覚しておきましょう。</p>
 <h3>決断前に自分に問いかけたいこと</h3>
 <p>終わらせるべきものを、まだ惜しんで抱えていないか。何かが終わることを、次の始まりの準備として受け入れられるか。変化を拒み続けたとき、一年後の自分はどうなっているか。手放す順番はどうするか。</p>
 <p class="note">「進めやすさ」は、その選択肢を「いま進める」ときの追い風の強さ。運勢の良し悪しではない。</p>

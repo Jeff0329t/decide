@@ -94,7 +94,22 @@ main p{margin:0 0 1em}
 .wtile-q{margin:0;padding:8px 12px;background:var(--soft);border-radius:8px;font-size:.86rem}
 .wtile-cards{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
 .wtile-cards a{display:inline-block;padding:1px 10px;border:1px solid var(--line);border-radius:999px;font-size:.78rem;text-decoration:none;background:var(--soft)}
-.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}</style>
+.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}
+/* reading-feel:start */
+a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+main p{text-wrap:pretty;line-break:strict}
+main h2{border-top:0;padding:2px 0 2px 12px;border-left:6px solid var(--accent);margin-top:40px}
+.cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
+.cta a:active{transform:scale(.96)}
+.pager a:active,.cats a:active,.wjump a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:1px 1px 0 #111}
+.wtile{transition:transform .12s ease,box-shadow .12s ease}
+.wtile-head:active,.wtile-more:active{background:#f7e88a}
+.grid a:active,.wcards a:active{transform:scale(.96)}
+.crumbs a:active,.alist a:active,.note a:active{opacity:.55}
+@media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* reading-feel:end */</style>
 <title>親の介護で迷う時の判断軸｜タロットで負担と本音を整理｜DECIDE.</title>
 <meta name="description" content="親の介護を自分で担うか、施設やサービスを頼るか迷う人へ。親の希望と家族が担える範囲、仕事や休息への影響を整理。関連するタロットカードと問いかけから、一人で抱えず続けられる支え方を考えます。">
 <meta property="og:title" content="親の介護で迷う時の判断軸｜タロットで負担と本音を整理｜DECIDE.">
@@ -109,26 +124,39 @@ main p{margin:0 0 1em}
 <div class="topbar"><a class="back" href="./worries" aria-label="悩み別に読むに戻る">← 戻る</a><nav class="crumbs" aria-label="パンくずリスト"><ol><li><a href="../">DECIDE.</a></li><li><a href="./">タロットカード78枚の意味</a></li><li aria-current="page">介護で迷うとき</li></ol></nav></div>
 <article>
 <h1>介護で迷うとき</h1>
-<p>親が年を重ね、これまで通りの生活が難しくなってきた。自分が支えたい気持ちはあるけれど、仕事や家庭、自分の体力にも限りがある。介護の迷いは、家族を大切にしたい思いと、自分の生活を守る必要のあいだで生まれます。このページでは、介護で迷うときに気持ちと状況を整理する視点と、その視点を映すタロットカードを紹介します。</p>
+<p>親が年を重ね、これまで通りの生活が難しくなってきた。自分が支えたい気持ちはあるけれど、仕事や家庭、自分の体力にも限りがある。</p>
+<p>介護の迷いは、家族を大切にしたい思いと、自分の生活を守る必要のあいだで生まれます。</p>
+<p>このページでは、介護で迷うときに気持ちと状況を整理する視点と、その視点を映すタロットカードを紹介します。</p>
 <aside class="cta" aria-label="DECIDE で考える">
 <p>ペンタクルの10の視点から、あなた自身の二つの選択肢を並べてみませんか。</p>
 <a href="../?from=pe10">今抱えている迷いを、このカードの視点から考えてみる</a>
 </aside>
 <section>
 <h2>迷いの正体</h2>
-<p>介護の迷いの多くは、「自分が面倒を見るべきだ」という責任感と、「もう限界かもしれない」という疲れのあいだで生まれます。施設やサービスを頼ることに罪悪感を覚えたり、親の希望と自分の現実がかみ合わなかったりすることもあります。兄弟姉妹との役割分担がうまくいかず、一人で抱え込んでしまう人も少なくありません。さらに、先の見通しが立たないことが不安を大きくします。まずは、何が一番つらいのか、時間なのか、お金なのか、気持ちなのかを言葉にしてみましょう。</p>
+<p>介護の迷いの多くは、「自分が面倒を見るべきだ」という責任感と、「もう限界かもしれない」という疲れのあいだで生まれます。</p>
+<p>施設やサービスを頼ることに罪悪感を覚えたり、親の希望と自分の現実がかみ合わなかったりすることもあります。</p>
+<p>兄弟姉妹との役割分担がうまくいかず、一人で抱え込んでしまう人も少なくありません。さらに、先の見通しが立たないことが不安を大きくします。</p>
+<p>まずは、何が一番つらいのか、時間なのか、お金なのか、気持ちなのかを言葉にしてみましょう。</p>
 </section>
 <section>
 <h2>整理の視点</h2>
-<p>整理のために役立つのは、「家族だけで抱えない」前提で考えることです。地域包括支援センターやケアマネジャーに相談すれば、介護保険のサービスや施設の選択肢など、知らなかった道が見えてくることがあります。親の意向、自分や家族が担えること、外部に任せられることを分けて書き出すと、全体像を落ち着いて見渡せます。また、介護する側が倒れてしまっては続けられません。自分の休息や仕事を守ることは、わがままではなく、長く支えるための大切な条件です。</p>
+<p>整理のために役立つのは、「家族だけで抱えない」前提で考えることです。</p>
+<p>地域包括支援センターやケアマネジャーに相談すれば、介護保険のサービスや施設の選択肢など、知らなかった道が見えてくることがあります。</p>
+<p>親の意向、自分や家族が担えること、外部に任せられることを分けて書き出すと、全体像を落ち着いて見渡せます。また、介護する側が倒れてしまっては続けられません。</p>
+<p>自分の休息や仕事を守ることは、わがままではなく、長く支えるための大切な条件です。</p>
 </section>
 <section>
 <h2>カードの読み方</h2>
-<p>介護の迷いでは、「家族のつながり」「思い出」「重荷」「内なる強さ」「仕組み」「休息」を表すカードが手がかりになります。ペンタクルの10は、世代を超えて受け継がれる家族の絆と暮らしを描きます。カップの6は、親との思い出や感謝の気持ちを、ワンドの10は一人で抱え込みすぎている状態を示します。力は穏やかさの中にある粘り強さを、皇帝は制度や計画で生活を支える視点を、ソードの4は立ち止まって休む必要を表します。引いたカードが、気持ちと現実のどちらを照らしているかを見てみてください。</p>
+<p>介護の迷いでは、「家族のつながり」「思い出」「重荷」「内なる強さ」「仕組み」「休息」を表すカードが手がかりになります。</p>
+<p>ペンタクルの10は、世代を超えて受け継がれる家族の絆と暮らしを描きます。カップの6は、親との思い出や感謝の気持ちを、ワンドの10は一人で抱え込みすぎている状態を示します。</p>
+<p>力は穏やかさの中にある粘り強さを、皇帝は制度や計画で生活を支える視点を、ソードの4は立ち止まって休む必要を表します。</p>
+<p>引いたカードが、気持ちと現実のどちらを照らしているかを見てみてください。</p>
 </section>
 <section>
 <h2>自分への問いかけ</h2>
-<p>次の問いに答えてみてください。今の介護の形を、一年後も続けられそうか。親が本当に望んでいることを、直接聞いたことはあるか。家族や親族のうち、まだ頼れていない人はいないか。相談できる窓口や専門家に、一度でも話してみたか。自分が休めているのは、週にどのくらいか。施設やサービスを使うことに抵抗があるとしたら、その理由は何か。自分の気持ちも大切にしながら答えていくと、家族にとって無理のない形が見えてきます。</p>
+<p>次の問いに答えてみてください。今の介護の形を、一年後も続けられそうか。親が本当に望んでいることを、直接聞いたことはあるか。家族や親族のうち、まだ頼れていない人はいないか。</p>
+<p>相談できる窓口や専門家に、一度でも話してみたか。自分が休めているのは、週にどのくらいか。施設やサービスを使うことに抵抗があるとしたら、その理由は何か。</p>
+<p>自分の気持ちも大切にしながら答えていくと、家族にとって無理のない形が見えてきます。</p>
 </section>
 <section>
 <h2>この悩みに関係するカード</h2>

@@ -94,7 +94,22 @@ main p{margin:0 0 1em}
 .wtile-q{margin:0;padding:8px 12px;background:var(--soft);border-radius:8px;font-size:.86rem}
 .wtile-cards{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
 .wtile-cards a{display:inline-block;padding:1px 10px;border:1px solid var(--line);border-radius:999px;font-size:.78rem;text-decoration:none;background:var(--soft)}
-.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}</style>
+.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}
+/* reading-feel:start */
+a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+main p{text-wrap:pretty;line-break:strict}
+main h2{border-top:0;padding:2px 0 2px 12px;border-left:6px solid var(--accent);margin-top:40px}
+.cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
+.cta a:active{transform:scale(.96)}
+.pager a:active,.cats a:active,.wjump a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:1px 1px 0 #111}
+.wtile{transition:transform .12s ease,box-shadow .12s ease}
+.wtile-head:active,.wtile-more:active{background:#f7e88a}
+.grid a:active,.wcards a:active{transform:scale(.96)}
+.crumbs a:active,.alist a:active,.note a:active{opacity:.55}
+@media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* reading-feel:end */</style>
 <title>女帝の意味と暮らしの選び方｜タロット正位置・逆位置｜DECIDE.</title>
 <meta name="description" content="仕事と家庭の選択で迷う人へ。タロット「女帝」の正位置・逆位置と象徴を解説。安心して力を発揮できる環境と、支え合える関係を考えます。自分への問いかけから、納得できる決断のヒントを探します。">
 <meta property="og:title" content="女帝の意味と暮らしの選び方｜タロット正位置・逆位置｜DECIDE.">
@@ -147,9 +162,12 @@ main p{margin:0 0 1em}
 <section>
 <h2>決断・迷いにおけるヒント</h2>
 <h3>決断の場面での読み方</h3>
-<p>女帝は、時間をかけて育てたものが実りを迎える豊かさの札です。決断の場面では、短期の損得よりも「この選択は半年後、一年後に何を育てるか」という視点を与えてくれます。麦畑や流れる川に囲まれた姿は、心身が満たされていることの大切さも示しています。無理を重ねて得る成果より、自分や身近な人が心地よくいられる選択の方が、長い目で見て実を結びやすいでしょう。</p>
+<p>女帝は、時間をかけて育てたものが実りを迎える豊かさの札です。決断の場面では、短期の損得よりも「この選択は半年後、一年後に何を育てるか」という視点を与えてくれます。</p>
+<p>麦畑や流れる川に囲まれた姿は、心身が満たされていることの大切さも示しています。</p>
+<p>無理を重ねて得る成果より、自分や身近な人が心地よくいられる選択の方が、長い目で見て実を結びやすいでしょう。</p>
 <h3>よくある迷いとの向き合い方</h3>
-<p>仕事と家庭、挑戦と安定のように、どちらも大切で選べないときに出やすいカードです。正位置なら、自分が安心して力を発揮できる環境を優先してよいサイン。逆位置では、相手を思うあまり手をかけすぎていないか、あるいは誰かに頼りきっていないかを見直す時期かもしれません。</p>
+<p>仕事と家庭、挑戦と安定のように、どちらも大切で選べないときに出やすいカードです。正位置なら、自分が安心して力を発揮できる環境を優先してよいサイン。</p>
+<p>逆位置では、相手を思うあまり手をかけすぎていないか、あるいは誰かに頼りきっていないかを見直す時期かもしれません。</p>
 <h3>決断前に自分に問いかけたいこと</h3>
 <p>この選択は、自分や周りの暮らしを豊かに育てる方向に向いているか。心地よさと怠けを取り違えていないか。実りを受け取るまでに必要な時間を、焦らず待てる余裕が今の自分にあるか。</p>
 <p class="note">「進めやすさ」は、その選択肢を「いま進める」ときの追い風の強さ。運勢の良し悪しではない。</p>

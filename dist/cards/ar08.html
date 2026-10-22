@@ -94,7 +94,22 @@ main p{margin:0 0 1em}
 .wtile-q{margin:0;padding:8px 12px;background:var(--soft);border-radius:8px;font-size:.86rem}
 .wtile-cards{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
 .wtile-cards a{display:inline-block;padding:1px 10px;border:1px solid var(--line);border-radius:999px;font-size:.78rem;text-decoration:none;background:var(--soft)}
-.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}</style>
+.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}
+/* reading-feel:start */
+a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+main p{text-wrap:pretty;line-break:strict}
+main h2{border-top:0;padding:2px 0 2px 12px;border-left:6px solid var(--accent);margin-top:40px}
+.cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
+.cta a:active{transform:scale(.96)}
+.pager a:active,.cats a:active,.wjump a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:1px 1px 0 #111}
+.wtile{transition:transform .12s ease,box-shadow .12s ease}
+.wtile-head:active,.wtile-more:active{background:#f7e88a}
+.grid a:active,.wcards a:active{transform:scale(.96)}
+.crumbs a:active,.alist a:active,.note a:active{opacity:.55}
+@media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* reading-feel:end */</style>
 <title>力の意味と感情を整える｜タロット正位置・逆位置｜DECIDE.</title>
 <meta name="description" content="怒りや焦りの中での選択で迷う人へ。タロット「力」の正位置・逆位置と象徴を解説。気持ちを言葉にし、粘り強く向き合える方法を考えます。自分への問いかけから、納得できる決断のヒントを探します。">
 <meta property="og:title" content="力の意味と感情を整える｜タロット正位置・逆位置｜DECIDE.">
@@ -147,9 +162,12 @@ main p{margin:0 0 1em}
 <section>
 <h2>決断・迷いにおけるヒント</h2>
 <h3>決断の場面での読み方</h3>
-<p>力の札は、獅子を力ずくではなく穏やかさで手なずける女性を描いています。決断の場面では、感情や衝動を押し殺すのではなく、受け止めながら方向づける強さを意味します。怒りや焦りに駆られているときほど、一晩置いてから判断する忍耐が結果を左右します。長期的な取り組みや人間関係の修復など、すぐには結果が出ないことに向き合う勇気も、このカードが示す力です。</p>
+<p>力の札は、獅子を力ずくではなく穏やかさで手なずける女性を描いています。決断の場面では、感情や衝動を押し殺すのではなく、受け止めながら方向づける強さを意味します。</p>
+<p>怒りや焦りに駆られているときほど、一晩置いてから判断する忍耐が結果を左右します。</p>
+<p>長期的な取り組みや人間関係の修復など、すぐには結果が出ないことに向き合う勇気も、このカードが示す力です。</p>
 <h3>よくある迷いとの向き合い方</h3>
-<p>相手に言い返したい、今すぐ辞めたいなど、強い感情が判断を急かしているときに出やすいカードです。正位置なら、感情を否定せず言葉にしてみると冷静さが戻ります。逆位置では自信を失い、本来できることまで諦めかけているのかもしれません。過去に乗り越えた経験を一つ思い出してみて。</p>
+<p>相手に言い返したい、今すぐ辞めたいなど、強い感情が判断を急かしているときに出やすいカードです。正位置なら、感情を否定せず言葉にしてみると冷静さが戻ります。</p>
+<p>逆位置では自信を失い、本来できることまで諦めかけているのかもしれません。過去に乗り越えた経験を一つ思い出してみて。</p>
 <h3>決断前に自分に問いかけたいこと</h3>
 <p>力ずくで押し切ろうとしていないか。相手や自分の中の荒ぶる感情を、なだめるように扱えているか。焦らずに続けられる穏やかな強さが自分にあるか。待つことが、今いちばん勇気のいる選択ではないか。</p>
 <p class="note">「進めやすさ」は、その選択肢を「いま進める」ときの追い風の強さ。運勢の良し悪しではない。</p>

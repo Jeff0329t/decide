@@ -94,7 +94,22 @@ main p{margin:0 0 1em}
 .wtile-q{margin:0;padding:8px 12px;background:var(--soft);border-radius:8px;font-size:.86rem}
 .wtile-cards{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
 .wtile-cards a{display:inline-block;padding:1px 10px;border:1px solid var(--line);border-radius:999px;font-size:.78rem;text-decoration:none;background:var(--soft)}
-.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}</style>
+.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}
+/* reading-feel:start */
+a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+main p{text-wrap:pretty;line-break:strict}
+main h2{border-top:0;padding:2px 0 2px 12px;border-left:6px solid var(--accent);margin-top:40px}
+.cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
+.cta a:active{transform:scale(.96)}
+.pager a:active,.cats a:active,.wjump a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:1px 1px 0 #111}
+.wtile{transition:transform .12s ease,box-shadow .12s ease}
+.wtile-head:active,.wtile-more:active{background:#f7e88a}
+.grid a:active,.wcards a:active{transform:scale(.96)}
+.crumbs a:active,.alist a:active,.note a:active{opacity:.55}
+@media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* reading-feel:end */</style>
 <title>人間関係で距離を置くか迷う時｜タロットの判断軸｜DECIDE.</title>
 <meta name="description" content="会うと疲れる相手との関係を続けるか、距離を置くか迷う人へ。自分の本音と義務感を分け、会う頻度や伝え方を整理。関連するタロットカードと問いかけから、無理のない人付き合いの距離感を考えます。">
 <meta property="og:title" content="人間関係で距離を置くか迷う時｜タロットの判断軸｜DECIDE.">
@@ -109,26 +124,38 @@ main p{margin:0 0 1em}
 <div class="topbar"><a class="back" href="./worries" aria-label="悩み別に読むに戻る">← 戻る</a><nav class="crumbs" aria-label="パンくずリスト"><ol><li><a href="../">DECIDE.</a></li><li><a href="./">タロットカード78枚の意味</a></li><li aria-current="page">人間関係で迷うとき</li></ol></nav></div>
 <article>
 <h1>人間関係で迷うとき</h1>
-<p>会うと疲れる友人、言いたいことが言えない職場の相手、近すぎて息苦しい家族。人間関係の迷いは、相手を大切に思う気持ちと、自分を守りたい気持ちのあいだで起こります。関係を切るか続けるかの二択だけではなく、距離感を調整するという選択肢もあります。このページでは、人付き合いの迷いを整理する視点と、関連するタロットカードを紹介します。</p>
+<p>会うと疲れる友人、言いたいことが言えない職場の相手、近すぎて息苦しい家族。人間関係の迷いは、相手を大切に思う気持ちと、自分を守りたい気持ちのあいだで起こります。</p>
+<p>関係を切るか続けるかの二択だけではなく、距離感を調整するという選択肢もあります。このページでは、人付き合いの迷いを整理する視点と、関連するタロットカードを紹介します。</p>
 <aside class="cta" aria-label="DECIDE で考える">
 <p>ソードの8の視点から、あなた自身の二つの選択肢を並べてみませんか。</p>
 <a href="../?from=sw08">今抱えている迷いを、このカードの視点から考えてみる</a>
 </aside>
 <section>
 <h2>迷いの正体</h2>
-<p>人間関係の迷いには、「相手にどう思われるか」という不安が深く関わっています。距離を置いたら嫌われるのではないか、断ったら関係が壊れるのではないか、と考えるうちに、自分の気持ちを後回しにしてしまいます。また、長い付き合いだから、お世話になったから、という義理や恩も判断を難しくします。自分が我慢すれば丸く収まる、と思い込んでいる場合もあります。まずは、その人と過ごしたあとの自分の気持ちを振り返ってみてください。安心しているのか、疲れているのか、その感覚が大切な手がかりになります。</p>
+<p>人間関係の迷いには、「相手にどう思われるか」という不安が深く関わっています。</p>
+<p>距離を置いたら嫌われるのではないか、断ったら関係が壊れるのではないか、と考えるうちに、自分の気持ちを後回しにしてしまいます。</p>
+<p>また、長い付き合いだから、お世話になったから、という義理や恩も判断を難しくします。自分が我慢すれば丸く収まる、と思い込んでいる場合もあります。</p>
+<p>まずは、その人と過ごしたあとの自分の気持ちを振り返ってみてください。安心しているのか、疲れているのか、その感覚が大切な手がかりになります。</p>
 </section>
 <section>
 <h2>整理の視点</h2>
-<p>整理のコツは、関係を「続けるか切るか」ではなく、「どのくらいの距離が心地よいか」で考えることです。会う頻度を減らす、話題を選ぶ、一対一ではなく複数人で会うなど、関係を保ちながら負担を減らす方法はいくつもあります。また、自分が相手に求めていることと、相手が自分に求めていることを書き出してみると、すれ違いの原因が見えることがあります。思い込みで縛られていないかも確かめましょう。断ったら関係が終わる、と感じていることの多くは、実際に試してみると意外と大丈夫なことも少なくありません。</p>
+<p>整理のコツは、関係を「続けるか切るか」ではなく、「どのくらいの距離が心地よいか」で考えることです。</p>
+<p>会う頻度を減らす、話題を選ぶ、一対一ではなく複数人で会うなど、関係を保ちながら負担を減らす方法はいくつもあります。</p>
+<p>また、自分が相手に求めていることと、相手が自分に求めていることを書き出してみると、すれ違いの原因が見えることがあります。思い込みで縛られていないかも確かめましょう。</p>
+<p>断ったら関係が終わる、と感じていることの多くは、実際に試してみると意外と大丈夫なことも少なくありません。</p>
 </section>
 <section>
 <h2>カードの読み方</h2>
-<p>人間関係の迷いでは、「思い込みによる束縛」「不安」「結びつき」「執着」を表すカードが手がかりになります。ソードの8は、目隠しをされ剣に囲まれていても、実は自分で歩き出せる状態を描き、思い込みで身動きが取れなくなっている心を映します。ソードの9は夜中に眠れずに悩む姿で、頭の中で不安が膨らんでいる状態を示します。カップの2は互いを尊重する対等な関係を、悪魔は離れたいのに離れられない依存を表します。引いたカードから、自分を縛っているのが相手なのか自分の思い込みなのかを考えてみてください。</p>
+<p>人間関係の迷いでは、「思い込みによる束縛」「不安」「結びつき」「執着」を表すカードが手がかりになります。</p>
+<p>ソードの8は、目隠しをされ剣に囲まれていても、実は自分で歩き出せる状態を描き、思い込みで身動きが取れなくなっている心を映します。</p>
+<p>ソードの9は夜中に眠れずに悩む姿で、頭の中で不安が膨らんでいる状態を示します。カップの2は互いを尊重する対等な関係を、悪魔は離れたいのに離れられない依存を表します。</p>
+<p>引いたカードから、自分を縛っているのが相手なのか自分の思い込みなのかを考えてみてください。</p>
 </section>
 <section>
 <h2>自分への問いかけ</h2>
-<p>次の問いに答えてみてください。その人と会ったあと、自分はどんな気持ちになっているか。関係を続けている理由は、好きだからか、義務感からか、嫌われるのが怖いからか。自分の本音を伝えたら、本当に関係は壊れてしまうだろうか。距離を少し変えるとしたら、どんな方法が考えられるか。自分が相手の立場だったら、本音を伝えてほしいと思うか。どの問いにも正解はありません。ただ、自分の気持ちを無視し続けないことが、長く穏やかな関係を築くための土台になります。</p>
+<p>次の問いに答えてみてください。その人と会ったあと、自分はどんな気持ちになっているか。関係を続けている理由は、好きだからか、義務感からか、嫌われるのが怖いからか。</p>
+<p>自分の本音を伝えたら、本当に関係は壊れてしまうだろうか。距離を少し変えるとしたら、どんな方法が考えられるか。自分が相手の立場だったら、本音を伝えてほしいと思うか。</p>
+<p>どの問いにも正解はありません。ただ、自分の気持ちを無視し続けないことが、長く穏やかな関係を築くための土台になります。</p>
 </section>
 <section>
 <h2>この悩みに関係するカード</h2>
