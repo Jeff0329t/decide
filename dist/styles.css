@@ -4382,7 +4382,13 @@ body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(13
 .tutorial-welcome .tutorial-intro-note { margin-bottom: 0; }
 .tutorial-log-lead { text-shadow: 0 1px 3px #000, 0 2px 12px #000; }
 .tutorial-lookback-skip { padding-inline: 14px; background: rgba(8,8,8,.82); }
-.tutorial-welcome .tutorial-intro-actions { position: sticky; bottom: 0; z-index: 1; width: auto; max-width: none; margin: 4px -24px 0; padding: 22px 24px calc(20px + env(safe-area-inset-bottom)); background: linear-gradient(180deg,rgba(5,5,5,0),rgba(5,5,5,.92) 34%); }
+.tutorial-welcome .tutorial-intro-actions { position: sticky; bottom: 0; z-index: 1; width: auto; max-width: none; margin: 4px -24px 0; padding: 22px 24px calc(44px + env(safe-area-inset-bottom)); background: linear-gradient(180deg,rgba(5,5,5,0),rgba(5,5,5,.92) 34%); }
+
+/* Tutorial: leave room under the last button (Safari's floating toolbar sits over the bottom edge), and show nothing that looks tappable but is not. */
+.tutorial-lookback .tutorial-intro-card { padding-bottom: calc(48px + env(safe-area-inset-bottom)); }
+body.tutorial-running .bottom-nav { display: none !important; }
+.tutorial-running .reflection-card { display: none; }
+.tutorial-mock-field { border: 0; border-left: 3px solid #b9b1a3; background: transparent; padding-block: 4px; }
 
 /* Touch feel: every control answers the finger. Uses the individual scale/translate properties so tilted plates keep their rotation. */
 :where(button, [role="button"], a.settings-link, summary) { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
