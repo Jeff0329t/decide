@@ -57,8 +57,9 @@ main p{text-wrap:pretty;line-break:strict}
 .wtile-more:active{opacity:.85}
 .grid a{margin:-4px;padding:4px}
 .grid a:active,.grid a.is-pressed{transform:scale(.96);background:var(--accent);color:#111}
-.wcards a:active,.wcards a.is-pressed{background:var(--accent);box-shadow:inset 5px 0 0 #111}
-.wcards a.is-pressed img{outline:3px solid #111;outline-offset:2px}
+/* same as the app's reading links: yellow while going, a quick shrink only under the finger */
+.wcards a:active{scale:.985}
+.wcards a:active,.wcards a.is-pressed{background:var(--accent);color:#111}
 /* the chosen state shows at once: the page change only waits 150ms */
 a.is-pressed{transition-duration:0s}
 .wtile-cards a.is-pressed{background:var(--accent);color:#111}
