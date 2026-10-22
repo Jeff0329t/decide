@@ -3753,6 +3753,32 @@ body[data-view="decide"] .decide-screen .save-form .button[type="submit"]:disabl
 body[data-view="decide"] .decide-screen .save-form .button[type="submit"]:disabled::after { content: ""; }
 body[data-view="decide"] .decide-screen .timestamp { margin: 0; color: #6b6458; font: italic .75rem/1.4 Didot, "Bodoni 72", "Hiragino Mincho ProN", serif; letter-spacing: .04em; text-align: center; }
 
+/* 2択の決定：3つのボタンだけ → 一言メモ（スキップ可） */
+.decide-two-choose .decision-options { margin-top: 34px; }
+body[data-view="decide"] .decide-two-choose .decision-option { min-height: 72px; padding-block: 0; }
+body[data-view="decide"] .decide-two-choose .decision-option span { padding-block: 12px; line-height: 1.35; overflow-wrap: anywhere; }
+.decide-two-memo .decide-title { margin-bottom: 0; }
+.decide-chosen {
+  display: flex; align-items: stretch; gap: 12px; margin: 28px 0 32px; min-height: 52px;
+  border: 2px solid #0b0b0b; background: #f1d527; color: #0b0b0b; box-shadow: 5px 5px 0 #0b0b0b;
+}
+.decide-chosen .decision-index { min-width: 54px; font-size: 1.05rem; }
+.decide-chosen span {
+  flex: 1; min-width: 0; align-self: center; padding: 10px 12px 10px 0; overflow-wrap: anywhere;
+  font: 800 1.02rem/1.35 "Hiragino Mincho ProN", "Yu Mincho", serif;
+}
+body[data-view="decide"] .decide-screen .save-form .decide-skip-memo {
+  min-height: 52px; margin-top: -4px; border: 2px solid #0b0b0b; border-radius: 0; background: #fffdf6; color: #0b0b0b;
+  box-shadow: 3px 3px 0 #0b0b0b; font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; font-weight: 800; letter-spacing: .06em;
+}
+body[data-view="decide"] .decide-screen .save-form .decide-skip-memo:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 #0b0b0b; }
+@media (max-height: 620px) {
+  .decide-two-choose .decide-title { margin-top: 18px; }
+  .decide-two-choose .decision-options { gap: 11px; margin: 22px 0 20px; }
+  body[data-view="decide"] .decide-two-choose .decision-option { min-height: 62px; }
+  body[data-view="decide"] .decide-two-choose .decision-option span { padding-block: 9px; font-size: 1.02rem; }
+}
+
 /* Tutorial trial: LOOK BACK page (stage 4) with a mock decision log */
 .tutorial-lookback .tutorial-intro-card { justify-content: flex-start; gap: 14px; }
 .tutorial-lookback-top { display: flex; align-items: center; gap: 12px; }

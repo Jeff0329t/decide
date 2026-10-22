@@ -129,6 +129,7 @@ let homeStage = 'splash';
 let detailId = null;
 let completionId = null;
 let selectedDecision = '';
+let decideStep = 'choose'; // 2択の決定画面：'choose'（3つから選ぶ）→ 'memo'（一言メモ）
 let decisionDraft = {genre:'',option1:'',option2:'',title:'',memo:''};
 let historyMode = 'list';
 let calendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
@@ -478,7 +479,7 @@ function updateNavigationState(view=currentView) {
   const back=document.querySelector('.nav-back');
   if(back){
     // 表示は「戻る」に統一し、戻り先は読み上げ用ラベルで補う
-    const labels={detail:detailReturn==='stats'?'統計へ戻る':'ログへ戻る',decide:'結果へ戻る',learn:'ホームへ戻る'};
+    const labels={detail:detailReturn==='stats'?'統計へ戻る':'ログへ戻る',decide:decideStep==='memo'&&activeSession?.mode==='two'?'選び直す':'結果へ戻る',learn:'ホームへ戻る'};
     back.querySelector('span').textContent='戻る';
     back.setAttribute('aria-label',labels[view]||'戻る');
     back.disabled=view==='home'&&homeStage==='splash';
@@ -487,6 +488,7 @@ function updateNavigationState(view=currentView) {
 function navigateBack() {
   if(currentView==='detail')return navigate(detailReturn);
   if(currentView==='prepare-options'){ captureDecisionDraft(); return navigate('prepare-genre'); }
+  if(currentView==='decide' && decideStep==='memo' && activeSession?.mode==='two'){ captureDecisionDraft(); decideStep='choose'; return navigate('decide'); }
   if(currentView==='decide'){ captureDecisionDraft(); return navigate('session'); }
   if(currentView==='learn'){ window.DECIDE_LEARN?.close?.(); return; }
   if(currentView==='home'&&homeStage==='quickstart'){ homeStage='splash'; return renderHome(); }
@@ -1123,7 +1125,7 @@ function confirmDecisionStep(button) {
   button.classList.add('is-confirming');
   sensoryFeedback('tick');
   const proceed=()=>{
-    if(activeSession===session && currentView==='session' && button.isConnected)navigate('decide');
+    if(activeSession===session && currentView==='session' && button.isConnected){ decideStep='choose'; navigate('decide'); }
   };
   if(prefersReducedMotion())proceed();
   else setTimeout(proceed,420);
@@ -1164,28 +1166,74 @@ function decisionSummaryHtml() {
 }
 function renderDecision() {
   if (!activeSession) return navigate('home');
-  const options = activeSession.mode === 'two' ? ['選択肢1','選択肢2','保留する'] : ['進む','見送る','保留する'];
+  if (activeSession.mode === 'two') return decideStep==='memo' && selectedDecision ? renderDecisionMemo() : renderDecisionChoices();
+  const options = ['進む','見送る','保留する'];
   app.innerHTML = `
     <section class="screen decide-screen">
       <button class="text-back" data-action="session">← マップに戻る</button>
       <p class="eyebrow">Decide</p><div class="decide-title"><span class="decide-kicker">THE FINAL CALL</span><h1>今回は、<wbr>どうする？</h1><span class="decide-sub">YOU DECIDE, NOT THE CARDS.</span></div>
       <p class="lead">カードではなく、<wbr>あなたが決めます。<wbr>いちばん納得できるものを<wbr>選んでください。</p>
-      <div class="decision-options">${options.map((o,i) => `<button class="decision-option ${selectedDecision === o ? 'selected' : ''}" data-action="select-decision" data-value="${o}" aria-pressed="${selectedDecision === o}"><b class="decision-index">${(activeSession.mode === 'two' ? ['A','B','HOLD'] : ['GO','PASS','HOLD'])[i]}</b><span>${DECIDE_DECISION.choiceText(o)}<small data-option-text="${o}"${decisionOptionText(o) ? '' : ' hidden'}>${esc(decisionOptionText(o))}</small></span><i>${selectedDecision === o ? '✓' : ''}</i></button>`).join('')}</div>
+      <div class="decision-options">${options.map((o,i) => `<button class="decision-option ${selectedDecision === o ? 'selected' : ''}" data-action="select-decision" data-value="${o}" aria-pressed="${selectedDecision === o}"><b class="decision-index">${['GO','PASS','HOLD'][i]}</b><span>${DECIDE_DECISION.choiceText(o)}<small data-option-text="${o}"${decisionOptionText(o) ? '' : ' hidden'}>${esc(decisionOptionText(o))}</small></span><i>${selectedDecision === o ? '✓' : ''}</i></button>`).join('')}</div>
       <form id="save-form" class="save-form">
         <label>ひとことメモ <span>任意</span><textarea name="memo" maxlength="240" rows="2" lang="ja" placeholder="決め手や、今の気持ち"></textarea></label>
         <button class="button" type="submit" data-save-decision ${selectedDecision ? '' : 'disabled'}>決定を記録する</button>
         <p class="timestamp">${formatDate(new Date().toISOString(), true)} の記録として保存</p>
-        <section class="decision-meta" aria-label="記録の補足">
+        ${decisionMetaHtml()}
+      </form>
+    </section>`;
+  restoreDecisionDraft();
+}
+
+// 2択は、カードの比較を見たあと「どれにするか」だけを選ぶ。選んだら一言メモへ進む
+function twoChoiceLabel(value) {
+  if(value==='保留する')return '保留にする';
+  const text=decisionOptionText(value);
+  return text ? `『${text}』にする` : `${DECIDE_DECISION.choiceText(value)}にする`;
+}
+function renderDecisionChoices() {
+  app.innerHTML = `
+    <section class="screen decide-screen decide-two-choose">
+      <button class="text-back" data-action="session">← 結果に戻る</button>
+      <p class="eyebrow">Decide</p><div class="decide-title"><span class="decide-kicker">THE FINAL CALL</span><h1>今回は、<wbr>どうする？</h1><span class="decide-sub">YOU DECIDE, NOT THE CARDS.</span></div>
+      <div class="decision-options">${['選択肢1','選択肢2','保留する'].map((o,i) => `<button class="decision-option ${selectedDecision === o ? 'selected' : ''}" data-action="choose-decision" data-value="${o}"><b class="decision-index">${['A','B','HOLD'][i]}</b><span>${esc(twoChoiceLabel(o))}</span></button>`).join('')}</div>
+    </section>`;
+}
+function chooseDecision(value) {
+  if(!activeSession || !['選択肢1','選択肢2','保留する'].includes(value))return;
+  captureDecisionDraft(); sensoryFeedback('tap'); selectedDecision=value; decideStep='memo'; navigate('decide');
+}
+function renderDecisionMemo() {
+  const index={'選択肢1':'A','選択肢2':'B','保留する':'HOLD'}[selectedDecision];
+  app.innerHTML = `
+    <section class="screen decide-screen decide-two-memo">
+      <button class="text-back" data-action="decide-rechoose">← 選び直す</button>
+      <div class="decide-title"><span class="decide-kicker">ONE LINE MEMO</span><h1>一言メモを<wbr>残す</h1></div>
+      <p class="decide-chosen"><b class="decision-index">${index}</b><span data-chosen-label>${esc(twoChoiceLabel(selectedDecision))}</span></p>
+      <form id="save-form" class="save-form">
+        <label>ひとことメモ <span>任意</span><textarea name="memo" maxlength="240" rows="3" lang="ja" placeholder="決め手や、今の気持ち"></textarea></label>
+        <button class="button" type="submit" data-save-decision>メモを残して記録する</button>
+        <button class="button secondary decide-skip-memo" type="button" data-action="skip-memo">残さずにスキップ</button>
+        <p class="timestamp">${formatDate(new Date().toISOString(), true)} の記録として保存</p>
+        ${decisionMetaHtml()}
+      </form>
+    </section>`;
+  restoreDecisionDraft();
+}
+function skipDecisionMemo(button) {
+  const form=document.getElementById('save-form'); if(!form)return;
+  if(form.elements.memo)form.elements.memo.value='';
+  decisionDraft.memo='';
+  sealDecision(form,button);
+}
+function decisionMetaHtml() {
+  return `<section class="decision-meta" aria-label="記録の補足">
           <div class="decision-summary"><div class="decision-summary-values" data-decision-summary>${decisionSummaryHtml()}</div><button type="button" class="decision-meta-toggle" data-action="toggle-decision-meta" aria-expanded="false" aria-controls="decision-meta-editor">変更する</button></div>
           <div id="decision-meta-editor" class="decision-meta-editor" hidden>
             <label>題名 <span>任意</span><input name="title" maxlength="60" autocomplete="off" enterkeyhint="done" lang="ja" placeholder="空欄なら内容から自動で作成"></label>
             <div class="form-section"><div class="form-section-head"><b>ジャンル</b><span>任意・1つだけ</span></div>${genreChips()}</div>
             ${activeSession.mode==='two'?`<div class="form-section"><div class="form-section-head"><b>選択肢の内容</b><span>任意</span></div>${optionEditor()}${sameOptionHint()}<div class="pair-candidates" data-pair-candidates></div><div class="recent-options" data-recent-options></div></div>`:''}
           </div>
-        </section>
-      </form>
-    </section>`;
-  restoreDecisionDraft();
+        </section>`;
 }
 
 function selectDecision(value) {
@@ -1204,6 +1252,7 @@ function updateDraftDisplays() {
   const hint=document.querySelector('[data-same-option-hint]');
   if(hint)hint.hidden=!(decisionDraft.option1 && decisionDraft.option1===decisionDraft.option2);
   const summary=document.querySelector('[data-decision-summary]'); if(summary)summary.innerHTML=decisionSummaryHtml();
+  const chosen=document.querySelector('[data-chosen-label]'); if(chosen && selectedDecision)chosen.textContent=twoChoiceLabel(selectedDecision);
   document.querySelectorAll('[data-option-text]').forEach(small=>{ const text=decisionOptionText(small.dataset.optionText); small.textContent=text; small.hidden=!text; });
   const pairs=DECIDE_DECISION.PAIRS[decisionDraft.genre]||[];
   document.querySelectorAll('[data-action="select-pair"]').forEach(button=>{ const pair=pairs[Number(button.dataset.pairIndex)]||[]; const selected=pair[0]===decisionDraft.option1 && pair[1]===decisionDraft.option2; button.classList.toggle('selected',selected); button.setAttribute('aria-pressed',String(selected)); });
@@ -1288,8 +1337,7 @@ function useRecentChoice(index) {
 }
 
 // 記録は決断の節目なので、判子を押す間をおいてから保存する
-function sealDecision(form) {
-  const button=form.querySelector('[data-save-decision]');
+function sealDecision(form,button=form.querySelector('[data-save-decision]')) {
   if (!selectedDecision || !activeSession || button?.classList.contains('is-sealing')) return;
   sensoryFeedback('save');
   if(!button || prefersReducedMotion()){ saveDecision(form); return; }
@@ -1324,7 +1372,7 @@ function saveDecision(form) {
   if(requestPersistence)requestPersistentStorage();
   pendingSave=null;
   if(firstRecord && shouldShowA2HS())a2hsBannerLogId=log.id;
-  activeSession = null; selectedDecision = ''; detailId = log.id;
+  activeSession = null; selectedDecision = ''; decideStep = 'choose'; detailId = log.id;
   decisionDraft = {genre:'',option1:'',option2:'',title:'',memo:''};
   completionId=log.id; currentView = 'detail'; render(); toast('決定を記録しました');
 }
@@ -2133,6 +2181,9 @@ document.addEventListener('click', event => {
   else if (action === 'select-back') selectBack(el.dataset.value);
   else if (action === 'decide') confirmDecisionStep(el);
   else if (action === 'select-decision') selectDecision(el.dataset.value);
+  else if (action === 'choose-decision') chooseDecision(el.dataset.value);
+  else if (action === 'decide-rechoose') { captureDecisionDraft(); decideStep='choose'; navigate('decide'); }
+  else if (action === 'skip-memo') skipDecisionMemo(el);
   else if (action === 'toggle-decision-meta') toggleDecisionMeta(el);
   else if (action === 'select-genre') selectGenre(el.dataset.value);
   else if (action === 'select-pair') selectPair(Number(el.dataset.pairIndex));
