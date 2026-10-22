@@ -92,3 +92,18 @@ test('a large history fails explicitly rather than silently dropping scheduled r
   await h.api.toggle(); assert.equal(h.api.isOn(),false);
   assert.equal(h.calls.filter(c=>c.name==='set_email_reminders').length,0);
 });
+
+test('stop-all turns this device OFF and covers devices that are no longer at hand', async () => {
+  const h=await load(); h.setLogs([{id:'a',remindAt:'2026-11-01'}]); await h.api.toggle(); assert.equal(h.api.isOn(),true);
+  await h.api.stopAll();
+  assert.equal(h.calls.at(-1).name,'disable_all_email_reminders'); assert.equal(h.api.isOn(),false);
+  assert.match(h.api.renderSettings(),/data-email-remind-action="stop-all"/);
+});
+test('failed stop-all keeps the current state and says so', async () => {
+  const h=await load(); await h.api.toggle(); h.setFail(true); await h.api.stopAll();
+  assert.equal(h.api.isOn(),true); assert.match(h.messages.at(-1),/停止できませんでした/);
+});
+test('a network failure at sign-out leaves the explanation to auth.js; only a busy toggle toasts', async () => {
+  const h=await load(); await h.api.toggle(); h.setFail(true); const before=h.messages.length;
+  assert.equal(await h.api.disableForSignOut(),false); assert.equal(h.messages.length,before); assert.equal(h.api.isBusy(),false);
+});

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <meta name="referrer" content="no-referrer" />
+  <title>リマインドメールの停止 — DECIDE.</title>
+  <style>
+    :root { --ink: #1e2430; --soft: #f2efe7; --muted: #5b6270; --line: #d9d4c7; }
+    @media (prefers-color-scheme: dark) { :root { --ink: #e8e6e1; --soft: #111010; --muted: #a3a8b3; --line: #2e2c2a; } }
+    body { margin: 0; background: var(--soft); color: var(--ink); font-family: Inter, "Hiragino Sans", "Yu Gothic UI", "Yu Gothic", sans-serif; line-height: 1.8; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+    main { max-width: 720px; margin: 0 auto; padding: 40px 16px 64px; }
+    h1 { font-size: 1.5rem; margin: 0 0 4px; }
+    p, li { font-size: .95rem; }
+    .meta { color: var(--muted); font-size: .85rem; }
+    a { color: inherit; }
+    .button { min-height: 44px; padding: 8px 18px; border: 1px solid var(--ink); border-radius: 3px; background: transparent; color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; }
+    .button:disabled { opacity: .5; cursor: default; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>リマインドメールの停止</h1>
+  <p class="meta">DECIDE.</p>
+
+  <section data-state="ready">
+    <p>DECIDE.の「メールでリマインド」を、このアカウントのすべての端末で停止します。</p>
+    <p><button type="button" class="button" data-action="unsubscribe">メールを停止する</button></p>
+  </section>
+  <section data-state="busy" hidden aria-live="polite">
+    <p>停止しています…</p>
+  </section>
+  <section data-state="done" hidden>
+    <p>リマインドメールを停止しました。これから届く予定のメールは送られません。</p>
+    <p>また受け取りたくなったら、アプリの設定で「メールでリマインド」をONにしてください。</p>
+    <p><a href="./">DECIDE. を開く</a></p>
+  </section>
+  <section data-state="invalid" hidden>
+    <p>このリンクは使えません。メールに書かれたリンクを、途中で切れないように開き直してください。</p>
+    <p>アプリにログインできる場合は、設定の「メールでリマインド」からも停止できます。</p>
+  </section>
+  <section data-state="error" hidden>
+    <p>通信できなかったため、停止できませんでした。オンラインでもう一度お試しください。</p>
+    <p><button type="button" class="button" data-action="unsubscribe">もう一度試す</button></p>
+  </section>
+
+  <p class="meta">ご不明な点は <a href="mailto:decisionprocess.decide@gmail.com">decisionprocess.decide@gmail.com</a> へ ／ <a href="./privacy">プライバシーポリシー</a></p>
+</main>
+<script src="./config.js"></script>
+<script src="./unsubscribe.js"></script>
+</body>
+</html>
