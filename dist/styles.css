@@ -4323,7 +4323,10 @@ body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(13
 :where(button:not(:disabled):not(.flip-card), a.settings-link, summary) { transition: scale .2s cubic-bezier(.3,1.5,.5,1), translate .14s ease, box-shadow .14s ease, background-color .18s ease, color .18s ease; }
 :where(button:not(:disabled):not(.flip-card), a.settings-link, summary):active { scale: .96; transition-duration: .06s; }
 :is(.learn-article-item, .learn-lesson-item, .learn-tile, .decision-log-item, .deck-preset, .stats-rank-row, .review-row, .stats-pending, .compact-card):not(:disabled):active { scale: .985; }
-.bottom-nav .nav-item:active { scale: .9; }
+/* 下部ナビはボタン本体を縮めると端を押した指が当たり判定の外で離れ、クリックが落ちるため、中身だけ縮める */
+.bottom-nav .nav-item:active { scale: 1; }
+.bottom-nav .nav-item::before, .bottom-nav .nav-item > span { transition: scale .2s cubic-bezier(.3,1.5,.5,1); }
+.bottom-nav .nav-item:not(:disabled):active::before, .bottom-nav .nav-item:not(:disabled):active > span { scale: .9; transition-duration: .06s; }
 .learn-tab:active, .learn-filter:active { scale: 1; translate: 2px 2px; box-shadow: 1px 1px 0 #0b0b0b; }
 .learn-tab[aria-selected="true"]:active, .learn-filter[aria-pressed="true"]:active { box-shadow: 1px 1px 0 #f1d527, 1px 1px 0 1px #0b0b0b; }
 .learn-article-item:active { scale: 1; translate: 3px 3px; box-shadow: 1px 1px 0 #0b0b0b; }
