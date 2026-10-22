@@ -2108,7 +2108,7 @@ textarea:focus-visible { outline: 3px solid #f1d527; outline-offset: 3px; }
 .nav-item[data-nav="home"]::before { content: "⌂"; }
 .nav-item[data-nav="history"]::before { content: "▣"; }
 .nav-item[data-nav="stats"]::before { content: "▂▅▇"; font-size: .75rem; letter-spacing: 1px; }
-.nav-item[data-action="open-settings"]::before { content: "⚙"; }
+.nav-item[data-nav="settings"]::before { content: "⚙"; }
 .nav-item span { font-size: .75rem; letter-spacing: .01em; }
 .nav-item.active {
   background: transparent;
@@ -4538,3 +4538,19 @@ body.tutorial-running :is(.draw-screen, .map-screen) { padding-top: calc(max(8px
 .completion-remind b { color: #0b0b0b; background: linear-gradient(transparent 55%, #f1d527 55%); }
 body[data-view="decide"] .decide-screen .save-form .remind-date { color: #0b0b0b; font-weight: 800; }
 body[data-view="decide"] .decide-screen .save-form .remind-date.selected { color: #f1d527; }
+
+/* Settings is a bottom-nav tab, not a sheet: no close button far from the thumb. */
+body[data-view="settings"] .bottom-nav { display: grid !important; }
+body[data-view="settings"] .app-shell { padding-bottom: calc(70px + env(safe-area-inset-bottom)); background: #090909; }
+.screen.settings-screen { min-height: 100%; padding: 0; background: #090909; }
+#settings-modal .settings-page {
+  max-height: none;
+  overflow: visible;
+  margin: 0 auto;
+  padding: 16px 18px 28px;
+  border: 0;
+  border-radius: 0;
+  transform: none;
+}
+#settings-modal .settings-page .sheet-head { top: 0; padding-top: 12px; }
+#settings-modal .settings-page .sheet-head h1 { margin: 0; color: #fff; font-family: Didot,"Times New Roman",serif; font-size: 1.7rem; letter-spacing: .03em; }
