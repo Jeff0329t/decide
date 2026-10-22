@@ -543,7 +543,7 @@ function renderHome() {
           <p class="home-tagline">心から納得いく決断を。</p>
           <p class="splash-subline">タロットを鏡に、自分で決める。</p>
         </div>
-        <p class="splash-sidecopy">A TOOL<br>FOR<br>BETTING<br>ON YOU.</p>
+        <p class="splash-sidecopy">A TOOL<br> FOR<br> BETTING<br> ON YOU.</p>
         <div class="splash-hit" data-action="start-app" aria-hidden="true"></div>
         <div class="splash-start" data-action="start-app">
           <button data-action="start-app" aria-label="DECIDEをはじめる"><span>→</span></button>

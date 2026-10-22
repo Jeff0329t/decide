@@ -1225,6 +1225,11 @@ body[data-view="detail"] .app-shell { padding-bottom: 70px; }
   letter-spacing: .1em;
   text-shadow: 0 2px 7px #000;
 }
+/* Short screens: 33% lands right under the Japanese copy, so set the side copy on one line below it instead. */
+@media (max-height: 700px) {
+  .splash-sidecopy { position: relative; top: auto; left: auto; margin-top: 14px; }
+  .splash-sidecopy br { display: none; }
+}
 .splash-start {
   position: absolute;
   z-index: 3;
