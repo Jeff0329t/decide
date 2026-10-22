@@ -384,7 +384,7 @@ body[data-detail-mode="complete"] .app-shell { padding-bottom:calc(70px + env(sa
 
 /* Decision-first log: opaque reading surfaces over the existing collage. */
 .history-screen .history-search { margin:22px 0 14px; padding:0; border:1px solid #827b6d; border-radius:0; background:rgba(10,10,10,.94); box-shadow:none; }
-.history-screen .history-search input { width:100%; min-width:0; height:46px; margin:0; padding:10px 54px 10px 40px; border:0; border-radius:0; background:transparent; color:#f4efe3; box-shadow:none; font-size:14px; }
+.history-screen .history-search input { width:100%; min-width:0; height:46px; margin:0; padding:10px 54px 10px 40px; border:0; border-radius:0; background:transparent; color:#f4efe3; box-shadow:none; font-size:16px; }
 .history-screen .history-search input::placeholder { color:#b8b09f; opacity:1; }
 .history-screen .history-search > span { left:13px; color:#b8b09f; }
 .history-screen .history-list { display:grid; gap:12px; border:0; }
