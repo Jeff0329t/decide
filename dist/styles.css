@@ -3521,10 +3521,6 @@ body.ritual-enter .thumb-prepare .prepare-controls { animation: ritual-rise .7s 
 .completion-sub { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .completion-sub .button { min-height: 44px; }
 
-.button.satisfied-button { position: relative; display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 56px; width: 100%; border: 2px solid #0b0b0b; border-radius: 0; background: #f1d527; color: #0b0b0b; box-shadow: 5px 5px 0 #0b0b0b, 5px 5px 0 2px #f4efe3; font-family: "Hiragino Mincho ProN","Yu Mincho",serif; font-size: 1.15rem; font-weight: 900; letter-spacing: .06em; transform: rotate(-.6deg); }
-.button.satisfied-button small { padding: 2px 6px; background: #0b0b0b; color: #f1d527; font-family: Didot,"Bodoni 72",serif; font-size: .75rem; letter-spacing: .24em; font-weight: 700; }
-.button.satisfied-button:active { transform: translate(3px,3px) rotate(-.6deg); box-shadow: 2px 2px 0 #0b0b0b; }
-.review-panel .satisfied-button { margin-top: 14px; }
 
 .remind-picker { position: relative; padding: 16px 14px 12px; border: 2px solid #0b0b0b; background: #f4efe3; color: #0b0b0b; box-shadow: 5px 5px 0 #f1d527; transform: rotate(.4deg); }
 .review-panel .remind-picker { margin-top: 16px; }

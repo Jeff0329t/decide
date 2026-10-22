@@ -1586,7 +1586,7 @@ function renderDetail() {
       <div class="completion-dock">
         <div class="completion-copy"><h1>よし、決めた。</h1><p>この決断を記録しました。</p><strong data-completion-title></strong></div>
         ${renderRemindPicker(log)}
-        <div class="completion-actions"><button class="button satisfied-button" data-action="satisfied"><small>DONE</small>納得できた！</button></div>
+        <div class="completion-actions"><button class="button decide-confirm completion-decide" data-action="satisfied" aria-label="DECIDE.">${decideWordmark()}</button></div>
       </div>
     </section>`;
     app.querySelector('[data-completion-title]').textContent=DECIDE_DECISION.decisionText(log);
@@ -1668,6 +1668,13 @@ function checkDueReview() {
   wrap.querySelector('[data-due-title]').textContent=log.title || '無題の決断';
   wrap.querySelector('[data-due-decision]').textContent=`結論：${DECIDE_DECISION.decisionText(log)}`;
   mountModal(wrap,'[data-action="due-review-open"]');
+}
+// The DECIDE. button presses down like a seal before the farewell opens, as it did on the result screen.
+function sealCompletion(button) {
+  if(button.classList.contains('is-confirming'))return;
+  button.classList.add('is-confirming');
+  if(prefersReducedMotion())openFarewell();
+  else setTimeout(()=>{ if(button.isConnected)openFarewell(); },420);
 }
 function openFarewell() {
   if(document.querySelector('.farewell'))return;
@@ -2185,7 +2192,7 @@ document.addEventListener('click', event => {
   else if (action === 'set-remind') setRemind(el.dataset.id,Number(el.dataset.days));
   else if (action === 'due-review-open') { const log=logs.find(item=>item.id===el.dataset.id); closeModal('#due-review-modal'); const saved=!log || commitLogChange(log,REMIND_KEYS,item=>writeRemind(item,null,null)); completionId=null; detailReturn='history'; navigate('detail',el.dataset.id); if(!saved)toast(SAVE_FAILED_MESSAGE); }
   else if (action === 'due-review-later') { const log=logs.find(item=>item.id===el.dataset.id); const saved=!log || commitLogChange(log,REMIND_KEYS,item=>writeRemind(item,new Date(Date.now()+3*DAY_MS).toISOString(),3)); if(!saved)toast(SAVE_FAILED_MESSAGE); else { closeModal('#due-review-modal'); toast(log ? `${formatDate(log.remindAt)} ごろにまたお聞きします` : '3日後にまたお聞きします'); } }
-  else if (action === 'satisfied') openFarewell();
+  else if (action === 'satisfied') sealCompletion(el);
   else if (action === 'farewell-share-instagram') shareFarewellInstagram();
   else if (action === 'farewell-home') { closeFarewell(); activeSession=null; completionId=null; homeStage='quickstart'; navigate('home'); }
   else if (action === 'deck-preset') selectDeckMode(el.dataset.value);
