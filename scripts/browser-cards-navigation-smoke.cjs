@@ -38,9 +38,8 @@ fs.mkdirSync(out, { recursive: true });
         await page.screenshot({ path: path.join(out, `${width}-${filename}-cta.png`), fullPage: false });
         assert.equal(await cta.locator('a').evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(17, 17, 17)');
         await cta.locator('a').click();
-        await page.locator('.card-entry-guide').waitFor();
-        assert.equal(new URL(page.url()).pathname, '/');
-        assert.match(await page.locator('.card-entry-guide').innerText(), filename === 'cu12.html' ? /カップのナイト/ : /ペンタクルの4/);
+        await page.waitForURL(url => new URL(url).pathname === '/' && !new URL(url).search);
+        assert.equal(await page.locator('.card-entry-guide').count(), 0);
       }
       await page.goto(base);
       await page.locator('.splash-atlas').click();

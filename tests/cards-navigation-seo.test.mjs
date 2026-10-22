@@ -59,9 +59,9 @@ function validate(file, html) {
   }
   if (card || file.startsWith('worry-')) {
     const ctas = [...body.matchAll(/<aside class="cta"(.*?)<\/aside>/gs)];
-    assert.equal(ctas.length, 2, file);
-    assert.match(ctas.at(-1)[1], /href="\.\.\/\?from=(?:ar|cu|wa|sw|pe)\d{2}"/);
-    assert.doesNotMatch(ctas.at(-1)[1], /今抱えている迷いを、このカードの視点から考えてみる/);
+    assert.equal(ctas.length, 1, file);
+    assert.match(ctas[0][1], /href="\.\.\/\?go=home"/);
+    assert.doesNotMatch(ctas[0][1], /迷い|DECIDE\. ?で/);
   }
   for (const m of body.matchAll(/href="\.\/([^"?#]*)"/g)) if (m[1]) {
     assert.ok(readdirSync(join(root, 'dist/cards')).includes(m[1] + '.html'), `${file}: ${m[1]}`);

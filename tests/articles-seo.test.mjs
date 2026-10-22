@@ -12,7 +12,7 @@ const ids = [
   ...['wa', 'cu', 'sw', 'pe'].flatMap((s) => Array.from({ length: 14 }, (_, i) => `${s}${String(i + 1).padStart(2, '0')}`)),
 ];
 const worries = ['tenshoku', 'wakare', 'hikkoshi', 'kekkon', 'manabi', 'dokuritsu', 'ningen', 'okane', 'renai', 'shukatsu', 'kaigo', 'fukugyo'];
-const CTA = '今抱えている迷いを、このカードの視点から考えてみる';
+const CTA = 'カードを引いて、決めたいことを整理する';
 const ARTICLES_SRC = fileURLToPath(new URL('../scripts/data/articles/', import.meta.url));
 const ARTICLES_DIST = fileURLToPath(new URL('../dist/articles/', import.meta.url));
 
@@ -121,10 +121,9 @@ test('published articles have SEO essentials, CTAs, OGP and no JS', () => {
     assert.match(html, /<meta name="description" content="[^"]{20,}"/, a.slug);
     assert.match(html, /"@type":\s*"Article"/, a.slug);
     assert.match(html, /"@type":\s*"BreadcrumbList"/, a.slug);
-    const h2s = a.blocks.filter((b) => b.type === 'h2').length;
-    assert.equal(html.split(CTA).length - 1, h2s >= 2 ? 2 : 1, `${a.slug} CTA count`);
-    const froms = [...html.matchAll(/href="\.\.\/\?from=([^"]+)"/g)].map((m) => m[1]);
-    for (const f of froms) assert.ok(ids.includes(f), `${a.slug} from=${f}`);
+    assert.equal(html.split(CTA).length - 1, 1, `${a.slug} CTA count`);
+    assert.match(html, /<aside class="cta"[^>]*>[\s\S]*?<a href="\.\.\/\?go=home">/, a.slug);
+    assert.doesNotMatch(html, /\?from=/, a.slug);
     assert.doesNotMatch(html, /<script(?![^>]*application\/ld\+json)/, a.slug);
     assert.doesNotMatch(html, /sk_live|sk_test|whsec_|service_role/, a.slug);
     assert.match(sm, new RegExp(`<loc>https://decisionprocess\\.net/articles/${a.slug}</loc>`), a.slug);

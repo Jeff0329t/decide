@@ -7,7 +7,7 @@ const ids = [
   ...Array.from({ length: 22 }, (_, i) => `ar${String(i).padStart(2, '0')}`),
   ...['wa', 'cu', 'sw', 'pe'].flatMap((s) => Array.from({ length: 14 }, (_, i) => `${s}${String(i + 1).padStart(2, '0')}`)),
 ];
-const CTA = '今抱えている迷いを、このカードの視点から考えてみる';
+const CTA = 'カードを引いて、決めたいことを整理する';
 
 test('78 card pages and index exist', () => {
   assert.equal(ids.length, 78);
@@ -24,8 +24,7 @@ test('each card page has SEO essentials, CTAs, credit and alt', () => {
     assert.match(html, /name="twitter:card"/, id);
     assert.match(html, /"@type":\s*"Article"/, id);
     assert.match(html, /"@type":\s*"BreadcrumbList"/, id);
-    assert.equal(html.split(CTA).length - 1, 1, `${id} mid CTA count`);
-    assert.equal((html.match(/<aside class="cta"/g) || []).length, 2, `${id} CTA count`);
+    assert.equal((html.match(/<aside class="cta"/g) || []).length, 1, `${id} CTA count`);
     assert.match(html, /images: sixseeds\/tarot-api, public domain/, id);
     assert.match(html, /<img [^>]*alt="[^"]+"/, id);
     assert.match(html, /決断・迷いにおけるヒント/, id);
@@ -85,29 +84,22 @@ test('sitemap includes category pages', () => {
   for (const slug of Object.values(cats)) assert.match(sm, new RegExp(`<loc>https://decisionprocess\\.net/cards/${slug}</loc>`), slug);
 });
 
-test('card CTAs carry ?from= context into the app', () => {
-  for (const id of ids) {
-    const html = read(`dist/cards/${id}.html`);
-    assert.equal(html.split(`href="../?from=${id}"`).length - 1, 2, `${id} from links`);
-  }
-  for (const slug of Object.values(cats)) assert.match(read(`dist/cards/${slug}.html`), new RegExp(`href="\\.\\./\\?from=${slug}"`), slug);
-});
-
-test('card-entry.js validates from and is loaded/cached by the app', async () => {
-  await import(new URL('../dist/card-entry.js', import.meta.url));
-  const { parseCardEntry, cardEntryLabel } = globalThis.DECIDE_CARD_ENTRY;
-  for (const id of ids) assert.deepEqual(parseCardEntry(id), { type: 'card', id });
-  for (const slug of Object.values(cats)) assert.equal(parseCardEntry(slug).type, 'category');
-  for (const bad of ['', 'ar22', 'wa00', 'wa15', 'xx01', 'WA05', '<script>', 'constructor', 'toString']) assert.equal(parseCardEntry(bad), null, bad);
-  assert.equal(cardEntryLabel({ type: 'card', id: 'wa05' }, [{ name: 'ワンドの5', image: './assets/rider-waite/wa05.jpg' }]), 'ワンドの5');
-  assert.equal(cardEntryLabel({ type: 'category', id: 'wands' }, []), 'ワンド');
-  const src = read('dist/card-entry.js');
-  assert.doesNotMatch(src, /localStorage|innerHTML/);
-  assert.match(read('dist/index.html'), /<script src="\.\/app\.js" defer><\/script>\s*<script src="\.\/card-entry\.js" defer><\/script>/);
-  assert.match(read('dist/service-worker.js'), /'\.\/card-entry\.js'/);
-});
-
 const worries = ['tenshoku', 'wakare', 'hikkoshi', 'kekkon', 'manabi', 'dokuritsu', 'ningen', 'okane', 'renai', 'shukatsu', 'kaigo', 'fukugyo'];
+
+test('card CTAs are a single next step into the draw screen, without a popup handoff', () => {
+  for (const file of [...ids, ...Object.values(cats), ...worries.map((w) => `worry-${w}`), 'index', 'worries']) {
+    const html = read(`dist/cards/${file}.html`);
+    assert.doesNotMatch(html, /\?from=/, file);
+    for (const m of html.matchAll(/<(?:aside|div) class="cta"[\s\S]*?<\/(?:aside|div)>/g)) {
+      assert.match(m[0], /<a href="\.\.\/\?go=home">/, file);
+      assert.doesNotMatch(m[0], /迷い|DECIDE\. ?で/, file);
+    }
+  }
+  assert.equal(existsSync(new URL('../dist/card-entry.js', import.meta.url)), false);
+  assert.doesNotMatch(read('dist/index.html'), /card-entry/);
+  assert.doesNotMatch(read('dist/service-worker.js'), /card-entry/);
+  assert.doesNotMatch(read('dist/styles.css'), /card-entry-guide/);
+});
 
 test('worry pages have SEO essentials, CTAs into the app, credit and no JS', () => {
   const sm = read('dist/sitemap.xml');
@@ -117,11 +109,8 @@ test('worry pages have SEO essentials, CTAs into the app, credit and no JS', () 
     assert.match(html, /<meta name="description" content="[^"]{20,}"/, slug);
     assert.match(html, /"@type":\s*"Article"/, slug);
     assert.match(html, /"@type":\s*"BreadcrumbList"/, slug);
-    assert.equal(html.split(CTA).length - 1, 1, `${slug} mid CTA count`);
-    assert.equal((html.match(/<aside class="cta"/g) || []).length, 2, `${slug} CTA count`);
-    const froms = [...html.matchAll(/href="\.\.\/\?from=([^"]+)"/g)].map((m) => m[1]);
-    assert.equal(froms.length, 2, `${slug} from links`);
-    for (const f of froms) assert.ok(ids.includes(f), `${slug} from=${f}`);
+    const ctaLinks = [...html.matchAll(/<aside class="cta"[\s\S]*?<a href="([^"]+)"/g)].map((m) => m[1]);
+    assert.deepEqual(ctaLinks, ['../?go=home'], `${slug} CTA`);
     assert.match(html, /images: sixseeds\/tarot-api, public domain/, slug);
     assert.match(html, /href="\.\/worries"/, slug);
     assert.doesNotMatch(html, /<script(?![^>]*application\/ld\+json)/, slug);

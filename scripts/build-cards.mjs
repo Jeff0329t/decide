@@ -18,7 +18,9 @@ const DIST = fileURLToPath(new URL('../dist/', import.meta.url));
 const DATA = fileURLToPath(new URL('./data/', import.meta.url));
 const ORIGIN = 'https://decisionprocess.net';
 const MIN_CHARS = 800;
-const CTA_TEXT = '今抱えている迷いを、このカードの視点から考えてみる';
+const CTA_TEXT = 'カードを引いて、決めたいことを整理する';
+// 記事はアプリ内の読みものでもあるので、CTA は表紙ではなく引き方を選ぶ画面へ（読み終えたあとの一つだけ）
+const CTA_HREF = '../?go=home';
 const CREDIT = 'images: sixseeds/tarot-api, public domain';
 const TODAY = new Date().toISOString().slice(0, 10);
 const DRAFTS = process.argv.includes('--drafts');
@@ -282,9 +284,9 @@ const crumbsLd = (items) => ({
 const kick = (t, cls = 'sec-k') => `<p class="kicker ${cls}">${esc(t)}</p>`;
 const meter = (n) => `<span class="meter" aria-hidden="true">${[1, 2, 3, 4, 5].map((i) => `<i${i <= n ? ' class="on"' : ''}></i>`).join('')}</span>`;
 
-const ctaHtml = (c, where) => `<aside class="cta" aria-label="DECIDE. で考える">
-<p>${where === 'mid' ? `${esc(c.name)}が示す視点を、あなた自身の選択肢に当てはめてみませんか。` : '二つの選択肢を並べて、カードと一緒に整理できます。'}</p>
-<a href="../?from=${c.id}">${CTA_TEXT}</a>
+const ctaHtml = () => `<aside class="cta" aria-label="次の一歩">
+<p>二つの選択肢を並べて、カードと一緒に整理できます。</p>
+<a href="${CTA_HREF}">${CTA_TEXT}</a>
 </aside>`;
 
 function sideHtml(c, key) {
@@ -350,7 +352,6 @@ ${kick('SYMBOLS')}
 <p>${esc(c.background)}</p>
 </section>
 ${sideHtml(c, 'upright')}
-${ctaHtml(c, 'mid')}
 ${sideHtml(c, 'reversed')}
 <section>
 ${kick('FOR YOUR DECISION')}
@@ -363,7 +364,7 @@ ${kick('FOR YOUR DECISION')}
 <p>${esc(x.check)}</p>
 <p class="note">「${esc(deck.scoring.axis)}」は、${esc(deck.scoring.definition)}</p>
 </section>
-${ctaHtml(c, 'end')}
+${ctaHtml()}
 <section>
 ${kick('RELATED CARDS')}
 <h2>関連するカード</h2>
@@ -571,7 +572,7 @@ ${kick(SUIT_KICKER[a], 'page-k')}
 ${catsNav(a)}
 <p>${esc(cat.intro)}</p>
 ${gridHtml(list)}
-<div class="cta"><p>${esc(a)}の視点を、いまの選択肢に当てはめてみる</p><a href="../?from=${cat.slug}">${CTA_TEXT}</a></div>
+<div class="cta"><p>${esc(a)}の視点を手がかりに、あなた自身の二つの選択肢を並べてみませんか。</p><a href="${CTA_HREF}">${CTA_TEXT}</a></div>
 <section>
 <h2>${esc(a)}のキーワード早見表</h2>
 <ul>
@@ -591,7 +592,6 @@ function worriesNav(current) {
 
 function worryPage(w) {
   const path = `/cards/worry-${w.slug}`;
-  const primary = byId.get(w.primary);
   const ogImage = `${ORIGIN}/assets/og/worry-${w.slug}.jpg`;
   const crumbs = [
     { name: 'DECIDE.', href: '../', path: '/' },
@@ -606,9 +606,9 @@ function worryPage(w) {
     author: { '@type': 'Organization', name: 'DECIDE.' },
     publisher: { '@type': 'Organization', name: 'DECIDE.', url: ORIGIN + '/' },
   };
-  const cta = (msg) => `<aside class="cta" aria-label="DECIDE. で考える">
+  const cta = (msg) => `<aside class="cta" aria-label="次の一歩">
 <p>${msg}</p>
-<a href="../?from=${w.primary}">${CTA_TEXT}</a>
+<a href="${CTA_HREF}">${CTA_TEXT}</a>
 </aside>`;
   const cardRows = w.cards.map(({ id, reason }) => {
     const c = byId.get(id);
@@ -620,7 +620,6 @@ ${crumbsHtml(crumbs)}
 ${kick(`WORRY GUIDE — ${GROUP_KICKER[WORRY_GROUPS.find((g) => g.slugs.includes(w.slug))?.id] || 'OTHER'}`, 'page-k')}
 <h1>${esc(w.h1)}</h1>
 <p>${esc(w.lead)}</p>
-${cta(`${esc(primary.name)}の視点から、あなた自身の二つの選択肢を並べてみませんか。`)}
 ${w.sections.map((s, i) => `<section${s.h2 === '自分への問いかけ' ? ' class="asks"' : ''}>
 ${kick(`POINT ${String(i + 1).padStart(2, '0')}`)}
 <h2>${esc(s.h2)}</h2>
@@ -725,7 +724,7 @@ ${worries.map((w) => `<li><a href="./worry-${w.slug}">${esc(w.h1.replace(/(で|�
 </ul></nav>
 <script>${WJUMP_PRESS_JS}</script>
 ${sections}
-<div class="cta"><p>カードを引いて、いまの迷いを整理する</p><a href="../">${CTA_TEXT}</a></div>
+<div class="cta"><p>カードの意味を読んだら、次はあなた自身の選択肢で。</p><a href="${CTA_HREF}">${CTA_TEXT}</a></div>
 <p class="note"><a href="./">78枚すべてのカード解説を見る</a></p>
 </main>`;
   return layout({ title, description, path, ogType: 'website', ogImage: `${ORIGIN}/og-image-v3.png`, ld: [itemList, crumbsLd(crumbs)], body });
@@ -736,7 +735,6 @@ const fmtDate = (d) => { const [y, m, dd] = d.split('-').map(Number); return `${
 
 function articlePage(a) {
   const path = `/articles/${a.slug}`;
-  const primary = byId.get(a.primary);
   const ogImage = `${ORIGIN}/assets/og/article-${a.slug}.jpg`;
   const crumbs = [
     { name: 'DECIDE.', href: '../', path: '/' },
@@ -750,15 +748,11 @@ function articlePage(a) {
     author: { '@type': 'Organization', name: 'DECIDE.' },
     publisher: { '@type': 'Organization', name: 'DECIDE.', url: ORIGIN + '/' },
   };
-  const cta = (msg) => `<aside class="cta" aria-label="DECIDE. で考える">
+  const cta = (msg) => `<aside class="cta" aria-label="次の一歩">
 <p>${msg}</p>
-<a href="../?from=${a.primary}">${CTA_TEXT}</a>
+<a href="${CTA_HREF}">${CTA_TEXT}</a>
 </aside>`;
-  // 中間CTA: 真ん中あたりの h2 の直前（h2 が2つ未満なら本文の後ろの CTA だけ）
-  const h2s = a.blocks.map((b, i) => (b.type === 'h2' ? i : -1)).filter((i) => i >= 0);
-  const midAt = h2s.length >= 2 ? h2s[Math.floor(h2s.length / 2)] : -1;
-  const mid = cta(`${esc(primary.name)}の視点から、あなた自身の二つの選択肢を並べてみませんか。`);
-  const bodyHtml = a.blocks.map((b, i) => (i === midAt ? mid + '\n' : '') + b.html).join('\n');
+  const bodyHtml = a.blocks.map((b) => b.html).join('\n');
   const relWorries = a.worries.map((s) => worryBySlug.get(s));
   const relCards = [...new Set([a.primary, ...a.cards])].map((id) => byId.get(id));
   const others = published.filter((o) => o.slug !== a.slug).slice(0, 5);
@@ -808,7 +802,7 @@ ${kick('READING', 'page-k')}
 <ul class="alist">
 ${rows}
 </ul>
-<div class="cta"><p>カードを引いて、いまの迷いを整理する</p><a href="../">${CTA_TEXT}</a></div>
+<div class="cta"><p>カードの意味を読んだら、次はあなた自身の選択肢で。</p><a href="${CTA_HREF}">${CTA_TEXT}</a></div>
 <p class="note"><a href="../cards/worries">悩み別に読む</a> ／ <a href="../cards/">78枚のカード解説</a></p>
 </main>`;
   return layout({ title, description, path, ogType: 'website', ogImage: `${ORIGIN}/og-image-v3.png`, ld: [itemList, crumbsLd(crumbs)], body, noindex: !list.some((a) => !a.draft) });
