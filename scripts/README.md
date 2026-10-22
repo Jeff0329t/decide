@@ -39,7 +39,7 @@ node scripts/build-cards.mjs
 
 - カードページはJS不要の静的HTML。Service Worker は `/cards/`・`/articles/`・`sitemap.xml`・`robots.txt` をキャッシュしません。
 - ドメインは `https://decisionprocess.net` 固定（canonical / OGP / sitemap）。変更時はスクリプト冒頭の定数を変更して再ビルド。
-- CTAは `../?from={id}`（分類ページは `../?from={slug}`、悩み別ページは `../?from={代表カードid}`）へリンク。アプリ側は `dist/card-entry.js` が読み取り「◯◯の視点で考える」ガイドを表示し、URLから `from` を消します（localStorageは使いません）。
+- CTAは各ページの最後に1つだけ置き、表紙を飛ばして引き方を選ぶ画面 `../?go=home` へリンクします（記事はアプリ内の読みものでもあるため）。読んだカードはアプリの流れに引き継がれないため、文言は「カードの視点を手がかりに、決めたいことを整理する」までにとどめ、そのカードで占えるような約束はしません。
 - 画像クレジット: images: sixseeds/tarot-api, public domain
 
 ## 読みもの（記事）— `scripts/data/articles/*.md`

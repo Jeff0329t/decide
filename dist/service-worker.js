@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'decide-shell-editorial-v224';
+const SHELL_CACHE = 'decide-shell-editorial-v225';
 const IMAGE_CACHE = 'decide-card-images-p14-v1';
 const IMAGE_LIMIT = 100;
 const CARD_SHELL_FILES = [
@@ -9,7 +9,7 @@ const SHELL_FILES = [
   './', './index.html', './app.js', './styles.css', './scoring.js',
   './consultation-share.js', './consultation-ui.css', './assets/editorial/prepare-portals-v1.webp',
   './shared.js', './interview.js', './decision-meta.js', './backup-format.js', './card-backs.js', './learn.js', './config.js', './auth.js', './entitlements.js', './sync.js',
-  './reminders.js', './share-themes.js', './referral.js', './push.js', './email-reminders.js', './card-entry.js',
+  './reminders.js', './share-themes.js', './referral.js', './push.js', './email-reminders.js',
   './manifest.webmanifest', './icon-192.png?v=2', './icon-512.png?v=2',
   './icon-512-maskable.png?v=2', './apple-touch-icon.png?v=2',
   './assets/editorial/learn-celestial-v1.webp', './assets/editorial/learn-elements-v1.webp',
