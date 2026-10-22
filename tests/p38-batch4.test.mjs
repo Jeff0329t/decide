@@ -22,16 +22,6 @@ function loadPush() {
   return window.DECIDE_PUSH._pure;
 }
 
-// #13 決定後は入力内容を要約し「変更する」で開く
-test('#13 決定後の入力内容は要約＋変更するボタンで、開くとフォーカスが移る', () => {
-  assert.match(app, /class="decision-summary"[\s\S]*?data-decision-summary[\s\S]*?data-action="toggle-decision-meta" aria-expanded="false" aria-controls="decision-meta-editor">変更する</);
-  const toggle = body(app, 'toggleDecisionMeta');
-  assert.match(toggle, /aria-expanded/);
-  assert.match(toggle, /閉じる/);
-  assert.match(toggle, /変更する/);
-  assert.match(toggle, /\.focus\(/);
-});
-
 // #14 2択の準備画面
 test('準備のジャンル選択は1枚ならドロー、2枚なら選択肢へ進み、選択肢内の変更では移動しない', () => {
   for (const [mode, view, expected] of [['one','prepare-genre','draw'],['two','prepare-genre','prepare-options'],['two','prepare-options',null]]) {

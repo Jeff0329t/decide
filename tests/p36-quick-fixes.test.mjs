@@ -20,10 +20,10 @@ test('#12 A/B の判断ボタンに入力した選択肢を表示する', () => 
   assert.match(app, /return decisionOptionText\(value\) \|\| DECIDE_DECISION\.choiceText\(value\);/);
 });
 
-test('#17 リマインドを選び直したら今日から数える', () => {
+test('#17 振り返る日は記録する前に選び、記録した日から数える', () => {
   const app = read('dist/app.js');
-  assert.match(app, /log\.remindAt=days>0 \? new Date\(Date\.now\(\)\+days\*DAY_MS\)/);
-  assert.match(app, /log\.remindDays=days>0 \? days : null/);
+  assert.match(app, /if\(draftRemind\.days\)return new Date\(Date\.parse\(from\)\+draftRemind\.days\*DAY_MS\)/);
+  assert.match(app, /log\.remindAt=draftRemindAt\(createdAt\)/);
 });
 
 test('#10 送信に失敗したリマインドは送信済みにしない', () => {

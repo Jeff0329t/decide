@@ -49,7 +49,7 @@ test('2択のボタンには入力された選択肢の文言をそのまま出�
   assert.equal(make('decisionChoiceLabel', deps('one', () => ''))('進む'), '進む');
 });
 
-test('選ぶと一言メモ画面へ進み、記録とスキップを選べる', () => {
+test('選ぶと一言メモ画面へ進み、メモと振り返る日を決めて「記録する」1つで保存する', () => {
   const choose = fnSource('chooseDecision');
   assert.match(choose, /selectedDecision=value;/);
   assert.match(choose, /navigate\('decide'\)/);
@@ -57,21 +57,27 @@ test('選ぶと一言メモ画面へ進み、記録とスキップを選べる',
   assert.match(memo, /一言メモを<wbr>残す/);
   assert.match(memo, /<form id="save-form"/);
   assert.match(memo, /name="memo"/);
-  assert.match(memo, /data-save-decision>メモを残して記録する</);
-  assert.match(memo, /data-action="skip-memo">残さずにスキップ</);
+  assert.match(memo, /\$\{draftRemindHtml\(\)\}/);
+  assert.match(memo, /data-save-decision>記録する</);
+  assert.doesNotMatch(memo, /skip-memo|decisionMetaHtml/);
   assert.match(memo, /data-action="decide-rechoose"/);
   assert.match(app, /action === 'choose-decision'\) chooseDecision\(el\)/);
-  assert.match(app, /action === 'skip-memo'\) skipDecisionMemo\(el\)/);
+  assert.match(app, /action === 'draft-remind'\) setDraftRemind\(Number\(el\.dataset\.days\)\)/);
 });
 
-test('スキップはメモを空にして、いつもの保存処理で記録する', () => {
-  const skip = fnSource('skipDecisionMemo');
-  assert.match(skip, /form\.elements\.memo\.value=''/);
-  assert.match(skip, /decisionDraft\.memo=''/);
-  assert.match(skip, /sealDecision\(form,button\)/);
-  assert.match(app, /function sealDecision\(form,button=form\.querySelector\('\[data-save-decision\]'\)\)/);
+test('保存は選択肢・題名を下書きから読み、振り返る日は選んだもの（初期は3日後）', () => {
+  const save = fnSource('saveDecision');
+  assert.match(save, /fd\.get\('option1'\)\?\?decisionDraft\.option1/);
+  assert.match(save, /log\.remindAt=draftRemindAt\(createdAt\); log\.remindDays=draftRemind\.days\|\|null;/);
+  assert.match(app, /let draftRemind=\{days:DEFAULT_REMIND_DAYS,date:''\};/);
+  assert.match(app, /const DEFAULT_REMIND_DAYS=3;/);
+  assert.match(fnSource('setDraftRemindDate'), /明日以降の日付を選んでください/);
   // 保存される決定の値は従来どおり（既存ログと互換）
-  assert.match(fnSource('saveDecision'), /decision:selectedDecision/);
+  assert.match(save, /decision:selectedDecision/);
+});
+
+test('記録したあとの「戻る」はホームへ（メモ画面や一覧には戻らない）', () => {
+  assert.match(fnSource('navigateBack'), /if\(currentView==='detail' && completionId\)\{ homeStage='quickstart'; return navigate\('home'\); \}/);
 });
 
 test('メモ画面の「戻る」「選び直す」はカードの結果に戻る', () => {

@@ -485,6 +485,7 @@ function updateNavigationState(view=currentView) {
   }
 }
 function navigateBack() {
+  if(currentView==='detail' && completionId){ homeStage='quickstart'; return navigate('home'); }
   if(currentView==='detail')return navigate(detailReturn);
   if(currentView==='prepare-options'){ captureDecisionDraft(); return navigate('prepare-genre'); }
   if(currentView==='decide'){ captureDecisionDraft(); return navigate('session'); }
@@ -1207,36 +1208,14 @@ function renderDecisionMemo() {
       <p class="decide-chosen"><b class="decision-index">${index}</b><span data-chosen-label>${esc(decisionChoiceLabel(selectedDecision))}</span></p>
       <form id="save-form" class="save-form">
         <label>ひとことメモ <span>任意</span><textarea name="memo" maxlength="240" rows="3" lang="ja" placeholder="決め手や、今の気持ち"></textarea></label>
-        <button class="button" type="submit" data-save-decision>メモを残して記録する</button>
-        <button class="button secondary decide-skip-memo" type="button" data-action="skip-memo">残さずにスキップ</button>
+        ${draftRemindHtml()}
+        <button class="button" type="submit" data-save-decision>記録する</button>
         <p class="timestamp">${formatDate(new Date().toISOString(), true)} の記録として保存</p>
-        ${decisionMetaHtml()}
       </form>
     </section>`;
   restoreDecisionDraft();
 }
-function skipDecisionMemo(button) {
-  const form=document.getElementById('save-form'); if(!form)return;
-  if(form.elements.memo)form.elements.memo.value='';
-  decisionDraft.memo='';
-  sealDecision(form,button);
-}
-function decisionMetaHtml() {
-  return `<section class="decision-meta" aria-label="記録の補足">
-          <div class="decision-summary"><div class="decision-summary-values" data-decision-summary>${decisionSummaryHtml()}</div><button type="button" class="decision-meta-toggle" data-action="toggle-decision-meta" aria-expanded="false" aria-controls="decision-meta-editor">変更する</button></div>
-          <div id="decision-meta-editor" class="decision-meta-editor" hidden>
-            <label>題名 <span>任意</span><input name="title" maxlength="60" autocomplete="off" enterkeyhint="done" lang="ja" placeholder="空欄なら内容から自動で作成"></label>
-            <div class="form-section"><div class="form-section-head"><b>ジャンル</b><span>任意・1つだけ</span></div>${genreChips()}</div>
-            ${activeSession.mode==='two'?`<div class="form-section"><div class="form-section-head"><b>選択肢の内容</b><span>任意</span></div>${optionEditor()}${sameOptionHint()}<div class="pair-candidates" data-pair-candidates></div><div class="recent-options" data-recent-options></div></div>`:''}
-          </div>
-        </section>`;
-}
 
-function toggleDecisionMeta(button) {
-  const editor=document.getElementById('decision-meta-editor'); if(!editor)return;
-  const open=editor.hidden; editor.hidden=!open; button.setAttribute('aria-expanded',String(open)); button.textContent=open?'閉じる':'変更する';
-  if(open)editor.querySelector('input, textarea, button')?.focus({preventScroll:true});
-}
 
 function updateDraftDisplays() {
   const hint=document.querySelector('[data-same-option-hint]');
@@ -1345,8 +1324,8 @@ function saveDecision(form) {
   const fd = new FormData(form);
   const createdAt = new Date().toISOString();
   const genre=DECIDE_DECISION.validGenre(decisionDraft.genre)||null;
-  const options=activeSession.mode==='two'?DECIDE_DECISION.savedOptions(fd.get('option1'),fd.get('option2')):null;
-  const manualTitle=String(fd.get('title')||'').trim().slice(0,60);
+  const options=activeSession.mode==='two'?DECIDE_DECISION.savedOptions(fd.get('option1')??decisionDraft.option1,fd.get('option2')??decisionDraft.option2):null;
+  const manualTitle=String(fd.get('title')??decisionDraft.title??'').trim().slice(0,60);
   const title=manualTitle||DECIDE_DECISION.autoTitle({genre,options,nodes:activeSession.nodes,createdAt,mode:activeSession.mode});
   const log = { id:activeSession.id, mode:activeSession.mode, createdAt, title,
     memo:String(fd.get('memo') || '').trim(), decision:selectedDecision, nodes:activeSession.nodes, review:null, genre, options };
@@ -1354,7 +1333,7 @@ function saveDecision(form) {
   const firstRecord=retry ? pendingSave.firstRecord : logs.length===0;
   const requestPersistence=retry ? pendingSave.requestPersistence : firstRecord && !settings.storagePersistRequested;
   const existing=logs.findIndex(item=>item.id===log.id);
-  if(existing>=0 && 'remindAt' in logs[existing]){ log.remindAt=logs[existing].remindAt; if(logs[existing].remindDays)log.remindDays=logs[existing].remindDays; if('remindUpdatedAt' in logs[existing])log.remindUpdatedAt=logs[existing].remindUpdatedAt; } else if(existing<0){ log.remindAt=window.DECIDE_REMINDERS?.defaultRemindAt?.(log.createdAt) || new Date(Date.parse(createdAt)+DEFAULT_REMIND_DAYS*DAY_MS).toISOString(); log.remindDays=DEFAULT_REMIND_DAYS; log.remindUpdatedAt=new Date().toISOString(); }
+  if(existing>=0 && 'remindAt' in logs[existing]){ log.remindAt=logs[existing].remindAt; if(logs[existing].remindDays)log.remindDays=logs[existing].remindDays; if('remindUpdatedAt' in logs[existing])log.remindUpdatedAt=logs[existing].remindUpdatedAt; } else if(existing<0){ log.remindAt=draftRemindAt(createdAt); log.remindDays=draftRemind.days||null; log.remindUpdatedAt=new Date().toISOString(); }
   if(existing<0 && !retry && window.DECIDE_ENTITLEMENTS && !window.DECIDE_ENTITLEMENTS.canSaveLog(logs.length)){ stashBlockedSave(log); window.DECIDE_ENTITLEMENTS.openPaywall('save'); return; }
   if(existing>=0)logs[existing]=log; else logs.unshift(log);
   if(requestPersistence)settings.storagePersistRequested=true;
@@ -1363,7 +1342,7 @@ function saveDecision(form) {
   pendingSave=null;
   if(firstRecord && shouldShowA2HS())a2hsBannerLogId=log.id;
   activeSession = null; selectedDecision = ''; detailId = log.id;
-  decisionDraft = {genre:'',option1:'',option2:'',title:'',memo:''};
+  decisionDraft = {genre:'',option1:'',option2:'',title:'',memo:''}; draftRemind={days:DEFAULT_REMIND_DAYS,date:''};
   completionId=log.id; currentView = 'detail'; render();
 }
 
@@ -1585,7 +1564,7 @@ function renderDetail() {
       <div class="completion-hero" aria-hidden="true"><p class="completion-script">DECIDED<span>決断を、次の一歩へ。</span></p></div>
       <div class="completion-dock">
         <div class="completion-copy"><h1>よし、決めた。</h1><p>この決断を記録しました。</p><strong data-completion-title></strong></div>
-        ${renderRemindPicker(log)}
+        ${completionRemindHtml(log)}
         <div class="completion-actions"><button class="button decide-confirm completion-decide" data-action="satisfied" aria-label="DECIDE.">${decideWordmark()}</button></div>
       </div>
     </section>`;
@@ -1634,40 +1613,37 @@ function openLogEditor(id) {
 // Every new decision gets a look-back date (3 days unless changed); a specific day comes from the calendar.
 const DEFAULT_REMIND_DAYS=3;
 const REMIND_OPTIONS=[[3,'3日後'],[7,'7日後']];
+let draftRemind={days:DEFAULT_REMIND_DAYS,date:''};
 const ymd=date=>`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
-function renderRemindPicker(log) {
-  const at=log.remindAt ? new Date(log.remindAt) : null; const valid=at && !Number.isNaN(at.getTime());
-  // 選び直した日数は remindDays に残る。古いログ（remindDays なし）は作成日からの差で判定する
-  const chosen=!valid ? null : REMIND_OPTIONS.some(([days])=>days && days===log.remindDays) ? log.remindDays : REMIND_OPTIONS.find(([days])=>days && Math.abs(at-new Date(log.createdAt).getTime()-days*DAY_MS)<DAY_MS/2)?.[0] ?? null;
-  const custom=valid && chosen===null;
-  return `<section class="remind-picker" aria-labelledby="remind-title-${esc(log.id)}">
-    <p class="remind-kicker">REMIND ME</p>
-    <h2 id="remind-title-${esc(log.id)}">いつ、この決定を振り返る？</h2>
-    <p class="remind-note">${phraseHtml('やってみて｜どうだったか、\n気持ちは｜変わったか。\n一言｜残すだけでも、｜次に迷ったときの｜手がかりになります。')}</p>
-    <p class="remind-note remind-note-sub">${phraseHtml('まだ｜結論が出ていなくても｜大丈夫です。')}</p>
-    <div class="remind-options">${REMIND_OPTIONS.map(([days,label])=>{
-      const on=chosen===days;
-      // 選び直すと今日から数える。選択中は保存済みの日付、それ以外は今日から数えた日付を出す
-      const date=on ? at : new Date(Date.now()+days*DAY_MS);
-      return `<button class="${on?'selected':''}" data-action="set-remind" data-days="${days}" data-id="${esc(log.id)}" aria-pressed="${on}">${label}<small>${date.getMonth()+1}/${date.getDate()}</small></button>`;
-    }).join('')}<label class="remind-date${custom?' selected':''}">日付を選ぶ<small>${custom ? `${at.getMonth()+1}/${at.getDate()}` : 'カレンダー'}</small><input type="date" data-remind-date data-id="${esc(log.id)}" min="${ymd(new Date(Date.now()+DAY_MS))}" max="${ymd(new Date(Date.now()+365*DAY_MS))}" value="${custom ? ymd(at) : ''}" aria-label="振り返る日付を選ぶ"></label></div>
-    <p class="remind-status">${valid ? `<b>${formatDate(log.remindAt)}</b> ごろ、<br>${phraseHtml(window.DECIDE_EMAIL_REMINDERS?.isOn?.() ? '記録の題名を添えた｜メールで、｜振り返るきっかけを｜お届けします。' : 'アプリを開いたときに、｜「その後どう？」と｜お聞きします。')}<br>${phraseHtml(custom ? '日付は、｜いつでも｜選び直せます。' : '選び直すと、｜今日から｜数えます。')}` : phraseHtml(window.DECIDE_EMAIL_REMINDERS?.isOn?.() ? '選ぶと、｜その頃に、\n記録の題名を添えた｜メールで、｜振り返るきっかけを｜お届けします。' : '選ぶと、｜その頃に、\nアプリを開いたとき、｜振り返りを｜ご案内します。')}</p>
-  </section>`;
+function draftRemindAt(from=new Date().toISOString()) {
+  if(draftRemind.days)return new Date(Date.parse(from)+draftRemind.days*DAY_MS).toISOString();
+  const [y,m,d]=draftRemind.date.split('-').map(Number); const now=new Date();
+  return new Date(y,m-1,d,now.getHours(),now.getMinutes()).toISOString();
 }
-function setRemind(id,days) {
-  const log=logs.find(item=>item.id===id); if(!log)return;
-  sensoryFeedback('tick');
-  const saved=commitLogChange(log,REMIND_KEYS,log=>{ log.remindAt=days>0 ? new Date(Date.now()+days*DAY_MS).toISOString() : null; log.remindDays=days>0 ? days : null; log.remindUpdatedAt=log.updatedAt=new Date().toISOString(); });
-  renderDetail(); toast(!saved ? SAVE_FAILED_MESSAGE : days>0 ? `${formatDate(log.remindAt)} ごろにお聞きします` : 'リマインドなしにしました');
+const remindMessage=()=>window.DECIDE_EMAIL_REMINDERS?.isOn?.() ? '記録の題名を添えた｜メールで、｜振り返るきっかけを｜お届けします。' : 'アプリを開いたときに、｜「その後どう？」と｜お聞きします。';
+function draftRemindHtml() {
+  const at=new Date(draftRemindAt());
+  return `<section class="remind-picker" data-draft-remind aria-labelledby="remind-title">
+      <h2 id="remind-title">いつ振り返る？</h2>
+      <div class="remind-options">${REMIND_OPTIONS.map(([days,label])=>{
+        const on=draftRemind.days===days; const date=new Date(Date.now()+days*DAY_MS);
+        return `<button type="button" class="${on?'selected':''}" data-action="draft-remind" data-days="${days}" aria-pressed="${on}">${label}<small>${date.getMonth()+1}/${date.getDate()}</small></button>`;
+      }).join('')}<label class="remind-date${draftRemind.date?' selected':''}">日付を選ぶ<small>${draftRemind.date ? `${at.getMonth()+1}/${at.getDate()}` : 'カレンダー'}</small><input type="date" data-remind-date min="${ymd(new Date(Date.now()+DAY_MS))}" max="${ymd(new Date(Date.now()+365*DAY_MS))}" value="${draftRemind.date}" aria-label="振り返る日付を選ぶ"></label></div>
+      <p class="remind-status"><b>${formatDate(at.toISOString())}</b> ごろ、<br>${phraseHtml(remindMessage())}</p>
+    </section>`;
 }
-function setRemindDate(input) {
-  const log=logs.find(item=>item.id===input.dataset.id); const [y,m,d]=input.value.split('-').map(Number); if(!log || !y || !m || !d)return;
-  const now=new Date(); const at=new Date(y,m-1,d,now.getHours(),now.getMinutes());
-  // iOS Safari lets people pick days before `min`; today or earlier is refused and the calendar goes back to the saved day.
+function refreshDraftRemind() { document.querySelector('[data-draft-remind]')?.replaceWith(Object.assign(document.createElement('template'),{innerHTML:draftRemindHtml()}).content.firstElementChild); }
+function setDraftRemind(days) { sensoryFeedback('tick'); draftRemind={days,date:''}; refreshDraftRemind(); }
+function setDraftRemindDate(input) {
+  const [y,m,d]=input.value.split('-').map(Number); if(!y || !m || !d)return;
+  const now=new Date();
+  // iOS Safari lets people pick days before `min`; today or earlier is refused and the calendar goes back to the chosen day.
   if(new Date(y,m-1,d)<=new Date(now.getFullYear(),now.getMonth(),now.getDate())){ input.value=input.defaultValue; toast('明日以降の日付を選んでください'); return; }
-  sensoryFeedback('tick');
-  const saved=commitLogChange(log,REMIND_KEYS,log=>{ log.remindAt=at.toISOString(); log.remindDays=null; log.remindUpdatedAt=log.updatedAt=new Date().toISOString(); });
-  renderDetail(); toast(!saved ? SAVE_FAILED_MESSAGE : `${formatDate(log.remindAt)} ごろにお聞きします`);
+  sensoryFeedback('tick'); draftRemind={days:0,date:input.value}; refreshDraftRemind();
+}
+function completionRemindHtml(log) {
+  const at=log.remindAt ? new Date(log.remindAt) : null; if(!at || Number.isNaN(at.getTime()))return '';
+  return `<p class="completion-remind"><span class="remind-kicker">REMIND ME</span><b>${formatDate(log.remindAt)}</b> ごろ、<br>${phraseHtml(remindMessage())}</p>`;
 }
 function dueReviewLog() {
   const now=Date.now();
@@ -2193,8 +2169,6 @@ document.addEventListener('click', event => {
   else if (action === 'decide') confirmDecisionStep(el);
   else if (action === 'choose-decision') chooseDecision(el);
   else if (action === 'decide-rechoose') { captureDecisionDraft(); navigate('session'); }
-  else if (action === 'skip-memo') skipDecisionMemo(el);
-  else if (action === 'toggle-decision-meta') toggleDecisionMeta(el);
   else if (action === 'select-genre') selectGenre(el.dataset.value);
   else if (action === 'select-pair') selectPair(Number(el.dataset.pairIndex));
   else if (action === 'swap-options') swapOptions();
@@ -2202,7 +2176,7 @@ document.addEventListener('click', event => {
   else if (action === 'detail') navigate('detail', el.dataset.id);
   else if (action === 'edit-log') openLogEditor(el.dataset.id);
   else if (action === 'review') setReview(el.dataset.value);
-  else if (action === 'set-remind') setRemind(el.dataset.id,Number(el.dataset.days));
+  else if (action === 'draft-remind') setDraftRemind(Number(el.dataset.days));
   else if (action === 'due-review-open') { const log=logs.find(item=>item.id===el.dataset.id); closeModal('#due-review-modal'); const saved=!log || commitLogChange(log,REMIND_KEYS,item=>writeRemind(item,null,null)); completionId=null; detailReturn='history'; navigate('detail',el.dataset.id); if(!saved)toast(SAVE_FAILED_MESSAGE); }
   else if (action === 'due-review-later') { const log=logs.find(item=>item.id===el.dataset.id); const saved=!log || commitLogChange(log,REMIND_KEYS,item=>writeRemind(item,new Date(Date.now()+3*DAY_MS).toISOString(),3)); if(!saved)toast(SAVE_FAILED_MESSAGE); else { closeModal('#due-review-modal'); toast(log ? `${formatDate(log.remindAt)} ごろにまたお聞きします` : '3日後にまたお聞きします'); } }
   else if (action === 'satisfied') sealCompletion(el);
@@ -2253,7 +2227,7 @@ document.addEventListener('submit', event => { if(event.target.id === 'save-form
 document.addEventListener('input', event => { if(event.target.id === 'story-text' && detailId){ setStoryDraft(detailId,event.target.value,logs.find(item=>item.id===detailId)?.story); return; } if(event.target.id === 'option-1' || event.target.id === 'option-2'){ captureDecisionDraft(); updateDraftDisplays(); return; } if(event.target.id === 'history-search'){ historyQuery=event.target.value; const results=document.querySelector('[data-history-results]'); if(results)results.innerHTML=renderHistoryResults(); const count=event.target.closest('.history-search')?.querySelector('small'); if(count)count.textContent=historyQuery?`${filteredLogs().length}件`:''; } });
 // iOS opens the calendar on tap by itself; desktop browsers need showPicker().
 document.addEventListener('click', event => { if(event.target.matches?.('[data-remind-date]')) { try { event.target.showPicker?.(); } catch {} } });
-document.addEventListener('change', event => { if(event.target.matches?.('[data-remind-date]')) { setRemindDate(event.target); return; } if(['import-file','import-markdown-file'].includes(event.target.id)) { const [file]=event.target.files || []; readImportFile(file).finally(()=>{ event.target.value=''; }); } });
+document.addEventListener('change', event => { if(event.target.matches?.('[data-remind-date]')) { setDraftRemindDate(event.target); return; } if(['import-file','import-markdown-file'].includes(event.target.id)) { const [file]=event.target.files || []; readImportFile(file).finally(()=>{ event.target.value=''; }); } });
 document.addEventListener('pointerdown', event => {
   const button=event.target.closest('[data-action="flip-both"]');
   if(button && event.button===0 && !prefersReducedMotion()) startRevealHold(button);
