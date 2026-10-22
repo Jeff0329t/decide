@@ -53,14 +53,22 @@ main p{text-wrap:pretty;line-break:strict}
 .wtile{transition:transform .12s ease,box-shadow .12s ease}
 .wtile-head:active{background:#f7e88a}
 .wtile-more:active{opacity:.85}
-.grid a:active,.wcards a:active{transform:scale(.96)}
+.grid a{margin:-4px;padding:4px}
+.grid a:active,.grid a.is-pressed{transform:scale(.96);background:var(--accent);color:#111}
+.wcards a:active,.wcards a.is-pressed{background:#f7e88a}
+.wtile-cards a.is-pressed{background:var(--accent);color:#111}
 .crumbs a:active,.alist a:active,.note a:active{opacity:.55}
 @media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 /* reading-feel:end */`;
 
+// Card tiles and rows stay lit from the tap until the next page opens (cleared on 戻る via pageshow),
+// so a slow page load never looks like a missed tap. Progressive enhancement: the links work without it.
+const PRESS_JS = `<script data-press>(function(){var S='.wjump a,.grid a,.wcards a,.wtile-cards a';function clear(){[].forEach.call(document.querySelectorAll('.is-pressed'),function(x){x.classList.remove('is-pressed')})}document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest(S);if(!a||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;clear();a.classList.add('is-pressed')});window.addEventListener('pageshow',clear)})();</script>`;
+
 export function applyReadingFeel(html) {
   html = html.replace(/\/\* reading-feel:start \*\/[\s\S]*?\/\* reading-feel:end \*\//, '').replace(/\n<\/style>/, '</style>');
   html = html.replace('</style>', `\n${FEEL_CSS}</style>`);
+  html = html.replace(/\n?<script data-press>[\s\S]*?<\/script>/, '').replace('</body>', `${PRESS_JS}\n</body>`);
   return splitLongParagraphs(html);
 }

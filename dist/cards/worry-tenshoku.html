@@ -65,11 +65,12 @@ dl.themes dd{margin:0;padding:0 0 10px;border-bottom:1px solid var(--line)}
 .pager a{display:block;padding:10px 12px;border:1.5px solid var(--ink);background:var(--card);box-shadow:3px 3px 0 var(--ink);font-weight:700;text-decoration:none;line-height:1.5}
 .pager small{display:block;color:var(--muted);font-size:.72rem;font-weight:400}
 .wcards{margin:12px 0 0;padding:0;list-style:none}
-.wcards li{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:start;padding:14px 0;border-bottom:1px solid var(--line)}
+.wcards li{border-bottom:1px solid var(--line)}
+.wcards a{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:start;margin:0 -8px;padding:14px 8px;color:inherit;text-decoration:none}
+.wcards a:focus-visible{outline:3px solid var(--ink);outline-offset:-3px}
 .wcards img{width:100%;height:auto;display:block;border:1px solid var(--ink);background:var(--ink)}
 .wcards h3{margin:0 0 4px}
-.wcards h3 a{text-decoration:none}
-.wcards h3 a::after{content:" →";font-family:Arial,sans-serif}
+.wcards h3::after{content:" →";font-family:Arial,sans-serif}
 .wcards p{margin:0 0 4px;font-size:.92rem;line-height:1.8}
 .cats{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;padding:0;list-style:none;font-size:.84rem}
 .cats a,.cats [aria-current]{display:inline-block;padding:4px 12px;border:1.5px solid var(--ink);background:var(--card);font-weight:700;line-height:1.6;text-decoration:none}
@@ -125,7 +126,10 @@ main p{text-wrap:pretty;line-break:strict}
 .wtile{transition:transform .12s ease,box-shadow .12s ease}
 .wtile-head:active{background:#f7e88a}
 .wtile-more:active{opacity:.85}
-.grid a:active,.wcards a:active{transform:scale(.96)}
+.grid a{margin:-4px;padding:4px}
+.grid a:active,.grid a.is-pressed{transform:scale(.96);background:var(--accent);color:#111}
+.wcards a:active,.wcards a.is-pressed{background:#f7e88a}
+.wtile-cards a.is-pressed{background:var(--accent);color:#111}
 .crumbs a:active,.alist a:active,.note a:active{opacity:.55}
 @media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -182,12 +186,12 @@ main p{text-wrap:pretty;line-break:strict}
 <p class="kicker sec-k">CARDS</p>
 <h2>この悩みに関係するカード</h2>
 <ul class="wcards">
-<li><a href="./cu08"><picture><source type="image/webp" srcset="../assets/rider-waite/cu08-320.webp 320w, ../assets/rider-waite/cu08-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/cu08.jpg" alt="カップの8（Eight of Cups）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture></a><div><h3><a href="./cu08">カップの8</a></h3><p>満たされた場所から、自分の意思で離れる決断を映すカード。</p></div></li>
-<li><a href="./ar00"><picture><source type="image/webp" srcset="../assets/rider-waite/ar00-320.webp 320w, ../assets/rider-waite/ar00-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/ar00.jpg" alt="愚者（The Fool）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture></a><div><h3><a href="./ar00">愚者</a></h3><p>準備が完全でなくても、新しい道へ踏み出す勇気を表します。</p></div></li>
-<li><a href="./pe07"><picture><source type="image/webp" srcset="../assets/rider-waite/pe07-320.webp 320w, ../assets/rider-waite/pe07-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/pe07.jpg" alt="ペンタクルの7（Seven of Pentacles）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture></a><div><h3><a href="./pe07">ペンタクルの7</a></h3><p>これまでの努力と実りを冷静に見積もり、続けるか見直す視点。</p></div></li>
-<li><a href="./wa02"><picture><source type="image/webp" srcset="../assets/rider-waite/wa02-320.webp 320w, ../assets/rider-waite/wa02-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/wa02.jpg" alt="ワンドの2（Two of Wands）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture></a><div><h3><a href="./wa02">ワンドの2</a></h3><p>今いる場所から先を見渡し、次の計画を立てる段階を示します。</p></div></li>
-<li><a href="./pe01"><picture><source type="image/webp" srcset="../assets/rider-waite/pe01-320.webp 320w, ../assets/rider-waite/pe01-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/pe01.jpg" alt="ペンタクルのエース（Ace of Pentacles）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture></a><div><h3><a href="./pe01">ペンタクルのエース</a></h3><p>目の前に現れた現実的なチャンスをつかむかどうかの問い。</p></div></li>
-<li><a href="./ar13"><picture><source type="image/webp" srcset="../assets/rider-waite/ar13-320.webp 320w, ../assets/rider-waite/ar13-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/ar13.jpg" alt="死神（Death）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture></a><div><h3><a href="./ar13">死神</a></h3><p>ひとつの区切りが、次の始まりにつながることを教えてくれます。</p></div></li>
+<li><a href="./cu08"><picture><source type="image/webp" srcset="../assets/rider-waite/cu08-320.webp 320w, ../assets/rider-waite/cu08-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/cu08.jpg" alt="カップの8（Eight of Cups）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><div><h3>カップの8</h3><p>満たされた場所から、自分の意思で離れる決断を映すカード。</p></div></a></li>
+<li><a href="./ar00"><picture><source type="image/webp" srcset="../assets/rider-waite/ar00-320.webp 320w, ../assets/rider-waite/ar00-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/ar00.jpg" alt="愚者（The Fool）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><div><h3>愚者</h3><p>準備が完全でなくても、新しい道へ踏み出す勇気を表します。</p></div></a></li>
+<li><a href="./pe07"><picture><source type="image/webp" srcset="../assets/rider-waite/pe07-320.webp 320w, ../assets/rider-waite/pe07-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/pe07.jpg" alt="ペンタクルの7（Seven of Pentacles）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><div><h3>ペンタクルの7</h3><p>これまでの努力と実りを冷静に見積もり、続けるか見直す視点。</p></div></a></li>
+<li><a href="./wa02"><picture><source type="image/webp" srcset="../assets/rider-waite/wa02-320.webp 320w, ../assets/rider-waite/wa02-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/wa02.jpg" alt="ワンドの2（Two of Wands）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><div><h3>ワンドの2</h3><p>今いる場所から先を見渡し、次の計画を立てる段階を示します。</p></div></a></li>
+<li><a href="./pe01"><picture><source type="image/webp" srcset="../assets/rider-waite/pe01-320.webp 320w, ../assets/rider-waite/pe01-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/pe01.jpg" alt="ペンタクルのエース（Ace of Pentacles）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><div><h3>ペンタクルのエース</h3><p>目の前に現れた現実的なチャンスをつかむかどうかの問い。</p></div></a></li>
+<li><a href="./ar13"><picture><source type="image/webp" srcset="../assets/rider-waite/ar13-320.webp 320w, ../assets/rider-waite/ar13-480.webp 480w" sizes="96px"><img src="../assets/rider-waite/ar13.jpg" alt="死神（Death）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><div><h3>死神</h3><p>ひとつの区切りが、次の始まりにつながることを教えてくれます。</p></div></a></li>
 </ul>
 </section>
 <aside class="cta" aria-label="次の一歩">
@@ -207,6 +211,7 @@ main p{text-wrap:pretty;line-break:strict}
 <p>解釈は決断を考えるための一つの視点です。占いの結果や将来を保証するものではありません。</p>
 <p class="meta"><a href="../tokushoho">特定商取引法に基づく表記</a> ／ <a href="../terms">利用規約</a> ／ <a href="../privacy">プライバシーポリシー</a> ／ <a href="../">DECIDE. に戻る</a></p>
 </footer>
+<script data-press>(function(){var S='.wjump a,.grid a,.wcards a,.wtile-cards a';function clear(){[].forEach.call(document.querySelectorAll('.is-pressed'),function(x){x.classList.remove('is-pressed')})}document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest(S);if(!a||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;clear();a.classList.add('is-pressed')});window.addEventListener('pageshow',clear)})();</script>
 <!-- app-nav:start -->
 <style>body{padding-bottom:calc(68px + env(safe-area-inset-bottom))}
 .app-nav{position:fixed;z-index:20;left:50%;bottom:0;transform:translateX(-50%);width:min(760px,100%);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:7px max(8px,env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));background:rgba(4,4,4,.96);border-top:1px solid rgba(255,255,255,.18);font-family:Inter,"Hiragino Sans","Yu Gothic UI","Yu Gothic",sans-serif}

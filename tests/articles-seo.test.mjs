@@ -124,7 +124,7 @@ test('published articles have SEO essentials, CTAs, OGP and no JS', () => {
     assert.equal(html.split(CTA).length - 1, 1, `${a.slug} CTA count`);
     assert.match(html, /<aside class="cta"[^>]*>[\s\S]*?<a href="\.\.\/\?go=home">/, a.slug);
     assert.doesNotMatch(html, /\?from=/, a.slug);
-    assert.doesNotMatch(html, /<script(?![^>]*application\/ld\+json)/, a.slug);
+    assert.doesNotMatch(html, /<script(?![^>]*(?:application\/ld\+json|data-press))/, a.slug);
     assert.doesNotMatch(html, /sk_live|sk_test|whsec_|service_role/, a.slug);
     assert.match(sm, new RegExp(`<loc>https://decisionprocess\\.net/articles/${a.slug}</loc>`), a.slug);
     const m = html.match(/property="og:image" content="([^"]+)"/);
