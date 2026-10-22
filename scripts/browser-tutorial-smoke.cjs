@@ -73,6 +73,22 @@ const context=await browser.newContext({serviceWorkers:'block'});const page=awai
 await page.addInitScript(()=>localStorage.setItem('decide.tarot.logs.v1',JSON.stringify([{id:'existing',title:'既存の記録',createdAt:new Date().toISOString(),mode:'one',decision:'保留する',nodes:[]}])));
 await page.goto(baseURL);await page.locator('.splash-screen').waitFor();assert.equal(await page.locator('#tutorial-intro').count(),0);
 console.log('PASS existing user');await context.close();
+// A user who turned on all 78 cards with reversals still practises with 22 upright major cards.
+const rev=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'});const rp=await rev.newPage();rp.on('pageerror',e=>errors.push(e.message));
+await rp.addInitScript(()=>{ if(!sessionStorage.getItem('seeded')){ localStorage.setItem('decide.tarot.settings.v1',JSON.stringify({deckMode:'all-reversed'})); sessionStorage.setItem('seeded','1'); } });
+for(let round=0;round<5;round++){
+ await rp.goto(baseURL);await rp.locator('#tutorial-intro').waitFor();
+ await rp.locator('[data-action="tutorial-intro-next"]').click();await rp.locator('[data-action="tutorial-intro-next"]').click();
+ await rp.locator('[data-action="tutorial-start"]').click();await rp.locator('.flip-card').nth(10).waitFor();
+ const deck=await rp.evaluate(()=>({count:activeSession.drawOptions.length,upright:activeSession.drawOptions.every(card=>card.orientation==='upright'),major:activeSession.drawOptions.every(card=>MAJOR.some(major=>major.id===card.id))}));
+ assert.deepEqual(deck,{count:22,upright:true,major:true});
+ await rp.locator('.flip-card').nth(10).click();await rp.locator('.tutorial-keywords button').first().waitFor();
+ assert.equal(await rp.evaluate(()=>activeSession.nodes[0].card.orientation),'upright');
+ await rp.locator('[data-action="tutorial-skip"]').click();
+ assert.equal(await rp.evaluate(()=>JSON.parse(localStorage.getItem('decide.tarot.settings.v1')).deckMode),'all-reversed');
+ await rp.evaluate(()=>localStorage.removeItem('decide.tarot.tutorial.v1'));
+}
+console.log('PASS reversed-deck user practises with 22 upright major cards');await rev.close();
 const standalone=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'});
 const sp=await standalone.newPage();sp.on('pageerror',e=>errors.push(e.message));
 await sp.addInitScript(()=>Object.defineProperty(navigator,'standalone',{value:true}));

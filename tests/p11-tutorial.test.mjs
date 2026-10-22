@@ -33,9 +33,9 @@ test('intro explains WHY and WHAT before HOW, then starts the trial',()=>{
   assert.match(css,/\.tutorial-concept p \{[^}]*font-size: 16px/);
 });
 
-test('tutorial draw uses 22 major cards and keeps deck mode unchanged',()=>{
-  assert.match(app,/drawOptions:shuffledDeck\(MAJOR\)/);
-  assert.match(app,/function shuffledDeck\(source=settings\.deckMode\.startsWith\('major'\) \? MAJOR : DECK\)/);
+test('tutorial draw uses 22 upright major cards and keeps deck mode unchanged',()=>{
+  assert.match(app,/drawOptions:shuffledDeck\(MAJOR,false\)/);
+  assert.match(app,/function shuffledDeck\(source=settings\.deckMode\.startsWith\('major'\) \? MAJOR : DECK, useReversed=settings\.deckMode\.endsWith\('reversed'\)\)/);
   assert.match(app,/orientation:useReversed && Math\.random\(\)<\.28 \? 'reversed' : 'upright'/);
   assert.match(app,/const contentReady=loadCardContent\(\);\n  if\(!activeSession \|\| activeSession\.id!==sessionId\)return;/);
   assert.match(app,/if\(tutorial\?\.stage===2\)beginTutorialResult\(\)/);

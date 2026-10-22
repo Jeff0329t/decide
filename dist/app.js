@@ -340,8 +340,7 @@ function randomCard(exclude=[]) {
   const useReversed = settings.deckMode.endsWith('reversed');
   return { ...base, orientation: useReversed && Math.random() < .28 ? 'reversed' : 'upright' };
 }
-function shuffledDeck(source=settings.deckMode.startsWith('major') ? MAJOR : DECK) {
-  const useReversed=settings.deckMode.endsWith('reversed');
+function shuffledDeck(source=settings.deckMode.startsWith('major') ? MAJOR : DECK, useReversed=settings.deckMode.endsWith('reversed')) {
   return source.map(card=>({...card,orientation:useReversed && Math.random()<.28 ? 'reversed' : 'upright'})).sort(()=>Math.random()-.5);
 }
 function meaning(card) {
@@ -698,7 +697,7 @@ function renderTutorialStage() {
 function beginTutorialDraw() {
   if(tutorial?.stage!==1)return;
   releaseTutorialIntro(); tutorial.stage=2; tutorialEvent('step',2);
-  activeSession={id:crypto.randomUUID?.()||String(Date.now()),mode:'one',startedAt:new Date().toISOString(),nodes:[],drawOptions:shuffledDeck(MAJOR),revealed:[],tutorial:true};
+  activeSession={id:crypto.randomUUID?.()||String(Date.now()),mode:'one',startedAt:new Date().toISOString(),nodes:[],drawOptions:shuffledDeck(MAJOR,false),revealed:[],tutorial:true};
   selectedDecision=''; decisionDraft={genre:'',option1:'',option2:'',title:'',memo:''}; navigate('draw');
 }
 function beginTutorialResult() {
