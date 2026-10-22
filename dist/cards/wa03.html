@@ -94,7 +94,22 @@ main p{margin:0 0 1em}
 .wtile-q{margin:0;padding:8px 12px;background:var(--soft);border-radius:8px;font-size:.86rem}
 .wtile-cards{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
 .wtile-cards a{display:inline-block;padding:1px 10px;border:1px solid var(--line);border-radius:999px;font-size:.78rem;text-decoration:none;background:var(--soft)}
-.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}</style>
+.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}
+/* reading-feel:start */
+a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+main p{text-wrap:pretty;line-break:strict}
+main h2{border-top:0;padding:2px 0 2px 12px;border-left:6px solid var(--accent);margin-top:40px}
+.cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
+.cta a:active{transform:scale(.96)}
+.pager a:active,.cats a:active,.wjump a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:1px 1px 0 #111}
+.wtile{transition:transform .12s ease,box-shadow .12s ease}
+.wtile-head:active,.wtile-more:active{background:#f7e88a}
+.grid a:active,.wcards a:active{transform:scale(.96)}
+.crumbs a:active,.alist a:active,.note a:active{opacity:.55}
+@media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* reading-feel:end */</style>
 <title>ワンドの3の意味と待つ間の判断軸｜タロット｜DECIDE.</title>
 <meta name="description" content="応募や提案の結果待ちで迷う人へ。タロット「ワンドの3」の正位置・逆位置と象徴を解説。焦りで方向を変える前に、見通しと次の準備を整理します。自分への問いかけから、納得できる決断のヒントを探します。">
 <meta property="og:title" content="ワンドの3の意味と待つ間の判断軸｜タロット｜DECIDE.">
@@ -147,9 +162,12 @@ main p{margin:0 0 1em}
 <section>
 <h2>決断・迷いにおけるヒント</h2>
 <h3>決断の場面での読み方</h3>
-<p>ワンドの3は、すでに送り出した船を崖の上から見送る場面です。種はまかれ、あとは結果がどう返ってくるかを見守る段階にあります。決断の場面では、新しい手を増やすより、動かした計画の行方を確かめる目線が求められます。視線の先が海の向こうであるように、短期の成否だけでなく半年後、一年後の広がりを想像してみてください。次に打つべき手は、その遠い景色から逆算すると見えてきます。</p>
+<p>ワンドの3は、すでに送り出した船を崖の上から見送る場面です。種はまかれ、あとは結果がどう返ってくるかを見守る段階にあります。</p>
+<p>決断の場面では、新しい手を増やすより、動かした計画の行方を確かめる目線が求められます。</p>
+<p>視線の先が海の向こうであるように、短期の成否だけでなく半年後、一年後の広がりを想像してみてください。次に打つべき手は、その遠い景色から逆算すると見えてきます。</p>
 <h3>よくある迷いとの向き合い方</h3>
-<p>応募や提案を出したあと、返事を待つあいだに別の選択肢へ手を出したくなるとき、このカードは「待つことも行動の一部」と示します。逆位置なら、見通しが甘かった点を一つだけ見直し、次の便に乗せる準備を整えましょう。焦りで航路を変えないことが大切です。</p>
+<p>応募や提案を出したあと、返事を待つあいだに別の選択肢へ手を出したくなるとき、このカードは「待つことも行動の一部」と示します。</p>
+<p>逆位置なら、見通しが甘かった点を一つだけ見直し、次の便に乗せる準備を整えましょう。焦りで航路を変えないことが大切です。</p>
 <h3>決断前に自分に問いかけたいこと</h3>
 <p>すでに送り出したものの結果を、落ち着いて待てているか。待つ間に打つべき準備と、焦りからの余計な手とを区別できているか。一年後の景色から逆算すると、今やるべきことは何か。</p>
 <p class="note">「進めやすさ」は、その選択肢を「いま進める」ときの追い風の強さ。運勢の良し悪しではない。</p>

@@ -94,7 +94,22 @@ main p{margin:0 0 1em}
 .wtile-q{margin:0;padding:8px 12px;background:var(--soft);border-radius:8px;font-size:.86rem}
 .wtile-cards{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
 .wtile-cards a{display:inline-block;padding:1px 10px;border:1px solid var(--line);border-radius:999px;font-size:.78rem;text-decoration:none;background:var(--soft)}
-.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}</style>
+.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}
+/* reading-feel:start */
+a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+main p{text-wrap:pretty;line-break:strict}
+main h2{border-top:0;padding:2px 0 2px 12px;border-left:6px solid var(--accent);margin-top:40px}
+.cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
+.cta a:active{transform:scale(.96)}
+.pager a:active,.cats a:active,.wjump a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:1px 1px 0 #111}
+.wtile{transition:transform .12s ease,box-shadow .12s ease}
+.wtile-head:active,.wtile-more:active{background:#f7e88a}
+.grid a:active,.wcards a:active{transform:scale(.96)}
+.crumbs a:active,.alist a:active,.note a:active{opacity:.55}
+@media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* reading-feel:end */</style>
 <title>恋人の意味と心で選ぶ判断軸｜タロット正位置・逆位置｜DECIDE.</title>
 <meta name="description" content="魅力的な二つの選択肢で迷う人へ。タロット「恋人」の正位置・逆位置と象徴を解説。周囲の期待と本来の望みを分け、心から選びたい道を考えます。自分への問いかけから、納得できる決断のヒントを探します。">
 <meta property="og:title" content="恋人の意味と心で選ぶ判断軸｜タロット正位置・逆位置｜DECIDE.">
@@ -147,9 +162,11 @@ main p{margin:0 0 1em}
 <section>
 <h2>決断・迷いにおけるヒント</h2>
 <h3>決断の場面での読み方</h3>
-<p>恋人は、恋愛に限らず「何を大切にして選ぶか」という価値観の札です。天使の祝福を受ける二人の姿は、心と頭が同じ方向を向いたときの選択の強さを表しています。迷ったら、それぞれの選択肢が自分の価値観のどれに沿うのかを書き出してみましょう。条件の比較で決めきれないときほど、譲れない一点がはっきりすると答えが近づきます。</p>
+<p>恋人は、恋愛に限らず「何を大切にして選ぶか」という価値観の札です。天使の祝福を受ける二人の姿は、心と頭が同じ方向を向いたときの選択の強さを表しています。</p>
+<p>迷ったら、それぞれの選択肢が自分の価値観のどれに沿うのかを書き出してみましょう。条件の比較で決めきれないときほど、譲れない一点がはっきりすると答えが近づきます。</p>
 <h3>よくある迷いとの向き合い方</h3>
-<p>二つの道のどちらも魅力的で決めきれないとき、このカードは「選ぶことは捨てることでもある」と静かに伝えます。逆位置では、目先の誘惑や周囲の期待に流されて、本来の望みを見失っている可能性も。選んだ後の自分を想像し、誇らしく感じる方を選ぶのが一つの目安になります。</p>
+<p>二つの道のどちらも魅力的で決めきれないとき、このカードは「選ぶことは捨てることでもある」と静かに伝えます。</p>
+<p>逆位置では、目先の誘惑や周囲の期待に流されて、本来の望みを見失っている可能性も。選んだ後の自分を想像し、誇らしく感じる方を選ぶのが一つの目安になります。</p>
 <h3>決断前に自分に問いかけたいこと</h3>
 <p>二つの選択肢のうち、心から「はい」と言えるのはどちらか。損得の計算を外したとき、残る気持ちは何か。その選択を、大切な人の前で自分の言葉として語れるか。選んだあとの責任も引き受けられるか。</p>
 <p class="note">「進めやすさ」は、その選択肢を「いま進める」ときの追い風の強さ。運勢の良し悪しではない。</p>

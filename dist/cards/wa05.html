@@ -94,7 +94,22 @@ main p{margin:0 0 1em}
 .wtile-q{margin:0;padding:8px 12px;background:var(--soft);border-radius:8px;font-size:.86rem}
 .wtile-cards{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
 .wtile-cards a{display:inline-block;padding:1px 10px;border:1px solid var(--line);border-radius:999px;font-size:.78rem;text-decoration:none;background:var(--soft)}
-.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}</style>
+.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}
+/* reading-feel:start */
+a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+main p{text-wrap:pretty;line-break:strict}
+main h2{border-top:0;padding:2px 0 2px 12px;border-left:6px solid var(--accent);margin-top:40px}
+.cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
+.cta a:active{transform:scale(.96)}
+.pager a:active,.cats a:active,.wjump a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:1px 1px 0 #111}
+.wtile{transition:transform .12s ease,box-shadow .12s ease}
+.wtile-head:active,.wtile-more:active{background:#f7e88a}
+.grid a:active,.wcards a:active{transform:scale(.96)}
+.crumbs a:active,.alist a:active,.note a:active{opacity:.55}
+@media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* reading-feel:end */</style>
 <title>ワンドの5の意味と対立の整理の仕方｜タロット｜DECIDE.</title>
 <meta name="description" content="職場や家族の意見の違いで迷う人へ。タロット「ワンドの5」の正位置・逆位置と象徴を解説。争点と自分の本音を整理し、納得できる合意の形を考えます。自分への問いかけから、納得できる決断のヒントを探します。">
 <meta property="og:title" content="ワンドの5の意味と対立の整理の仕方｜タロット｜DECIDE.">
@@ -147,9 +162,12 @@ main p{margin:0 0 1em}
 <section>
 <h2>決断・迷いにおけるヒント</h2>
 <h3>決断の場面での読み方</h3>
-<p>ワンドの5では、若者たちが杖をぶつけ合っていますが、誰も傷ついてはいません。勝ち負けよりも、意見の衝突そのものを描いた札です。決断の場面では、摩擦があることを失敗のサインと受け取らないでください。異なる考えがぶつかるからこそ、案の弱点が浮かび上がります。ただし全員が同時に話している状態では何も決まりません。論点を一つに絞り、誰が最終判断をするのかを先に決めておくと、競り合いが前進の力に変わります。</p>
+<p>ワンドの5では、若者たちが杖をぶつけ合っていますが、誰も傷ついてはいません。勝ち負けよりも、意見の衝突そのものを描いた札です。</p>
+<p>決断の場面では、摩擦があることを失敗のサインと受け取らないでください。異なる考えがぶつかるからこそ、案の弱点が浮かび上がります。</p>
+<p>ただし全員が同時に話している状態では何も決まりません。論点を一つに絞り、誰が最終判断をするのかを先に決めておくと、競り合いが前進の力に変わります。</p>
 <h3>よくある迷いとの向き合い方</h3>
-<p>職場や家族で意見が割れ、どちらに付くか迷っているとき、このカードは「対立の構造を整理しよう」と促します。逆位置なら争いは収まりつつありますが、言えなかった不満がくすぶっていないか確かめを。黙って合わせることと、納得して合意することは別物です。</p>
+<p>職場や家族で意見が割れ、どちらに付くか迷っているとき、このカードは「対立の構造を整理しよう」と促します。</p>
+<p>逆位置なら争いは収まりつつありますが、言えなかった不満がくすぶっていないか確かめを。黙って合わせることと、納得して合意することは別物です。</p>
 <h3>決断前に自分に問いかけたいこと</h3>
 <p>ぶつかり合っている論点を、一つの文で言い表せるか。誰が最終的に決めるのかを、関係者で共有しているか。勝ち負けではなく、案を良くするための衝突になっているか。言えずにいる意見はないか。</p>
 <p class="note">「進めやすさ」は、その選択肢を「いま進める」ときの追い風の強さ。運勢の良し悪しではない。</p>

@@ -94,7 +94,22 @@ main p{margin:0 0 1em}
 .wtile-q{margin:0;padding:8px 12px;background:var(--soft);border-radius:8px;font-size:.86rem}
 .wtile-cards{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
 .wtile-cards a{display:inline-block;padding:1px 10px;border:1px solid var(--line);border-radius:999px;font-size:.78rem;text-decoration:none;background:var(--soft)}
-.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}</style>
+.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}
+/* reading-feel:start */
+a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+main p{text-wrap:pretty;line-break:strict}
+main h2{border-top:0;padding:2px 0 2px 12px;border-left:6px solid var(--accent);margin-top:40px}
+.cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
+.cta a:active{transform:scale(.96)}
+.pager a:active,.cats a:active,.wjump a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:1px 1px 0 #111}
+.wtile{transition:transform .12s ease,box-shadow .12s ease}
+.wtile-head:active,.wtile-more:active{background:#f7e88a}
+.grid a:active,.wcards a:active{transform:scale(.96)}
+.crumbs a:active,.alist a:active,.note a:active{opacity:.55}
+@media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* reading-feel:end */</style>
 <title>ソードの5の意味と争うかの決め方｜タロット｜DECIDE.</title>
 <meta name="description" content="対立で主張を押し通すかで迷う人へ。タロット「ソードの5」の正位置・逆位置と象徴を解説。勝つことで失うものを見積もり、本当に守りたい目的を考えます。自分への問いかけから、納得できる決断のヒントを探します。">
 <meta property="og:title" content="ソードの5の意味と争うかの決め方｜タロット｜DECIDE.">
@@ -147,9 +162,12 @@ main p{margin:0 0 1em}
 <section>
 <h2>決断・迷いにおけるヒント</h2>
 <h3>決断の場面での読み方</h3>
-<p>ソードの5は、勝者が剣を拾い集める一方、敗れた二人が背を向けて去る場面です。勝ったはずなのに、何かを失っている不毛な勝利を描いています。決断の場面では、議論や交渉に勝つことが本当の目的なのかを問い直してください。言い負かして得たものは、関係の損失に見合うでしょうか。目的が別にあるなら、勝ちにこだわらず引く選択も賢明です。どこまでなら譲れるのかを先に決めておくと、消耗戦を避けられます。</p>
+<p>ソードの5は、勝者が剣を拾い集める一方、敗れた二人が背を向けて去る場面です。勝ったはずなのに、何かを失っている不毛な勝利を描いています。</p>
+<p>決断の場面では、議論や交渉に勝つことが本当の目的なのかを問い直してください。言い負かして得たものは、関係の損失に見合うでしょうか。</p>
+<p>目的が別にあるなら、勝ちにこだわらず引く選択も賢明です。どこまでなら譲れるのかを先に決めておくと、消耗戦を避けられます。</p>
 <h3>よくある迷いとの向き合い方</h3>
-<p>対立の中で自分の主張を押し通すか迷うとき、このカードは代償を見積もるよう促します。逆位置なら、和解や負けを受け入れる時期が来ていますが、後味の悪さが残ることも。謝る、認めるといった小さな一言が、関係を立て直すきっかけになります。</p>
+<p>対立の中で自分の主張を押し通すか迷うとき、このカードは代償を見積もるよう促します。逆位置なら、和解や負けを受け入れる時期が来ていますが、後味の悪さが残ることも。</p>
+<p>謝る、認めるといった小さな一言が、関係を立て直すきっかけになります。</p>
 <h3>決断前に自分に問いかけたいこと</h3>
 <p>この議論に勝つことが、本当の目的か。勝って得るものは、失う関係に見合うか。どこまでなら譲れるのかを先に決めているか。謝る、認めるといった一言で状況が変わらないか。</p>
 <p class="note">「進めやすさ」は、その選択肢を「いま進める」ときの追い風の強さ。運勢の良し悪しではない。</p>

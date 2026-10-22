@@ -94,7 +94,22 @@ main p{margin:0 0 1em}
 .wtile-q{margin:0;padding:8px 12px;background:var(--soft);border-radius:8px;font-size:.86rem}
 .wtile-cards{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
 .wtile-cards a{display:inline-block;padding:1px 10px;border:1px solid var(--line);border-radius:999px;font-size:.78rem;text-decoration:none;background:var(--soft)}
-.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}</style>
+.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}
+/* reading-feel:start */
+a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+main p{text-wrap:pretty;line-break:strict}
+main h2{border-top:0;padding:2px 0 2px 12px;border-left:6px solid var(--accent);margin-top:40px}
+.cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
+.cta a:active{transform:scale(.96)}
+.pager a:active,.cats a:active,.wjump a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:1px 1px 0 #111}
+.wtile{transition:transform .12s ease,box-shadow .12s ease}
+.wtile-head:active,.wtile-more:active{background:#f7e88a}
+.grid a:active,.wcards a:active{transform:scale(.96)}
+.crumbs a:active,.alist a:active,.note a:active{opacity:.55}
+@media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* reading-feel:end */</style>
 <title>結婚するか迷う時の判断軸｜タロットで本音を整理｜DECIDE.</title>
 <meta name="description" content="結婚に踏み切れず、期待と不安の間で迷う人へ。相手との暮らしや価値観、自分が望む将来を整理。関連するタロットカードと自分への問いかけから、周囲の期待に流されず結婚を考えるヒントを紹介します。">
 <meta property="og:title" content="結婚するか迷う時の判断軸｜タロットで本音を整理｜DECIDE.">
@@ -109,26 +124,39 @@ main p{margin:0 0 1em}
 <div class="topbar"><a class="back" href="./worries" aria-label="悩み別に読むに戻る">← 戻る</a><nav class="crumbs" aria-label="パンくずリスト"><ol><li><a href="../">DECIDE.</a></li><li><a href="./">タロットカード78枚の意味</a></li><li aria-current="page">結婚に踏み切れないとき</li></ol></nav></div>
 <article>
 <h1>結婚に踏み切れないとき</h1>
-<p>相手のことは大切に思っている。それでも結婚となると、なぜか一歩が踏み出せない。結婚は二人の関係だけでなく、家族、仕事、お金、住む場所まで含めた長い約束です。迷いがあるのは、真剣に考えている証拠でもあります。このページでは、結婚の迷いを整理する視点と、その気持ちを映すタロットカードを紹介します。</p>
+<p>相手のことは大切に思っている。それでも結婚となると、なぜか一歩が踏み出せない。結婚は二人の関係だけでなく、家族、仕事、お金、住む場所まで含めた長い約束です。</p>
+<p>迷いがあるのは、真剣に考えている証拠でもあります。このページでは、結婚の迷いを整理する視点と、その気持ちを映すタロットカードを紹介します。</p>
 <aside class="cta" aria-label="DECIDE で考える">
 <p>恋人の視点から、あなた自身の二つの選択肢を並べてみませんか。</p>
 <a href="../?from=ar06">今抱えている迷いを、このカードの視点から考えてみる</a>
 </aside>
 <section>
 <h2>迷いの正体</h2>
-<p>結婚の迷いには、「相手への迷い」と「結婚という形への迷い」が混ざっていることがよくあります。相手には不満がないのに、自由がなくなる気がする、責任を背負う自信がない、という不安が先に立つこともあります。逆に、結婚への憧れはあるのに、この人でいいのかという確信が持てない場合もあります。年齢や周囲の結婚報告、家族からの期待が焦りを生み、自分の気持ちが見えにくくなることも少なくありません。まずは、迷っているのが「誰と」なのか「結婚そのもの」なのかを分けて考えてみましょう。</p>
+<p>結婚の迷いには、「相手への迷い」と「結婚という形への迷い」が混ざっていることがよくあります。</p>
+<p>相手には不満がないのに、自由がなくなる気がする、責任を背負う自信がない、という不安が先に立つこともあります。</p>
+<p>逆に、結婚への憧れはあるのに、この人でいいのかという確信が持てない場合もあります。</p>
+<p>年齢や周囲の結婚報告、家族からの期待が焦りを生み、自分の気持ちが見えにくくなることも少なくありません。</p>
+<p>まずは、迷っているのが「誰と」なのか「結婚そのもの」なのかを分けて考えてみましょう。</p>
 </section>
 <section>
 <h2>整理の視点</h2>
-<p>整理のためには、日常の具体的な場面を想像してみることが役立ちます。お金の使い方、休日の過ごし方、家事の分担、仕事との両立、家族との距離感。理想の生活像を言葉にして、相手のそれとどこが重なり、どこが違うのかを確かめてみましょう。違いがあること自体は問題ではなく、違いを話し合える関係かどうかが大切です。また、周囲のペースではなく、自分たちのペースで決めてよいということも忘れないでください。焦りから決めた結婚も、不安から先送りし続けることも、どちらも本音から離れた選択になりがちです。</p>
+<p>整理のためには、日常の具体的な場面を想像してみることが役立ちます。お金の使い方、休日の過ごし方、家事の分担、仕事との両立、家族との距離感。</p>
+<p>理想の生活像を言葉にして、相手のそれとどこが重なり、どこが違うのかを確かめてみましょう。違いがあること自体は問題ではなく、違いを話し合える関係かどうかが大切です。</p>
+<p>また、周囲のペースではなく、自分たちのペースで決めてよいということも忘れないでください。</p>
+<p>焦りから決めた結婚も、不安から先送りし続けることも、どちらも本音から離れた選択になりがちです。</p>
 </section>
 <section>
 <h2>カードの読み方</h2>
-<p>結婚の迷いでは、「選択」「結びつき」「家族」「決断」を表すカードが手がかりになります。恋人は、心が惹かれる相手との結びつきと同時に、自分の価値観に沿って選ぶという意味を持つカードです。カップの2は対等なパートナーシップを、カップの10は家族として築く満ち足りた暮らしを示します。審判は、心の呼びかけに応えて大きな決断をするタイミングを表します。引いたカードが関係の深まりを示しているのか、まだ自分の中で整理が必要な段階を示しているのかを見比べてみてください。</p>
+<p>結婚の迷いでは、「選択」「結びつき」「家族」「決断」を表すカードが手がかりになります。</p>
+<p>恋人は、心が惹かれる相手との結びつきと同時に、自分の価値観に沿って選ぶという意味を持つカードです。</p>
+<p>カップの2は対等なパートナーシップを、カップの10は家族として築く満ち足りた暮らしを示します。審判は、心の呼びかけに応えて大きな決断をするタイミングを表します。</p>
+<p>引いたカードが関係の深まりを示しているのか、まだ自分の中で整理が必要な段階を示しているのかを見比べてみてください。</p>
 </section>
 <section>
 <h2>自分への問いかけ</h2>
-<p>次の問いに、ゆっくり答えてみてください。結婚して手に入れたいものは何か、失うのが怖いものは何か。相手と意見が食い違ったとき、どのように話し合ってきたか。十年後の自分たちの暮らしを、具体的に思い描けるか。結婚を迷う理由を相手に伝えたことはあるか。周囲の期待や年齢の焦りがなかったとしても、同じように迷うだろうか。答えにくい問いほど、二人で話し合う価値があります。迷いを一人で抱え込まず、相手と共有することも、結婚を考えるうえで大切な一歩です。</p>
+<p>次の問いに、ゆっくり答えてみてください。結婚して手に入れたいものは何か、失うのが怖いものは何か。相手と意見が食い違ったとき、どのように話し合ってきたか。</p>
+<p>十年後の自分たちの暮らしを、具体的に思い描けるか。結婚を迷う理由を相手に伝えたことはあるか。周囲の期待や年齢の焦りがなかったとしても、同じように迷うだろうか。</p>
+<p>答えにくい問いほど、二人で話し合う価値があります。迷いを一人で抱え込まず、相手と共有することも、結婚を考えるうえで大切な一歩です。</p>
 </section>
 <section>
 <h2>この悩みに関係するカード</h2>

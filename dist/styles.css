@@ -48,7 +48,8 @@
 }
 
 * { box-sizing: border-box; }
-html { background: var(--soft); }
+/* iPhoneで横向きにしたとき文字を勝手に大きくしない */
+html { background: var(--soft); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body { margin: 0; min-width: 320px; color: var(--ink); background: var(--soft); }
 button, input, textarea { font: inherit; }
 button { color: inherit; }
@@ -469,7 +470,7 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .backup-output { display: grid; gap: 9px; margin-top: 12px; padding: 12px; border: 1px solid var(--accent-border); border-radius: 13px; background: var(--accent-soft); }
 .backup-output[hidden] { display: none; }
 .backup-output label { display: grid; gap: 7px; color: var(--muted); font-size: .75rem; font-weight: 800; }
-.backup-output textarea { min-height: 130px; resize: vertical; padding: 10px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .75rem; line-height: 1.5; }
+.backup-output textarea { min-height: 130px; resize: vertical; padding: 10px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 16px; line-height: 1.5; }
 .backup-output .button { min-height: 44px; font-size: .78rem; }
 .import-summary { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin: 18px 0 0; }
 .import-summary div { padding: 12px; border-radius: 12px; background: var(--soft); }
@@ -1209,6 +1210,7 @@ body[data-view="detail"] .app-shell { padding-bottom: 70px; }
 .splash-copy { position: relative; z-index: 2; }
 .splash-screen .home-wordmark { font-size: clamp(4.1rem,22vw,6.2rem); line-height: .9; text-shadow: 0 3px 20px #000; }
 .splash-screen .home-tagline { margin-top: 9px; color: #fff; font-size: 1rem; text-shadow: 0 2px 12px #000; }
+.splash-subline { display: inline-block; margin: 8px 0 0; padding: 3px 8px; background: rgba(0,0,0,.72); color: #ded7ca; font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; font-size: .85rem; letter-spacing: .06em; text-shadow: 0 2px 12px #000; }
 .splash-sidecopy {
   position: absolute;
   z-index: 2;
@@ -4167,11 +4169,15 @@ body.learn-active .learn-screen[data-learn-tab="lessons"] {
 .rotate-lock { display: none; }
 @media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
   .rotate-lock { display: block; position: fixed; left: 12px; right: 12px; bottom: max(10px, env(safe-area-inset-bottom)); z-index: 9999; pointer-events: none; }
-  .rotate-lock-card { display: flex; align-items: center; gap: 10px; margin: 0 auto; max-width: 420px; background: #f4efe3; color: #0b0b0b; border: 2px solid #0b0b0b; box-shadow: 4px 4px 0 #f1d527; padding: 8px 14px; }
+  .rotate-lock-card { display: flex; align-items: center; gap: 10px; margin: 0 auto; max-width: 460px; background: #f4efe3; color: #0b0b0b; border: 2px solid #0b0b0b; box-shadow: 4px 4px 0 #f1d527; padding: 8px 14px; }
   .rotate-lock-icon { display: inline-grid; place-items: center; flex: none; width: 28px; height: 28px; background: #f1d527; border: 2px solid #0b0b0b; font-size: 1rem; font-weight: 900; }
-  .rotate-lock-card p { margin: 0; font-family: var(--serif, serif); font-size: .9rem; font-weight: 800; letter-spacing: .06em; }
-  .rotate-lock-card small { font-size: .78rem; letter-spacing: .04em; opacity: .75; }
+  .rotate-lock-card p { margin: 0; white-space: nowrap; font-family: var(--serif, serif); font-size: .9rem; font-weight: 800; letter-spacing: .06em; }
+  .rotate-lock-card small { white-space: nowrap; font-size: .78rem; letter-spacing: .04em; opacity: .75; }
+  .rotate-lock-close { pointer-events: auto; display: inline-grid; place-items: center; flex: none; margin-left: auto; width: 32px; height: 32px; padding: 0; background: transparent; color: #0b0b0b; border: 2px solid #0b0b0b; font-size: 1.1rem; font-weight: 900; line-height: 1; cursor: pointer; }
+  .rotate-lock-close:active { background: #f1d527; }
 }
+/* ×で閉じたら次からは出さない */
+.rotate-hint-off .rotate-lock { display: none; }
 
 /* 削除ボタン：赤い目立つボタン */
 .danger-zone .danger-button { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 52px; background: #c8321e; color: #fff; border: 2px solid #0b0b0b; box-shadow: 4px 4px 0 #0b0b0b; font-weight: 800; font-size: 15px; letter-spacing: .04em; }
@@ -4267,12 +4273,14 @@ body[data-view="decide"] .decide-screen .pair-chip.selected { background: #0b0b0
 
 /* First-use guidance: concrete example and optional card learning. */
 .tutorial-example { margin: 0 0 18px; padding: 12px 14px; border-left: 3px solid #f1d527; background: #0b0b0b; color: #f4efe3; font-size: 15px; line-height: 1.7; }
-.tutorial-callout .tutorial-meaning-help { margin-top: 16px; padding-top: 14px; border-top: 1px solid currentColor; font-weight: 500; }
 .tutorial-callout > .button { width: 100%; min-height: 44px; white-space: normal; }
 
 .tutorial-welcome .tutorial-intro-card { justify-content: center; padding-top: max(32px, env(safe-area-inset-top)); }
 .tutorial-welcome .tutorial-intro-card h2 { max-width: none; margin: 0 0 18px; font-size: clamp(1.8rem, 7vw, 2.3rem); line-height: 1.35; }
 .tutorial-guidance { scroll-margin-top: 72px; }
+.tutorial-concept { display: grid; gap: 12px; margin: 0 0 24px; }
+.tutorial-concept p { margin: 0; padding: 10px 14px; background: rgba(0,0,0,.72); color: #fff; font-size: 16px; line-height: 1.8; backdrop-filter: blur(7px); }
+.tutorial-concept .tutorial-concept-note { margin-top: 6px; border-left: 3px solid #f1d527; background: #0b0b0b; color: #f4efe3; font-weight: 700; }
 
 .tutorial-mock-decisions button span, .tutorial-mock-decisions button small { display: block; }
 .tutorial-mock-decisions button small { margin-top: 4px; font-size: 12px; font-weight: 500; line-height: 1.4; }
@@ -4357,3 +4365,130 @@ body[data-view="decide"] .decide-screen:has(.decide-cards) .decision-options { g
 .prepare-screen.thumb-prepare[data-prepare-art="options"] { overflow: visible; overflow-x: clip; }
 /* In the browser the shell clips with overflow:hidden, which also traps sticky; clip keeps the rounded clipping without a scroll box (the home-screen app scrolls inside .app-viewport and is left alone) */
 html:not(.standalone-shell) body[data-view="prepare-options"] .app-shell { overflow: clip; }
+
+/* Tutorial readability: wrap only between phrases, one idea per line, and a clear main line on each page. */
+.tp { display: inline-block; max-width: 100%; }
+.tutorial-welcome .tutorial-intro-card h2, .tutorial-lookback .tutorial-intro-card h2 { font-size: clamp(1.7rem, 7.4vw, 2.3rem); line-height: 1.35; text-wrap: balance; }
+.tutorial-concept { gap: 10px; }
+.tutorial-concept-lead { display: grid; gap: 14px; padding: 14px 16px; background: rgba(0,0,0,.72); backdrop-filter: blur(7px); }
+.tutorial-concept .tutorial-concept-lead p { padding: 0; background: none; backdrop-filter: none; line-height: 1.75; }
+.tutorial-concept .tutorial-concept-lead p:last-child:not(:first-child) { color: #f1d527; font-weight: 700; }
+.tutorial-concept .tutorial-concept-note { margin-top: 0; padding: 12px 16px; font-size: 17px; line-height: 1.7; }
+.tutorial-example { display: grid; gap: 6px; line-height: 1.6; }
+.tutorial-example p { margin: 0; }
+.tutorial-example-quote { color: #fff; font-family: "Hiragino Mincho ProN","Yu Mincho",serif; font-size: 18px; font-weight: 700; }
+.tutorial-example-note { color: #bdb6a9; font-size: 13px; }
+.tutorial-intro-lines p { display: grid; grid-template-columns: 6.4em minmax(0,1fr); align-items: baseline; column-gap: 8px; }
+.tutorial-intro-lines p b { justify-self: start; margin-right: 0; }
+.tutorial-callout p + p { margin-top: 10px; }
+.tutorial-meaning-help { margin: 0; padding: 12px 14px; border: 1px solid rgba(244,239,227,.3); background: rgba(0,0,0,.6); color: #ded7ca; font-size: 14px; line-height: 1.6; }
+.tutorial-meaning-help b { display: block; margin-bottom: 6px; color: #f1d527; font-size: 13px; letter-spacing: .06em; }
+.tutorial-meaning-help ul { display: grid; gap: 4px; margin: 0; padding-left: 1.1em; }
+.tutorial-finish-start { width: 100%; min-height: 52px; margin-top: 4px; }
+
+/* Touch feel: every control answers the finger. Uses the individual scale/translate properties so tilted plates keep their rotation. */
+:where(button, [role="button"], a.settings-link, summary) { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+:where(button:not(:disabled):not(.flip-card), a.settings-link, summary) { transition: scale .2s cubic-bezier(.3,1.5,.5,1), translate .14s ease, box-shadow .14s ease, background-color .18s ease, color .18s ease; }
+:where(button:not(:disabled):not(.flip-card), a.settings-link, summary):active { scale: .96; transition-duration: .06s; }
+:is(.learn-article-item, .learn-lesson-item, .learn-tile, .decision-log-item, .deck-preset, .stats-rank-row, .review-row, .stats-pending, .compact-card):not(:disabled):active { scale: .985; }
+.bottom-nav .nav-item:active { scale: .9; }
+.learn-tab:active, .learn-filter:active { scale: 1; translate: 2px 2px; box-shadow: 1px 1px 0 #0b0b0b; }
+.learn-tab[aria-selected="true"]:active, .learn-filter[aria-pressed="true"]:active { box-shadow: 1px 1px 0 #f1d527, 1px 1px 0 1px #0b0b0b; }
+.learn-article-item:active { scale: 1; translate: 3px 3px; box-shadow: 1px 1px 0 #0b0b0b; }
+.learn-lesson-back:active { scale: 1; translate: 2px 2px; box-shadow: 1px 1px 0 #f1d527; }
+.learn-tab, .learn-filter, .learn-article-item, .learn-lesson-back { transition: translate .14s ease, box-shadow .14s ease, background-color .18s ease, color .18s ease; }
+
+/* In-screen switches (tabs, filters, stats rows) no longer replay the whole-page rise; the chosen control pops and a new tab's panel slides in. */
+.screen.soft-enter { animation: none; }
+.screen.soft-tab [role="tabpanel"], .screen.soft-tab [data-history-results] { animation: soft-panel-in .22s ease both; }
+.just-picked { animation: pick-pop .3s cubic-bezier(.3,1.6,.5,1); }
+@keyframes soft-panel-in { from { opacity: 0; translate: 0 8px; } }
+@keyframes pick-pop { 0% { scale: .92; } 100% { scale: 1; } }
+
+/* The learn screen states its side gutter so full-bleed rows can match it. */
+.learn-screen { --learn-gutter: 22px; padding-inline: var(--learn-gutter); }
+@media (max-width: 460px) { .learn-screen { --learn-gutter: 18px; } }
+
+/* Related articles: a calmer list and a reader with a wide measure, clear section breaks and a way to keep going. */
+.learn-articles-intro { margin: 0 0 12px; padding: 0; background: none; color: #2a2620; font-size: 15px; }
+.learn-article-count { margin: -6px 0 12px; padding: 0; background: none; color: #555044; font-size: 13px; letter-spacing: .04em; }
+.learn-article-filters { margin: 0 calc(-1 * var(--learn-gutter)) 12px; padding: 2px var(--learn-gutter) 10px; scroll-padding-inline: var(--learn-gutter); scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 28px), transparent); }
+.learn-article-filters::-webkit-scrollbar { display: none; }
+.learn-article-list { gap: 12px; }
+.learn-article-item { padding: 14px 16px 15px; background: #fffdf6; }
+.learn-article-item strong { margin: 8px 0 6px; font-family: "Hiragino Mincho ProN","Yu Mincho",serif; font-size: 17px; font-weight: 800; line-height: 1.55; text-wrap: pretty; }
+.learn-article-item p { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; color: #4a453b; font-size: 14px; line-height: 1.7; }
+.learn-article-item.is-read { background: #f4efe3; }
+.learn-article-item.is-read strong { color: #4a453b; }
+.learn-article-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 0; color: #555044; font-size: 12px; letter-spacing: .04em; line-height: 1.4; }
+.learn-article-tag { padding: 2px 7px; background: #0b0b0b; color: #f1d527; font-weight: 700; }
+.learn-article-done { margin-left: auto; padding: 1px 7px; border: 1px solid #555044; font-weight: 700; }
+.learn-article-done::before { content: "✓ "; }
+.learn-article-more { margin-top: 4px; }
+
+.learn-article-reader { margin: 0 calc(-1 * var(--learn-gutter)); padding: 20px var(--learn-gutter) 28px; border: 0; border-top: 2px solid #0b0b0b; background: #fbf8f0; }
+.learn-article-reader > .learn-lesson-back { margin-bottom: 18px; }
+.learn-article-reader > .learn-article-meta { margin-bottom: 10px; font-size: 13px; }
+.learn-article-reader > h2 { margin: 0 0 26px; padding-bottom: 18px; border-bottom: 2px solid #0b0b0b; font-family: "Hiragino Mincho ProN","Yu Mincho",serif; font-size: clamp(22px, 6vw, 26px); font-weight: 800; line-height: 1.5; text-wrap: pretty; }
+.learn-article-body { max-width: 34em; color: #1e1b16; font-size: 17px; line-height: 2; letter-spacing: .03em; line-break: strict; }
+.learn-article-body p { margin: 0 0 1.3em; color: #1e1b16; line-height: 2; text-wrap: pretty; }
+.learn-article-body h2 { margin: 2.2em 0 .9em; padding: 2px 0 2px 12px; border-left: 6px solid #f1d527; font-family: "Hiragino Mincho ProN","Yu Mincho",serif; font-size: 20px; font-weight: 800; line-height: 1.55; text-wrap: pretty; }
+.learn-article-body h3 { margin: 1.8em 0 .6em; font-size: 18px; }
+.learn-article-body blockquote { margin: 0 0 1.3em; padding: 10px 14px; border-left: 3px solid #0b0b0b; background: #f4efe3; }
+.learn-article-next { display: grid; gap: 10px; margin: 36px 0 0; padding-top: 22px; border-top: 2px solid #0b0b0b; }
+.learn-article-next h3 { justify-self: start; margin: 0 0 4px; padding: 3px 10px; background: #0b0b0b; color: #f1d527; font-size: .9rem; letter-spacing: .12em; }
+.learn-article-next .learn-article-item strong { margin: 6px 0 0; font-size: 16px; }
+.learn-read-progress { position: fixed; z-index: 13; top: 0; left: 50%; width: min(760px, 100%); height: 3px; translate: -50% 0; background: rgba(11,11,11,.08); pointer-events: none; }
+.learn-read-progress span { display: block; height: 100%; background: #f1d527; box-shadow: 0 1px 0 #0b0b0b; transform: scaleX(0); transform-origin: left; }
+.learn-article-reader > .button, .learn-article-more { border: 2px solid #0b0b0b; border-radius: 0; background: #fffdf6; color: #0b0b0b; box-shadow: 3px 3px 0 #0b0b0b; font-family: "Hiragino Mincho ProN","Yu Mincho",serif; }
+.learn-article-reader > .button:active, .learn-article-more:active { scale: 1; translate: 2px 2px; box-shadow: 1px 1px 0 #0b0b0b; }
+
+/* Lessons: the reading sheet sits on plain paper, with real card pictures and simple diagrams between short paragraphs. */
+.learn-lesson-reader { margin: 0 calc(-1 * var(--learn-gutter)); padding: 20px var(--learn-gutter) 28px; border-top: 2px solid #0b0b0b; background: #fbf8f0; }
+.learn-lesson-reader > p:not(.learn-kicker):not(.learn-minutes) { margin: 0 0 .9em; font-size: 17px; line-height: 1.95; letter-spacing: .03em; line-break: strict; text-wrap: pretty; }
+.learn-lesson-reader > h2 { margin-bottom: 18px; }
+.learn-figure { margin: 22px 0 26px; padding: 14px 14px 16px; border: 2px solid #0b0b0b; background: #fffdf6; box-shadow: 4px 4px 0 #0b0b0b; }
+.learn-figure-title { justify-self: start; display: inline-block; margin: 0 0 12px !important; padding: 3px 10px; background: #0b0b0b; color: #f1d527 !important; font-size: 13px !important; font-weight: 700; letter-spacing: .08em; line-height: 1.5 !important; }
+.learn-fig-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.learn-fig-row-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.learn-fig-row-2 { grid-template-columns: repeat(2, minmax(0, 120px)); justify-content: center; gap: 24px; }
+.learn-fig-card { margin: 0; min-width: 0; text-align: center; }
+.learn-fig-frame { display: block; padding: 3px; border: 1.5px solid #0b0b0b; background: #0b0b0b; }
+.learn-fig-frame img { display: block; width: 100%; height: auto; aspect-ratio: 300 / 520; object-fit: cover; }
+.learn-fig-card.is-reversed img { transform: rotate(180deg); }
+.learn-fig-card figcaption { display: grid; gap: 1px; margin-top: 6px; line-height: 1.4; }
+.learn-fig-card figcaption b { color: #0b0b0b; font-size: 13px; }
+.learn-fig-card figcaption span { color: #555044; font-size: 12px; word-break: keep-all; overflow-wrap: anywhere; }
+.learn-split { display: grid; grid-template-columns: 22fr 56fr; margin-bottom: 14px; border: 2px solid #0b0b0b; font-size: 12px; line-height: 1.35; }
+.learn-split > span { display: grid; gap: 1px; padding: 8px 6px; text-align: center; }
+.learn-split b { font-size: 12px; }
+.learn-split-major { background: #0b0b0b; color: #f1d527; }
+.learn-split-minor { background: #f1d527; color: #0b0b0b; border-left: 2px solid #0b0b0b; }
+.learn-split span span { font-family: Didot,"Bodoni 72",serif; font-size: 18px; font-weight: 700; }
+.learn-figure-journey .learn-journey { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.learn-figure-journey .learn-journey-step { display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 12px; align-items: start; padding: 0 0 10px !important; border: 0 !important; border-bottom: 1px dashed #b9b09c !important; background: none !important; box-shadow: none !important; }
+.learn-figure-journey .learn-journey-step:last-child { padding-bottom: 0 !important; border-bottom: 0 !important; }
+.learn-figure-journey .learn-journey-step b { display: inline-block; margin-right: 8px; padding: 0 6px; background: #f1d527; color: #0b0b0b; font-size: 12px; }
+.learn-figure-journey .learn-journey-step strong { font-size: 15px; }
+.learn-figure-journey .learn-journey-step p { margin: 4px 0 0; font-size: 14px; line-height: 1.65; }
+.learn-suit-cards { grid-template-columns: 1fr; gap: 12px; margin: 22px 0 26px; }
+.learn-suit-cards article { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 14px; align-items: start; padding: 12px; }
+.learn-suit-cards h3 { margin: 0 0 2px; font-size: 17px; }
+.learn-suit-cards p { margin: 0 !important; line-height: 1.6 !important; }
+.learn-suit-tool { color: #555044 !important; font-size: 12.5px; }
+.learn-suit-theme { margin-top: 4px !important; font-size: 15px; font-weight: 700; }
+.learn-suit-ask { margin-top: 2px !important; font-size: 14px; }
+.learn-figure-table .learn-rank-table { margin: 0; box-shadow: none !important; border: 0 !important; }
+.learn-flow { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.learn-flow li { position: relative; display: grid; grid-template-columns: 34px minmax(0, 1fr); column-gap: 12px; padding-bottom: 16px; }
+.learn-flow li:last-child { padding-bottom: 0; }
+.learn-flow li:not(:last-child)::after { content: ""; position: absolute; left: 16px; top: 34px; bottom: 2px; border-left: 2px dashed #0b0b0b; }
+.learn-flow-no { grid-row: span 2; display: grid; place-items: center; width: 34px; height: 34px; background: #0b0b0b; color: #f1d527; font: 700 17px/1 Didot,"Bodoni 72",serif; }
+.learn-flow b { font-size: 16px; line-height: 1.5; }
+.learn-flow-text { color: #4a453b; font-size: 14px; line-height: 1.6; }
+.learn-mark-read { border: 2px solid #0b0b0b; border-radius: 0; background: #0b0b0b; color: #f1d527; box-shadow: 3px 3px 0 #f1d527, 3px 3px 0 1px #0b0b0b; font-family: "Hiragino Mincho ProN","Yu Mincho",serif; }
+.learn-mark-read:active { scale: 1; translate: 2px 2px; box-shadow: 1px 1px 0 #f1d527, 1px 1px 0 1px #0b0b0b; }
+@media (max-width: 360px) { .learn-fig-row:not(.learn-fig-row-2) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.home-reading-links a { transition: background-color .15s ease, color .15s ease, scale .2s cubic-bezier(.3,1.5,.5,1); -webkit-tap-highlight-color: transparent; }
+.home-reading-links a:active { scale: .94; background: #f1d527; color: #0b0b0b; transition-duration: .06s; }

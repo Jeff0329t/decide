@@ -94,7 +94,22 @@ main p{margin:0 0 1em}
 .wtile-q{margin:0;padding:8px 12px;background:var(--soft);border-radius:8px;font-size:.86rem}
 .wtile-cards{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
 .wtile-cards a{display:inline-block;padding:1px 10px;border:1px solid var(--line);border-radius:999px;font-size:.78rem;text-decoration:none;background:var(--soft)}
-.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}</style>
+.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}
+/* reading-feel:start */
+a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+main p{text-wrap:pretty;line-break:strict}
+main h2{border-top:0;padding:2px 0 2px 12px;border-left:6px solid var(--accent);margin-top:40px}
+.cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
+.cta a:active{transform:scale(.96)}
+.pager a:active,.cats a:active,.wjump a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:1px 1px 0 #111}
+.wtile{transition:transform .12s ease,box-shadow .12s ease}
+.wtile-head:active,.wtile-more:active{background:#f7e88a}
+.grid a:active,.wcards a:active{transform:scale(.96)}
+.crumbs a:active,.alist a:active,.note a:active{opacity:.55}
+@media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* reading-feel:end */</style>
 <title>ワンドの8の意味と動く時の判断軸｜タロット｜DECIDE.</title>
 <meta name="description" content="急に進み始めた話で迷う人へ。タロット「ワンドの8」の正位置・逆位置と象徴を解説。流れの速さと準備を確かめ、連絡や行動のタイミングを考えます。自分への問いかけから、納得できる決断のヒントを探します。">
 <meta property="og:title" content="ワンドの8の意味と動く時の判断軸｜タロット｜DECIDE.">
@@ -147,9 +162,12 @@ main p{margin:0 0 1em}
 <section>
 <h2>決断・迷いにおけるヒント</h2>
 <h3>決断の場面での読み方</h3>
-<p>ワンドの8には人物が描かれず、同じ方向へ飛ぶ杖だけがあります。物事が人の思惑を超えて一気に進む流れを表すカードです。決断の場面では、じっくり検討する時間よりも、流れに乗るタイミングが価値を持ちます。返事を保留していた連絡や、送りかけたメッセージがあれば、今が出し時かもしれません。ただし勢いのある時期ほど確認漏れも起きやすいもの。最低限押さえるべき条件を三つだけ決めてから動くと安心です。</p>
+<p>ワンドの8には人物が描かれず、同じ方向へ飛ぶ杖だけがあります。物事が人の思惑を超えて一気に進む流れを表すカードです。</p>
+<p>決断の場面では、じっくり検討する時間よりも、流れに乗るタイミングが価値を持ちます。返事を保留していた連絡や、送りかけたメッセージがあれば、今が出し時かもしれません。</p>
+<p>ただし勢いのある時期ほど確認漏れも起きやすいもの。最低限押さえるべき条件を三つだけ決めてから動くと安心です。</p>
 <h3>よくある迷いとの向き合い方</h3>
-<p>急に話がまとまり始め、このまま進めてよいか不安になるとき、このカードは「流れは味方している」と告げます。逆位置なら、連絡の行き違いや遅れが起きやすい時期です。焦って追いかけるより、情報の経路を一本に整理することを優先しましょう。</p>
+<p>急に話がまとまり始め、このまま進めてよいか不安になるとき、このカードは「流れは味方している」と告げます。逆位置なら、連絡の行き違いや遅れが起きやすい時期です。</p>
+<p>焦って追いかけるより、情報の経路を一本に整理することを優先しましょう。</p>
 <h3>決断前に自分に問いかけたいこと</h3>
 <p>流れに乗るべきタイミングが、まさに今ではないか。動く前に最低限確認すべき条件を三つ挙げられるか。保留している連絡はないか。勢いの中で見落としやすいことは何か。</p>
 <p class="note">「進めやすさ」は、その選択肢を「いま進める」ときの追い風の強さ。運勢の良し悪しではない。</p>

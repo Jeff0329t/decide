@@ -5,10 +5,11 @@
   let data=null, pending=null, tab='cards', filter='all', query='', lessonId=null;
   let articles=null, articlePending=null, articleError=false, articleId=null, articleQuery='', articleCategory='all', articleLimit=12, articleListScroll=0;
   const TABS=[['cards','図鑑'],['lessons','学ぶ'],['articles','関連記事']];
-  let viewed=[], read={}, visible=[], cardIndex=-1, direction='upright', returnTile=null, observer=null;
+  let viewed=[], read={}, articlesRead=[], visible=[], cardIndex=-1, direction='upright', returnTile=null, observer=null;
   const state=load(KEY,{});
   if(Array.isArray(state.viewed))viewed=[...new Set(state.viewed.filter(id=>typeof id==='string'))];
   if(state.lessons && typeof state.lessons==='object' && !Array.isArray(state.lessons))read={...state.lessons};
+  if(Array.isArray(state.articles))articlesRead=[...new Set(state.articles.filter(id=>typeof id==='string'))];
 
   function el(tag, cls='', value=null) {
     const node=document.createElement(tag);
@@ -20,7 +21,7 @@
     const node=el('button',cls,label); node.type='button'; node.dataset.learn=action; return node;
   }
   function signal(action,id='') { window.dispatchEvent(new CustomEvent('decide:learn',{detail:{action,id}})); }
-  function save() { safeSetItem(KEY,JSON.stringify({viewed,lessons:read})); }
+  function save() { safeSetItem(KEY,JSON.stringify({viewed,lessons:read,articles:articlesRead})); }
   function fetchData() {
     if(pending)return pending;
     pending=Promise.all([loadCardContent(),fetch('./assets/learn.json').then(r=>{if(!r.ok)throw Error('load');return r.json();})])
@@ -173,7 +174,7 @@
   }
   function renderLessons(root) {
     const pane=el('div','learn-lessons');pane.setAttribute('role','tabpanel');
-    if(lessonId){renderLesson(pane);root.append(pane);return;}
+    if(lessonId){pane.classList.add('learn-lesson-reader');renderLesson(pane);root.append(pane);return;}
     data.lessons.forEach(lesson=>{
       const b=btn('','lesson','learn-lesson-item');b.dataset.id=lesson.id;
       const label=el('span');label.append(el('strong','',lesson.title),el('p','',lesson.summary));
@@ -182,20 +183,68 @@
     if(data.lessons.every(l=>read[l.id])){const done=el('div','learn-complete');done.append(el('p','', 'タロットの基礎は、ひととおり読みました。カードを引いて、試してみましょう'),btn('ホームへ','home','button'));pane.append(done);}
     root.append(pane);
   }
+  function cardThumb(code, caption='', note='', cls='') {
+    const item=allCards().find(c=>c.copy.id===code);
+    const fig=el('figure',`learn-fig-card ${cls}`.trim());const frame=el('span','learn-fig-frame');
+    const img=el('img');img.src=`./assets/rider-waite/${code}-320.webp`;img.alt=item?.copy.name||'';img.width=320;img.height=Math.round(cardImageHeight(item?.base||{})*2/3);
+    img.loading='lazy';img.decoding='async';img.addEventListener('error',()=>{if(img.src.endsWith('.webp'))img.src=`./assets/rider-waite/${code}.jpg`;},{once:true});
+    frame.append(img);fig.append(frame);
+    const text=el('figcaption');if(caption)text.append(el('b','',caption));if(note){const span=el('span');note.split(/(?<=の)/).forEach((part,i)=>{if(i)span.append(document.createElement('wbr'));span.append(part);});text.append(span);}if(caption||note)fig.append(text);
+    return fig;
+  }
+  function figureBox(title, cls, ...children) {
+    const box=el('div',`learn-figure ${cls}`);if(title)box.append(el('p','learn-figure-title',title));box.append(...children);return box;
+  }
+  const LESSON_FIGURES={
+    composition(){
+      const bar=el('div','learn-split');bar.setAttribute('role','img');bar.setAttribute('aria-label','78枚のうち、大アルカナが22枚、小アルカナが56枚');
+      const major=el('span','learn-split-major');major.append(el('b','','大アルカナ'),el('span','','22枚'));
+      const minor=el('span','learn-split-minor');minor.append(el('b','','小アルカナ'),el('span','','56枚'));bar.append(major,minor);
+      const cards=el('div','learn-fig-row');cards.append(cardThumb('ar00','大アルカナ','愚者'),cardThumb('ar17','大アルカナ','星'),cardThumb('cu03','小アルカナ','カップの3'),cardThumb('pe08','小アルカナ','ペンタクルの8'));
+      return figureBox('78枚の内わけ','learn-figure-composition',bar,cards);
+    },
+    'major-samples'(){
+      const row=el('div','learn-fig-row learn-fig-row-3');row.append(cardThumb('ar00','0 愚者','小さく試す'),cardThumb('ar08','8 力','落ち着いて向き合う'),cardThumb('ar21','21 世界','ここまでと区切る'));
+      return figureBox('大アルカナの例','learn-figure-samples',row);
+    },
+    journey(){
+      const codes=['ar00','ar01','ar08','ar21'];
+      const journey=el('ol','learn-journey');data.majorJourney.forEach((part,i)=>{const row=el('li','learn-journey-step');const text=el('div');text.append(el('b','',part.range),el('strong','',part.title),el('p','',part.text));row.append(cardThumb(codes[i],'','','learn-journey-card'),text);journey.append(row);});
+      return figureBox('愚者の旅（22枚の読み方の1つ）','learn-figure-journey',journey);
+    },
+    suits(){
+      const tools={wa:'杖',cu:'杯',sw:'剣',pe:'金貨'};
+      const suits=el('div','learn-suit-cards');data.suits.forEach(part=>{const c=el('article');const text=el('div');text.append(el('h3','',part.name),el('p','learn-suit-tool',`${tools[part.id]}の絵・${part.element}`),el('p','learn-suit-theme',part.theme),el('p','learn-suit-ask',part.asks));c.append(cardThumb(`${part.id}01`,'','','learn-suit-card'),text);suits.append(c);});
+      return suits;
+    },
+    numbers(){
+      const label=n=>data.numbers.find(x=>x.n===n)?.label||'';
+      const row=el('div','learn-fig-row learn-fig-row-3');row.append(cardThumb('wa01','1（エース）',label(1)),cardThumb('wa05','5',label(5)),cardThumb('wa10','10',label(10)));
+      return figureBox('数字のカード（ワンドの例）','learn-figure-numbers',row);
+    },
+    court(){
+      const row=el('div','learn-fig-row');data.court.forEach((c,i)=>row.append(cardThumb(`cu${11+i}`,c.name,['学び始める人','行動する人','寄り添う人','支える人'][i])));
+      return figureBox('人物のカード（カップの例）','learn-figure-court',row);
+    },
+    'rank-table'(){
+      const table=el('table','learn-rank-table');const body=el('tbody');
+      [...data.numbers.map(n=>[String(n.n),n.label]),...data.court.map(c=>[c.name,c.label])].forEach(([name,label])=>{const row=el('tr');row.append(el('th','',name),el('td','',label));body.append(row);});table.append(body);
+      return figureBox('数字と人物の目安','learn-figure-table',table);
+    },
+    orientation(){
+      const row=el('div','learn-fig-row learn-fig-row-2');row.append(cardThumb('ar17','正位置','ふつうの向き'),cardThumb('ar17','逆位置','上下が逆さま','is-reversed'));
+      return figureBox('同じ「星」のカードの、2つの向き','learn-figure-orientation',row);
+    },
+    flow(){
+      const steps=el('ol','learn-flow');[['引く','迷いを1つ決めて、カードを引く'],['読む','説明を読んで、どう感じたか確かめる'],['決める','進む・見送る・保留するを選ぶ'],['ふり返る','あとでログに、どうだったかを残す']].forEach(([title,text],i)=>{const li=el('li');li.append(el('span','learn-flow-no',i+1),el('b','',title),el('span','learn-flow-text',text));steps.append(li);});
+      return figureBox('DECIDEの使い方の流れ','learn-figure-flow',steps);
+    },
+  };
   function renderLesson(pane) {
     const lesson=data.lessons.find(l=>l.id===lessonId);if(!lesson)return;
     pane.append(btn('← レッスン一覧','lesson-list','learn-lesson-back'),el('p','learn-kicker','LESSON'),el('h2','',lesson.title));
-    lesson.body.forEach(part=>paragraph(pane,part));
-    if(lesson.id==='l2'){
-      const journey=el('div','learn-journey');data.majorJourney.forEach(part=>{const row=el('div','learn-journey-step');row.append(el('b','',part.range),el('strong','',part.title),el('p','',part.text));journey.append(row);});pane.append(journey);
-    }
-    if(lesson.id==='l3'){
-      const suits=el('div','learn-suit-cards');data.suits.forEach(part=>{const c=el('article');c.append(el('h3','',`${part.name}（${part.element}）`),el('p','',part.theme),el('p','',part.asks));suits.append(c);});pane.append(suits);
-    }
-    if(lesson.id==='l4'){
-      const table=el('table','learn-rank-table');const body=el('tbody');
-      [...data.numbers.map(n=>[String(n.n),n.label]),...data.court.map(c=>[c.name,c.label])].forEach(([name,label])=>{const row=el('tr');row.append(el('th','',name),el('td','',label));body.append(row);});table.append(body);pane.append(table);
-    }
+    const figures=Array.isArray(lesson.figures)?lesson.figures:[];
+    lesson.body.forEach((part,index)=>{paragraph(pane,part);figures.filter(f=>f.after===index && LESSON_FIGURES[f.type]).forEach(f=>pane.append(LESSON_FIGURES[f.type]()));});
     const points=el('section','learn-points');points.append(el('h3','','覚えておきたいこと'));const list=el('ul');lesson.points.forEach(p=>list.append(el('li','',p)));points.append(list);pane.append(points);
     pane.append(btn(read[lesson.id]?'読んだ ✓':'読んだ','read-lesson','button learn-mark-read'));
   }
@@ -218,14 +267,28 @@
   }
   function fillArticleList(list) {
     const matches=articleMatches();list.replaceChildren();
-    const count=list.parentElement?.querySelector('[data-article-count]');if(count)count.textContent=`${matches.length}件の記事`;
+    const count=list.parentElement?.querySelector('[data-article-count]');if(count)count.textContent=`${matches.length}件の記事${articleQuery.trim()?`（「${articleQuery.trim()}」で検索）`:''}`;
     if(!matches.length){list.append(el('p','learn-empty','見つかりませんでした。別の言葉で探してみてください。'));return;}
     matches.slice(0,articleLimit).forEach(article=>{
       const button=btn('','article','learn-article-item');button.dataset.id=article.id;
       const category=articles.categories.find(c=>c.id===article.category)?.label || '';
-      button.append(el('small','learn-article-meta',`${category} ・ 約${article.minutes}分`),el('strong','',article.title),el('p','',article.summary));list.append(button);
+      const meta=el('small','learn-article-meta');meta.append(el('span','learn-article-tag',category),el('span','',`約${article.minutes}分`));
+      if(articlesRead.includes(article.id)){meta.append(el('span','learn-article-done','読んだ'));button.classList.add('is-read');}
+      button.append(meta,el('strong','',article.title),el('p','',article.summary));list.append(button);
     });
-    if(matches.length>articleLimit)list.append(btn('もっと見る','article-more','button secondary learn-article-more'));
+    if(matches.length>articleLimit)list.append(btn(`もっと見る（あと${matches.length-articleLimit}件）`,'article-more','button secondary learn-article-more'));
+  }
+  // Long article paragraphs read better split between sentences (same rule as scripts/lib/reading-feel.mjs).
+  function splitParagraph(text) {
+    if([...text].length<=110)return [text];
+    const sentences=[];let depth=0,start=0;
+    for(let i=0;i<text.length;i++){const ch=text[i];if('「『（(【'.includes(ch))depth++;else if('」』）)】'.includes(ch))depth=Math.max(0,depth-1);else if(depth===0 && '。！？'.includes(ch)){sentences.push(text.slice(start,i+1));start=i+1;}}
+    if(start<text.length)sentences.push(text.slice(start));
+    const parts=[];let current='';
+    sentences.filter(x=>x.trim()).forEach(x=>{if(current && [...current].length+[...x].length>90){parts.push(current);current='';}current+=x;});
+    if(current)parts.push(current);
+    if(parts.length>1 && [...parts.at(-1)].length<24)parts.splice(-2,2,parts.at(-2)+parts.at(-1));
+    return parts;
   }
   function renderArticles(root) {
     const pane=el('div','learn-articles');pane.setAttribute('role','tabpanel');root.append(pane);
@@ -237,13 +300,26 @@
     const article=articleId && articles.articles.find(a=>a.id===articleId);
     if(article){
       pane.classList.add('learn-article-reader');
-      pane.append(btn('← 記事の一覧へ','article-list','learn-lesson-back'),el('h2','',article.title));
+      const category=articles.categories.find(c=>c.id===article.category)?.label || '';
+      const progress=el('div','learn-read-progress');progress.setAttribute('aria-hidden','true');progress.append(el('span'));
+      const meta=el('p','learn-article-meta');meta.append(el('span','learn-article-tag',category),el('span','',`約${article.minutes}分で読めます`));
+      pane.append(progress,btn('← 記事の一覧へ','article-list','learn-lesson-back'),meta,el('h2','',article.title));
       const body=el('article','learn-article-body');
-      article.blocks.forEach(block=>body.append(el(block.type==='li'?'p':block.type,'',block.type==='li'?`・${block.text}`:block.text)));
-      pane.append(body,btn('記事の一覧へ戻る','article-list','button secondary'));return;
+      article.blocks.forEach(block=>{if(block.type==='p')splitParagraph(block.text).forEach(part=>body.append(el('p','',part)));else body.append(el(block.type==='li'?'p':block.type,'',block.type==='li'?`・${block.text}`:block.text));});
+      pane.append(body);
+      const next=articles.articles.filter(a=>a.id!==article.id && a.category===article.category);
+      const picks=[...next.filter(a=>!articlesRead.includes(a.id)),...next.filter(a=>articlesRead.includes(a.id))].slice(0,2);
+      if(picks.length){
+        const more=el('section','learn-article-next');more.append(el('h3','','つづけて読む'));
+        picks.forEach(a=>{const b=btn('','article','learn-article-item');b.dataset.id=a.id;b.append(el('small','learn-article-meta',`約${a.minutes}分`),el('strong','',a.title));more.append(b);});
+        pane.append(more);
+      }
+      pane.append(btn('記事の一覧へ戻る','article-list','button secondary'));
+      if(!articlesRead.includes(article.id)){articlesRead.push(article.id);save();}
+      return;
     }
     pane.append(el('p','learn-articles-intro','気になる話から読んでみましょう。'));
-    const filters=el('div','learn-filters');filters.setAttribute('aria-label','記事のテーマ');
+    const filters=el('div','learn-filters learn-article-filters');filters.setAttribute('aria-label','記事のテーマ');
     [['all','すべて'],...articles.categories.map(c=>[c.id,c.label])].forEach(([id,label])=>{
       const button=btn(label,'article-filter','learn-filter');button.dataset.category=id;button.setAttribute('aria-pressed',String(articleCategory===id));filters.append(button);
     });pane.append(filters);
@@ -275,9 +351,9 @@
     if(action==='related'){closeModal('#card-modal');tab='lessons';lessonId=target.dataset.id;setTimeout(()=>{render();scrollAppTo(0);signal('lesson',lessonId);},190);return;}
     if(action==='tab'){tab=target.dataset.tab;lessonId=null;articleId=null;render();return;}
     if(action==='article-retry'){fetchArticles();render();return;}
-    if(action==='article'){articleListScroll=appScrollTop();articleId=target.dataset.id;lastArticleId=articleId;render();scrollAppTo(0);app.focus({preventScroll:true});return;}
+    if(action==='article'){if(!articleId)articleListScroll=appScrollTop();articleId=target.dataset.id;lastArticleId=articleId;render();scrollAppTo(0);app.focus({preventScroll:true});updateReadProgress();return;}
     if(action==='article-list'){showArticleList();return;}
-    if(action==='article-filter'){articleCategory=target.dataset.category;articleLimit=12;render();document.querySelector('[data-learn="article-filter"][aria-pressed="true"]')?.focus({preventScroll:true});return;}
+    if(action==='article-filter'){articleCategory=target.dataset.category;articleLimit=12;document.querySelectorAll('[data-learn="article-filter"]').forEach(b=>b.setAttribute('aria-pressed',String(b===target)));target.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});fillArticleList(document.querySelector('[data-article-list]'));return;}
     if(action==='article-more'){const previous=articleLimit;articleLimit+=12;const list=document.querySelector('[data-article-list]');fillArticleList(list);list.querySelectorAll('[data-learn="article"]')[previous]?.focus({preventScroll:true});return;}
     if(action==='filter'){filter=target.dataset.filter;document.querySelectorAll('.learn-filter').forEach(b=>b.setAttribute('aria-pressed',String(b===target)));fillGrid(document.querySelector('[data-learn-grid]'));return;}
     if(action==='lesson'){lessonId=target.dataset.id;render();scrollAppTo(0);signal('lesson',lessonId);return;}
@@ -293,5 +369,12 @@
     const tabButton=event.target.closest?.('.learn-tab');if(!tabButton || !['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
     event.preventDefault();const index=TABS.findIndex(([id])=>id===tab);const next=event.key==='Home'?0:event.key==='End'?TABS.length-1:(index+(event.key==='ArrowRight'?1:-1)+TABS.length)%TABS.length;tab=TABS[next][0];lessonId=null;articleId=null;render();document.querySelector(`.learn-tab[data-tab="${tab}"]`)?.focus();
   });
+  function updateReadProgress() {
+    const bar=document.querySelector('.learn-read-progress span');if(!bar)return;
+    const scroller=document.documentElement.classList.contains('standalone-shell')?document.querySelector('.app-shell'):document.documentElement;
+    const range=scroller.scrollHeight-scroller.clientHeight;
+    bar.style.transform=`scaleX(${range>0?Math.min(1,Math.max(0,appScrollTop()/range)):1})`;
+  }
+  document.addEventListener('scroll',updateReadProgress,{capture:true,passive:true});
   window.DECIDE_LEARN={open,render,close:goBack};
 })();
