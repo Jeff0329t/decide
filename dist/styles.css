@@ -4409,6 +4409,8 @@ body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(13
 /* Tutorial: leave room under the last button (Safari's floating toolbar sits over the bottom edge), and show nothing that looks tappable but is not. */
 .tutorial-lookback .tutorial-intro-card { padding-bottom: calc(48px + env(safe-area-inset-bottom)); }
 body.tutorial-running .bottom-nav { display: none !important; }
+/* The fixed page counter (.tutorial-stage-controls, ~50px tall) must not sit on the heading or the drawn card. */
+body.tutorial-running :is(.draw-screen, .map-screen) { padding-top: calc(max(8px, env(safe-area-inset-top)) + 64px); }
 .tutorial-running .reflection-card { display: none; }
 .tutorial-mock-field { border: 0; border-left: 3px solid #b9b1a3; background: transparent; padding-block: 4px; }
 
