@@ -447,7 +447,7 @@ ${published.length ? `<section class="idx-sec" id="articles">
 <p>読んだら、次はあなたの迷いを。<br>カードを引いて、選択肢を整理します。</p>
 <a href="../?go=home">カードを引いて決める<span aria-hidden="true">→</span></a>
 </aside>
-<script>${INDEX_SEARCH_JS}</script>
+<script>${INDEX_SEARCH_JS}${INDEX_NAV_JS}</script>
 </main>`;
   return layout({
     title, description, path, ogType: 'website', ogImage: `${ORIGIN}/og-image-v3.png`,
@@ -465,6 +465,10 @@ const WORRY_SHORT = {
 
 // カード名・キーワードの絞り込み（JS がないときは検索欄ごと隠れたまま）。カタカナはひらがなに寄せて比べる
 const INDEX_SEARCH_JS = `(function(){var box=document.querySelector('.csearch');if(!box)return;box.hidden=false;var input=box.querySelector('input'),count=box.querySelector('.cs-count'),empty=document.querySelector('.cs-empty'),items=[].slice.call(document.querySelectorAll('.cgrid li')),suits=[].slice.call(document.querySelectorAll('.suit'));function norm(s){return String(s).toLowerCase().replace(/\\s+/g,'').replace(/[\\u30a1-\\u30f6]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-96)})}items.forEach(function(li){li._q=norm(li.getAttribute('data-q'))});input.addEventListener('input',function(){var q=norm(input.value),n=0;items.forEach(function(li){var hit=!q||li._q.indexOf(q)>-1;li.hidden=!hit;if(hit)n++});suits.forEach(function(s){s.hidden=!!q&&!s.querySelector('.cgrid li:not([hidden])')});count.textContent=q?n+'枚見つかりました':'';empty.hidden=n>0})})();`;
+
+// ページ内ジャンプで現在地を見失わないように: なめらかに移動し、着いた見出しを光らせ、
+// 「元の場所へ戻る」ボタンを出し、スートのバーで今いる場所を示す（JS がなければ通常のアンカー移動）
+const INDEX_NAV_JS = `(function(){var main=document.querySelector('main.idx');if(!main)return;var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,how=reduce?'auto':'smooth',origin=null;var back=document.createElement('button');back.type='button';back.className='jump-back';back.hidden=true;document.body.appendChild(back);var landing=null,landTimer=0;function land(){clearTimeout(landTimer);if(landing){flash(landing);landing=null}}window.addEventListener('scrollend',land);function flash(t){var h=t.querySelector('.suit-head,.sec-head')||t;h.classList.remove('flash');void h.offsetWidth;h.classList.add('flash')}main.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href^="#"]');if(!a)return;var t=document.getElementById(a.getAttribute('href').slice(1));if(!t)return;e.preventDefault();var dist=t.getBoundingClientRect().top,down=dist>0;origin=window.scrollY;t.scrollIntoView({behavior:how,block:'start'});history.replaceState(null,'','#'+t.id);clearTimeout(landTimer);if(reduce||Math.abs(dist)<80){flash(t)}else{landing=t;landTimer=setTimeout(land,'onscrollend' in window?3000:900)}back.textContent=(down?'↑':'↓')+' 元の場所へ戻る';back.hidden=false});back.addEventListener('click',function(){if(origin!==null)window.scrollTo({top:origin,behavior:how});origin=null;back.hidden=true});var bar=document.querySelector('.suits'),links={},cur=null,suits=[].slice.call(document.querySelectorAll('.suit'));[].forEach.call(document.querySelectorAll('.suits a'),function(a){links[a.getAttribute('href').slice(1)]=a});function setCur(id){if(id===cur)return;cur=id;for(var k in links){if(k===id)links[k].setAttribute('aria-current','true');else links[k].removeAttribute('aria-current')}var a=id&&links[id];if(a&&bar)bar.scrollTo({left:a.offsetLeft-(bar.clientWidth-a.offsetWidth)/2,behavior:how})}function spy(){var line=(bar?bar.getBoundingClientRect().bottom:0)+24,id=null,last=null;suits.forEach(function(s){if(s.hidden)return;last=s;if(s.getBoundingClientRect().top<=line)id=s.id});if(last&&last.getBoundingClientRect().bottom<line)id=null;setCur(id)}var tick=false;window.addEventListener('scroll',function(){if(tick)return;tick=true;requestAnimationFrame(function(){tick=false;spy()})},{passive:true});var q=document.getElementById('card-q');if(q)q.addEventListener('input',spy);spy()})();`;
 
 const INDEX_CSS = `.idx-head{padding:14px 0 0}
 .idx h1{margin:6px 0 2px;font-size:2.15rem;line-height:1.2}
@@ -503,7 +507,13 @@ const INDEX_CSS = `.idx-head{padding:14px 0 0}
 .suits{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;margin:4px -16px 0;padding:8px 16px;background:#f4efe3;border-bottom:1px solid rgba(17,17,17,.18);scrollbar-width:none}
 .suits::-webkit-scrollbar{display:none}
 .suits a{flex:none;display:flex;align-items:baseline;gap:5px;padding:6px 11px;border:1.5px solid #111;background:#fffdf7;font-size:.8rem;font-weight:700;text-decoration:none}
-.suits a:active{background:#f1d527}
+.suits a:active,.suits a[aria-current]{background:#f1d527}
+.suits a[aria-current]{box-shadow:2px 2px 0 #111}
+.flash{animation:idx-flash 1.6s ease-out both}
+@keyframes idx-flash{0%,45%{outline:4px solid #f1d527;outline-offset:3px}100%{outline:4px solid rgba(241,213,39,0);outline-offset:3px}}
+.jump-back{position:fixed;z-index:21;left:50%;bottom:calc(80px + env(safe-area-inset-bottom));transform:translateX(-50%);padding:10px 18px;border:1.5px solid #111;background:#f1d527;color:#111;box-shadow:3px 3px 0 #111;font:700 .86rem/1.4 "Hiragino Mincho ProN","Yu Mincho",serif;white-space:nowrap;cursor:pointer}
+.jump-back[hidden]{display:none}
+.jump-back:active{transform:translate(calc(-50% + 2px),2px);box-shadow:1px 1px 0 #111}
 .suits small,.suit-head small{font-family:Didot,"Bodoni 72",serif;font-weight:700}
 .suit{margin-top:18px;scroll-margin-top:56px}
 .suit[hidden],.cgrid li[hidden]{display:none}
