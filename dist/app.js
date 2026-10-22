@@ -535,6 +535,8 @@ function renderHome() {
   document.body.classList.toggle('has-logs',logs.length>0);
   const deckCount=settings.deckMode.startsWith('major') ? 22 : 78;
   document.body.dataset.homeStage=homeStage;
+  // スプラッシュ⇄ホームは navigate() を通らずここだけで切り替わるため、戻るボタンの無効状態もここで合わせる
+  updateNavigationState();
   if(homeStage==='splash') {
     app.innerHTML = `
       <section class="screen home-screen splash-screen">
