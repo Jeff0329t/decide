@@ -1663,7 +1663,8 @@ function setRemind(id,days) {
 function setRemindDate(input) {
   const log=logs.find(item=>item.id===input.dataset.id); const [y,m,d]=input.value.split('-').map(Number); if(!log || !y || !m || !d)return;
   const now=new Date(); const at=new Date(y,m-1,d,now.getHours(),now.getMinutes());
-  if(at.getTime()<=Date.now())return;
+  // iOS Safari lets people pick days before `min`; today or earlier is refused and the calendar goes back to the saved day.
+  if(new Date(y,m-1,d)<=new Date(now.getFullYear(),now.getMonth(),now.getDate())){ input.value=input.defaultValue; toast('明日以降の日付を選んでください'); return; }
   sensoryFeedback('tick');
   const saved=commitLogChange(log,REMIND_KEYS,log=>{ log.remindAt=at.toISOString(); log.remindDays=null; log.remindUpdatedAt=log.updatedAt=new Date().toISOString(); });
   renderDetail(); toast(!saved ? SAVE_FAILED_MESSAGE : `${formatDate(log.remindAt)} ごろにお聞きします`);
