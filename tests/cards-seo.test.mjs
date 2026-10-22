@@ -137,6 +137,7 @@ test('card tiles, worry card rows, theme buttons and worry chips keep a pressed 
     assert.match(html, /<script data-press>[\s\S]*?<\/script>\n<\/head>/, file);
     assert.match(scripts[0], /pagereveal/, file);
     assert.match(scripts[0], /history\.back\(\)/, file);
+    assert.match(scripts[0], /setTimeout\(function\(\)\{location\.href=t\.href\},150\)/, file);
     assert.match(html, /<a class="back" href="[^"]+"/, file);
   }
   // Each related-card row is one link: picture, name and reason all open the card page.
