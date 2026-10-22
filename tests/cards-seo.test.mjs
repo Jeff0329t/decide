@@ -120,24 +120,29 @@ test('worry pages have SEO essentials, CTAs into the app, credit and no JS', () 
 });
 
 test('card tiles, worry card rows, theme buttons and worry chips keep a pressed state until the next page opens', () => {
-  for (const file of ['major', 'worries', 'worry-tenshoku', 'cu08']) {
+  for (const file of ['major', 'worries', 'worry-tenshoku', 'cu08', 'index']) {
     const html = read(`dist/cards/${file}.html`);
     // Only the tap-feedback enhancement may run; the page itself must not need JS.
     const scripts = [...html.matchAll(/<script(?![^>]*application\/ld\+json)[^>]*>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
-    assert.equal(scripts.length, 1, file);
+    // The index also keeps its card search; nothing else may run.
+    assert.equal(scripts.length, file === 'index' ? 2 : 1, file);
+    if (file === 'index') assert.match(scripts.at(-1), /csearch/);
     assert.match(scripts[0], /is-pressed/, file);
     assert.match(scripts[0], /pageshow/, file);
     assert.doesNotMatch(scripts[0], /innerHTML|insertAdjacent|createElement|textContent/, file);
     assert.match(html, /\.grid a\.is-pressed/, file);
     assert.match(html, /\.wcards a\.is-pressed/, file);
     assert.match(html, /\.cats a\.is-pressed/, file);
-    assert.match(scripts[0], /\.cats a/, file);
+    assert.match(scripts[0], /closest\('a\[href\]'\)/, file);
     assert.match(html, /@view-transition\{navigation:auto\}/, file);
     assert.match(html, /prefers-reduced-motion:reduce\)\{[^}]*\}@view-transition\{navigation:none\}/, file);
     assert.match(html, /<script data-press>[\s\S]*?<\/script>\n<\/head>/, file);
     assert.match(scripts[0], /pagereveal/, file);
     assert.match(scripts[0], /history\.back\(\)/, file);
-    assert.match(scripts[0], /setTimeout\(function\(\)\{location\.href=t\.href\},150\)/, file);
+    assert.match(scripts[0], /else location\.href=t\.href\},150\)/, file);
+    assert.match(html, /a\.is-pressed\{background:var\(--accent\)!important/, file);
+    // In-page jumps (doors, suit tabs) are not marked as chosen: the scroll shows the result.
+    assert.match(scripts[0], /if\(t\.hash&&t\.pathname===location\.pathname&&t\.search===location\.search\)return;clear\(\)/, file);
     assert.match(html, /<a class="back" href="[^"]+"/, file);
   }
   // Each related-card row is one link: picture, name and reason all open the card page.
