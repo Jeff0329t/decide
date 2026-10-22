@@ -141,6 +141,8 @@ test('card tiles, worry card rows, theme buttons and worry chips keep a pressed 
     assert.match(scripts[0], /history\.back\(\)/, file);
     assert.match(scripts[0], /else location\.href=t\.href\},150\)/, file);
     assert.match(html, /a\.is-pressed\{background:var\(--accent\)!important/, file);
+    // In-page jumps (doors, suit tabs) are not marked as chosen: the scroll shows the result.
+    assert.match(scripts[0], /if\(t\.hash&&t\.pathname===location\.pathname&&t\.search===location\.search\)return;clear\(\)/, file);
     assert.match(html, /<a class="back" href="[^"]+"/, file);
   }
   // Each related-card row is one link: picture, name and reason all open the card page.
