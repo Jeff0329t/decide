@@ -4293,9 +4293,13 @@ body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(82
 .learn-articles .learn-filter { flex: 0 0 auto; white-space: nowrap; }
 
 /* Crawlable reading links share the cover's existing auxiliary navigation. */
-.home-reading-links { grid-column: 1 / -1; background: rgba(8,8,8,.85); display: flex; align-items: center; justify-content: center; gap: 4px; }
-.home-reading-links a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 4px 6px; color: #f4efe3; font-size: 12px; line-height: 1.4; text-underline-offset: 4px; }
+/* Each link is a bordered chip like the buttons above it, so it reads as tappable rather than as body text. */
+.home-reading-links { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1.9fr) repeat(3, minmax(0, 1fr)); gap: 6px; }
+.home-reading-links a { display: inline-flex; align-items: center; justify-content: center; gap: 3px; min-width: 0; min-height: 44px; padding: 4px 4px; border: 1px solid rgba(244,239,227,.6); background: rgba(8,8,8,.85); color: #f4efe3; font-size: 13px; font-weight: 700; line-height: 1.3; text-decoration: none; white-space: nowrap; }
+.home-reading-links a::after { content: "›"; color: #f1d527; font-size: 15px; line-height: 1; }
+.home-reading-links a:first-child::after { content: "→"; font-size: 13px; }
 .home-reading-links a:focus-visible { outline: 3px solid #f1d527; outline-offset: 1px; }
+@media (max-width: 359px) { .home-reading-links { gap: 4px; } .home-reading-links a { padding: 2px; font-size: 12px; } .home-reading-links a:first-child::after { content: none; } }
 body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(136px + env(safe-area-inset-bottom)); }
 
 /* Tutorial readability: wrap only between phrases, one idea per line, and a clear main line on each page. */
@@ -4317,6 +4321,17 @@ body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(13
 .tutorial-meaning-help b { display: block; margin-bottom: 6px; color: #f1d527; font-size: 13px; letter-spacing: .06em; }
 .tutorial-meaning-help ul { display: grid; gap: 4px; margin: 0; padding-left: 1.1em; }
 .tutorial-finish-start { width: 100%; min-height: 52px; margin-top: 4px; }
+
+/* Tutorial layout: buttons stay in the same place on every page, the collage fills the screen instead of a black band. */
+.tutorial-intro { background-attachment: scroll; }
+.tutorial-intro::before { background: linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.2) 34%,rgba(0,0,0,.62) 62%,rgba(0,0,0,.82)); }
+.tutorial-intro-card { background: none; }
+.tutorial-welcome .tutorial-intro-card { justify-content: flex-end; padding-top: max(56px, env(safe-area-inset-top)); padding-bottom: 0; }
+.tutorial-welcome .tutorial-concept { margin-bottom: 0; }
+.tutorial-welcome .tutorial-intro-note { margin-bottom: 0; }
+.tutorial-log-lead { text-shadow: 0 1px 3px #000, 0 2px 12px #000; }
+.tutorial-lookback-skip { padding-inline: 14px; background: rgba(8,8,8,.82); }
+.tutorial-welcome .tutorial-intro-actions { position: sticky; bottom: 0; z-index: 1; width: auto; max-width: none; margin: 4px -24px 0; padding: 22px 24px calc(20px + env(safe-area-inset-bottom)); background: linear-gradient(180deg,rgba(5,5,5,0),rgba(5,5,5,.92) 34%); }
 
 /* Touch feel: every control answers the finger. Uses the individual scale/translate properties so tilted plates keep their rotation. */
 :where(button, [role="button"], a.settings-link, summary) { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
@@ -4426,4 +4441,9 @@ body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(13
 .learn-mark-read:active { scale: 1; translate: 2px 2px; box-shadow: 1px 1px 0 #f1d527, 1px 1px 0 1px #0b0b0b; }
 @media (max-width: 360px) { .learn-fig-row:not(.learn-fig-row-2) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .home-reading-links a { transition: background-color .15s ease, color .15s ease, scale .2s cubic-bezier(.3,1.5,.5,1); -webkit-tap-highlight-color: transparent; }
-.home-reading-links a:active { scale: .94; background: #f1d527; color: #0b0b0b; transition-duration: .06s; }
+.home-reading-links a:active, .home-reading-links a.is-going { scale: .94; border-color: #f1d527; background: #f1d527; color: #0b0b0b; transition-duration: .06s; }
+.home-reading-links a:active::after, .home-reading-links a.is-going::after { color: #0b0b0b; }
+/* Stays lit until the article opens, so a slow network still shows the tap landed. */
+.home-reading-links a.is-going { scale: 1; animation: reading-link-going .9s ease-in-out infinite alternate; }
+@keyframes reading-link-going { to { background: #f8e889; } }
+@media (prefers-reduced-motion: reduce) { .home-reading-links a.is-going { animation: none; } }
