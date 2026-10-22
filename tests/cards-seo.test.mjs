@@ -135,7 +135,11 @@ test('worries index lists all worry pages and is linked from cards index', () =>
   assert.match(html, /"@type":\s*"ItemList"/);
   assert.equal(html.split(CTA).length - 1, 1, 'worries CTA count');
   for (const slug of worries) assert.match(html, new RegExp(`href="\\./worry-${slug}"`), slug);
-  assert.doesNotMatch(html, /<script(?![^>]*application\/ld\+json)/);
+  // Only the tap-feedback enhancement for the theme buttons may run; the page itself must not need JS.
+  const scripts = [...html.matchAll(/<script(?![^>]*application\/ld\+json)[^>]*>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
+  assert.equal(scripts.length, 1);
+  assert.match(scripts[0], /is-pressed/);
+  assert.doesNotMatch(scripts[0], /innerHTML|insertAdjacent|createElement|textContent/);
   assert.match(read('dist/cards/index.html'), /href="\.\/worries"/);
   assert.match(read('dist/sitemap.xml'), /<loc>https:\/\/decisionprocess\.net\/cards\/worries<\/loc>/);
 });

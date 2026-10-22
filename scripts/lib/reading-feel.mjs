@@ -46,7 +46,8 @@ a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 main p{text-wrap:pretty;line-break:strict}
 .cta a,.pager a,.cats a,.wjump a,.wtile-cards a,.wtile-more,.grid a,.wcards a,.alist a,.wtile-head,.back,.crumbs a{transition:transform .14s cubic-bezier(.3,1.5,.5,1),box-shadow .12s ease,background-color .15s ease,opacity .15s ease}
 .cta a:active{transform:scale(.96)}
-.pager a:active,.cats a:active,.wjump a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.pager a:active,.cats a:active,.wtile-cards a:active{transform:translate(1px,1px);background:var(--accent);color:#111}
+.wjump a:active,.wjump a.is-pressed{transform:translate(2px,2px);box-shadow:0 0 0 #111;background:var(--accent);color:#111}
 .wtile:has(.wtile-head:active){transform:translate(2px,2px);box-shadow:2px 2px 0 #111}
 .pager a:active{box-shadow:1px 1px 0 #111}
 .wtile{transition:transform .12s ease,box-shadow .12s ease}

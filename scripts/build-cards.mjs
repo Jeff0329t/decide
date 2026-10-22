@@ -204,7 +204,8 @@ main p{margin:0 0 1em}
 .steps li::before{counter-increment:s;content:counter(s,decimal-leading-zero);position:absolute;left:12px;top:14px;width:28px;height:24px;background:var(--ink);color:var(--accent);font-family:Didot,"Bodoni 72",serif;font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center}
 .steps b{display:block;margin-bottom:2px}
 .wjump{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0;padding:0;list-style:none}
-.wjump a{display:inline-block;padding:4px 12px;border:1.5px solid var(--ink);background:var(--card);text-decoration:none;font-size:.84rem;font-weight:700}
+.wjump a{display:inline-block;padding:4px 12px;border:1.5px solid var(--ink);background:var(--card);box-shadow:2px 2px 0 var(--ink);text-decoration:none;font-size:.84rem;font-weight:700}
+.wjump a:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 .wgroup-lead{color:var(--muted);font-size:.9rem;margin:0 0 4px}
 .wtiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:12px 0 0;padding:0;list-style:none}
 .wtile{display:flex;flex-direction:column;background:var(--card);border:1.5px solid var(--ink);box-shadow:4px 4px 0 var(--ink);overflow:hidden}
@@ -675,6 +676,9 @@ function firstQuestion(text) {
   return q ? q[0].trim().replace(/か。$/, 'か？') : firstSentence(text);
 }
 
+// タップしたテーマを次のページが開くまで押した状態で残す（iOS は :active がほぼ出ないため）
+const WJUMP_PRESS_JS = `(function(){var nav=document.querySelector('.wjump');if(!nav)return;nav.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a');if(!a||e.metaKey||e.ctrlKey||e.shiftKey)return;[].forEach.call(nav.querySelectorAll('.is-pressed'),function(x){x.classList.remove('is-pressed')});a.classList.add('is-pressed')});window.addEventListener('pageshow',function(){[].forEach.call(nav.querySelectorAll('.is-pressed'),function(x){x.classList.remove('is-pressed')})})})();`;
+
 function worriesIndex() {
   const path = '/cards/worries';
   const title = '悩み別に読むタロット｜転職・恋愛・引っ越しなど決断の考え方 - DECIDE.';
@@ -719,6 +723,7 @@ ${WORRIES_INTRO.map((p, i) => `<p${i === 0 ? ' class="lede"' : ''}>${esc(p)}</p>
 <nav aria-label="テーマから探す"><ul class="wjump">
 ${worries.map((w) => `<li><a href="./worry-${w.slug}">${esc(w.h1.replace(/(で|を|に)?(迷う|決められない|踏み切れない|始めるか迷う)とき$/, '').replace(/するか$/, '').replace(/るか$/, 'る'))}</a></li>`).join('\n')}
 </ul></nav>
+<script>${WJUMP_PRESS_JS}</script>
 ${sections}
 <div class="cta"><p>カードを引いて、いまの迷いを整理する</p><a href="../">${CTA_TEXT}</a></div>
 <p class="note"><a href="./">78枚すべてのカード解説を見る</a></p>
