@@ -603,6 +603,8 @@ function phraseText(target, copy) {
   });
   return target;
 }
+// phraseText for template strings: same ｜ (phrase) and \n (line) markers, returned as escaped HTML.
+const phraseHtml=copy=>copy.split('\n').map(line=>line.split('｜').map(part=>`<span class="tp">${esc(part)}</span>`).join('')).join('<br>');
 // intro pages: 0=WHY, 1=WHAT, 2=HOW (the intro has no page number)
 const TUTORIAL_INTRO_PAGES=[
   {heading:'心から｜納得いく｜決断を。',lead:['迷ったまま、｜時間が｜過ぎたり。\n勢いで決めて、｜あとで｜後悔したり。','そんなこと、｜ありませんか？'],note:'DECIDEは、\n自分で選んで｜「これでよかった」と｜思えるための｜アプリです。'},
@@ -1637,14 +1639,15 @@ function renderRemindPicker(log) {
   return `<section class="remind-picker" aria-labelledby="remind-title-${esc(log.id)}">
     <p class="remind-kicker">REMIND ME</p>
     <h2 id="remind-title-${esc(log.id)}">いつ、この決定を振り返る？</h2>
-    <p class="remind-note">やってみてどうだったか、気持ちは変わったか。一言残すだけでも、次に迷ったときの手がかりになります。まだ結論が出ていなくても大丈夫です。</p>
+    <p class="remind-note">${phraseHtml('やってみて｜どうだったか、\n気持ちは｜変わったか。\n一言｜残すだけでも、｜次に迷ったときの｜手がかりになります。')}</p>
+    <p class="remind-note remind-note-sub">${phraseHtml('まだ｜結論が出ていなくても｜大丈夫です。')}</p>
     <div class="remind-options">${REMIND_OPTIONS.map(([days,label])=>{
       const on=days ? chosen===days : log.remindAt===null;
       // 選び直すと今日から数える。選択中は保存済みの日付、それ以外は今日から数えた日付を出す
       const date=days ? (on ? at : new Date(Date.now()+days*DAY_MS)) : null;
       return `<button class="${on?'selected':''}" data-action="set-remind" data-days="${days}" data-id="${esc(log.id)}" aria-pressed="${on}">${label}${date ? `<small>${date.getMonth()+1}/${date.getDate()}</small>` : ''}</button>`;
     }).join('')}</div>
-    <p class="remind-status">${valid ? `<b>${formatDate(log.remindAt)}</b> ごろ、${window.DECIDE_EMAIL_REMINDERS?.isOn?.() ? '記録の題名を添えたメールで、振り返るきっかけをお届けします' : 'アプリを開いたときに「その後どう？」とお聞きします'}。選び直すと今日から数えます` : log.remindAt===null ? 'リマインドなし。選ぶと今日から数えた日にお聞きします' : window.DECIDE_EMAIL_REMINDERS?.isOn?.() ? '選ぶと、今日から数えたその頃に記録の題名を添えたメールで、振り返るきっかけをお届けします' : '選ぶと、今日から数えたその頃にアプリを開いたとき振り返りをご案内します'}</p>
+    <p class="remind-status">${valid ? `<b>${formatDate(log.remindAt)}</b> ごろ、<br>${phraseHtml(window.DECIDE_EMAIL_REMINDERS?.isOn?.() ? '記録の題名を添えた｜メールで、｜振り返るきっかけを｜お届けします。' : 'アプリを開いたときに、｜「その後どう？」と｜お聞きします。')}<br>${phraseHtml('選び直すと、｜今日から｜数えます。')}` : phraseHtml(log.remindAt===null ? 'リマインドなし。\n選ぶと、｜今日から数えた日に｜お聞きします。' : window.DECIDE_EMAIL_REMINDERS?.isOn?.() ? '選ぶと、｜今日から数えた｜その頃に、\n記録の題名を添えた｜メールで、｜振り返るきっかけを｜お届けします。' : '選ぶと、｜今日から数えた｜その頃に、\nアプリを開いたとき、｜振り返りを｜ご案内します。')}</p>
   </section>`;
 }
 function setRemind(id,days) {

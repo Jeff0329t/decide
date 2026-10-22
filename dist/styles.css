@@ -3536,6 +3536,10 @@ body.ritual-enter .thumb-prepare .prepare-controls { animation: ritual-rise .7s 
 .remind-options button.selected { background: #0b0b0b; color: #f1d527; box-shadow: 2px 2px 0 #f1d527; transform: rotate(-1.5deg); }
 .remind-status { margin: 9px 0 0; color: #6b6458; font-size: .75rem; line-height: 1.5; }
 .remind-status b { color: #0b0b0b; background: linear-gradient(transparent 55%, #f1d527 55%); }
+.remind-note { margin: 0 0 6px; font-size: .95rem; line-height: 1.7; }
+.remind-note.remind-note-sub { margin-bottom: 12px; color: #6b6458; font-size: .85rem; }
+.completion-copy strong { text-wrap: balance; }
+.completion-copy h1 { max-width: none; }
 
 .due-review-sheet { border: 2px solid #0b0b0b; box-shadow: 0 -6px 0 #f1d527; }
 .due-review-kicker { display: inline-block; margin: 4px 0 0; padding: 2px 9px; background: #f1d527; color: #0b0b0b; font-family: Didot,"Bodoni 72",serif; font-size: .75rem; font-weight: 700; letter-spacing: .3em; transform: rotate(-2deg); }
