@@ -119,7 +119,7 @@ if(!DECK_MODES.includes(settings.deckMode))settings.deckMode='major-upright';
 const DECK_PRESETS = [
   {mode:'major-upright',name:'シンプル',subtitle:'大アルカナ22枚・正位置のみ',one:'絵柄が印象的で、意味が分かりやすい。',benefit:'迷わず読める／初めてでも使いやすい',drawback:'日常の細かい場面までは出にくい',scene:'はじめての方。大きなテーマを考えたいとき'},
   {mode:'major-reversed',name:'深め',subtitle:'大アルカナ22枚・正位置と逆位置（44通り）',one:'22枚のまま、気をつけたい点も読める。',benefit:'一つの札を、両面から読める',drawback:'逆位置の読み方に、少し慣れが要る',scene:'大きな決断を、両面から見たいとき'},
-  {mode:'all-upright',name:'いろいろ',subtitle:'全78枚・正位置のみ',one:'身近な場面まで、カードが広がる。',benefit:'仕事・お金・人間関係など、日常の具体的な場面が出る',drawback:'枚数が多く、選ぶのに少し時間がかかる',scene:'日々の迷いを整理したいとき'},
+  {mode:'all-upright',name:'いろいろ',subtitle:'全78枚・正位置のみ',one:'身近な場面まで、カードが広がる。',benefit:'仕事・お金・人間関係など、日常の具体的な場面が出る',drawback:'枚数が多く、選ぶのに少し時間がかかる',scene:'日々のことをじっくり決めたいとき'},
   {mode:'all-reversed',name:'くわしい',subtitle:'全78枚・正位置と逆位置（156通り）',one:'状況の細部まで、両面から読める。',benefit:'細やかな読みが得られる',drawback:'情報量が多く、読むのに時間がかかる',scene:'じっくり整理したいとき'}
 ];
 let logs = (list=>Array.isArray(list) ? list.filter(log=>log && typeof log==='object' && typeof log.id==='string' && Array.isArray(log.nodes)) : [])(load(STORAGE_KEY, []));
@@ -182,7 +182,7 @@ function canInstallPrompt() { return !isIOS() && !!deferredInstallPrompt; }
 function shouldShowA2HS() { return (isIOS() || /Android/i.test(navigator.userAgent) || canInstallPrompt()) && !isStandalone() && !a2hsHidden && Number(settings.a2hsDismissedUntil || 0)<=Date.now(); }
 function homeInstallBanner() {
   if(!shouldShowA2HS())return '';
-  return `<aside class="home-install" data-a2hs-banner aria-label="ホーム画面に追加"><button class="home-install-close" data-action="dismiss-a2hs" aria-label="案内を2日間非表示にする">×</button><div class="home-install-copy"><img src="./icon-192.png?v=2" alt="" width="64" height="64"><div><h2><span class="home-install-logo" aria-label="DECIDE"><span aria-hidden="true">DECIDE<span class="home-install-dot">.</span></span></span><span class="home-install-tagline">いつでもすぐに。</span></h2><p>ホーム画面から、ワンタップで開けます。</p></div></div><button class="button home-install-button" data-action="${canInstallPrompt() ? 'a2hs-install' : 'a2hs-help'}">ホーム画面に追加</button><div class="home-install-actions"><button class="home-install-later" data-action="dismiss-a2hs">あとで</button><button class="home-install-never" data-action="hide-a2hs" aria-label="追加済み・今後表示しない">追加済み</button></div></aside>`;
+  return `<aside class="home-install" data-a2hs-banner aria-label="ホーム画面に追加"><button class="home-install-close" data-action="dismiss-a2hs" aria-label="案内を2日間非表示にする">×</button><div class="home-install-copy"><img src="./icon-192.png?v=2" alt="" width="64" height="64"><div><h2><span class="home-install-logo" aria-label="DECIDE."><span aria-hidden="true">DECIDE<span class="home-install-dot">.</span></span></span><span class="home-install-tagline">いつでもすぐに。</span></h2><p>ホーム画面から、ワンタップで開けます。</p></div></div><button class="button home-install-button" data-action="${canInstallPrompt() ? 'a2hs-install' : 'a2hs-help'}">ホーム画面に追加</button><div class="home-install-actions"><button class="home-install-later" data-action="dismiss-a2hs">あとで</button><button class="home-install-never" data-action="hide-a2hs" aria-label="追加済み・今後表示しない">追加済み</button></div></aside>`;
 }
 function refreshHomeInstallBanner() {
   const link=document.querySelector('.quickstart-screen .quickstart-cards');
@@ -219,7 +219,7 @@ async function exportLogs(records=logs, markComplete=true, format='markdown') {
   const mime=markdown?'text/markdown':'application/json';
   const blob=new Blob([content],{type:mime}); const file=typeof File==='function' ? new File([blob],filename,{type:mime}) : null;
   if(file && navigator.canShare?.({files:[file]}) && navigator.share) {
-    try { await navigator.share({files:[file],title:'DECIDEの履歴バックアップ'}); if(markComplete)markBackupComplete(exportedAt); toast('履歴を書き出しました'); return; }
+    try { await navigator.share({files:[file],title:'DECIDE.の履歴バックアップ'}); if(markComplete)markBackupComplete(exportedAt); toast('履歴を書き出しました'); return; }
     catch(error) { if(error?.name==='AbortError')return; }
   }
   const link=document.createElement('a');
@@ -239,7 +239,7 @@ function countImportFields(before,after,fields) {
   if(!hit)fields.other++;
 }
 function prepareImport(payload) {
-  if(!payload || payload.app!=='DECIDE' || payload.schema!==BACKUP_SCHEMA || !Array.isArray(payload.logs))throw new Error('DECIDEのバックアップファイルではありません。');
+  if(!payload || payload.app!=='DECIDE' || payload.schema!==BACKUP_SCHEMA || !Array.isArray(payload.logs))throw new Error('DECIDE.のバックアップファイルではありません。');
   if(!payload.logs.every(isImportLog))throw new Error('履歴データの形式が正しくありません。');
   const ids=payload.logs.map(log=>log.id); if(new Set(ids).size!==ids.length)throw new Error('同じ履歴IDが重複しています。');
   const existing=new Map(logs.map(log=>[log.id,log])); const additions=[]; let updated=0; let same=0; let conflicts=0; const fields={review:0,story:0,remind:0,other:0};
@@ -523,7 +523,7 @@ function render() {
     catch {
       app.replaceChildren();
       const section=document.createElement('section'); section.className='screen empty-state';
-      const heading=document.createElement('h1'); heading.textContent='DECIDE';
+      const heading=document.createElement('h1'); heading.textContent='DECIDE.';
       const message=document.createElement('p'); message.textContent='画面を読み直してください。';
       section.append(heading,message); app.append(section);
     }
@@ -548,7 +548,7 @@ function renderHome() {
         <p class="splash-sidecopy">A TOOL<br> FOR<br> BETTING<br> ON YOU.</p>
         <div class="splash-hit" data-action="start-app" aria-hidden="true"></div>
         <div class="splash-start" data-action="start-app">
-          <button data-action="start-app" aria-label="DECIDEをはじめる"><span>→</span></button>
+          <button data-action="start-app" aria-label="DECIDE.をはじめる"><span>→</span></button>
           <b>はじめる</b>
         </div>
         <nav class="splash-links" aria-label="使い方とカード図鑑">
@@ -575,11 +575,11 @@ function renderHome() {
       <p class="quickstart-title">引き方を選ぶ</p>
       <div class="choice-grid">
         <div class="quickstart-plate" aria-hidden="true"><small>CHOOSE</small><span>YOUR DRAW</span></div>
-        <button class="draw-choice primary" data-action="start" data-mode="one"><span class="choice-kicker" aria-hidden="true">SOLO · 1 CARD</span><span class="mode-art one-art" aria-hidden="true"><i class="card-back back-${settings.back}"></i></span><span class="choice-stamp" aria-hidden="true">DRAW!</span><strong>1枚引き</strong><span>ひとつの迷いを考える</span><small>${deckCount} CARDS</small></button>
+        <button class="draw-choice primary" data-action="start" data-mode="one"><span class="choice-kicker" aria-hidden="true">SOLO · 1 CARD</span><span class="mode-art one-art" aria-hidden="true"><i class="card-back back-${settings.back}"></i></span><span class="choice-stamp" aria-hidden="true">DRAW!</span><strong>1枚引き</strong><span>ひとつのことを決める</span><small>${deckCount} CARDS</small></button>
         <button class="draw-choice" data-action="start" data-mode="two"><span class="choice-kicker" aria-hidden="true">DUEL · A or B</span><span class="mode-art two-art" aria-hidden="true"><i class="card-back back-${settings.back}"></i><i class="card-back back-${settings.back}"></i><b class="choice-vs">OR</b></span><span class="choice-stamp" aria-hidden="true">DRAW!</span><strong>2枚引き</strong><span>2つの選択肢を比べる</span><small>${deckCount} CARDS</small></button>
       </div>
       <button class="quickstart-help" data-action="tutorial-open">使い方を見る</button>
-      <a class="quickstart-cards" href="./cards/"><b>78 CARDS</b><span>カードの意味と、迷ったときのヒント</span></a>
+      <a class="quickstart-cards" href="./cards/"><b>78 CARDS</b><span>カードの意味と、決めるときのヒント</span></a>
       ${homeInstallBanner()}
       ${last ? `<button class="last-log" data-action="detail" data-id="${esc(last.id)}"><span>最近の決定</span><strong>${esc(last.title)}</strong><small>${esc(DECIDE_DECISION.choiceText(last.decision))} · ${formatDate(last.createdAt)}</small></button>` : ''}
     </section>`;
@@ -590,7 +590,7 @@ function shouldAutoStartTutorial() {
   if(currentView!=='home' || sharedPayload || logs.length || tutorial)return false;
   try { return localStorage.getItem(TUTORIAL_KEY)===null; } catch { return false; }
 }
-// step: 1=DRAW, 2=DECIDE, 3=LOOK BACK (the intro has no page number)
+// step: 1=DRAW, 2=DECIDE., 3=LOOK BACK (the intro has no page number)
 function tutorialProgress(step) {
   const dots=document.createElement('div'); dots.className='tutorial-progress'; dots.setAttribute('aria-label',`${step}/3`);
   const pageNo=document.createElement('b'); pageNo.className='tutorial-page-no'; pageNo.setAttribute('aria-hidden','true'); pageNo.innerHTML=`${String(step).padStart(2,'0')}<small>/ 03</small>`; dots.append(pageNo);
@@ -609,7 +609,7 @@ function phraseText(target, copy) {
 const phraseHtml=copy=>copy.split('\n').map(line=>line.split('｜').map(part=>`<span class="tp">${esc(part)}</span>`).join('')).join('<br>');
 // intro pages: 0=WHY, 1=WHAT, 2=HOW (the intro has no page number)
 const TUTORIAL_INTRO_PAGES=[
-  {heading:'心から｜納得いく｜決断を。',lead:['迷ったまま、｜時間が｜過ぎたり。\n勢いで決めて、｜あとで｜後悔したり。','そんなこと、｜ありませんか？'],note:'DECIDEは、\n自分で選んで｜「これでよかった」と｜思えるための｜アプリです。'},
+  {heading:'心から｜納得いく｜決断を。',lead:['迷ったまま、｜時間が｜過ぎたり。\n勢いで決めて、｜あとで｜後悔したり。','そんなこと、｜ありませんか？'],note:'DECIDE.は、\n自分で選んで｜「これでよかった」と｜思えるための｜アプリです。'},
   {heading:'タロットは、｜心を映す鏡。',lead:['タロットは、｜78枚の｜絵のカードです。\n未来を｜当てるためではなく、\n自分で｜決めるために｜使います。','コインを｜投げた瞬間、\n「表が出てほしい」と｜思ったら、\nそれが｜本音。','カードも｜同じです。'],note:'占いを｜信じなくても、｜使えます。'},
   {heading:'引く。｜決める。｜振り返る。'}
 ];
@@ -640,7 +640,7 @@ function renderTutorialIntroPage() {
     const example=document.createElement('div'); example.className='tutorial-example';
     const exampleLead=phraseText(document.createElement('p'),'1回、｜練習してみましょう。');
     const exampleQuote=phraseText(document.createElement('p'),'例：｜「久しぶりの友人に、｜連絡してみる？」'); exampleQuote.className='tutorial-example-quote';
-    const exampleNote=phraseText(document.createElement('p'),'自分の迷いごとでも｜OK。\n練習は保存されません。'); exampleNote.className='tutorial-example-note';
+    const exampleNote=phraseText(document.createElement('p'),'自分の決めたいことでも｜OK。\n練習は保存されません。'); exampleNote.className='tutorial-example-note';
     example.append(exampleLead,exampleQuote,exampleNote);
     const lines=document.createElement('div'); lines.className='tutorial-intro-lines';
     [['引く','カードを1枚｜選んで、｜意味を読む'],['決める','どうするか｜選んで、｜メモする'],['振り返る','あとでメモを見て、｜どうだったか｜残す']].forEach(([kicker,copy],index)=>{ const line=document.createElement('p'); const no=document.createElement('b'); no.textContent=`${index+1} ${kicker}`; const text=phraseText(document.createElement('span'),copy); line.append(no,text); lines.append(line); });
@@ -820,7 +820,7 @@ function chooseTutorialReview(value) {
   const helpList=document.createElement('ul');
   ['カードの意味は、｜絵や名前を｜押すと｜読めます。','ほかのカードは、｜「設定」→「カード図鑑」へ。','使い方は、｜ホームの｜「使い方を見る」で｜見直せます。'].forEach(copy=>helpList.append(phraseText(document.createElement('li'),copy)));
   help.append(helpTitle,helpList);
-  const done=document.createElement('button'); done.className='button tutorial-intro-start tutorial-finish-start'; done.dataset.action='tutorial-complete'; done.textContent='自分の迷いで始める';
+  const done=document.createElement('button'); done.className='button tutorial-intro-start tutorial-finish-start'; done.dataset.action='tutorial-complete'; done.textContent='さっそく始める';
   intro.querySelector('.tutorial-intro-card').append(bubble,help,done);
   requestAnimationFrame(()=>bubble.scrollIntoView({block:'nearest',behavior:'auto'}));
 }
@@ -830,7 +830,7 @@ function finishTutorial(status, redirect=true) {
   safeSetItem(TUTORIAL_KEY,JSON.stringify({status,at:new Date().toISOString(),version:1}));
   tutorial=null; releaseTutorialIntro(); document.querySelectorAll('.tutorial-guidance').forEach(element=>element.remove()); restoreTutorialControls();
   if(activeSession?.tutorial)activeSession.tutorial=false;
-  if(status==='completed'){ activeSession=null; homeStage='quickstart'; navigate('home'); toast('小さな迷いから、始めてみましょう'); app.focus({preventScroll:true}); }
+  if(status==='completed'){ activeSession=null; homeStage='quickstart'; navigate('home'); toast('小さなことから、決めてみましょう'); app.focus({preventScroll:true}); }
   else if(redirect && stage===2){ activeSession=null; navigate('home'); }
   else if(redirect && stage>=3){ renderSession(); app.focus({preventScroll:true}); }
   else if(returnFocus?.isConnected)returnFocus.focus({preventScroll:true});
@@ -902,7 +902,7 @@ function renderPreparation() {
   const actions=options
     ? `<div class="prepare-actions"><button class="prepare-skip" type="button" data-action="prepare-skip">入力せず引く <span aria-hidden="true">→</span></button><button class="button" type="button" data-action="prepare-next">カードを引く <span aria-hidden="true">→</span></button></div>`
     : '';
-  app.innerHTML=`<section class="screen prepare-screen thumb-prepare" data-prepare-art="${options?'options':activeSession.mode}"><div class="prepare-art" aria-hidden="true"></div><header class="prepare-heading">${options?'':`<p class="eyebrow">${activeSession.mode==='two'?'2枚引き':'1枚引き'}</p>`}<h1>${options?'2つの選択肢を選ぶ':'どんな迷いですか？'}</h1><p class="lead">${options?'候補を1タップ。自由に入力してもOKです。入力は任意です。':activeSession.mode==='two'?'ジャンルを選ぶと、選択肢の入力へ進みます。':'ジャンルを選ぶと、カードを引く画面へ進みます。'}</p></header><form id="prepare-form" class="save-form prepare-controls">${fields}${actions}</form></section>`;
+  app.innerHTML=`<section class="screen prepare-screen thumb-prepare" data-prepare-art="${options?'options':activeSession.mode}"><div class="prepare-art" aria-hidden="true"></div><header class="prepare-heading">${options?'':`<p class="eyebrow">${activeSession.mode==='two'?'2枚引き':'1枚引き'}</p>`}<h1>${options?'2つの選択肢を選ぶ':'何を決めますか？'}</h1><p class="lead">${options?'候補を1タップ。自由に入力してもOKです。入力は任意です。':activeSession.mode==='two'?'ジャンルを選ぶと、選択肢の入力へ進みます。':'ジャンルを選ぶと、カードを引く画面へ進みます。'}</p></header><form id="prepare-form" class="save-form prepare-controls">${fields}${actions}</form></section>`;
   restoreDecisionDraft();
 }
 function continuePreparation(skip=false) {
@@ -1381,7 +1381,7 @@ function openA2HSHelp() {
       ? '<p>iPhoneでは、Safariから追加できます。</p><ol class="a2hs-steps"><li>共有ボタン（□に↑）を押す</li><li>「ホーム画面に追加」を選ぶ</li><li>「追加」を押す</li></ol>'
       : '<p>Chromeのメニュー（⋮）から追加できます。</p><ol class="a2hs-steps"><li>ブラウザのメニュー（⋮）を開く</li><li>「ホーム画面に追加」または「アプリをインストール」を選ぶ</li><li>確認画面で追加する</li></ol>';
   const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='a2hs-help-modal';
-  wrap.innerHTML=`<button class="modal-shade" data-action="close-a2hs-help" aria-label="追加手順を閉じる"></button><section class="settings-sheet confirm-sheet" role="dialog" aria-modal="true" aria-labelledby="a2hs-help-title"><div class="sheet-handle"></div><div class="sheet-head"><h2 id="a2hs-help-title">ホーム画面に追加</h2><button data-action="close-a2hs-help" aria-label="閉じる">×</button></div><img class="install-help-icon" src="./icon-192.png?v=2" alt="DECIDE" width="64" height="64">${steps}<div class="confirm-actions"><button class="button" data-action="close-a2hs-help">わかった</button><button class="button ghost" data-action="hide-a2hs">追加済み・今後表示しない</button></div></section>`;
+  wrap.innerHTML=`<button class="modal-shade" data-action="close-a2hs-help" aria-label="追加手順を閉じる"></button><section class="settings-sheet confirm-sheet" role="dialog" aria-modal="true" aria-labelledby="a2hs-help-title"><div class="sheet-handle"></div><div class="sheet-head"><h2 id="a2hs-help-title">ホーム画面に追加</h2><button data-action="close-a2hs-help" aria-label="閉じる">×</button></div><img class="install-help-icon" src="./icon-192.png?v=2" alt="DECIDE." width="64" height="64">${steps}<div class="confirm-actions"><button class="button" data-action="close-a2hs-help">わかった</button><button class="button ghost" data-action="hide-a2hs">追加済み・今後表示しない</button></div></section>`;
   mountModal(wrap,'.sheet-head button');
 }
 
@@ -1674,8 +1674,8 @@ function openFarewell() {
   wrap.innerHTML=`<div class="farewell-inner">
     <p class="farewell-kicker">SEE YOU AGAIN</p>
     <p class="farewell-mark" aria-label="DECIDE.">${decideWordmark()}</p>
-    <h2 id="farewell-title">迷ったら、<br>またここへ。</h2>
-    <p class="farewell-copy">決めたのは、あなた自身です。<br>次に迷ったときも、カードがきっかけになります。</p>
+    <h2 id="farewell-title">決めたいときは、<br>またここへ。</h2>
+    <p class="farewell-copy">決めたのは、あなた自身です。<br>次に何かを決めるときも、カードがきっかけになります。</p>
     <p class="farewell-count"><b>${count}</b><span>DECISIONS</span><b>${reviewed}</b><span>LOOKED BACK</span></p>
     <p class="farewell-note">このままアプリを閉じて大丈夫です</p>
     <button class="button farewell-home" data-action="farewell-home">ホームへ</button>
@@ -1839,7 +1839,7 @@ function openCardDetail(card, originQuestion='') {
     <header class="card-detail-header"><span class="card-image-frame card-detail-image-frame">${cardPicture(card,{className:direction==='reversed'?'reversed-image':'',sizes:'132px'})}</span><div><span class="orientation-badge">${orientationLabel(card)}</span><h3>${esc(content.name)}</h3>${content.en?`<p class="card-english">${esc(content.en)}</p>`:''}<p class="card-meta">番号 ${esc(number)} ・ ${esc(content.arcana)}</p>${content.symbol?`<p class="card-symbol">${esc(content.symbol)}</p>`:''}</div></header>
     <p class="card-direction-help">正位置は、ふつうの向き。逆位置は、上下が逆の向きです。逆位置だから悪いことが起きる、という意味ではありません。</p>
     <div class="card-detail-copy"><section><h3>このカードが表すこと</h3><p>${esc(content.story)}</p></section><section><h3>絵に描かれているもの</h3><p>${esc(content.background)}</p></section><section><h3>カードの意味</h3><div class="keyword-chips">${current.keywords.map(keyword=>`<i>${esc(keyword)}</i>`).join('')}</div><p class="direction-meaning">${esc(current.meaning)}</p></section>
-    <section class="theme-reading"><h3>迷ったときに考えるヒント</h3><div class="theme-tabs" role="tablist" aria-label="テーマを選ぶ">${Object.entries(cardThemeLabels).map(([key,label])=>`<button role="tab" aria-selected="${key===originKey}" class="${key===originKey?'selected':''}" data-action="card-theme" data-theme="${key}">${key===originKey?'<span aria-hidden="true">●</span>':''}${esc(label)}</button>`).join('')}</div><div class="theme-panel" role="tabpanel"><b data-theme-title>${esc(cardThemeLabels[originKey])}</b><p data-theme-text>${esc(current.themes[originKey])}</p></div></section>
+    <section class="theme-reading"><h3>決めるときに考えるヒント</h3><div class="theme-tabs" role="tablist" aria-label="テーマを選ぶ">${Object.entries(cardThemeLabels).map(([key,label])=>`<button role="tab" aria-selected="${key===originKey}" class="${key===originKey?'selected':''}" data-action="card-theme" data-theme="${key}">${key===originKey?'<span aria-hidden="true">●</span>':''}${esc(label)}</button>`).join('')}</div><div class="theme-panel" role="tabpanel"><b data-theme-title>${esc(cardThemeLabels[originKey])}</b><p data-theme-text>${esc(current.themes[originKey])}</p></div></section>
     <details class="opposite-meaning"><summary>反対の向きでは <span>${opposite==='upright'?'正位置':'逆位置'}</span></summary><div class="keyword-chips">${other.keywords.map(keyword=>`<i>${esc(keyword)}</i>`).join('')}</div><p>${esc(other.meaning)}</p></details>
     <small class="card-disclaimer">カードは未来を決めるものではありません。自分の気持ちや、次にすることを考えるヒントにしてください。</small></div><button class="button card-detail-close" data-action="close-card-detail">閉じる</button></section>`;
   mountModal(wrap,'.sheet-head button');
@@ -1855,7 +1855,7 @@ function readSharedPayload() {
 }
 function renderConsultationShared(payload) {
   const two=payload.cards.length===2;
-  app.innerHTML=`<section class="screen shared-screen consultation-received"><header><p class="eyebrow">DECIDE.</p><h1>${two?'あなたなら、どっち？':'この迷い、どう思う？'}</h1>${payload.title!=='決定の記録'?`<p class="received-question">${esc(payload.title)}</p>`:''}</header><div class="received-choices">${payload.cards.map((card,i)=>`<article class="received-choice${two && payload.chosen===i+1?' is-chosen':''}">${two?`<h2><span>${'AB'[i]}</span>${esc(payload.choices[i])}</h2>`:''}${two && payload.chosen===i+1?'<p class="received-chosen">本人の選択</p>':''}${DECIDE_SHARED.renderSharedCard(card,esc)}</article>`).join('')}</div><p class="received-decision">${two?(payload.chosen?`私は${'AB'[payload.chosen-1]}を選んだ。あなたは？`:'まだ迷っている。あなたは？'):`このときの決定：${esc(DECIDE_DECISION.choiceText(payload.decision))}`}</p>${payload.memo?`<section class="shared-story"><h2>当時のメモ</h2><p>${esc(payload.memo)}</p></section>`:''}<p class="received-reply">ひとこと、意見を聞かせて。<small>送ってくれた相手に、LINEやSNSで返信できます。</small></p><button class="button" data-action="open-app">自分の迷いでも引いてみる →</button></section>`;
+  app.innerHTML=`<section class="screen shared-screen consultation-received"><header><p class="eyebrow">DECIDE.</p><h1>${two?'あなたなら、どっち？':'この選択、どう思う？'}</h1>${payload.title!=='決定の記録'?`<p class="received-question">${esc(payload.title)}</p>`:''}</header><div class="received-choices">${payload.cards.map((card,i)=>`<article class="received-choice${two && payload.chosen===i+1?' is-chosen':''}">${two?`<h2><span>${'AB'[i]}</span>${esc(payload.choices[i])}</h2>`:''}${two && payload.chosen===i+1?'<p class="received-chosen">本人の選択</p>':''}${DECIDE_SHARED.renderSharedCard(card,esc)}</article>`).join('')}</div><p class="received-decision">${two?(payload.chosen?`私は${'AB'[payload.chosen-1]}を選んだ。あなたは？`:'まだ決めていない。あなたは？'):`このときの決定：${esc(DECIDE_DECISION.choiceText(payload.decision))}`}</p>${payload.memo?`<section class="shared-story"><h2>当時のメモ</h2><p>${esc(payload.memo)}</p></section>`:''}<p class="received-reply">ひとこと、意見を聞かせて。<small>送ってくれた相手に、LINEやSNSで返信できます。</small></p><button class="button" data-action="open-app">自分でも引いてみる →</button></section>`;
 }
 function sharedResultUrl(log,type,{includeContent=false}={}) {
   const nodes=(log.nodes||[]).slice(0,2);
@@ -1868,14 +1868,14 @@ function normalizeSharedPayload(payload) {
   catch { return null; }
 }
 function renderInvalidSharedResult() {
-  app.innerHTML=`<section class="screen shared-screen empty-state"><p class="eyebrow">Shared from DECIDE</p><h1>このリンクは読み込めませんでした</h1><p>リンクが途中で切れているか、古い形式かもしれません。</p><button class="button" data-action="open-app">DECIDEを使ってみる</button></section>`;
+  app.innerHTML=`<section class="screen shared-screen empty-state"><p class="eyebrow">Shared from DECIDE.</p><h1>このリンクは読み込めませんでした</h1><p>リンクが途中で切れているか、古い形式かもしれません。</p><button class="button" data-action="open-app">DECIDE.を使ってみる</button></section>`;
 }
 function renderSharedResult() {
   if(!sharedPayload){ currentView='home'; return renderHome(); }
   const payload=normalizeSharedPayload(sharedPayload);
   if(!payload)return renderInvalidSharedResult();
   if(payload.consultation)return renderConsultationShared(payload);
-  app.innerHTML=`<section class="screen shared-screen"><p class="eyebrow">Shared from DECIDE</p><h1 data-shared-title></h1><div class="shared-outcome"><strong data-shared-outcome></strong></div><div class="shared-card-grid">${payload.cards.map(card=>DECIDE_SHARED.renderSharedCard(card,esc)).join('')}</div>${payload.story?'<section class="shared-story"><span>その後のストーリー</span><p data-shared-story></p></section>':''}<div class="shared-note"><b>DECIDEとは？</b><p>タロットカードをきっかけに、心から納得できる決断を助ける思考ツールです。</p></div><button class="button" data-action="open-app">自分もカードを引いてみる</button></section>`;
+  app.innerHTML=`<section class="screen shared-screen"><p class="eyebrow">Shared from DECIDE.</p><h1 data-shared-title></h1><div class="shared-outcome"><strong data-shared-outcome></strong></div><div class="shared-card-grid">${payload.cards.map(card=>DECIDE_SHARED.renderSharedCard(card,esc)).join('')}</div>${payload.story?'<section class="shared-story"><span>その後のストーリー</span><p data-shared-story></p></section>':''}<div class="shared-note"><b>DECIDE.とは？</b><p>タロットカードをきっかけに、心から納得できる決断を助ける思考ツールです。</p></div><button class="button" data-action="open-app">自分もカードを引いてみる</button></section>`;
   app.querySelector('[data-shared-title]').textContent=payload.title||'決定の記録';
   app.querySelector('[data-shared-outcome]').textContent=DECIDE_SHARED.sharedOutcomeText(payload.decision,payload.verdict);
   const sharedStory=app.querySelector('[data-shared-story]'); if(sharedStory)sharedStory.textContent=payload.story;
@@ -1933,7 +1933,7 @@ async function createStoryImageBlob(data, theme) {
     x+=cardWidth+gap;
   }
   ctx.fillStyle=YELLOW; ctx.font=`700 34px ${SERIF}`; ctx.fillText('decisionprocess.net',540,1660);
-  ctx.fillStyle=P.soft||'rgba(244,239,227,.6)'; ctx.font=`500 24px ${MINCHO}`; ctx.fillText('タロットで、迷いに答えを出す',540,1704);
+  ctx.fillStyle=P.soft||'rgba(244,239,227,.6)'; ctx.font=`500 24px ${MINCHO}`; ctx.fillText('タロットで、納得いく決断を',540,1704);
   return await new Promise(resolve=>canvas.toBlob(resolve,'image/png',.94));
 }
 async function drawStoryShareCanvas(canvas,ctx,data,{YELLOW,INK,CREAM,SERIF,MINCHO,SOFT}){
@@ -1962,7 +1962,7 @@ async function drawStoryShareCanvas(canvas,ctx,data,{YELLOW,INK,CREAM,SERIF,MINC
   ctx.fillStyle=INK; ctx.font=`700 120px ${SERIF}`; ctx.fillText('“',120,1330);
   ctx.font=`500 38px ${MINCHO}`; wrapCanvasText(ctx,data.storyText||'その後の物語を記録しました',140,1360,800,56,4);
   ctx.textAlign='center'; ctx.fillStyle=YELLOW; ctx.font=`700 34px ${SERIF}`; ctx.fillText('decisionprocess.net',540,1700);
-  ctx.fillStyle=SOFT; ctx.font=`500 24px ${MINCHO}`; ctx.fillText('タロットで、迷いに答えを出す',540,1744);
+  ctx.fillStyle=SOFT; ctx.font=`500 24px ${MINCHO}`; ctx.fillText('タロットで、納得いく決断を',540,1744);
   return await new Promise(resolve=>canvas.toBlob(resolve,'image/png',.94));
 }
 function storySharePreviewHtml(data){
@@ -2033,18 +2033,18 @@ function shareData(type='app', log=null, {includeContent=false}={}) {
   const url=`${location.origin}${location.pathname}`;
   if (type === 'result' && log) {
     const cardNodes=(log.nodes || []).slice(0,2); const cards=cardNodes.map(node=>`${node.card.name}（${orientationLabel(node.card)}）`).join('・');
-    return {title:'DECIDE — 決定結果',logTitle:'決定の記録',decision:DECIDE_DECISION.choiceText(log.decision),heading:'結果をシェア',lead:'相手がリンクを開くと、カード画像・意味・あなたの結論（決めた内容）が表示されます。題名とメモは共有されません。',text:`結論：${DECIDE_DECISION.choiceText(log.decision)}${cards ? `\nカード：${cards}` : ''}\n#DECIDE`,url:sharedResultUrl(log,type),cards:shareCards(cardNodes),postText:sharePostText(log,cardNodes)};
+    return {title:'DECIDE. — 決定結果',logTitle:'決定の記録',decision:DECIDE_DECISION.choiceText(log.decision),heading:'結果をシェア',lead:'相手がリンクを開くと、カード画像・意味・あなたの結論（決めた内容）が表示されます。題名とメモは共有されません。',text:`結論：${DECIDE_DECISION.choiceText(log.decision)}${cards ? `\nカード：${cards}` : ''}\n#DECIDE`,url:sharedResultUrl(log,type),cards:shareCards(cardNodes),postText:sharePostText(log,cardNodes)};
   }
   if (type === 'story' && log) {
     const cardNodes=(log.nodes || []).slice(0,2); const decision=DECIDE_DECISION.choiceText(log.decision);
     const base={kind:'story',heading:'その後をシェア',decision,review:log.review||'',reviewIcon:reviewIcon(log.review),reviewKey:reviewKey(log.review),reviewedAt:log.reviewedAt||'',decidedAt:log.createdAt||'',cards:shareCards(cardNodes),postText:sharePostText(log,cardNodes),logId:log.id,includeContent,storyText:''};
     if(includeContent){
       const story=(log.story || '').slice(0,420);
-      return {...base,storyText:story.slice(0,160)+(story.length>160?'…':''),title:`${log.title}のその後 — DECIDE`,logTitle:log.title,lead:'相手がリンクを開くと、カード画像・結論・その後のストーリーが表示されます。タイトルと本文が共有先に表示されます。',text:`「${log.title}」\n結論：${decision}\nその後：${story}${log.story?.length > 420 ? '…' : ''}\n#DECIDE`,url:sharedResultUrl(log,type,{includeContent:true})};
+      return {...base,storyText:story.slice(0,160)+(story.length>160?'…':''),title:`${log.title}のその後 — DECIDE.`,logTitle:log.title,lead:'相手がリンクを開くと、カード画像・結論・その後のストーリーが表示されます。タイトルと本文が共有先に表示されます。',text:`「${log.title}」\n結論：${decision}\nその後：${story}${log.story?.length > 420 ? '…' : ''}\n#DECIDE`,url:sharedResultUrl(log,type,{includeContent:true})};
     }
-    return {...base,title:'DECIDE — その後',logTitle:'決定の記録',lead:'相手がリンクを開くと、カード画像と結論（決めた内容）が表示されます。タイトルと本文は共有されません。含める場合は下のスイッチをONにしてください。',text:`結論：${decision}\n#DECIDE`,url:sharedResultUrl(log,type)};
+    return {...base,title:'DECIDE. — その後',logTitle:'決定の記録',lead:'相手がリンクを開くと、カード画像と結論（決めた内容）が表示されます。タイトルと本文は共有されません。含める場合は下のスイッチをONにしてください。',text:`結論：${decision}\n#DECIDE`,url:sharedResultUrl(log,type)};
   }
-  return {title:'DECIDE — 心から納得いく決断を。',heading:'DECIDEを共有',lead:'友だちにも、心から納得できる決断の時間を。共有されるのはアプリのURLだけで、あなたの履歴は含まれません。',text:'DECIDE — 心から納得いく決断を。',url};
+  return {title:'DECIDE. — 心から納得いく決断を。',heading:'DECIDE.を共有',lead:'友だちにも、心から納得できる決断の時間を。共有されるのはアプリのURLだけで、あなたの履歴は含まれません。',text:'DECIDE. — 心から納得いく決断を。',url};
 }
 function openShare(type='app', id=null) {
   const log=id ? logs.find(item=>item.id===id) : null;

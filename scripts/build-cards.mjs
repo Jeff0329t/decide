@@ -220,7 +220,7 @@ function layout({ title, description, path, ogImage, ogType = 'article', ld, bod
 <link rel="canonical" href="${url}">${noindex ? '\n<meta name="robots" content="noindex">' : ''}
 <meta name="theme-color" content="#f2efe7">
 <meta property="og:type" content="${ogType}">
-<meta property="og:site_name" content="DECIDE">
+<meta property="og:site_name" content="DECIDE.">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
@@ -241,7 +241,7 @@ ${body}
 <footer>
 <p>${CREDIT}（ライダー＝ウェイト＝スミス版 1909年）</p>
 <p>解釈は決断を考えるための一つの視点です。占いの結果や将来を保証するものではありません。</p>
-<p class="meta"><a href="../tokushoho">特定商取引法に基づく表記</a> ／ <a href="../terms">利用規約</a> ／ <a href="../privacy">プライバシーポリシー</a> ／ <a href="../">DECIDE に戻る</a></p>
+<p class="meta"><a href="../tokushoho">特定商取引法に基づく表記</a> ／ <a href="../terms">利用規約</a> ／ <a href="../privacy">プライバシーポリシー</a> ／ <a href="../">DECIDE. に戻る</a></p>
 </footer>
 </body>
 </html>
@@ -261,7 +261,7 @@ const crumbsLd = (items) => ({
   itemListElement: items.map((it, i) => ({ '@type': 'ListItem', position: i + 1, name: it.name, item: ORIGIN + it.path })),
 });
 
-const ctaHtml = (c, where) => `<aside class="cta" aria-label="DECIDE で考える">
+const ctaHtml = (c, where) => `<aside class="cta" aria-label="DECIDE. で考える">
 <p>${where === 'mid' ? `${esc(c.name)}が示す視点を、あなた自身の選択肢に当てはめてみませんか。` : '二つの選択肢を並べて、カードと一緒に整理できます。'}</p>
 <a href="../?from=${c.id}">${CTA_TEXT}</a>
 </aside>`;
@@ -281,11 +281,11 @@ function sideHtml(c, key) {
 function cardPage(c) {
   const x = extra[c.id];
   const path = `/cards/${c.id}`;
-  const title = `${c.name}（${c.en}）の意味｜正位置・逆位置と決断のヒント - DECIDE`;
+  const title = `${c.name}（${c.en}）の意味｜正位置・逆位置と決断のヒント - DECIDE.`;
   const description = `タロット「${c.name}」の象徴と、正位置（${c.upright.keywords.join('・')}）・逆位置（${c.reversed.keywords.join('・')}）の意味。迷いや決断の場面でどう読むかを解説します。`.slice(0, 160);
   const ogImage = `${ORIGIN}/assets/og/${c.id}.jpg`;
   const crumbs = [
-    { name: 'DECIDE', href: '../', path: '/' },
+    { name: 'DECIDE.', href: '../', path: '/' },
     { name: 'カード解説', href: './', path: '/cards/' },
     { name: catOf(c).label, href: `./${catOf(c).slug}`, path: `/cards/${catOf(c).slug}` },
     { name: c.name, path },
@@ -295,8 +295,8 @@ function cardPage(c) {
     headline: `${c.name}（${c.en}）の意味と決断のヒント`,
     description, image: `${ORIGIN}/assets/rider-waite/${c.id}.jpg`, inLanguage: 'ja',
     mainEntityOfPage: ORIGIN + path, datePublished: TODAY, dateModified: TODAY,
-    author: { '@type': 'Organization', name: 'DECIDE' },
-    publisher: { '@type': 'Organization', name: 'DECIDE', url: ORIGIN + '/' },
+    author: { '@type': 'Organization', name: 'DECIDE.' },
+    publisher: { '@type': 'Organization', name: 'DECIDE.', url: ORIGIN + '/' },
   };
   const rel = related(c);
   const same = sameScore(c, rel);
@@ -357,9 +357,9 @@ ${gridHtml(same)}` : ''}
 
 function indexPage() {
   const path = '/cards/';
-  const title = 'タロットカード78枚の意味一覧｜決断のヒント - DECIDE';
+  const title = 'タロットカード78枚の意味一覧｜決断のヒント - DECIDE.';
   const description = 'ライダー版タロット78枚それぞれの象徴、正位置・逆位置の意味、迷いや決断の場面での読み方をまとめた解説一覧です。';
-  const crumbs = [{ name: 'DECIDE', href: '../', path: '/' }, { name: 'カード解説', path }];
+  const crumbs = [{ name: 'DECIDE.', href: '../', path: '/' }, { name: 'カード解説', path }];
   const groups = ARCANA_ORDER.map((a) => {
     const list = cards.filter((c) => c.arcana === a);
     return `<section>
@@ -375,7 +375,7 @@ ${gridHtml(list)}
   const body = `<main>
 ${crumbsHtml(crumbs)}
 <h1>タロットカード78枚の意味</h1>
-<p>DECIDE は、二つの選択肢で迷ったときにタロットの視点を借りて考えを整理するアプリです。ここでは78枚それぞれの象徴と、正位置・逆位置の意味、そして決断の場面での読み方を紹介します。カードは未来を言い当てるものではなく、見落としていた視点に気づくための問いかけとして使ってください。</p>
+<p>DECIDE. は、二つの選択肢で迷ったときにタロットの視点を借りて考えを整理するアプリです。ここでは78枚それぞれの象徴と、正位置・逆位置の意味、そして決断の場面での読み方を紹介します。カードは未来を言い当てるものではなく、見落としていた視点に気づくための問いかけとして使ってください。</p>
 <div class="cta"><p>カードを引いて、いまの迷いを整理する</p><a href="../">${CTA_TEXT}</a></div>
 <section>
 <h2 id="worries"><a href="./worries">悩み別に読む</a></h2>
@@ -406,11 +406,11 @@ function categoryPage(a) {
   const list = cards.filter((c) => c.arcana === a);
   const path = `/cards/${cat.slug}`;
   const title = a === '大アルカナ'
-    ? `大アルカナ${list.length}枚の意味一覧｜正位置・逆位置と決断のヒント - DECIDE`
-    : `${a}（${list.length}枚）の意味一覧｜タロット小アルカナと決断のヒント - DECIDE`;
+    ? `大アルカナ${list.length}枚の意味一覧｜正位置・逆位置と決断のヒント - DECIDE.`
+    : `${a}（${list.length}枚）の意味一覧｜タロット小アルカナと決断のヒント - DECIDE.`;
   const description = `${SUIT_NOTE[a]}タロット「${a}」${list.length}枚それぞれの正位置・逆位置のキーワードと、迷いや決断の場面での読み方をまとめました。`.slice(0, 160);
   const crumbs = [
-    { name: 'DECIDE', href: '../', path: '/' },
+    { name: 'DECIDE.', href: '../', path: '/' },
     { name: 'カード解説', href: './', path: '/cards/' },
     { name: a, path },
   ];
@@ -448,7 +448,7 @@ function worryPage(w) {
   const primary = byId.get(w.primary);
   const ogImage = `${ORIGIN}/assets/og/worry-${w.slug}.jpg`;
   const crumbs = [
-    { name: 'DECIDE', href: '../', path: '/' },
+    { name: 'DECIDE.', href: '../', path: '/' },
     { name: 'カード解説', href: './', path: '/cards/' },
     { name: '悩み別に読む', href: './worries', path: '/cards/worries' },
     { name: w.h1, path },
@@ -457,10 +457,10 @@ function worryPage(w) {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: w.h1, description: w.description, image: `${ORIGIN}/assets/rider-waite/${w.primary}.jpg`, inLanguage: 'ja',
     mainEntityOfPage: ORIGIN + path, datePublished: TODAY, dateModified: TODAY,
-    author: { '@type': 'Organization', name: 'DECIDE' },
-    publisher: { '@type': 'Organization', name: 'DECIDE', url: ORIGIN + '/' },
+    author: { '@type': 'Organization', name: 'DECIDE.' },
+    publisher: { '@type': 'Organization', name: 'DECIDE.', url: ORIGIN + '/' },
   };
-  const cta = (msg) => `<aside class="cta" aria-label="DECIDE で考える">
+  const cta = (msg) => `<aside class="cta" aria-label="DECIDE. で考える">
 <p>${msg}</p>
 <a href="../?from=${w.primary}">${CTA_TEXT}</a>
 </aside>`;
@@ -498,7 +498,7 @@ ${worriesNav(w.slug)}
 const WORRIES_INTRO = [
   '大きな決断ほど、ひとりで考えていると同じところをぐるぐる回ってしまいがちです。転職、就活、副業、独立、学び直し、お金の使い方、恋愛、結婚、別れ、介護、引っ越し、人間関係。どれも正解がひとつに決まらず、どちらを選んでも何かを手放すことになる種類の迷いです。',
   'このページでは、よくある迷いごとに「何が判断を難しくしているのか」「どんな順番で考えると整理しやすいか」をまとめ、その場面で視点を貸してくれるタロットカードを紹介しています。カードは未来を言い当てるためのものではなく、見落としていた気持ちや条件に気づくための問いかけとして使ってください。',
-  '各ページでは、迷いの中身を分解する考え方を四つの観点から説明したうえで、関係するカードがなぜその場面で役立つのかを一枚ずつ解説しています。気になるテーマから読み始め、最後にDECIDEで実際の二つの選択肢を並べてみると、頭の中だけで考えていたときよりも、自分が本当に大切にしたいものが見えやすくなるはずです。',
+  '各ページでは、迷いの中身を分解する考え方を四つの観点から説明したうえで、関係するカードがなぜその場面で役立つのかを一枚ずつ解説しています。気になるテーマから読み始め、最後にDECIDE.で実際の二つの選択肢を並べてみると、頭の中だけで考えていたときよりも、自分が本当に大切にしたいものが見えやすくなるはずです。',
 ];
 
 const WORRY_GROUPS = [
@@ -520,10 +520,10 @@ function firstQuestion(text) {
 
 function worriesIndex() {
   const path = '/cards/worries';
-  const title = '悩み別に読むタロット｜転職・恋愛・引っ越しなど決断の考え方 - DECIDE';
+  const title = '悩み別に読むタロット｜転職・恋愛・引っ越しなど決断の考え方 - DECIDE.';
   const description = `転職、就活、副業、恋愛、結婚、別れ、介護、引っ越し、お金など、よくある${worries.length}の迷いについて、考え方の整理のしかたと視点を貸してくれるタロットカードを紹介します。`;
   const crumbs = [
-    { name: 'DECIDE', href: '../', path: '/' },
+    { name: 'DECIDE.', href: '../', path: '/' },
     { name: 'カード解説', href: './', path: '/cards/' },
     { name: '悩み別に読む', path },
   ];
@@ -560,7 +560,7 @@ ${WORRIES_INTRO.map((p, i) => `<p${i === 0 ? ' class="lede"' : ''}>${esc(p)}</p>
 <li><b>近いテーマを選ぶ</b>いまの迷いにいちばん近いものを開きます。ぴったりでなくても大丈夫です。</li>
 <li><b>迷いをほどく</b>「迷いの正体」と「整理の視点」で、何に引っかかっているのかを言葉にします。</li>
 <li><b>カードの視点を借りる</b>関係するカードの意味を読み、見落としていた気持ちや条件を探します。</li>
-<li><b>実際に引いてみる</b>二つの選択肢を思い浮かべて、DECIDEでカードを引きます。</li>
+<li><b>実際に引いてみる</b>二つの選択肢を思い浮かべて、DECIDE.でカードを引きます。</li>
 </ol>
 <nav aria-label="テーマから探す"><ul class="wjump">
 ${worries.map((w) => `<li><a href="./worry-${w.slug}">${esc(w.h1.replace(/(で|を|に)?(迷う|決められない|踏み切れない|始めるか迷う)とき$/, '').replace(/するか$/, '').replace(/るか$/, 'る'))}</a></li>`).join('\n')}
@@ -580,7 +580,7 @@ function articlePage(a) {
   const primary = byId.get(a.primary);
   const ogImage = `${ORIGIN}/assets/og/article-${a.slug}.jpg`;
   const crumbs = [
-    { name: 'DECIDE', href: '../', path: '/' },
+    { name: 'DECIDE.', href: '../', path: '/' },
     { name: '読みもの', href: './', path: '/articles/' },
     { name: a.h1, path },
   ];
@@ -588,10 +588,10 @@ function articlePage(a) {
     '@context': 'https://schema.org', '@type': 'Article',
     headline: a.h1, description: a.description, image: ogImage, inLanguage: 'ja',
     mainEntityOfPage: ORIGIN + path, datePublished: a.date, dateModified: a.updated || a.date,
-    author: { '@type': 'Organization', name: 'DECIDE' },
-    publisher: { '@type': 'Organization', name: 'DECIDE', url: ORIGIN + '/' },
+    author: { '@type': 'Organization', name: 'DECIDE.' },
+    publisher: { '@type': 'Organization', name: 'DECIDE.', url: ORIGIN + '/' },
   };
-  const cta = (msg) => `<aside class="cta" aria-label="DECIDE で考える">
+  const cta = (msg) => `<aside class="cta" aria-label="DECIDE. で考える">
 <p>${msg}</p>
 <a href="../?from=${a.primary}">${CTA_TEXT}</a>
 </aside>`;
@@ -608,7 +608,7 @@ ${crumbsHtml(crumbs)}
 <article>
 ${a.draft ? '<p class="draft">下書き（未公開）— このページは確認用です。公開するには draft: false にして再ビルドします。</p>' : ''}
 <h1>${esc(a.h1)}</h1>
-<p class="dateline"><time datetime="${a.date}">${fmtDate(a.date)}</time>${a.updated ? `（更新 <time datetime="${a.updated}">${fmtDate(a.updated)}</time>）` : ''} ・ DECIDE 編集部</p>
+<p class="dateline"><time datetime="${a.date}">${fmtDate(a.date)}</time>${a.updated ? `（更新 <time datetime="${a.updated}">${fmtDate(a.updated)}</time>）` : ''} ・ DECIDE. 編集部</p>
 ${bodyHtml}
 ${cta('二つの選択肢を並べて、カードと一緒に整理できます。')}
 ${relWorries.length ? `<section>
@@ -632,11 +632,11 @@ ${others.length ? `<section>
 
 function articlesIndex(list) {
   const path = '/articles/';
-  const title = '読みもの｜迷いと決断について考える記事 - DECIDE';
+  const title = '読みもの｜迷いと決断について考える記事 - DECIDE.';
   const description = '転職、別れ、副業、決められない疲れ。迷いや決断について、タロットの視点も借りながら考えを整理するための記事をまとめています。';
-  const crumbs = [{ name: 'DECIDE', href: '../', path: '/' }, { name: '読みもの', path }];
+  const crumbs = [{ name: 'DECIDE.', href: '../', path: '/' }, { name: '読みもの', path }];
   const itemList = {
-    '@context': 'https://schema.org', '@type': 'ItemList', name: 'DECIDE の読みもの',
+    '@context': 'https://schema.org', '@type': 'ItemList', name: 'DECIDE. の読みもの',
     itemListElement: list.map((a, i) => ({ '@type': 'ListItem', position: i + 1, url: `${ORIGIN}/articles/${a.slug}`, name: a.h1 })),
   };
   const rows = list.map((a) => `<li><h3><a href="./${a.slug}">${esc(a.h1)}</a>${a.draft ? '（下書き）' : ''}</h3><p class="dateline"><time datetime="${a.date}">${fmtDate(a.date)}</time></p><p>${esc(a.description)}</p></li>`).join('\n');
@@ -660,7 +660,7 @@ function notFoundPage() {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ページが見つかりません - DECIDE</title>
+<title>ページが見つかりません - DECIDE.</title>
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#f2efe7">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -670,7 +670,7 @@ function notFoundPage() {
 <main>
 <h1>ページが見つかりません</h1>
 <p>お探しのページは、移動したか削除された可能性があります。</p>
-<ul class="cats"><li><a href="/">DECIDE を開く</a></li><li><a href="/cards/">78枚のカード解説</a></li><li><a href="/cards/worries">悩み別に読む</a></li></ul>
+<ul class="cats"><li><a href="/">DECIDE. を開く</a></li><li><a href="/cards/">78枚のカード解説</a></li><li><a href="/cards/worries">悩み別に読む</a></li></ul>
 </main>
 <footer>
 <p class="meta"><a href="/tokushoho">特定商取引法に基づく表記</a> ／ <a href="/terms">利用規約</a> ／ <a href="/privacy">プライバシーポリシー</a></p>
