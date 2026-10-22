@@ -138,6 +138,9 @@ test('card tiles, worry card rows, theme buttons and worry chips keep a pressed 
     assert.match(html, /prefers-reduced-motion:reduce\)\{[^}]*\}@view-transition\{navigation:none\}/, file);
     assert.match(html, /<script data-press>[\s\S]*?<\/script>\n<\/head>/, file);
     assert.match(scripts[0], /pagereveal/, file);
+    // A skipped transition rejects ready; both sides catch it so no uncaught AbortError is logged.
+    assert.equal(scripts[0].split('quiet(e.viewTransition)').length - 1, 2, file);
+    assert.match(scripts[0], /ready\.catch\(/, file);
     assert.match(scripts[0], /history\.back\(\)/, file);
     assert.match(scripts[0], /else location\.href=t\.href\},150\)/, file);
     assert.match(html, /a\.is-pressed\{background:var\(--accent\)!important/, file);
