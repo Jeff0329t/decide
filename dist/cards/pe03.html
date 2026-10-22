@@ -205,5 +205,28 @@ main h2{border-top:0;padding:2px 0 2px 12px;border-left:6px solid var(--accent);
 <p>解釈は決断を考えるための一つの視点です。占いの結果や将来を保証するものではありません。</p>
 <p class="meta"><a href="../tokushoho">特定商取引法に基づく表記</a> ／ <a href="../terms">利用規約</a> ／ <a href="../privacy">プライバシーポリシー</a> ／ <a href="../">DECIDE に戻る</a></p>
 </footer>
+<!-- app-nav:start -->
+<style>body{padding-bottom:calc(68px + env(safe-area-inset-bottom))}
+.app-nav{position:fixed;z-index:20;left:50%;bottom:0;transform:translateX(-50%);width:min(760px,100%);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:7px max(8px,env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));background:rgba(4,4,4,.96);border-top:1px solid rgba(255,255,255,.18);font-family:Inter,"Hiragino Sans","Yu Gothic UI","Yu Gothic",sans-serif}
+.app-nav a{position:relative;min-width:0;min-height:52px;display:grid;place-items:center;align-content:center;gap:3px;color:#aaa49a;font-weight:700;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.app-nav a::before{color:currentColor;font-family:Arial,sans-serif;font-size:1rem;line-height:1}
+.app-nav span{font-size:.75rem;letter-spacing:.01em;line-height:1.2}
+.app-nav [data-go="back"]{color:#fff}
+.app-nav [data-go="back"]::before{content:"←";color:#f1d527}
+.app-nav [data-go="home"]::before{content:"⌂"}
+.app-nav [data-go="history"]::before{content:"▣"}
+.app-nav [data-go="stats"]::before{content:"▂▅▇";font-size:.75rem;letter-spacing:1px}
+.app-nav [data-go="settings"]::before{content:"⚙"}
+.app-nav a:active{color:#fff}
+.app-nav a:focus-visible{outline:2px solid #f1d527;outline-offset:-4px}
+@media (min-width:760px){.app-nav{border:1px solid rgba(255,255,255,.18);border-bottom:0;border-radius:18px 18px 0 0}}</style>
+<nav class="app-nav" aria-label="DECIDE. のメニュー">
+<a href="./pentacles" data-go="back" aria-label="ひとつ前の一覧へ戻る"><span>戻る</span></a>
+<a href="../?go=home" data-go="home"><span>ホーム</span></a>
+<a href="../?go=history" data-go="history"><span>ログ</span></a>
+<a href="../?go=stats" data-go="stats"><span>統計</span></a>
+<a href="../?go=settings" data-go="settings"><span>設定</span></a>
+</nav>
+<!-- app-nav:end -->
 </body>
 </html>
