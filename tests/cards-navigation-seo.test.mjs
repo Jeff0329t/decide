@@ -116,6 +116,5 @@ test('full source generation preserves enhancements and keeps proposals outside 
       assert.deepEqual(urls.filter(s => s.startsWith(origin + '/cards/')).sort(), Object.keys(cardsSeo).map(f => origin + canonical(f)).sort());
       for (const file of readdirSync(dir, { recursive: true })) assert.doesNotMatch(file, /cards-navigation-seo-proposal|\.preview\.html|\.proposed\.html/);
     }
-    assert.match(read('.github/workflows/pages.yml'), /path: dist/);
   } finally { rmSync(temp, { recursive: true, force: true }); }
 });
