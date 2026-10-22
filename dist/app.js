@@ -586,6 +586,21 @@ function renderHome() {
     </section>`;
 }
 
+// スプラッシュの「DECIDE.」ははがさず、その場で次の画面の見出しへ引き継ぐ（View Transition がない環境では従来どおりはがす）
+function startApp() {
+  const splash=app.querySelector('.splash-screen');
+  if(splash?.classList.contains('peeling'))return;
+  const go=()=>{ if(homeStage!=='splash')return; homeStage='quickstart'; renderHome(); app.focus({preventScroll:true}); };
+  if(!splash || prefersReducedMotion()){ go(); return; }
+  splash.classList.add('peeling');
+  if(!document.startViewTransition){ setTimeout(go,460); return; }
+  splash.classList.add('is-handoff');
+  splash.querySelector('.home-wordmark')?.style.setProperty('view-transition-name','brand-mark');
+  setTimeout(()=>softTransition(()=>{
+    go();
+    app.querySelector('.quickstart-brand h1')?.style.setProperty('view-transition-name','brand-mark');
+  }),220);
+}
 function tutorialEvent(action, step) { window.dispatchEvent(new CustomEvent('decide:tutorial',{detail:{action,step}})); }
 function shouldAutoStartTutorial() {
   if(currentView!=='home' || sharedPayload || logs.length || tutorial)return false;
@@ -1759,6 +1774,21 @@ function saveStory(id) {
   renderDetail(); toast(saved ? 'その後のストーリーを保存しました' : SAVE_FAILED_MESSAGE);
 }
 
+// カードを引いたあと、保存前にこの回から離れる操作だけ確かめる（決定画面→結果画面の「戻る」は離れないので聞かない）
+let pendingLeave=null; let leaveConfirmed=false;
+function leavingDrawnSession(action) {
+  if(tutorial || !activeSession || activeSession.tutorial || !activeSession.revealed?.length)return false;
+  if(!['draw','session','decide'].includes(currentView))return false;
+  if(['home','history','stats'].includes(action))return true;
+  return action==='nav-back' && currentView!=='decide';
+}
+function openLeaveConfirm(target,action) {
+  if(document.querySelector('#leave-modal'))return;
+  pendingLeave={target,action};
+  const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='leave-modal';
+  wrap.innerHTML=`<button class="modal-shade" data-action="close-leave" aria-label="このまま続ける"></button><section class="settings-sheet confirm-sheet" role="dialog" aria-modal="true" aria-labelledby="leave-title"><div class="sheet-handle"></div><p class="eyebrow">Leave</p><h2 id="leave-title">引いたカードを、置いていきますか？</h2><p>このまま離れると、引いたカードと入力した内容は保存されません。記録するには「決定を記録する」まで進んでください。</p><div class="confirm-actions"><button class="button secondary" data-action="confirm-leave">離れる</button><button class="button" data-action="close-leave">続ける</button></div></section>`;
+  mountModal(wrap,'[data-action="close-leave"].button');
+}
 function openDeleteConfirm(id) {
   const log=logs.find(item=>item.id===id); if(!log)return;
   const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='delete-modal';
@@ -2164,6 +2194,7 @@ document.addEventListener('click', event => {
   if(revealLinger && event.target.closest('.draw-screen') && !event.target.closest('[data-action="home"]')){ revealLinger(); return; }
   const el = event.target.closest('[data-action], [data-nav]'); if (!el) return;
   const action = el.dataset.action || el.dataset.nav;
+  if (!leaveConfirmed && leavingDrawnSession(action)) { openLeaveConfirm(el,action); return; }
   if (action === 'tutorial-start') beginTutorialDraw();
   else if (action === 'tutorial-skip') finishTutorial('skipped');
   else if (action === 'tutorial-keyword') chooseTutorialKeyword(Number(el.dataset.index));
@@ -2175,7 +2206,7 @@ document.addEventListener('click', event => {
   else if (action === 'tutorial-complete') { if(tutorial?.stage===4 && tutorial.review)finishTutorial('completed'); }
   else if (action === 'tutorial-replay') { closeSettings(); setTimeout(()=>{ try{localStorage.removeItem(TUTORIAL_KEY);}catch{} activeSession=null; navigate('home'); startTutorialIntro(); },180); }
   else if (action === 'tutorial-open') startTutorialIntro();
-  else if (action === 'start-app') { const splash=app.querySelector('.splash-screen'); const go=()=>{ homeStage='quickstart'; renderHome(); app.focus({preventScroll:true}); }; if(splash && !prefersReducedMotion() && !splash.classList.contains('peeling')){ splash.classList.add('peeling'); setTimeout(go,460); } else if(!splash?.classList.contains('peeling')) go(); }
+  else if (action === 'start-app') startApp();
   else if (action === 'open-learn') window.DECIDE_LEARN.open();
   else if (action === 'open-paywall') { closeModal('#settings-modal'); window.DECIDE_ENTITLEMENTS?.openPaywall?.('settings'); }
   else if (action === 'open-settings') openSettings();
@@ -2244,6 +2275,14 @@ document.addEventListener('click', event => {
   else if (action === 'delete-log') openDeleteConfirm(el.dataset.id);
   else if (action === 'confirm-delete') deleteLog(el.dataset.id);
   else if (action === 'close-delete') closeDelete();
+  else if (action === 'close-leave') closeModal('#leave-modal');
+  else if (action === 'confirm-leave') {
+    const pending=pendingLeave; pendingLeave=null; closeModal('#leave-modal');
+    // 確認のあいだに画面が進んでいても、同じ行き先のボタンを押し直す。閉じる演出を待たずに背景を戻し、移動先のスクロールを巻き戻さない
+    const target=pending?.target?.isConnected ? pending.target : pending && document.querySelector(`[data-action="${pending.action}"], [data-nav="${pending.action}"]`);
+    setBackgroundInert(false); setBodyScrollLocked(false);
+    if(target){ leaveConfirmed=true; try{ target.click(); } finally { leaveConfirmed=false; } }
+  }
   else if (action === 'close-share') closeShare();
   else if (action === 'toggle-share-content') toggleShareContent(el);
   else if (action === 'share-instagram-story') shareInstagramStory();
