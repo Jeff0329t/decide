@@ -325,6 +325,9 @@ body[data-view="prepare-options"] .thumb-prepare .prepare-art { height:auto; asp
 .map-screen:not(.deep-menu-open) .compare-node > p { flex:1; }
 .map-screen:not(.deep-menu-open) .compare-node:not(.is-recommended) .compare-heading { margin-bottom:38px; }
 .map-screen:not(.deep-menu-open) .choice-comparison:not(:has(.is-recommended)) .compare-heading { margin-bottom:12px; }
+/* With the user's A/B wording under the heading, the badge-height spacer moves below the wording so both cards still line up */
+.map-screen:not(.deep-menu-open) .compare-node:not(.is-recommended) .compare-heading:has(+ .option-plate-text) { margin-bottom:12px; }
+.map-screen:not(.deep-menu-open) .choice-comparison:has(.is-recommended) .compare-node:not(.is-recommended) .option-plate-text { margin-bottom:40px; }
 .map-screen:not(.deep-menu-open) .choice-comparison:not(:has(.is-recommended)) .compare-card { width:100%; }
 
 /* Draw editorial: the same ink, serif and yellow accent as the home choices. */

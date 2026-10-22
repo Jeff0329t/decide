@@ -807,7 +807,7 @@ function enterRitual(button){
   setTimeout(()=>{
     if(!document.startViewTransition){ button.closest('.quickstart-screen')?.classList.add('is-leaving'); setTimeout(go,320); return; }
     button.style.viewTransitionName='ritual-art';
-    document.startViewTransition(go);
+    document.startViewTransition(go)?.ready?.catch(()=>{}); // 画面が裏に回るなどで演出が中断されても、遷移そのものは済んでいる
   },650);
 }
 function startSession(mode) {
@@ -833,6 +833,11 @@ function optionEditor() {
 function decisionOptionText(value) {
   if(activeSession?.mode!=='two')return '';
   return value==='選択肢1' ? decisionDraft.option1 || '' : value==='選択肢2' ? decisionDraft.option2 || '' : '';
+}
+// 2枚引きで入力した選択肢を、A・Bの札のすぐ下に添える（片方だけ入力でも高さをそろえる）
+function optionPlateText(slot) {
+  if(activeSession?.mode!=='two' || (!decisionDraft.option1 && !decisionDraft.option2))return '';
+  return `<span class="option-plate-text">${esc(decisionDraft['option'+(slot+1)] || '')}</span>`;
 }
 function sessionContext() {
   return decisionDraft.genre ? `<p class="session-context">ジャンル：${esc(decisionDraft.genre)}</p>` : '';
@@ -892,12 +897,13 @@ function drawCardButton(card, slot, label='') {
   const action = activeSession.mode === 'two' ? '' : ' data-action="flip-card"';
   const center=(activeSession.drawOptions.length-1)/2;
   const fanStyle=activeSession.mode === 'one' ? ` style="--tilt:${(((slot-center)/Math.max(center,1))*9).toFixed(2)}deg;--drop:${(Math.abs(slot-center)/Math.max(center,1)*18).toFixed(1)}px"` : '';
-  const hiddenLabel=activeSession.mode === 'two' ? `選択肢${'AB'[slot]}のカード（伏せてある）` : `伏せたカード ${slot + 1}枚目`;
+  const optionText=activeSession.mode === 'two' ? decisionDraft['option'+(slot+1)] || '' : '';
+  const hiddenLabel=activeSession.mode === 'two' ? `選択肢${'AB'[slot]}${optionText ? `「${optionText}」` : ''}のカード（伏せてある）` : `伏せたカード ${slot + 1}枚目`;
   const tabIndex=activeSession.mode === 'one' ? ` tabindex="${slot === Math.floor(center) ? '0' : '-1'}"` : '';
   const ariaHidden=activeSession.mode === 'one' && slot !== Math.floor(center) && !revealed ? ' aria-hidden="true"' : '';
   const front=revealed ? `<span class="flip-face flip-front" aria-hidden="false">${cardPicture(card,{className:card.orientation === 'reversed' ? 'reversed-image' : ''})}<em>${esc(card.name)}</em></span>` : '';
   return `<${tag} class="flip-card ${activeSession.mode === 'two' ? 'pair-card' : ''} ${revealed ? 'flipped chosen' : ''}"${action} data-slot="${slot}"${fanStyle}${tabIndex}${ariaHidden} ${locked ? 'disabled' : ''} aria-label="${revealed ? `${card.name}を選びました` : hiddenLabel}">
-    ${label ? (activeSession.mode === 'two' ? `<b class="draw-label draw-plate" aria-hidden="true"><small>OPTION</small><span>${esc(label)}</span></b>` : `<b class="draw-label">${label}</b>`) : ''}
+    ${label ? (activeSession.mode === 'two' ? `<b class="draw-label draw-plate" aria-hidden="true"><small>OPTION</small><span>${esc(label)}</span></b>${optionPlateText(slot)}` : `<b class="draw-label">${label}</b>`) : ''}
     <span class="flip-inner">
       <span class="flip-face flip-back card-back back-${settings.back}"><i aria-hidden="true"></i></span>
       ${front}
@@ -965,9 +971,60 @@ function flipCard(slot) {
     if (image) image.alt = card.name;
   }
   activeSession.nodes = [{question:'いま必要な視点',label:'NOW',card}];
-  Promise.all([contentReady, wait(520)]).then(() => {
-    if (activeSession?.id===sessionId){ if(tutorial?.stage===2)beginTutorialResult(); else navigate('session'); }
+  if(prefersReducedMotion()){
+    Promise.all([contentReady, wait(520)]).then(() => {
+      if (activeSession?.id===sessionId){ if(tutorial?.stage===2)beginTutorialResult(); else navigate('session'); }
+    });
+    return;
+  }
+  document.querySelector('.draw-screen')?.classList.add('is-revealing');
+  button?.scrollIntoView?.({behavior:'smooth',inline:'center',block:'nearest'});
+  lingerOnReveal(sessionId, Promise.all([contentReady, wait(REVEAL_FLIP_MS)]), `「${card.name}」${orientationLabel(card)}`, () => {
+    if(tutorial?.stage===2)beginTutorialResult(); else carryRevealedCards(()=>navigate('session'));
   });
+}
+
+// めくった札は表のまましばらく見せ、名前を読めるだけの間をおいてから次の画面へ運ぶ。待ちきれない人はタップで先へ進める
+const REVEAL_FLIP_MS=560;
+const REVEAL_LINGER_MS=1000;
+let revealLinger=null;
+function lingerOnReveal(sessionId, ready, caption, proceed) {
+  let timer=null; let done=false;
+  const go=()=>{
+    if(done)return;
+    done=true; revealLinger=null; clearTimeout(timer);
+    if(activeSession?.id===sessionId && currentView==='draw')proceed();
+  };
+  ready.then(()=>{
+    if(done || activeSession?.id!==sessionId || currentView!=='draw')return;
+    const screen=document.querySelector('.draw-screen');
+    screen?.classList.add('is-lingering');
+    const instruction=screen?.querySelector('.draw-instruction');
+    if(instruction)instruction.textContent=caption;
+    sensoryFeedback('tick');
+    revealLinger=go;
+    timer=setTimeout(go,REVEAL_LINGER_MS);
+  });
+}
+// 開いた札が、そのまま結果画面のカード位置へ移っていく。演出が中断されて描き替えが呼ばれなくても、画面は必ず先へ進める
+function carryRevealedCards(next) {
+  const faces=[...document.querySelectorAll('.draw-screen .flip-card.flipped .flip-front')];
+  if(!document.startViewTransition || !faces.length){ next(); return; }
+  let moved=false;
+  const move=()=>{
+    if(moved)return;
+    moved=true;
+    if(currentView!=='draw')return;
+    next();
+    document.querySelectorAll('.card-detail-button').forEach((button,index)=>{
+      if(index>=faces.length)return;
+      button.style.animation='none';
+      button.querySelector('.card-image-frame')?.style.setProperty('view-transition-name',`reveal-card-${index}`);
+    });
+  };
+  faces.forEach((face,index)=>{ face.style.viewTransitionName=`reveal-card-${index}`; });
+  document.startViewTransition(move)?.ready?.catch(()=>{});
+  setTimeout(move,1500);
 }
 
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
@@ -1026,10 +1083,17 @@ function flipBoth() {
     {question:'選択肢1を選んだとき',label:'選択肢 1',card:activeSession.drawOptions[0]},
     {question:'選択肢2を選んだとき',label:'選択肢 2',card:activeSession.drawOptions[1]}
   ];
-  Promise.all([contentReady, wait(prefersReducedMotion() ? 520 : 900)]).then(() => {
-    if (activeSession?.id===sessionId) navigate('session');
-  });
+  if(prefersReducedMotion()){
+    Promise.all([contentReady, wait(520)]).then(() => {
+      if (activeSession?.id===sessionId) navigate('session');
+    });
+    return;
+  }
+  const [first,second]=activeSession.drawOptions;
+  lingerOnReveal(sessionId, Promise.all([contentReady, wait(REVEAL_PAIR_FLIP_MS)]), `A「${first.name}」　B「${second.name}」`, () => carryRevealedCards(()=>navigate('session')));
 }
+// Aが開き、ひと呼吸おいてBが開く（Bの遅れはCSSの transition-delay と合わせる）
+const REVEAL_PAIR_FLIP_MS=960;
 
 function renderCard(node, index, showReflection=false) {
   const c = node.card;
@@ -1093,7 +1157,7 @@ function renderSession() {
     const reading=nodeReading(node,'two',index);
     const label=DECIDE_DECISION.choiceText(node.label).replace(' ','');
     const recommended=!verdict.holdRecommended && !verdict.tie && verdict.scores[index]>verdict.scores[1-index];
-    return `<article class="compare-node${recommended ? ' is-recommended' : ''}"><div class="compare-heading"><span class="compare-letter" aria-hidden="true">${'AB'[index]}</span>${renderStars(verdict.scores[index],`${label}のおすすめ度`)}</div>${recommended ? '<span class="recommendation-badge">おすすめ</span>' : ''}<button class="compare-card card-detail-button" data-action="card-detail" data-index="${index}" aria-label="${esc(node.card.name)}の詳しい意味を見る"><span class="card-image-frame">${cardPicture(node.card,{className:node.card.orientation === 'reversed' ? 'reversed-image' : '',sizes:'160px'})}</span></button><div class="compare-meta"><b>${esc(node.card.name)}</b><small>${orientationLabel(node.card)}</small></div><p><strong>${esc(reading.heading)}</strong>${esc(reading.body)}</p></article>`;
+    return `<article class="compare-node${recommended ? ' is-recommended' : ''}"><div class="compare-heading"><span class="compare-letter" aria-hidden="true">${'AB'[index]}</span>${renderStars(verdict.scores[index],`${label}のおすすめ度`)}</div>${optionPlateText(index)}${recommended ? '<span class="recommendation-badge">おすすめ</span>' : ''}<button class="compare-card card-detail-button" data-action="card-detail" data-index="${index}" aria-label="${esc(node.card.name)}の詳しい意味を見る"><span class="card-image-frame">${cardPicture(node.card,{className:node.card.orientation === 'reversed' ? 'reversed-image' : '',sizes:'160px'})}</span></button><div class="compare-meta"><b>${esc(node.card.name)}</b><small>${orientationLabel(node.card)}</small></div><p><strong>${esc(reading.heading)}</strong>${esc(reading.body)}</p></article>`;
   }).join('') : '';
   app.innerHTML = `
     <section class="screen map-screen ${activeSession.mode === 'two' ? 'two-result' : 'one-result'} ${deepCount > 0 ? 'has-deep' : ''}">
@@ -1277,7 +1341,7 @@ function saveDecision(form) {
   if(firstRecord && shouldShowA2HS())a2hsBannerLogId=log.id;
   activeSession = null; selectedDecision = ''; detailId = log.id;
   decisionDraft = {genre:'',option1:'',option2:'',title:'',memo:''};
-  completionId=log.id; currentView = 'detail'; render(); toast('決定を記録しました');
+  completionId=log.id; currentView = 'detail'; render(); scrollAppTo(0); // 判子から見せる。完了画面そのものが「記録しました」を伝えるので、トーストは重ねない
 }
 
 // 保存上限で止まった決定は、購入・ログインで画面を離れても失われないよう退避しておく
@@ -1566,6 +1630,9 @@ function setRemind(id,days) {
   const log=logs.find(item=>item.id===id); if(!log)return;
   sensoryFeedback('tick');
   const saved=commitLogChange(log,REMIND_KEYS,log=>{ log.remindAt=days>0 ? new Date(Date.now()+days*DAY_MS).toISOString() : null; log.remindDays=days>0 ? days : null; log.remindUpdatedAt=log.updatedAt=new Date().toISOString(); });
+  // 完了画面では描き直すと登場演出が最初からやり直しになるので、リマインド欄だけ差し替える（日付は欄の中に出る）
+  const picker=completionId===id && document.querySelector('.completion-screen .remind-picker');
+  if(picker){ picker.outerHTML=renderRemindPicker(log); document.querySelector('.completion-screen .remind-picker')?.classList.add('is-settled'); document.querySelector(`.completion-screen [data-action="set-remind"][data-days="${days}"]`)?.focus({preventScroll:true}); if(!saved)toast(SAVE_FAILED_MESSAGE); return; }
   renderDetail(); toast(!saved ? SAVE_FAILED_MESSAGE : days>0 ? `${formatDate(log.remindAt)} ごろにお聞きします` : 'リマインドなしにしました');
 }
 function dueReviewLog() {
@@ -2050,6 +2117,7 @@ function updateDeckSettingUI() {
 }
 
 document.addEventListener('click', event => {
+  if(revealLinger && event.target.closest('.draw-screen') && !event.target.closest('[data-action="home"]')){ revealLinger(); return; }
   const el = event.target.closest('[data-action], [data-nav]'); if (!el) return;
   const action = el.dataset.action || el.dataset.nav;
   if (action === 'tutorial-start') beginTutorialDraw();

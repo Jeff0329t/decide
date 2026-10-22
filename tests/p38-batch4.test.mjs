@@ -184,8 +184,9 @@ test('low-score comparison omits the recommendation badge and card emphasis', ()
   const markup={innerHTML:''};
   const nodes=[{card:{name:'A',orientation:'upright'},label:'A'},{card:{name:'B',orientation:'upright'},label:'B'}];
   const context={activeSession:{mode:'two',nodes},app:markup,decisionDraft:{option1:'貯める',option2:'使う'},comparisonVerdict:()=>({scores:[1,2],tie:false,holdRecommended:true,label:'今回は、保留をおすすめします。選ぶなら選択肢Bです。'}),nodeReading:()=>({heading:'意味',body:'本文'}),DECIDE_DECISION:{choiceText:value=>value},esc:value=>value,renderStars:()=>'',cardPicture:()=>'',orientationLabel:()=>'',sessionContext:()=>'',renderReflection:()=>'',renderTutorialStage(){}};
-  vm.createContext(context);vm.runInContext(body(app,'renderSession'),context);context.renderSession();
+  vm.createContext(context);vm.runInContext(body(app,'optionPlateText'),context);vm.runInContext(body(app,'renderSession'),context);context.renderSession();
   assert.doesNotMatch(markup.innerHTML,/is-recommended|recommendation-badge/);
+  assert.match(markup.innerHTML,/<span class="option-plate-text">貯める<\/span>[\s\S]*<span class="option-plate-text">使う<\/span>/,'each compared card carries the wording the user typed');
   assert.match(markup.innerHTML,/今回は、保留をおすすめします。選ぶなら『使う』です。/);
   context.comparisonVerdict=()=>({scores:[2,3],tie:false,holdRecommended:false,label:'選択肢Bを選択としておすすめします'});
   context.renderSession();assert.match(markup.innerHTML,/is-recommended/);assert.match(markup.innerHTML,/recommendation-badge/);

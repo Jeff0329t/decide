@@ -3022,7 +3022,7 @@ button.stats-pending:focus-visible { transform: translate(-2px,-2px) rotate(.35d
 }
 .draw-two.is-charging .draw-vs { transform: translate(-50%,-50%) scale(1.2); }
 .draw-two.is-revealing .draw-vs { transform: translate(-50%,-50%) rotate(180deg) scale(.4); opacity: 0; }
-.draw-two .dual-draw .pair-card[data-slot="1"] .flip-inner { transition-delay: .18s; }
+.draw-two .dual-draw .pair-card[data-slot="1"] .flip-inner { transition-delay: .4s; }
 .draw-two.is-revealing::after {
   content: "";
   position: absolute;
@@ -3245,6 +3245,15 @@ body.ritual-enter .thumb-prepare .prepare-controls { animation: ritual-rise .7s 
 @keyframes ritual-fade-out { to { opacity: 0; } }
 @keyframes ritual-fade-in { from { opacity: 0; } }
 @keyframes ritual-rise { from { opacity: 0; transform: translateY(12px); } }
+
+/* reveal: the picked card lifts while the rest sink; once open, its name holds on screen, then the card travels into the result */
+.draw-screen:not(.draw-two).is-revealing .fan-deck .flip-card:disabled { opacity: .12; translate: 0 28px; transition: opacity .35s ease, translate .45s ease; }
+.draw-screen:not(.draw-two).is-revealing .fan-deck .flip-card.chosen { scale: 1.12; transition: transform .2s ease, scale .5s cubic-bezier(.2,.8,.2,1); }
+#app .draw-screen.is-lingering .draw-instruction { animation: reveal-name .45s cubic-bezier(.2,.8,.2,1) both; font-weight: 800; font-size: 1.05rem; letter-spacing: .04em; }
+@keyframes reveal-name { from { opacity: 0; translate: 0 8px; } }
+::view-transition-group(reveal-card-0), ::view-transition-group(reveal-card-1) { animation-duration: .7s; animation-timing-function: cubic-bezier(.3,.7,.2,1); }
+::view-transition-old(reveal-card-0), ::view-transition-new(reveal-card-0),
+::view-transition-old(reveal-card-1), ::view-transition-new(reveal-card-1) { animation-duration: .7s; height: 100%; object-fit: cover; }
 
 @keyframes qs-slam-in {
   from { opacity: 0; transform: translateY(60px) rotate(calc(var(--qs-tilt) * 5)) scale(.92); }
@@ -3889,6 +3898,19 @@ body[data-detail-mode="complete"] .app-shell { padding-bottom: 0; }
   .screen.completion-screen .completion-script,
   .screen.completion-screen > .completion-dock { animation: none; }
 }
+/* Completion pacing: the stamp lands, "よし、決めた。" settles, then — after a breath — the reminder question and DONE follow */
+.screen.completion-screen > .completion-dock { animation: none; }
+.completion-dock > .completion-copy { animation: completion-follow .6s cubic-bezier(.2,.8,.2,1) .25s both; }
+.completion-dock > .remind-picker { animation: completion-follow .6s cubic-bezier(.2,.8,.2,1) .9s both; }
+.completion-dock > .completion-actions { animation: completion-follow .5s cubic-bezier(.2,.8,.2,1) 1.05s both; }
+.completion-dock > .remind-picker.is-settled { animation: none; }
+@keyframes completion-follow { from { opacity: 0; translate: 0 14px; } }
+/* Keep DONE above the pinned nav on a 375x812 phone without scrolling: a shorter doorway and a tighter reminder note */
+.screen.completion-screen > .completion-hero { height: clamp(220px, 36svh, 520px); }
+.screen.completion-screen > .completion-dock { gap: 12px; }
+.completion-dock .completion-copy { padding: 4px 10px 6px; }
+.completion-dock .remind-note { margin: 0 0 10px; font-size: .8rem; line-height: 1.6; }
+@media (prefers-reduced-motion: reduce) { .completion-dock > * { animation: none; } }
 
 .completion-dock .completion-sub .button { border-radius: 0; border-width: 2px; font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; }
 
@@ -4289,3 +4311,8 @@ body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(82
 .home-reading-links a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 4px 6px; color: #f4efe3; font-size: 12px; line-height: 1.4; text-underline-offset: 4px; }
 .home-reading-links a:focus-visible { outline: 3px solid #f1d527; outline-offset: 1px; }
 body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(136px + env(safe-area-inset-bottom)); }
+
+/* Two-card: the user's own A/B wording sits under each plate and above each compared card */
+.option-plate-text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; min-height: 2.9em; font: 700 .8rem/1.45 "Hiragino Mincho ProN","Yu Mincho",serif; letter-spacing: .02em; overflow-wrap: anywhere; }
+.draw-screen.draw-two .option-plate-text { margin: 0 2px 10px; color: #fffaf0; text-align: center; text-shadow: 0 1px 6px #000, 0 0 2px #000; }
+.two-result .option-plate-text { margin: -2px 4px 8px; color: #111; }
