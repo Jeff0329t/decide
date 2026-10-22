@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const baseURL=process.env.BASE_URL || 'http://127.0.0.1:4186';
-const out=path.resolve(__dirname,'../docs/tutorial-readability-2026-10-22');fs.mkdirSync(out,{recursive:true});
+const out=path.resolve(__dirname,'../docs/tutorial-layout-2026-10-22');fs.mkdirSync(out,{recursive:true});
 (async()=>{
 const browser=await chromium.launch({headless:true,channel:'chrome'});const errors=[];
 for(const [width,height] of [[320,568],[390,844],[430,932]]){
