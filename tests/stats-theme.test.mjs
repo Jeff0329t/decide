@@ -28,13 +28,10 @@ test('satisfaction rows are color-coded buttons that open the matching review lo
   assert.match(css,/conic-gradient\(var\(--good\) var\(--good-from/);
 });
 
-test('pending reviews get their own block and theme/period tabs are ranked panels',()=>{
+test('pending reviews get their own block and the theme tab is a ranked panel',()=>{
   assert.match(app,/評価待ち/);
   assert.doesNotMatch(app,/未評価/);
   assert.match(app,/class="stats-pending/);
-  assert.match(app,/'stats-period'/);
-  assert.match(app,/action === 'stats-period'/);
-  assert.match(app,/'PERIOD LOG'/);
   assert.match(css,/\.stats-pending \{/);
   assert.match(css,/\.stats-rank-row \{/);
 });

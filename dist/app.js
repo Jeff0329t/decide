@@ -137,7 +137,6 @@ let historyQuery = '';
 let statsTab = 'summary';
 let statsTheme = '';
 let statsReview = '';
-let statsPeriod = '';
 let detailReturn = 'history';
 let activeShareData = null;
 let pendingImport = null;
@@ -1437,15 +1436,7 @@ function filteredLogs() {
 
 function renderHistoryResults(results=filteredLogs()) {
   if(!results.length) return `<div class="search-empty"><span>⌕</span><b>見つかりませんでした</b><p>言葉を短くするか、別のキーワードで試してください。</p></div>`;
-  return historyMode === 'calendar' ? renderCalendar(results) : `<div class="history-list">${results.map(log=>decisionLogItem(log)).join('')}</div>`;
-}
-
-function decisionLogItem(log) {
-  return `<button class="decision-log-item" data-action="detail" data-id="${esc(log.id)}">
-    <span class="decision-log-meta"><time>${formatDate(log.createdAt)}</time>${log.review ? `<em class="decision-log-status status-${reviewKey(log.review)}"><span aria-hidden="true">${reviewIcon(log.review)}</span> ${esc(log.review)}</em>` : '<em class="decision-log-status status-pending">評価待ち</em>'}</span>
-    ${log.title ? `<strong class="decision-log-title">${esc(log.title)}</strong>` : ''}
-    <span class="decision-log-choice"><span>${esc(DECIDE_DECISION.decisionText(log))}</span><i aria-hidden="true">→</i></span>
-  </button>`;
+  return historyMode === 'calendar' ? renderCalendar(results) : `<div class="history-list">${results.map(log=>historyItem(log,{deletable:false})).join('')}</div>`;
 }
 
 function historyItem(log,{deletable=true}={}) {
@@ -1472,6 +1463,15 @@ function renderCalendar(viewLogs=logs) {
   const monthKey = `${year}-${String(month+1).padStart(2,'0')}-`;
   const monthLogs = Object.entries(byDate).filter(([key]) => key.startsWith(monthKey)).flatMap(([,list]) => list);
   const monthPending = monthLogs.filter(log => !log.review).length;
+  const thisMonth = new Date(); thisMonth.setDate(1);
+  const monthsBack = (thisMonth.getFullYear()-year)*12+thisMonth.getMonth()-month;
+  // The strip ends at this month, unless the calendar shows a month outside it.
+  const strip = recentMonthCounts(viewLogs, monthsBack<0 || monthsBack>5 ? calendarMonth : thisMonth);
+  const stripMax = Math.max(...strip.map(item => item.count),1);
+  const stripButtons = strip.map(item => {
+    const value=`${item.year}-${String(item.month+1).padStart(2,'0')}`, current=item.year===year && item.month===month;
+    return `<button class="calendar-month${current ? ' selected' : ''}" data-action="calendar-month" data-value="${value}" aria-pressed="${current}" aria-label="${item.year}年${item.month+1}月、決定${item.count}件"><b>${item.count}</b><i aria-hidden="true"><span style="height:${Math.round(item.count/stripMax*100)}%"></span></i><small>${item.month+1}月</small></button>`;
+  }).join('');
   const monthName = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'][month];
   const blanks = Array.from({length:firstDay},() => '<span class="calendar-blank"></span>').join('');
   const cells = Array.from({length:days},(_,i) => {
@@ -1485,11 +1485,12 @@ function renderCalendar(viewLogs=logs) {
   const selectedLogs = byDate[selectedCalendarDate] || [];
   const selectedPending = selectedLogs.filter(log => !log.review).length;
   return `<div class="calendar-wrap">
-    <div class="calendar-toolbar"><button data-action="calendar-prev" aria-label="前の月">←</button><strong><small>${monthName}</small><span>${year}年 ${month+1}月</span></strong><button data-action="calendar-next" aria-label="次の月">→</button></div>
+    <section class="calendar-months-wrap"><h2><span>MONTHLY RECORD</span>最近6か月の決定</h2><div class="calendar-months">${stripButtons}</div></section>
+    <div class="calendar-toolbar"><button data-action="calendar-prev" aria-label="前の月">←</button><strong><small>${monthName}</small><span>${year}年 ${month+1}月</span><em>この月の決定 ${monthLogs.length}件</em></strong><button data-action="calendar-next" aria-label="次の月">→</button></div>
     <div class="calendar-summary"><p class="calendar-pending-plate ${monthPending ? '' : 'clear'}"><span>AWAITING REVIEW</span><strong>${monthPending}</strong><small>件</small></p><ul class="calendar-legend"><li class="pending">評価待ち</li><li class="reviewed">評価済み</li></ul></div>
     <div class="week-row">${['日','月','火','水','木','金','土'].map(d=>`<span>${d}</span>`).join('')}</div>
     <div class="calendar-grid">${blanks}${cells}</div>
-    <div class="calendar-detail">${selectedCalendarDate ? `<p class="calendar-date-label"><span>${Number(selectedCalendarDate.slice(5,7))}月${Number(selectedCalendarDate.slice(8,10))}日の決定</span>${selectedPending ? `<em>評価待ち ${selectedPending}件</em>` : ''}</p>${selectedLogs.map(log=>decisionLogItem(log)).join('')}` : '<p class="calendar-hint">印のある日を選ぶと、その日の決定を確認できます。</p>'}</div>
+    <div class="calendar-detail">${selectedCalendarDate ? `<p class="calendar-date-label"><span>${Number(selectedCalendarDate.slice(5,7))}月${Number(selectedCalendarDate.slice(8,10))}日の決定</span>${selectedPending ? `<em>評価待ち ${selectedPending}件</em>` : ''}</p><div class="history-list">${selectedLogs.map(log=>historyItem(log,{deletable:false})).join('')}</div>` : '<p class="calendar-hint">印のある日を選ぶと、その日の決定を確認できます。</p>'}</div>
   </div>`;
 }
 
@@ -1502,10 +1503,12 @@ function renderSavedCard(log,node,index) {
     <div><span>${esc(DECIDE_DECISION.nodeLabel(log,node,index))} · ${esc(DECIDE_DECISION.choiceText(node.question || ''))}</span><h3>${esc(node.card.name)} <small>${orientationLabel(node.card)}</small></h3><b>${esc(reading.heading)}</b><p>${esc(reading.body)}</p><button class="card-more" data-action="saved-card-detail" data-id="${esc(log.id)}" data-index="${index}">カードの詳しい意味を見る</button></div>
   </article>`;
 }
-function recentMonthCounts(items, limit=6) {
+// The `limit` months ending at `end`, oldest first; empty months stay so the bars read as a timeline.
+function recentMonthCounts(items, end=new Date(), limit=6) {
   const counts=new Map();
   items.forEach(log=>{ const date=new Date(log.createdAt); if(Number.isNaN(date.getTime()))return; const key=date.getFullYear()*12+date.getMonth(); counts.set(key,(counts.get(key)||0)+1); });
-  return [...counts].sort((a,b)=>b[0]-a[0]).slice(0,limit).map(([key,count])=>[`${Math.floor(key/12)}年${key%12+1}月`,count]);
+  const last=end.getFullYear()*12+end.getMonth();
+  return Array.from({length:limit},(_,i)=>{ const key=last-limit+1+i; return {year:Math.floor(key/12),month:key%12,count:counts.get(key)||0}; });
 }
 function renderStats() {
   const reviewed=logs.filter(log=>log.review);
@@ -1524,15 +1527,12 @@ function renderStats() {
   let ringStop=0;
   const ringStyle=reviewCounts.map(({label,count})=>{ const from=ringStop; ringStop+=reviewed.length?count/reviewed.length*360:0; return `--${REVIEW_KEYS[label]}-from:${from}deg;--${REVIEW_KEYS[label]}-to:${ringStop}deg`; }).join(';');
   if(statsTheme && !logs.some(log=>(log.genre||'その他')===statsTheme))statsTheme='';
-  const periodOf=log=>{ const date=new Date(log.createdAt); return Number.isNaN(date.getTime())?'':`${date.getFullYear()}年${date.getMonth()+1}月`; };
-  if(statsPeriod && !logs.some(log=>periodOf(log)===statsPeriod))statsPeriod='';
   const themeButton=(name,inner,className)=>`<button class="${className}${statsTheme===name?' selected':''}" data-action="stats-theme" data-value="${esc(name)}" aria-pressed="${statsTheme===name}">${inner}</button>`;
   const logPanel=(kicker,name,list,action)=>`<section class="stats-theme-logs" aria-live="polite"><header><h2><span>${kicker}</span>「${esc(name)}」の決断<b>${list.length}件</b></h2><button class="stats-theme-close" data-action="${action}" data-value="${esc(name)}" aria-label="一覧を閉じる">×</button></header><div class="history-list">${list.map(log=>historyItem(log,{deletable:false})).join('')}</div></section>`;
   const newestFirst=(a,b)=>new Date(b.createdAt)-new Date(a.createdAt);
   const themeLogPanel=statsTheme?logPanel('THEME LOG',statsTheme,logs.filter(log=>(log.genre||'その他')===statsTheme).sort(newestFirst),'stats-theme'):'';
   const reviewLogPanel=statsReview&&statsReview!=='評価待ち'?logPanel('REVIEW LOG',statsReview,logs.filter(log=>log.review===statsReview).sort(newestFirst),'stats-review'):'';
   const pendingLogPanel=statsReview==='評価待ち'?logPanel('PENDING LOG','評価待ち',logs.filter(log=>!log.review).sort(newestFirst),'stats-review'):'';
-  const periodLogPanel=statsPeriod?logPanel('PERIOD LOG',statsPeriod,logs.filter(log=>periodOf(log)===statsPeriod).sort(newestFirst),'stats-period'):'';
   const pendingBlock=pendingCount
     ?`<button class="stats-pending${statsReview==='評価待ち'?' selected':''}" data-action="stats-review" data-value="評価待ち" aria-pressed="${statsReview==='評価待ち'}"><span class="stats-pending-kicker">AWAITING REVIEW</span><span class="stats-pending-title">決断評価待ち</span><strong>${pendingCount}<small>件</small></strong></button>`
     :`<section class="stats-pending empty"><span class="stats-pending-kicker">AWAITING REVIEW</span><span class="stats-pending-title">決断評価待ち<small>評価待ちはありません</small></span><strong>0<small>件</small></strong></section>`;
@@ -1543,10 +1543,9 @@ function renderStats() {
     return `<section class="stats-rank"><header class="stats-rank-head"><span>${kicker}</span><h2>${title}</h2><b>${total}<small>件</small></b></header>${items.length?`<div class="stats-rank-list">${rows}</div>`:`<p class="stats-rank-empty">${emptyText}</p>`}</section>${logPanelHtml}`;
   };
   const themePanel=rankPanel('THEME RANKING','テーマ別の決断',themes,'stats-theme',statsTheme,(name,index)=>String(index+1).padStart(2,'0'),'決断を記録すると、よく考えるテーマが見えてきます。',themeLogPanel);
-  const periodPanel=rankPanel('MONTHLY RECORD','最近6か月の記録',recentMonthCounts(logs),'stats-period',statsPeriod,name=>{ const [,y,m]=name.match(/^(\d+)年(\d+)月$/)||[]; return `${String(m).padStart(2,'0')}<small>${y}</small>`; },'記録が増えると、月ごとの決断数を比べられます。',periodLogPanel);
   const summaryPanel=`<section class="stats-summary"><span>これまでの決断</span><strong>${logs.length}<small>件</small></strong></section>${pendingBlock}${pendingLogPanel}<section class="satisfaction"><h2>決断の満足度</h2><div class="satisfaction-ring${reviewed.length?'':' empty'}" style="${ringStyle}"><strong>${reviewed.length ? `${satisfaction}<small>%</small>` : '—'}</strong><span>${reviewed.length ? '満足' : '評価待ち'}</span></div><div class="review-bars">${reviewRows}</div></section>${reviewLogPanel}<section class="stats-themes"><h2>よくあるテーマ</h2><div>${themes.length?themes.map(([name,count])=>themeButton(name,`${esc(name)} <b>${count}</b>`,'stats-theme-ticket')).join(''):'<span>まだデータがありません</span>'}</div></section>${themeLogPanel}`;
-  const panels={summary:summaryPanel,theme:themePanel,period:periodPanel};
-  const tabs=[['summary','サマリー'],['theme','テーマ'],['period','期間']];
+  const panels={summary:summaryPanel,theme:themePanel};
+  const tabs=[['summary','サマリー'],['theme','テーマ']];
   const current=panels[statsTab] ? statsTab : 'summary';
   app.innerHTML=`<section class="screen stats-screen">
     <button class="stats-back" data-action="home">← ホーム</button>
@@ -2158,7 +2157,7 @@ document.addEventListener('click', event => {
   else if (action === 'history') { completionId=null; navigate('history'); }
   else if (action === 'stats') navigate('stats');
   else if (action === 'stats-tab') { statsTab=el.dataset.value; renderStats(); }
-  else if (action === 'stats-theme' || action === 'stats-review' || action === 'stats-period') { const current={'stats-theme':statsTheme,'stats-review':statsReview,'stats-period':statsPeriod}[action]; const next=current===el.dataset.value?'':el.dataset.value; statsTheme=action==='stats-theme'?next:''; statsReview=action==='stats-review'?next:''; statsPeriod=action==='stats-period'?next:''; renderStats(); if(next)requestAnimationFrame(()=>document.querySelector('.stats-theme-logs')?.scrollIntoView({behavior:'smooth',block:'start'})); }
+  else if (action === 'stats-theme' || action === 'stats-review') { const current=action==='stats-theme'?statsTheme:statsReview; const next=current===el.dataset.value?'':el.dataset.value; statsTheme=action==='stats-theme'?next:''; statsReview=action==='stats-review'?next:''; renderStats(); if(next)requestAnimationFrame(()=>document.querySelector('.stats-theme-logs')?.scrollIntoView({behavior:'smooth',block:'start'})); }
   else if (action === 'session') navigate('session');
   else if (action === 'prepare-next') continuePreparation();
   else if (action === 'prepare-skip') continuePreparation(true);
@@ -2206,6 +2205,7 @@ document.addEventListener('click', event => {
   else if (action === 'history-mode') { historyMode=el.dataset.value; selectedCalendarDate=''; renderHistory(); }
   else if (action === 'calendar-prev') { calendarMonth=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()-1,1); selectedCalendarDate=''; renderHistory(); }
   else if (action === 'calendar-next') { calendarMonth=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()+1,1); selectedCalendarDate=''; renderHistory(); }
+  else if (action === 'calendar-month') { const [y,m]=el.dataset.value.split('-').map(Number); calendarMonth=new Date(y,m-1,1); selectedCalendarDate=''; renderHistory(); }
   else if (action === 'calendar-day') { selectedCalendarDate=el.dataset.value; renderHistory(); }
   else if (action === 'save-story') saveStory(el.dataset.id);
   else if (action === 'share-log') openShare('result',el.dataset.id);
