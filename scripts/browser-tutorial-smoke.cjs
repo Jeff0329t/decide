@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const baseURL=process.env.BASE_URL || 'http://127.0.0.1:4186';
-const out=path.resolve(__dirname,'../docs/tutorial-concept-2026-10-22');fs.mkdirSync(out,{recursive:true});
+const out=path.resolve(__dirname,'../docs/tutorial-readability-2026-10-22');fs.mkdirSync(out,{recursive:true});
 (async()=>{
 const browser=await chromium.launch({headless:true,channel:'chrome'});const errors=[];
 for(const [width,height] of [[320,568],[390,844],[430,932]]){
@@ -43,6 +43,8 @@ for(const [width,height] of [[320,568],[390,844],[430,932]]){
  await page.waitForFunction(()=>document.querySelector('.tutorial-lookback-callout > p')?.textContent.length>0);
  assert.match(await page.locator('#tutorial-intro').innerText(),/「設定」→「カード図鑑」/);
  await page.screenshot({path:`${out}/${width}-finish.png`,fullPage:true});
+ await page.locator('#tutorial-intro').evaluate(el=>{el.scrollTop=el.scrollHeight;});
+ await page.screenshot({path:`${out}/${width}-finish-bottom.png`,fullPage:true});
  await page.locator('[data-action="tutorial-complete"]').click();
  await page.locator('.quickstart-screen').waitFor();
  assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('decide.tarot.tutorial.v1')).status),'completed');
