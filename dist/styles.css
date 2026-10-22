@@ -4509,3 +4509,13 @@ body.tutorial-running .bottom-nav { display: none !important; }
 .home-reading-links a.is-going { scale: 1; animation: reading-link-going .9s ease-in-out infinite alternate; }
 @keyframes reading-link-going { to { background: #f8e889; } }
 @media (prefers-reduced-motion: reduce) { .home-reading-links a.is-going { animation: none; } }
+
+/* Memo and look-back day on one screen: the picker sits inside the RECORD card, and "よし、決めた。" just confirms the day. */
+.save-form .remind-picker { position: static; margin: 2px 0 0; padding: 0; border: 0; background: none; box-shadow: none; transform: none; }
+.save-form .remind-picker h2 { position: relative; margin: 0 0 8px; padding-left: 12px; font-size: 1rem; }
+.save-form .remind-picker h2::before { content: ""; position: absolute; left: 0; top: .2em; width: 5px; height: 1em; background: #f1d527; box-shadow: 1px 1px 0 #0b0b0b; }
+.save-form .remind-status { margin-top: 8px; }
+.completion-remind { position: relative; margin: 0; padding: 18px 14px 12px; border: 2px solid #0b0b0b; background: #f4efe3; color: #4a453c; box-shadow: 5px 5px 0 #f1d527; font-size: .85rem; line-height: 1.6; text-align: left; transform: rotate(.4deg); }
+.completion-remind b { color: #0b0b0b; background: linear-gradient(transparent 55%, #f1d527 55%); }
+body[data-view="decide"] .decide-screen .save-form .remind-date { color: #0b0b0b; font-weight: 800; }
+body[data-view="decide"] .decide-screen .save-form .remind-date.selected { color: #f1d527; }
