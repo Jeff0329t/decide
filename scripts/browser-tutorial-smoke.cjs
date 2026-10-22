@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const baseURL=process.env.BASE_URL || 'http://127.0.0.1:4186';
-const out=path.resolve(__dirname,'../docs/tutorial-2026-10-18');fs.mkdirSync(out,{recursive:true});
+const out=path.resolve(__dirname,'../docs/tutorial-concept-2026-10-22');fs.mkdirSync(out,{recursive:true});
 (async()=>{
 const browser=await chromium.launch({headless:true,channel:'chrome'});const errors=[];
 for(const [width,height] of [[320,568],[390,844],[430,932]]){
@@ -11,9 +11,15 @@ for(const [width,height] of [[320,568],[390,844],[430,932]]){
  const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
  await page.goto(baseURL);
  await page.locator('#tutorial-intro').waitFor();
- assert.match(await page.locator('#tutorial-intro').innerText(),/練習は保存されません/);
- assert.ok(await page.locator('#tutorial-intro h2').evaluate(el=>el.getBoundingClientRect().top>=0));
- await page.screenshot({path:`${out}/${width}-intro.png`,fullPage:true});
+ // WHY -> WHAT -> HOW, each page fully visible with its primary button.
+ for(const [name,copy] of [['why',/心から納得いく決断を。/],['what',/タロットは、心を映す鏡。[\s\S]*占いを信じなくても、使えます。/],['how',/引く。決める。振り返る。[\s\S]*練習は保存されません/]]){
+  assert.match(await page.locator('#tutorial-intro').innerText(),copy);
+  assert.ok(await page.locator('#tutorial-intro h2').evaluate(el=>el.getBoundingClientRect().top>=0));
+  const primary=page.locator('#tutorial-intro .tutorial-intro-start');
+  assert.ok(await primary.evaluate(el=>document.activeElement===el),`${name} focuses the primary button`);
+  await page.screenshot({path:`${out}/${width}-intro-${name}.png`,fullPage:true});
+  if(name!=='how')await primary.click();
+ }
  await page.locator('[data-action="tutorial-start"]').click();
  await page.locator('.flip-card').nth(10).click();
  await page.locator('.tutorial-keywords button').first().waitFor();
@@ -71,6 +77,7 @@ const standalone=await browser.newContext({viewport:{width:390,height:844},servi
 const sp=await standalone.newPage();sp.on('pageerror',e=>errors.push(e.message));
 await sp.addInitScript(()=>Object.defineProperty(navigator,'standalone',{value:true}));
 await sp.goto(baseURL);await sp.locator('.app-viewport #tutorial-intro').waitFor();
+await sp.locator('[data-action="tutorial-intro-next"]').click();await sp.locator('[data-action="tutorial-intro-next"]').click();
 await sp.locator('[data-action="tutorial-start"]').click();await sp.locator('.flip-card').nth(10).click();
 await sp.locator('.tutorial-guidance [data-action="card-detail"]').click();await sp.locator('.app-viewport #card-modal.open').waitFor();
 await sp.locator('#card-modal .card-detail-close').click();await sp.locator('#card-modal').waitFor({state:'detached'});

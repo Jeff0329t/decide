@@ -542,6 +542,7 @@ function renderHome() {
         <div class="splash-copy">
           <h1 class="home-wordmark">DECIDE<span>.</span></h1>
           <p class="home-tagline">心から納得いく決断を。</p>
+          <p class="splash-subline">タロットを鏡に、自分で決める。</p>
         </div>
         <p class="splash-sidecopy">A TOOL<br>FOR<br>BETTING<br>ON YOU.</p>
         <div class="splash-hit" data-action="start-app" aria-hidden="true"></div>
@@ -567,10 +568,10 @@ function renderHome() {
       <header class="quickstart-brand" aria-label="DECIDE.">
         <small aria-hidden="true">TAROT FOR DECISIONS</small>
         <h1 aria-hidden="true"><span class="qb-word">DECIDE</span><span class="qb-dot">.</span></h1>
-        <p aria-hidden="true"><i>No.</i>迷ったら、ここへ。</p>
+        <p aria-hidden="true"><i>No.</i>今日は、何を決める？</p>
       </header>
       <div class="quickstart-art" aria-hidden="true"></div>
-      <p class="quickstart-title">どちらの方法で<wbr>考えますか？</p>
+      <p class="quickstart-title">引き方を選ぶ</p>
       <div class="choice-grid">
         <div class="quickstart-plate" aria-hidden="true"><small>CHOOSE</small><span>YOUR DRAW</span></div>
         <button class="draw-choice primary" data-action="start" data-mode="one"><span class="choice-kicker" aria-hidden="true">SOLO · 1 CARD</span><span class="mode-art one-art" aria-hidden="true"><i class="card-back back-${settings.back}"></i></span><span class="choice-stamp" aria-hidden="true">DRAW!</span><strong>1枚引き</strong><span>ひとつの迷いを考える</span><small>${deckCount} CARDS</small></button>
@@ -595,24 +596,52 @@ function tutorialProgress(step) {
   for(let index=1;index<=3;index++){ const dot=document.createElement('span'); dot.className=index===step?'current':''; dot.setAttribute('aria-hidden','true'); dots.append(dot); }
   return dots;
 }
+// intro pages: 0=WHY, 1=WHAT, 2=HOW (the intro has no page number)
+const TUTORIAL_INTRO_PAGES=[
+  {heading:'心から納得いく決断を。',lead:['迷ったまま時間が過ぎたり、勢いで決めてあとで後悔したり。そんなこと、ありませんか？'],note:'DECIDEは、自分で選んで「これでよかった」と思えるためのアプリです。'},
+  {heading:'タロットは、心を映す鏡。',lead:['タロットは、78枚の絵のカードです。未来を当てるためではなく、自分で決めるために使います。','コインを投げた瞬間、「表が出てほしい」と思ったら、それが本音。カードも同じです。'],note:'占いを信じなくても、使えます。'},
+  {heading:'引く。決める。振り返る。'}
+];
 function startTutorialIntro() {
   if(tutorial || currentView!=='home')return;
   if(homeStage!=='quickstart'){ homeStage='quickstart'; renderHome(); }
-  tutorial={stage:1,selectedKeyword:null,returnFocus:document.activeElement};
+  tutorial={stage:1,introPage:0,selectedKeyword:null,returnFocus:document.activeElement};
   tutorialEvent('start',1);
   const wrap=document.createElement('div'); wrap.id='tutorial-intro'; wrap.className='tutorial-intro tutorial-welcome';
   const dialog=document.createElement('section'); dialog.className='tutorial-intro-card'; dialog.setAttribute('role','dialog'); dialog.setAttribute('aria-modal','true'); dialog.setAttribute('aria-labelledby','tutorial-intro-title');
-  const heading=document.createElement('h2'); heading.id='tutorial-intro-title'; heading.textContent='まずは、1枚引いてみよう。';
-  const lines=document.createElement('div'); lines.className='tutorial-intro-lines';
-  [['引く','カードを1枚選び、意味を読む'],['決める','自分はどうしたいか決めて、メモする'],['ふり返る','あとでメモを読んで、どうなったか残す']].forEach(([kicker,copy],index)=>{ const line=document.createElement('p'); const no=document.createElement('b'); no.textContent=`${index+1} ${kicker}`; const text=document.createElement('span'); text.textContent=copy; line.append(no,text); lines.append(line); });
-  const example=document.createElement('p'); example.className='tutorial-example'; example.textContent='「友だちに連絡しようかな？」で練習してみましょう。自分の迷いでもOK。練習は保存されません。';
-  const note=document.createElement('p'); note.className='tutorial-intro-note'; note.textContent='カードの意味は、引いたあとに読めます。読んで感じたことをヒントに、自分で決めます。';
+  wrap.append(dialog);
+  appOverlayRoot().append(wrap); setBodyScrollLocked(true); setBackgroundInert(true);
+  renderTutorialIntroPage();
+}
+function renderTutorialIntroPage() {
+  const wrap=document.querySelector('#tutorial-intro.tutorial-welcome'); const dialog=wrap?.querySelector('.tutorial-intro-card');
+  if(tutorial?.stage!==1 || !dialog)return;
+  const pageIndex=tutorial.introPage; const page=TUTORIAL_INTRO_PAGES[pageIndex]; const last=pageIndex===TUTORIAL_INTRO_PAGES.length-1;
+  wrap.dataset.introPage=String(pageIndex);
+  const heading=document.createElement('h2'); heading.id='tutorial-intro-title'; heading.textContent=page.heading;
   const actions=document.createElement('div'); actions.className='tutorial-intro-actions';
   const skipBottom=document.createElement('button'); skipBottom.className='tutorial-intro-skip-bottom'; skipBottom.dataset.action='tutorial-skip'; skipBottom.innerHTML='<small>SKIP</small>スキップ';
-  const start=document.createElement('button'); start.className='button tutorial-intro-start'; start.dataset.action='tutorial-start'; start.textContent='1枚引いて試す';
+  const start=document.createElement('button'); start.className='button tutorial-intro-start';
+  if(last){ start.dataset.action='tutorial-start'; start.textContent='1枚引いて試す'; }
+  else { start.dataset.action='tutorial-intro-next'; start.textContent='次へ'; }
   actions.append(skipBottom,start);
-  dialog.append(heading,example,lines,note,actions); wrap.append(dialog);
-  appOverlayRoot().append(wrap); setBodyScrollLocked(true); setBackgroundInert(true); start.focus({preventScroll:true}); wrap.scrollTop=0;
+  if(last) {
+    const example=document.createElement('p'); example.className='tutorial-example'; example.textContent='1回、練習してみましょう。例：「久しぶりの友人に、連絡してみる？」自分の迷いごとでもOK。練習は保存されません。';
+    const lines=document.createElement('div'); lines.className='tutorial-intro-lines';
+    [['引く','カードを1枚選んで、意味を読む'],['決める','どうするか選んで、メモする'],['振り返る','あとでメモを見て、どうだったか残す']].forEach(([kicker,copy],index)=>{ const line=document.createElement('p'); const no=document.createElement('b'); no.textContent=`${index+1} ${kicker}`; const text=document.createElement('span'); text.textContent=copy; line.append(no,text); lines.append(line); });
+    const note=document.createElement('p'); note.className='tutorial-intro-note'; note.textContent='カードの意味は、引いたあとに読めます。覚えなくて大丈夫です。';
+    dialog.replaceChildren(heading,example,lines,note,actions);
+  } else {
+    const body=document.createElement('div'); body.className='tutorial-concept';
+    page.lead.forEach(copy=>{ const line=document.createElement('p'); line.textContent=copy; body.append(line); });
+    const note=document.createElement('p'); note.className='tutorial-concept-note'; note.textContent=page.note; body.append(note);
+    dialog.replaceChildren(heading,body,actions);
+  }
+  start.focus({preventScroll:true}); wrap.scrollTop=0;
+}
+function nextTutorialIntroPage() {
+  if(tutorial?.stage!==1 || tutorial.introPage>=TUTORIAL_INTRO_PAGES.length-1)return;
+  tutorial.introPage++; renderTutorialIntroPage();
 }
 function releaseTutorialIntro() {
   const intro=document.querySelector('#tutorial-intro'); if(!intro)return;
@@ -643,14 +672,14 @@ function renderTutorialStage() {
     setTutorialInactive(document.querySelector('.topbar')); setTutorialInactive(document.querySelector('.bottom-nav'));
     [...screen.children].filter(element=>!element.classList.contains('fan-deck') && !element.classList.contains('tutorial-guidance')).forEach(setTutorialInactive);
     target=screen.querySelector('.fan-deck');
-    const bubble=tutorialCallout('「友だちに連絡しようかな？」と考えてみてください。カードを左右に動かして、好きな1枚を押しましょう。'); bubble.classList.add('tutorial-guidance'); target?.before(bubble);
+    const bubble=tutorialCallout('「久しぶりの友人に、連絡してみる？」と思い浮かべてください。カードを左右に動かして、気になる1枚を押しましょう。'); bubble.classList.add('tutorial-guidance'); target?.before(bubble);
   } else {
     const node=screen.querySelector('.thought-node'); const reading=node?.querySelector('.reading'); const reflection=node?.querySelector('.reflection-card');
     if(!node || !reading || !reflection)return;
     setTutorialInactive(reflection);
     if(tutorial.phase==='keyword') {
       target=reading;
-      const bubble=tutorialCallout(tutorial.selectedKeyword!==null?'その言葉を見て、何を思いましたか？ たとえば「短いメッセージなら送れそう」など。すぐに思いつかなくても大丈夫です。':'カードの説明を読んでみましょう。下の言葉から、気になるものを1つ押してください。どれでも大丈夫です。'); bubble.classList.add('tutorial-guidance');
+      const bubble=tutorialCallout(tutorial.selectedKeyword!==null?'その言葉を見て、どう感じましたか？「連絡したくなった」も「なんか違う」も、どちらも大事なヒントです。':'カードの説明が出ました。下の言葉から、気になるものを1つ押してください。正解はありません。'); bubble.classList.add('tutorial-guidance');
       const chips=document.createElement('div'); chips.className='tutorial-keywords';
       cardKeywords(activeSession.nodes[0].card).forEach((keyword,index)=>{ const button=document.createElement('button'); button.dataset.action='tutorial-keyword'; button.dataset.index=String(index); button.textContent=keyword; button.setAttribute('aria-pressed',String(tutorial.selectedKeyword===index)); if(tutorial.selectedKeyword===index)button.classList.add('selected'); chips.append(button); });
       bubble.append(chips);
@@ -660,7 +689,7 @@ function renderTutorialStage() {
       if(tutorial.selectedKeyword!==null){ target=bubble; chips.querySelector('.selected')?.focus({preventScroll:true}); }
     } else {
       target=reflection; reflection.classList.add('tutorial-highlight');
-      const bubble=tutorialCallout('「連絡してみようかな」「今日はやめようかな」。今の気持ちはどちらですか？ まだ決めなくても大丈夫。次は、気持ちをメモする練習です。'); bubble.classList.add('tutorial-guidance');
+      const bubble=tutorialCallout('「連絡してみようかな」「今回はやめておこうかな」。今の気持ちはどちらですか？ まだ決めなくても大丈夫。次は、決めたことをメモする練習です。'); bubble.classList.add('tutorial-guidance');
       const done=document.createElement('button'); done.className='button'; done.dataset.action='tutorial-next'; done.textContent='次へ'; bubble.append(done); reflection.before(bubble); target=bubble; done.focus({preventScroll:true});
     }
   }
@@ -715,7 +744,7 @@ function beginTutorialLog() {
   const lead=document.createElement('p'); lead.className='tutorial-log-lead'; lead.textContent='保存したメモは、下の「ログ」から読めます。';
   const log=document.createElement('article'); log.className='tutorial-mock-log';
   const meta=document.createElement('p'); meta.className='tutorial-mock-meta'; meta.innerHTML=`<b>決めたことのメモ</b><span>${new Date().toLocaleDateString('ja-JP',{month:'long',day:'numeric'})}（今日）</span>`;
-  const title=document.createElement('h3'); title.textContent='例：友だちに連絡しようかな？';
+  const title=document.createElement('h3'); title.textContent='例：久しぶりの友人に、連絡してみる？';
   const drawn=document.createElement('p'); drawn.className='tutorial-mock-card'; drawn.textContent=tutorialDrawnText();
   const question=document.createElement('p'); question.className='tutorial-mock-question'; question.textContent='決めたこと';
   const choices=document.createElement('div'); choices.className='tutorial-mock-decisions';
@@ -743,10 +772,10 @@ function beginTutorialLookBack() {
   if(tutorial?.stage!==3 || tutorial.phase!=='log' || !tutorial.decision)return;
   releaseTutorialIntro();
   tutorial.stage=4; tutorial.review=null; tutorialEvent('step',4);
-  const {wrap,dialog}=tutorialOverlay(3,'tutorial-reviewstep','あとで「どうなった？」を残そう。');
+  const {wrap,dialog}=tutorialOverlay(3,'tutorial-reviewstep','数日たったら、振り返ってみましょう。');
   const log=document.createElement('article'); log.className='tutorial-mock-log';
   const meta=document.createElement('p'); meta.className='tutorial-mock-meta'; meta.innerHTML='<b>決めたことのメモ</b><span>何日かたってから</span>';
-  const title=document.createElement('h3'); title.textContent='例：友だちに連絡しようかな？';
+  const title=document.createElement('h3'); title.textContent='例：久しぶりの友人に、連絡してみる？';
   const drawn=document.createElement('p'); drawn.className='tutorial-mock-card'; drawn.textContent=tutorialDrawnText();
   const past=document.createElement('div'); past.className='tutorial-mock-past';
   past.append(tutorialMockField('決めたこと',tutorial.decision),tutorialMockField('その時の気持ち',`例）${tutorialDecisionMemo(tutorial.decision)}`));
@@ -765,7 +794,7 @@ function chooseTutorialReview(value) {
   intro.querySelectorAll('[data-action="tutorial-review"]').forEach(button=>{ const on=button.dataset.value===value; button.classList.toggle('selected',on); button.setAttribute('aria-pressed',String(on)); });
   if(!first)return;
   intro.querySelector('.tutorial-lookback-callout')?.remove();
-  const bubble=tutorialCallout('「どう考えて決めたか」と「そのあとどうなったか」。両方残すと、次に迷ったときのヒントになります。'); bubble.classList.add('tutorial-lookback-callout');
+  const bubble=tutorialCallout('「これでよかった？」を確かめると、決断への納得が深まります。続けると、自分の決め方のクセも見えてきます。'); bubble.classList.add('tutorial-lookback-callout');
   const help=document.createElement('p'); help.className='tutorial-meaning-help'; help.textContent='カードの絵や名前を押すと、もっと詳しい意味が読めます。ほかのカードも知りたいときは、下の「設定」→「カード図鑑」へ。使い方はホームの「使い方を見る」で見直せます。';
   const done=document.createElement('button'); done.className='button'; done.dataset.action='tutorial-complete'; done.textContent='自分の迷いで始める'; bubble.append(help,done);
   intro.querySelector('.tutorial-intro-card').append(bubble);
@@ -2053,6 +2082,7 @@ document.addEventListener('click', event => {
   const el = event.target.closest('[data-action], [data-nav]'); if (!el) return;
   const action = el.dataset.action || el.dataset.nav;
   if (action === 'tutorial-start') beginTutorialDraw();
+  else if (action === 'tutorial-intro-next') nextTutorialIntroPage();
   else if (action === 'tutorial-skip') finishTutorial('skipped');
   else if (action === 'tutorial-keyword') chooseTutorialKeyword(Number(el.dataset.index));
   else if (action === 'tutorial-reading-next') continueTutorialReading();

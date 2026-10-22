@@ -16,12 +16,21 @@ test('tutorial uses its own key and requires no marker, no logs and no shared li
 test('intro explains a concrete unsaved trial in an accessible three-step dialog',()=>{
   assert.match(app,/setAttribute\('role','dialog'\)/);
   assert.match(app,/setAttribute\('aria-modal','true'\)/);
-  for(const copy of ['まずは、1枚引いてみよう。','引く','決める','ふり返る','カードを1枚選び、意味を読む','練習は保存されません。','読んで感じたことをヒントに、自分で決めます。','1枚引いて試す','スキップ'])assert.ok(app.includes(copy));
+  for(const copy of ['引く。決める。振り返る。','引く','決める','振り返る','カードを1枚選んで、意味を読む','練習は保存されません。','覚えなくて大丈夫です。','1枚引いて試す','スキップ'])assert.ok(app.includes(copy),copy);
   assert.match(app,/tutorial-intro-actions/);
   assert.match(app,/tutorial-intro-skip-bottom/);
   assert.match(app,/actions\.append\(skipBottom,start\)/);
   assert.match(app,/start\.focus\(\{preventScroll:true\}\)/);
   assert.match(app,/event\.key==='Escape'\)\{ event\.preventDefault\(\); finishTutorial\('skipped'\)/);
+});
+
+test('intro explains WHY and WHAT before HOW, then starts the trial',()=>{
+  for(const copy of ['心から納得いく決断を。','自分で選んで「これでよかった」と思えるためのアプリです。','タロットは、心を映す鏡。','未来を当てるためではなく、自分で決めるために使います。','「表が出てほしい」と思ったら、それが本音。','占いを信じなくても、使えます。','久しぶりの友人に、連絡してみる？'])assert.ok(app.includes(copy),copy);
+  assert.doesNotMatch(app,/友だちに連絡しようかな/);
+  assert.match(app,/tutorial=\{stage:1,introPage:0,/);
+  assert.match(app,/action === 'tutorial-intro-next'\) nextTutorialIntroPage\(\)/);
+  assert.match(app,/if\(last\)\{ start\.dataset\.action='tutorial-start'; start\.textContent='1枚引いて試す'; \}\n  else \{ start\.dataset\.action='tutorial-intro-next'; start\.textContent='次へ'; \}/);
+  assert.match(css,/\.tutorial-concept p \{[^}]*font-size: 16px/);
 });
 
 test('tutorial draw uses 22 major cards and keeps deck mode unchanged',()=>{
@@ -56,7 +65,7 @@ test('callouts are live statuses with 44px controls and 15px text',()=>{
 });
 
 test('intro has no page number and steps are numbered DRAW 01, DECIDE 02, LOOK BACK 03',()=>{
-  assert.match(app,/dialog\.append\(heading,example,lines,note,actions\)/);
+  assert.match(app,/dialog\.replaceChildren\(heading,example,lines,note,actions\)/);
   assert.match(app,/const page=tutorial\.stage-1;/);
   assert.match(app,/top\.append\(tutorialProgress\(step\),skip\)/);
   assert.match(app,/tutorialOverlay\(2,'tutorial-logstep'/);
@@ -69,7 +78,7 @@ test('LOOK BACK shows a sample log and an unsaved trial review before completion
   assert.match(app,/if\(tutorial\?\.stage!==3 \|\| tutorial\.phase!=='log' \|\| !tutorial\.decision\)return;/);
   assert.match(app,/action === 'tutorial-review'\) chooseTutorialReview\(el\.dataset\.value\)/);
   assert.match(app,/action === 'tutorial-complete'\) \{ if\(tutorial\?\.stage===4 && tutorial\.review\)finishTutorial\('completed'\)/);
-  for(const copy of ['あとで「どうなった？」を残そう。','次に迷ったときのヒントになります','決めたことのメモ','やってみて、どうでしたか？','（練習なので保存されません）','良かった','まあ良かった','どちらとも言えない','違った'])assert.ok(app.includes(copy),copy);
+  for(const copy of ['数日たったら、振り返ってみましょう。','決断への納得が深まります','決めたことのメモ','やってみて、どうでしたか？','（練習なので保存されません）','良かった','まあ良かった','どちらとも言えない','違った'])assert.ok(app.includes(copy),copy);
   const lookBack=app.slice(app.indexOf('function beginTutorialLookBack'),app.indexOf('function finishTutorial'));
   assert.doesNotMatch(lookBack,/saveLogs|logs\.push|safeSetItem\(STORAGE_KEY/);
   assert.match(css,/\.tutorial-lookback-skip \{ min-height: 44px;[^}]*font-size: 15px/);

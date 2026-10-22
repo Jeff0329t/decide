@@ -1209,6 +1209,7 @@ body[data-view="detail"] .app-shell { padding-bottom: 70px; }
 .splash-copy { position: relative; z-index: 2; }
 .splash-screen .home-wordmark { font-size: clamp(4.1rem,22vw,6.2rem); line-height: .9; text-shadow: 0 3px 20px #000; }
 .splash-screen .home-tagline { margin-top: 9px; color: #fff; font-size: 1rem; text-shadow: 0 2px 12px #000; }
+.splash-subline { display: inline-block; margin: 8px 0 0; padding: 3px 8px; background: rgba(0,0,0,.72); color: #ded7ca; font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; font-size: .85rem; letter-spacing: .06em; text-shadow: 0 2px 12px #000; }
 .splash-sidecopy {
   position: absolute;
   z-index: 2;
@@ -4251,6 +4252,9 @@ body[data-view="decide"] .decide-screen .pair-chip.selected { background: #0b0b0
 .tutorial-welcome .tutorial-intro-card { justify-content: center; padding-top: max(32px, env(safe-area-inset-top)); }
 .tutorial-welcome .tutorial-intro-card h2 { max-width: none; margin: 0 0 18px; font-size: clamp(1.8rem, 7vw, 2.3rem); line-height: 1.35; }
 .tutorial-guidance { scroll-margin-top: 72px; }
+.tutorial-concept { display: grid; gap: 12px; margin: 0 0 24px; }
+.tutorial-concept p { margin: 0; padding: 10px 14px; background: rgba(0,0,0,.72); color: #fff; font-size: 16px; line-height: 1.8; backdrop-filter: blur(7px); }
+.tutorial-concept .tutorial-concept-note { margin-top: 6px; border-left: 3px solid #f1d527; background: #0b0b0b; color: #f4efe3; font-weight: 700; }
 
 .tutorial-mock-decisions button span, .tutorial-mock-decisions button small { display: block; }
 .tutorial-mock-decisions button small { margin-top: 4px; font-size: 12px; font-weight: 500; line-height: 1.4; }
