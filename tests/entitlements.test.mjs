@@ -17,8 +17,8 @@ function memoryStorage(initial = {}) {
 }
 
 // entitlements.js を最小限のブラウザ環境で読み込む
-function load({ stored, user = null, client = null } = {}) {
-  const localStorage = memoryStorage(stored ? { [STORE_KEY]: JSON.stringify(stored) } : {});
+function load({ stored, user = null, client = null, extra = {}, config } = {}) {
+  const localStorage = memoryStorage({ ...(stored ? { [STORE_KEY]: JSON.stringify(stored) } : {}), ...extra });
   const auth = user === undefined ? undefined : {
     isEnabled: () => true,
     getUser: () => user,
@@ -26,7 +26,7 @@ function load({ stored, user = null, client = null } = {}) {
     onChange: () => {},
     client: () => client
   };
-  const window = { DECIDE_AUTH: auth, addEventListener() {} };
+  const window = { DECIDE_AUTH: auth, DECIDE_CONFIG: config, addEventListener() {} };
   const listeners = {};
   const document = {
     visibilityState: 'visible',
@@ -39,6 +39,7 @@ function load({ stored, user = null, client = null } = {}) {
     sessionStorage: memoryStorage(),
     document,
     setTimeout,
+    URL,
     console
   };
   vm.runInNewContext(read('entitlements.js'), sandbox);
@@ -110,6 +111,28 @@ test('PRO は ドロー・保存とも無制限', () => {
 test('未ログインなら PRO キャッシュがあっても無料扱い', () => {
   const { ent } = load({ stored: { draws: 10, plan: 'pro', userId: USER.id, checkedAt: FRESH() }, user: null });
   assert.equal(ent.canDraw(), false);
+});
+
+const SB_CONFIG = { SUPABASE_URL: 'https://ppuyenvuepxqqrhiswwb.supabase.co' };
+const SB_SESSION_KEY = 'sb-ppuyenvuepxqqrhiswwb-auth-token';
+
+test('オフラインでログイン状態が読めなくても、端末に残るログインの持ち主なら購入済みのまま', () => {
+  const stored = { plan: 'pro', userId: USER.id, checkedAt: FRESH() };
+  const session = JSON.stringify({ access_token: 'x', expires_at: 1, user: { id: USER.id } });
+  const { ent } = load({ stored, user: null, config: SB_CONFIG, extra: { [SB_SESSION_KEY]: session } });
+  assert.equal(ent.hasProAccess(), true);
+  assert.equal(ent.hasPurchased(), true);
+  assert.equal(ent.canDraw(), true);
+  // Supabase 自体が読めない（auth なし）ときも同じ
+  assert.equal(load({ stored, user: undefined, config: SB_CONFIG, extra: { [SB_SESSION_KEY]: session } }).ent.hasProAccess(), true);
+});
+
+test('端末に残るログインが別の人、またはログアウト済みなら購入済みにしない', () => {
+  const stored = { plan: 'pro', userId: USER.id, checkedAt: FRESH() };
+  const other = JSON.stringify({ user: { id: 'user-2' } });
+  assert.equal(load({ stored, config: SB_CONFIG, extra: { [SB_SESSION_KEY]: other } }).ent.hasProAccess(), false);
+  assert.equal(load({ stored, config: SB_CONFIG }).ent.hasProAccess(), false);
+  assert.equal(load({ stored, config: SB_CONFIG, extra: { [SB_SESSION_KEY]: '{broken' } }).ent.hasProAccess(), false);
 });
 
 test('PRO キャッシュが7日を過ぎても購入済みは無料扱いに落とさない（needsOnline で再確認を促す）', () => {

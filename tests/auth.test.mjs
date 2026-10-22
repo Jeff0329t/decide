@@ -73,3 +73,10 @@ test('Google ログインは GIS → signInWithIdToken（nonce は SHA-256 ハ�
   assert.match(auth, /signInWithOAuth/);
   assert.match(read('config.js'), /GOOGLE_CLIENT_ID:/);
 });
+
+test('アカウント削除はユーザーを先に消す（失敗しても購入記録のプロフィールが残る）', () => {
+  const fn = fs.readFileSync(new URL('../supabase/functions/delete-account/index.ts', import.meta.url), 'utf8');
+  const user = fn.indexOf('admin.auth.admin.deleteUser(');
+  const profile = fn.indexOf("from('profiles').delete()");
+  assert.ok(user > 0 && profile > user);
+});

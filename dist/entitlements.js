@@ -46,6 +46,21 @@
   function currentUser() {
     return auth()?.getUser?.() || null;
   }
+  // オフラインでは Supabase が読めない（CDN）か、期限切れのトークンを更新できずログイン中に見えない。
+  // 端末に残るログイン情報の持ち主を、PRO判定のためだけに使う（ログアウトすれば消えるので、ほかの人には効かない）。
+  // 無料枠はもともと端末内判定なので、ここで信じても守るべきものは増えない。
+  function storedSessionUser() {
+    try {
+      const host = new URL(window.DECIDE_CONFIG?.SUPABASE_URL || '').hostname.split('.')[0];
+      const id = JSON.parse(localStorage.getItem(`sb-${host}-auth-token`) || 'null')?.user?.id;
+      return typeof id === 'string' && id ? { id } : null;
+    } catch(error) {
+      return null;
+    }
+  }
+  function accessUser() {
+    return currentUser() || storedSessionUser();
+  }
 
   // PRO判定の本体。オフラインで7日を過ぎても購入済みの人を無料扱いに落とさない（needsOnline で再確認を促すだけ）。
   // 招待特典は pro_until の期限だけで判定する。ログイン中ユーザーとキャッシュの持ち主が違えば何も認めない。
@@ -69,15 +84,15 @@
     }
     return access;
   }
-  function hasProAccess(user = currentUser()) {
+  function hasProAccess(user = accessUser()) {
     return accessFor(user).pro;
   }
   // 買い切り購入済みか（招待特典だけの人は購入できるように区別する）
-  function hasPurchased(user = currentUser()) {
+  function hasPurchased(user = accessUser()) {
     return accessFor(user).purchased;
   }
   // 招待特典の期限（購入済み・特典なし・期限切れなら null）
-  function proUntil(user = currentUser()) {
+  function proUntil(user = accessUser()) {
     const access = accessFor(user);
     return access.pro && !access.purchased ? state.proUntil : null;
   }
@@ -140,7 +155,7 @@
   }
 
   // 設定画面：購入済みでキャッシュが7日を過ぎたときだけ「再確認」の通知欄を出す
-  function needsOnline(user = currentUser()) {
+  function needsOnline(user = accessUser()) {
     return accessFor(user).needsOnline;
   }
   function renderOnlineNotice() {

@@ -85,7 +85,12 @@
           try{await navigator.share({files:[file],text:postText(data)+'\n'+link(data,base)});}
           catch(error){if(error.name!=='AbortError')toast('共有できませんでした。もう一度お試しください');}
           finally{if(alive && blob)send.disabled=false;}
-        }else toast('このブラウザは画像共有に対応していません。スマートフォンのSafariやChromeでお試しください。');
+        }else{
+          // 画像共有に対応しない環境（PCのブラウザなど）：画像を保存し、投稿文をコピーして手で投稿できるようにする
+          const a=document.createElement('a');a.href=objectURL;a.download=file.name;a.click();
+          let copied=false;try{await navigator.clipboard?.writeText(postText(data)+'\n'+link(data,base));copied=!!navigator.clipboard;}catch(error){}
+          toast(copied?'画像を保存し、投稿文をコピーしました。Instagramで画像を選んで貼り付けてください':'画像を保存しました。Instagramで画像を選んで投稿してください');
+        }
       }
     });
     const observer=new MutationObserver(()=>{if(wrap.isConnected)return;alive=false;clearTimeout(timer);if(objectURL)URL.revokeObjectURL(objectURL);observer.disconnect();});

@@ -33,10 +33,10 @@ Deno.serve(async (req) => {
   const { data: { user }, error } = await admin.auth.getUser(token);
   if (error || !user) return json({ error: 'login required' }, 401);
 
-  // profiles is removed by ON DELETE CASCADE; delete explicitly too in case the FK was altered.
-  const { error: profileError } = await admin.from('profiles').delete().eq('id', user.id);
-  if (profileError) return json({ error: 'profile delete failed' }, 500);
+  // Delete the user first: if that fails, the account stays whole (profiles holds the purchase, plan_type).
+  // profiles is removed by ON DELETE CASCADE; the explicit delete afterwards only covers an altered FK.
   const { error: deleteError } = await admin.auth.admin.deleteUser(user.id);
   if (deleteError) return json({ error: 'account delete failed' }, 500);
+  await admin.from('profiles').delete().eq('id', user.id);
   return json({ ok: true });
 });
