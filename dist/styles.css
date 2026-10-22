@@ -3232,6 +3232,20 @@ button.stats-pending:focus-visible { transform: translate(-2px,-2px) rotate(.35d
 .quickstart-screen.is-choosing .draw-choice:not(.is-picked) { opacity: 0; transform: translateY(40px) rotate(calc(var(--qs-tilt) * 6)); }
 .quickstart-screen.is-choosing .quickstart-help { opacity: 0; transition: opacity .2s ease; }
 
+/* ritual: after the stamp settles, the picked plate becomes the portal art; the question, then the choices, rise in turn */
+.quickstart-screen.is-leaving { opacity: 0; transition: opacity .32s ease; }
+::view-transition-group(ritual-art) { animation-duration: .8s; animation-timing-function: cubic-bezier(.3,.7,.2,1); }
+::view-transition-old(ritual-art), ::view-transition-new(ritual-art) { animation-duration: .8s; height: 100%; object-fit: cover; }
+::view-transition-old(root) { animation: ritual-fade-out .4s ease both; }
+::view-transition-new(root) { animation: ritual-fade-in .5s ease .15s both; }
+body.ritual-enter .thumb-prepare { animation: none; }
+body.ritual-enter .thumb-prepare .prepare-art { view-transition-name: ritual-art; }
+body.ritual-enter .thumb-prepare .prepare-heading { animation: ritual-rise .7s cubic-bezier(.2,.8,.2,1) .5s both; }
+body.ritual-enter .thumb-prepare .prepare-controls { animation: ritual-rise .7s cubic-bezier(.2,.8,.2,1) .8s both; }
+@keyframes ritual-fade-out { to { opacity: 0; } }
+@keyframes ritual-fade-in { from { opacity: 0; } }
+@keyframes ritual-rise { from { opacity: 0; transform: translateY(12px); } }
+
 @keyframes qs-slam-in {
   from { opacity: 0; transform: translateY(60px) rotate(calc(var(--qs-tilt) * 5)) scale(.92); }
   to { opacity: 1; transform: rotate(var(--qs-tilt)); }

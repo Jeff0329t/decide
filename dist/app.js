@@ -793,7 +793,22 @@ function pickDrawMode(button, event){
   sensoryFeedback('tap');
   screen.classList.add('is-choosing');
   button.classList.add('is-picked');
-  setTimeout(()=>{ pickingDrawMode=false; if(button.isConnected)startSession(button.dataset.mode); },420);
+  enterRitual(button);
+}
+// 選んだ瞬間はにぎやかに、その後はひと呼吸おいて、選んだ札が次の画面の扉へつながっていく
+function enterRitual(button){
+  const go=()=>{
+    pickingDrawMode=false;
+    if(!button.isConnected)return;
+    document.body.classList.add('ritual-enter');
+    startSession(button.dataset.mode);
+    setTimeout(()=>document.body.classList.remove('ritual-enter'),2000);
+  };
+  setTimeout(()=>{
+    if(!document.startViewTransition){ button.closest('.quickstart-screen')?.classList.add('is-leaving'); setTimeout(go,320); return; }
+    button.style.viewTransitionName='ritual-art';
+    document.startViewTransition(go);
+  },650);
 }
 function startSession(mode) {
   if(window.DECIDE_ENTITLEMENTS && !window.DECIDE_ENTITLEMENTS.canDraw()){ window.DECIDE_ENTITLEMENTS.openPaywall('draw'); return false; }
