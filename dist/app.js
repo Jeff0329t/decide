@@ -465,9 +465,9 @@ function setupFanFeedback(deck) {
 }
 
 function updateNavigationState(view=currentView) {
-  const selected=view==='history' || view==='detail' ? 'history' : view==='stats' ? 'stats' : view==='home' ? 'home' : '';
+  const selected=view==='history' || view==='detail' ? 'history' : view==='stats' ? 'stats' : view==='settings' ? 'settings' : view==='home' ? 'home' : '';
   const bottomNav=document.querySelector('.bottom-nav');
-  if(bottomNav)bottomNav.style.display=['history','detail','stats','session','decide','prepare-genre','prepare-options','draw','learn'].includes(view)?'grid':'';
+  if(bottomNav)bottomNav.style.display=['history','detail','stats','settings','session','decide','prepare-genre','prepare-options','draw','learn'].includes(view)?'grid':'';
   document.querySelectorAll('.nav-item').forEach(item=>{
     const active=item.dataset.nav===selected;
     item.classList.toggle('active',active);
@@ -513,6 +513,7 @@ function render() {
     if (currentView === 'decide') return renderDecision();
     if (currentView === 'history') return renderHistory();
     if (currentView === 'stats') return renderStats();
+    if (currentView === 'settings') return renderSettings();
     if (currentView === 'detail') return renderDetail();
     if (currentView === 'learn') return window.DECIDE_LEARN.render();
     return renderHome();
@@ -1798,7 +1799,7 @@ function mountModal(wrap, initialSelector) {
   requestAnimationFrame(()=>{ wrap.classList.add('open'); const initial=wrap.querySelector(initialSelector) || focusableElements(wrap)[0] || wrap.querySelector('[role="dialog"]'); initial?.focus(); });
 }
 function closeModal(selector) {
-  const modal=document.querySelector(selector); if(!modal || modal.classList.contains('closing'))return;
+  const modal=document.querySelector(selector); if(!modal?.classList.contains('modal-wrap') || modal.classList.contains('closing'))return;
   if(selector==='#card-modal')activeCardDetail=null;
   const returnFocus=modal.returnFocus;
   modal.classList.add('closing'); modal.classList.remove('open');
@@ -1999,10 +2000,11 @@ function deckDetailHtml() {
   const preset=DECK_PRESETS.find(item=>item.mode===settings.deckMode)||DECK_PRESETS[3];
   return `<b>${preset.name}</b><span>${preset.subtitle}</span><p>${preset.one}</p><p><em>向いている場面</em>${preset.scene}</p>`;
 }
-function openSettings() {
-  const wrap = document.createElement('div'); wrap.className='modal-wrap'; wrap.id='settings-modal';
-  wrap.innerHTML = `<button class="modal-shade" data-action="close-settings" aria-label="設定を閉じる"></button><section class="settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title">
-    <div class="sheet-handle"></div><div class="sheet-head"><h2 id="settings-title">設定</h2><button data-action="close-settings" aria-label="閉じる">×</button></div>
+function openSettings() { navigate('settings'); }
+// 設定は下部ナビのタブ画面。各モジュールが #settings-modal を探して描き込むため、id は従来のまま残す。
+function renderSettings() {
+  app.innerHTML = `<section class="screen settings-screen"><div id="settings-modal"><section class="settings-sheet settings-page" aria-labelledby="settings-title">
+    <div class="sheet-head"><h1 id="settings-title">設定</h1></div>
     <h3 class="settings-group-title" data-settings-group="card">カードと操作</h3>
     <div class="deck-setting"><b id="deck-setting-title">使うカード</b><p>カードの枚数（縦）と、逆位置の有無（横）の組み合わせから選べます。</p>
       <div class="deck-presets deck-quad" role="radiogroup" aria-labelledby="deck-setting-title">${renderDeckPresets()}</div>
@@ -2015,18 +2017,17 @@ function openSettings() {
     <section class="data-setting" aria-labelledby="data-setting-title"><div><b id="data-setting-title">バックアップ</b><p>履歴 ${logs.length}件</p><small data-backup-date>${backupDateLabel(settings.lastBackupAt)}</small></div>${storageSaveFailed ? '<p class="storage-error" role="alert">この端末では保存できない状態です</p>' : ''}<div class="data-actions"><button class="button secondary" data-action="export-markdown">書き出す</button><button class="button secondary" data-action="import-markdown">読み込む</button></div><div class="sync-actions"><button class="sync-help-button" type="button" data-action="backup-help">バックアップについて</button></div><input id="import-file" type="file" accept="text/markdown,.md,text/plain,application/json,.json" hidden><p class="backup-status" data-backup-status role="status" aria-live="polite"></p><div class="backup-output" data-backup-output hidden><label>バックアップ内容<textarea readonly aria-label="バックアップ内容"></textarea></label><button class="button secondary" data-action="copy-backup-text">コピーする</button></div></section>
      <section class="data-setting account-setting" data-account-setting aria-labelledby="account-setting-title" hidden></section>
      <nav class="settings-links" aria-label="その他">${window.DECIDE_ENTITLEMENTS?.hasPurchased?.() ? '' : '<button class="settings-link settings-link-pro" data-action="open-paywall"><span><small>UNLIMITED EDITION</small>引き放題・残し放題にする</span><span class="settings-link-chevron" aria-hidden="true">›</span></button>'}<button class="settings-link" data-action="open-learn"><span>カード図鑑</span><span class="settings-link-chevron" aria-hidden="true">›</span></button><button class="settings-link" data-action="tutorial-replay"><span data-tutorial-label>使い方をもう一度見る</span><span class="settings-link-chevron" aria-hidden="true">›</span></button><a class="settings-link" href="./cards/worries" target="_blank" rel="noopener"><span>記事を読む</span><span class="settings-link-chevron" aria-hidden="true">›</span></a></nav>
-     <button class="sheet-bottom-close" data-action="close-settings">設定を閉じる</button>
      <nav class="settings-legal" aria-label="規約・お問い合わせ"><a href="./privacy" target="_blank" rel="noopener">プライバシーポリシー</a><a href="./terms" target="_blank" rel="noopener">利用規約</a><a href="./tokushoho" target="_blank" rel="noopener">特定商取引法に基づく表記</a><a href="mailto:decisionprocess.decide@gmail.com">お問い合わせ</a></nav>
-     
-  </section>`;
+  </section></div></section>`;
+  const wrap=app.querySelector('#settings-modal');
   window.DECIDE_AUTH?.renderSettings?.(wrap);
   window.DECIDE_REMINDERS?.mountSettings?.(wrap);
   window.DECIDE_PUSH?.mountSettings?.(wrap);
   window.DECIDE_EMAIL_REMINDERS?.mountSettings?.(wrap);
   window.DECIDE_ENTITLEMENTS?.mountSettings?.(wrap);
-  mountModal(wrap,'.sheet-head button');
 }
-function closeSettings() { closeModal('#settings-modal'); }
+// タブ画面なので閉じる操作はない。続けて別の画面やシートを開く呼び出し側の都合で残している。
+function closeSettings() {}
 function shareCards(cardNodes){ return cardNodes.map(node=>({...node.card,image:cardImage(node.card),meaning:meaning(node.card),keyword:cardKeywords(node.card)[0]||''})); }
 function sharePostText(log,cardNodes){ const keywords=cardNodes.map(node=>cardKeywords(node.card)[0]).filter(Boolean); return `私は「${DECIDE_DECISION.choiceText(log.decision)}」に決めた${keywords.length?`\nカード：${keywords.join('・')}`:''}\n#DECIDE #タロット`; }
 function shareData(type='app', log=null, {includeContent=false}={}) {
@@ -2158,6 +2159,7 @@ document.addEventListener('click', event => {
   else if (action === 'nav-back') navigateBack();
   else if (action === 'history') { completionId=null; navigate('history'); }
   else if (action === 'stats') navigate('stats');
+  else if (action === 'settings') navigate('settings');
   else if (action === 'stats-tab') { statsTab=el.dataset.value; renderStats(); }
   else if (action === 'stats-theme' || action === 'stats-review') { const current=action==='stats-theme'?statsTheme:statsReview; const next=current===el.dataset.value?'':el.dataset.value; statsTheme=action==='stats-theme'?next:''; statsReview=action==='stats-review'?next:''; renderStats(); if(next)requestAnimationFrame(()=>document.querySelector('.stats-theme-logs')?.scrollIntoView({behavior:'smooth',block:'start'})); }
   else if (action === 'session') navigate('session');
@@ -2222,7 +2224,6 @@ document.addEventListener('click', event => {
   else if (action === 'close-share') closeShare();
   else if (action === 'toggle-share-content') toggleShareContent(el);
   else if (action === 'share-instagram-story') shareInstagramStory();
-  else if (action === 'close-settings') closeSettings();
   else if (action === 'open-app') { history.replaceState(null,'',location.pathname); sharedPayload=null; activeSession=null; navigate('home'); if(shouldAutoStartTutorial())requestAnimationFrame(startTutorialIntro); }
 });
 document.addEventListener('submit', event => { if(event.target.id === 'save-form'){ event.preventDefault(); sealDecision(event.target); } });
@@ -2250,19 +2251,19 @@ document.addEventListener('keydown', event => {
     }
   }
   const modal=document.querySelector('.modal-wrap.open');
+  const radio=event.target.closest?.('#settings-modal [data-action="deck-preset"]');
+  if(radio && !modal) {
+    if(['ArrowDown','ArrowRight','ArrowUp','ArrowLeft','Home','End'].includes(event.key)) {
+      event.preventDefault();
+      const radios=[...radio.closest('#settings-modal').querySelectorAll('[data-action="deck-preset"]')];
+      const step=['ArrowDown','ArrowRight'].includes(event.key)?1:-1;
+      const index=event.key==='Home'?0:event.key==='End'?radios.length-1:(radios.indexOf(radio)+step+radios.length)%radios.length;
+      radios[index].click(); radios[index].focus(); return;
+    }
+    if(event.key==='Enter' || event.key===' ') { event.preventDefault(); radio.click(); return; }
+  }
   if(modal) {
     if(event.key === 'Escape') { event.preventDefault(); closeModal(`#${modal.id}`); return; }
-    const radio=event.target.closest?.('[data-action="deck-preset"]');
-    if(radio && modal.id==='settings-modal') {
-      if(['ArrowDown','ArrowRight','ArrowUp','ArrowLeft','Home','End'].includes(event.key)) {
-        event.preventDefault();
-        const radios=[...modal.querySelectorAll('[data-action="deck-preset"]')];
-        const step=['ArrowDown','ArrowRight'].includes(event.key)?1:-1;
-        const index=event.key==='Home'?0:event.key==='End'?radios.length-1:(radios.indexOf(radio)+step+radios.length)%radios.length;
-        radios[index].click(); radios[index].focus(); return;
-      }
-      if(event.key==='Enter' || event.key===' ') { event.preventDefault(); radio.click(); return; }
-    }
     if(event.key === 'Tab') {
       const focusable=focusableElements(modal); if(!focusable.length)return;
       const first=focusable[0], last=focusable.at(-1);
@@ -2350,9 +2351,8 @@ const cardsNavTarget=(()=>{
     return ['home','history','stats','settings'].includes(go)&&!sharedPayload ? go : null;
   } catch { return null; }
 })();
-if(cardsNavTarget){ homeStage='quickstart'; if(cardsNavTarget==='history'||cardsNavTarget==='stats')currentView=cardsNavTarget; }
+if(cardsNavTarget){ homeStage='quickstart'; if(cardsNavTarget!=='home')currentView=cardsNavTarget; }
 render();
-if(cardsNavTarget==='settings')openSettings();
 // 解説ページへ移る前に今の画面を URL に残し、「戻る」で読み込み直しても同じ画面へ帰れるようにする
 document.addEventListener('click',event=>{
   const link=event.target.closest?.('a[href*="cards/"]');
