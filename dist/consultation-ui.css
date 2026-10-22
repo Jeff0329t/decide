@@ -366,9 +366,12 @@ body[data-view="prepare-options"] .thumb-prepare .prepare-art { height:auto; asp
 .map-screen:not(.deep-menu-open) .reflection-actions .decide-confirm:active { transform:translate(3px,3px); box-shadow:1px 1px 0 #f1d527; }
 .map-screen:not(.deep-menu-open) .reflection-actions .decide-confirm.is-confirming { opacity:1; color:#f4efe3; background:#111; animation:decide-seal .42s cubic-bezier(.2,.8,.2,1) both; }
 .decide-confirm.is-confirming .decide-dot { animation:decide-dot-settle .42s ease-out both; }
+.completion-actions .completion-decide { display:flex; align-items:center; justify-content:center; width:100%; min-height:64px; padding:16px 24px; color:#f4efe3; background:#111; border:2px solid #f4efe3; border-radius:0; box-shadow:4px 4px 0 #f1d527; font-size:36px; letter-spacing:normal; overflow:visible; transition:transform .12s ease,box-shadow .12s ease; }
+.completion-actions .completion-decide:active { transform:translate(3px,3px); box-shadow:1px 1px 0 #f1d527; }
+.completion-actions .completion-decide.is-confirming { animation:decide-seal .42s cubic-bezier(.2,.8,.2,1) both; }
 @keyframes decide-seal { 0% { transform:translate(0,0) scale(1); box-shadow:4px 4px 0 #f1d527; } 24% { transform:translate(4px,4px) scale(.97); box-shadow:0 0 0 #f1d527; } 58% { transform:translate(2px,2px) scale(1.015); box-shadow:2px 2px 0 #f1d527; } 100% { transform:translate(3px,3px) scale(1); box-shadow:1px 1px 0 #f1d527; } }
 @keyframes decide-dot-settle { 0%,100% { transform:none; } 35% { transform:scale(1.3); } }
-@media (prefers-reduced-motion:reduce) { .map-screen:not(.deep-menu-open) .reflection-actions .decide-confirm,.decide-confirm.is-confirming .decide-dot { animation:none; transition:none; } }
+@media (prefers-reduced-motion:reduce) { .map-screen:not(.deep-menu-open) .reflection-actions .decide-confirm,.completion-actions .completion-decide,.decide-confirm.is-confirming .decide-dot { animation:none; transition:none; } }
 
 /* Memo content remains private until its share checkbox is selected. */
 .consult-memo-section { min-width:0; }
