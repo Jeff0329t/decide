@@ -134,7 +134,19 @@ main p{text-wrap:pretty;line-break:strict}
 .wtile-cards a.is-pressed{background:var(--accent);color:#111}
 .crumbs a:active,.alist a:active,.note a:active{opacity:.55}
 @media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:feel-out .2s ease both}
+::view-transition-new(root){animation:feel-in .32s cubic-bezier(.2,.8,.2,1) both}
+html:active-view-transition-type(back)::view-transition-old(root){animation-name:feel-out-back}
+html:active-view-transition-type(back)::view-transition-new(root){animation-name:feel-in-back}
+::view-transition-group(card-art){animation-duration:.38s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+.app-nav{view-transition-name:app-nav}
+::view-transition-group(app-nav){animation:none}
+@keyframes feel-in{from{opacity:0;transform:translateX(28px)}}
+@keyframes feel-out{to{opacity:0;transform:translateX(-28px)}}
+@keyframes feel-in-back{from{opacity:0;transform:translateX(-28px)}}
+@keyframes feel-out-back{to{opacity:0;transform:translateX(28px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}@view-transition{navigation:none}}
 /* reading-feel:end */</style>
 <title>悩み別タロットの判断軸｜転職・恋愛など12の迷いを整理｜DECIDE.</title>
 <meta name="description" content="転職や恋愛、結婚、引っ越し、お金などの選択で迷う人へ。12の悩みから自分に近いテーマを選び、迷いの正体や整理の視点を確認。関連するタロットカードと問いかけを通して、自分なりの判断軸を考えます。">
@@ -145,6 +157,7 @@ main p{text-wrap:pretty;line-break:strict}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"ItemList","name":"悩み別のタロット解説","itemListElement":[{"@type":"ListItem","position":1,"url":"https://decisionprocess.net/cards/worry-tenshoku","name":"転職するか迷うとき"},{"@type":"ListItem","position":2,"url":"https://decisionprocess.net/cards/worry-wakare","name":"別れるか迷うとき"},{"@type":"ListItem","position":3,"url":"https://decisionprocess.net/cards/worry-hikkoshi","name":"引っ越しを決められないとき"},{"@type":"ListItem","position":4,"url":"https://decisionprocess.net/cards/worry-kekkon","name":"結婚に踏み切れないとき"},{"@type":"ListItem","position":5,"url":"https://decisionprocess.net/cards/worry-manabi","name":"進学・学び直しで迷うとき"},{"@type":"ListItem","position":6,"url":"https://decisionprocess.net/cards/worry-dokuritsu","name":"独立・起業で迷うとき"},{"@type":"ListItem","position":7,"url":"https://decisionprocess.net/cards/worry-ningen","name":"人間関係で迷うとき"},{"@type":"ListItem","position":8,"url":"https://decisionprocess.net/cards/worry-okane","name":"大きな買い物・お金の使い方で迷うとき"},{"@type":"ListItem","position":9,"url":"https://decisionprocess.net/cards/worry-renai","name":"恋愛で迷うとき"},{"@type":"ListItem","position":10,"url":"https://decisionprocess.net/cards/worry-shukatsu","name":"就活で迷うとき"},{"@type":"ListItem","position":11,"url":"https://decisionprocess.net/cards/worry-kaigo","name":"介護で迷うとき"},{"@type":"ListItem","position":12,"url":"https://decisionprocess.net/cards/worry-fukugyo","name":"副業を始めるか迷うとき"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"悩み別タロットの判断軸｜転職・恋愛など12の迷いを整理｜DECIDE.","headline":"悩み別タロットの判断軸｜転職・恋愛など12の迷いを整理｜DECIDE.","description":"転職や恋愛、結婚、引っ越し、お金などの選択で迷う人へ。12の悩みから自分に近いテーマを選び、迷いの正体や整理の視点を確認。関連するタロットカードと問いかけを通して、自分なりの判断軸を考えます。","url":"https://decisionprocess.net/cards/worries","inLanguage":"ja","publisher":{"@type":"Organization","name":"DECIDE.","url":"https://decisionprocess.net/"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"DECIDE.","item":"https://decisionprocess.net/"},{"@type":"ListItem","position":2,"name":"タロットカード78枚の意味","item":"https://decisionprocess.net/cards/"},{"@type":"ListItem","position":3,"name":"悩み別に読むタロット","item":"https://decisionprocess.net/cards/worries"}]}</script>
+<script data-press>(function(){var S='.wjump a,.cats a,.pager a,.grid a,.wcards a,.wtile-cards a';function clear(){[].forEach.call(document.querySelectorAll('.is-pressed'),function(x){x.classList.remove('is-pressed');var i=x.querySelector('img');if(i)i.style.viewTransitionName=''})}function back(e){var a=e&&e.activation;return a&&a.navigationType==='traverse'&&a.from&&a.entry&&a.entry.index<a.from.index}document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('a');if(!t||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;try{sessionStorage.setItem('feel-dir',t.matches('.back,[data-go="back"]')?'back':'')}catch(_){}if(!t.matches(S))return;clear();t.classList.add('is-pressed')});window.addEventListener('pageshow',clear);window.addEventListener('pageswap',function(e){if(!e.viewTransition)return;var b=back(e);try{b=b||sessionStorage.getItem('feel-dir')==='back'}catch(_){}if(b){e.viewTransition.types.add('back');return}var i=document.querySelector('.is-pressed img');if(i)i.style.viewTransitionName='card-art'});window.addEventListener('pagereveal',function(e){if(!e.viewTransition)return;var b=back(window.navigation);try{b=b||sessionStorage.getItem('feel-dir')==='back';sessionStorage.removeItem('feel-dir')}catch(_){}if(b){e.viewTransition.types.add('back');return}var h=document.querySelector('.hero img');if(!h)return;h.style.viewTransitionName='card-art';e.viewTransition.finished.finally(function(){h.style.viewTransitionName=''})})})();</script>
 </head>
 <body>
 <main>
@@ -251,7 +264,6 @@ main p{text-wrap:pretty;line-break:strict}
 <p>解釈は決断を考えるための一つの視点です。占いの結果や将来を保証するものではありません。</p>
 <p class="meta"><a href="../tokushoho">特定商取引法に基づく表記</a> ／ <a href="../terms">利用規約</a> ／ <a href="../privacy">プライバシーポリシー</a> ／ <a href="../">DECIDE. に戻る</a></p>
 </footer>
-<script data-press>(function(){var S='.wjump a,.cats a,.pager a,.grid a,.wcards a,.wtile-cards a';function clear(){[].forEach.call(document.querySelectorAll('.is-pressed'),function(x){x.classList.remove('is-pressed')})}document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest(S);if(!a||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;clear();a.classList.add('is-pressed')});window.addEventListener('pageshow',clear)})();</script>
 <!-- app-nav:start -->
 <style>body{padding-bottom:calc(68px + env(safe-area-inset-bottom))}
 .app-nav{position:fixed;z-index:20;left:50%;bottom:0;transform:translateX(-50%);width:min(760px,100%);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:7px max(8px,env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));background:rgba(4,4,4,.96);border-top:1px solid rgba(255,255,255,.18);font-family:Inter,"Hiragino Sans","Yu Gothic UI","Yu Gothic",sans-serif}

@@ -134,7 +134,19 @@ main p{text-wrap:pretty;line-break:strict}
 .wtile-cards a.is-pressed{background:var(--accent);color:#111}
 .crumbs a:active,.alist a:active,.note a:active{opacity:.55}
 @media (hover:hover){.pager a:hover,.cats a:hover,.wjump a:hover,.wtile-cards a:hover{background:#fff6c2}.cta a:hover{transform:translateY(-1px)}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:feel-out .2s ease both}
+::view-transition-new(root){animation:feel-in .32s cubic-bezier(.2,.8,.2,1) both}
+html:active-view-transition-type(back)::view-transition-old(root){animation-name:feel-out-back}
+html:active-view-transition-type(back)::view-transition-new(root){animation-name:feel-in-back}
+::view-transition-group(card-art){animation-duration:.38s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+.app-nav{view-transition-name:app-nav}
+::view-transition-group(app-nav){animation:none}
+@keyframes feel-in{from{opacity:0;transform:translateX(28px)}}
+@keyframes feel-out{to{opacity:0;transform:translateX(-28px)}}
+@keyframes feel-in-back{from{opacity:0;transform:translateX(-28px)}}
+@keyframes feel-out-back{to{opacity:0;transform:translateX(28px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}@view-transition{navigation:none}}
 /* reading-feel:end */</style>
 <title>ペンタクル14枚の意味一覧｜タロットで仕事とお金を整理｜DECIDE.</title>
 <meta name="description" content="仕事やお金、暮らしに関わる選択で迷う人へ。タロットのペンタクル14枚の正位置・逆位置を一覧で確認。時間や費用、技能の積み重ねに目を向け、長く続けられる選択の条件を考えるヒントを探せます。">
@@ -145,6 +157,7 @@ main p{text-wrap:pretty;line-break:strict}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"ItemList","name":"ペンタクルのカード解説","itemListElement":[{"@type":"ListItem","position":1,"url":"https://decisionprocess.net/cards/pe01","name":"ペンタクルのエース"},{"@type":"ListItem","position":2,"url":"https://decisionprocess.net/cards/pe02","name":"ペンタクルの2"},{"@type":"ListItem","position":3,"url":"https://decisionprocess.net/cards/pe03","name":"ペンタクルの3"},{"@type":"ListItem","position":4,"url":"https://decisionprocess.net/cards/pe04","name":"ペンタクルの4"},{"@type":"ListItem","position":5,"url":"https://decisionprocess.net/cards/pe05","name":"ペンタクルの5"},{"@type":"ListItem","position":6,"url":"https://decisionprocess.net/cards/pe06","name":"ペンタクルの6"},{"@type":"ListItem","position":7,"url":"https://decisionprocess.net/cards/pe07","name":"ペンタクルの7"},{"@type":"ListItem","position":8,"url":"https://decisionprocess.net/cards/pe08","name":"ペンタクルの8"},{"@type":"ListItem","position":9,"url":"https://decisionprocess.net/cards/pe09","name":"ペンタクルの9"},{"@type":"ListItem","position":10,"url":"https://decisionprocess.net/cards/pe10","name":"ペンタクルの10"},{"@type":"ListItem","position":11,"url":"https://decisionprocess.net/cards/pe11","name":"ペンタクルのペイジ"},{"@type":"ListItem","position":12,"url":"https://decisionprocess.net/cards/pe12","name":"ペンタクルのナイト"},{"@type":"ListItem","position":13,"url":"https://decisionprocess.net/cards/pe13","name":"ペンタクルのクイーン"},{"@type":"ListItem","position":14,"url":"https://decisionprocess.net/cards/pe14","name":"ペンタクルのキング"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"ペンタクル14枚の意味一覧｜タロットで仕事とお金を整理｜DECIDE.","headline":"ペンタクル14枚の意味一覧｜タロットで仕事とお金を整理｜DECIDE.","description":"仕事やお金、暮らしに関わる選択で迷う人へ。タロットのペンタクル14枚の正位置・逆位置を一覧で確認。時間や費用、技能の積み重ねに目を向け、長く続けられる選択の条件を考えるヒントを探せます。","url":"https://decisionprocess.net/cards/pentacles","inLanguage":"ja","publisher":{"@type":"Organization","name":"DECIDE.","url":"https://decisionprocess.net/"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"DECIDE.","item":"https://decisionprocess.net/"},{"@type":"ListItem","position":2,"name":"タロットカード78枚の意味","item":"https://decisionprocess.net/cards/"},{"@type":"ListItem","position":3,"name":"ペンタクルの意味一覧（14枚）","item":"https://decisionprocess.net/cards/pentacles"}]}</script>
+<script data-press>(function(){var S='.wjump a,.cats a,.pager a,.grid a,.wcards a,.wtile-cards a';function clear(){[].forEach.call(document.querySelectorAll('.is-pressed'),function(x){x.classList.remove('is-pressed');var i=x.querySelector('img');if(i)i.style.viewTransitionName=''})}function back(e){var a=e&&e.activation;return a&&a.navigationType==='traverse'&&a.from&&a.entry&&a.entry.index<a.from.index}document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('a');if(!t||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;try{sessionStorage.setItem('feel-dir',t.matches('.back,[data-go="back"]')?'back':'')}catch(_){}if(!t.matches(S))return;clear();t.classList.add('is-pressed')});window.addEventListener('pageshow',clear);window.addEventListener('pageswap',function(e){if(!e.viewTransition)return;var b=back(e);try{b=b||sessionStorage.getItem('feel-dir')==='back'}catch(_){}if(b){e.viewTransition.types.add('back');return}var i=document.querySelector('.is-pressed img');if(i)i.style.viewTransitionName='card-art'});window.addEventListener('pagereveal',function(e){if(!e.viewTransition)return;var b=back(window.navigation);try{b=b||sessionStorage.getItem('feel-dir')==='back';sessionStorage.removeItem('feel-dir')}catch(_){}if(b){e.viewTransition.types.add('back');return}var h=document.querySelector('.hero img');if(!h)return;h.style.viewTransitionName='card-art';e.viewTransition.finished.finally(function(){h.style.viewTransitionName=''})})})();</script>
 </head>
 <body>
 <main>
@@ -186,7 +199,6 @@ main p{text-wrap:pretty;line-break:strict}
 <p>解釈は決断を考えるための一つの視点です。占いの結果や将来を保証するものではありません。</p>
 <p class="meta"><a href="../tokushoho">特定商取引法に基づく表記</a> ／ <a href="../terms">利用規約</a> ／ <a href="../privacy">プライバシーポリシー</a> ／ <a href="../">DECIDE. に戻る</a></p>
 </footer>
-<script data-press>(function(){var S='.wjump a,.cats a,.pager a,.grid a,.wcards a,.wtile-cards a';function clear(){[].forEach.call(document.querySelectorAll('.is-pressed'),function(x){x.classList.remove('is-pressed')})}document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest(S);if(!a||e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;clear();a.classList.add('is-pressed')});window.addEventListener('pageshow',clear)})();</script>
 <!-- app-nav:start -->
 <style>body{padding-bottom:calc(68px + env(safe-area-inset-bottom))}
 .app-nav{position:fixed;z-index:20;left:50%;bottom:0;transform:translateX(-50%);width:min(760px,100%);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:7px max(8px,env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));background:rgba(4,4,4,.96);border-top:1px solid rgba(255,255,255,.18);font-family:Inter,"Hiragino Sans","Yu Gothic UI","Yu Gothic",sans-serif}
