@@ -96,10 +96,57 @@ test('the card hand-off still moves on if the view transition never calls back',
     },
     setTimeout: (callback, ms) => pending.push({ callback, ms })
   };
-  vm.createContext(context); vm.runInContext(body(app, 'carryRevealedCards'), context);
+  vm.createContext(context); vm.runInContext(body(app, 'softTransition'), context); vm.runInContext(body(app, 'carryRevealedCards'), context);
   context.carryRevealedCards(() => moved.push('session'));
   assert.equal(moved.length, 0);
   assert.equal(pending[0].ms, 1500);
   pending[0].callback(); pending[0].callback();
   assert.deepEqual(moved, ['session']);
+});
+
+test('the picked genre chip travels into the THEME tag, and the screen moves on even if the transition stalls', () => {
+  const pending = [], went = [];
+  const chip = { style: {} }, art = { style: { setProperty() {} } }, theme = { style: { setProperty: (key, value) => { theme[key] = value; } } };
+  const context = {
+    currentView: 'prepare-genre',
+    document: {
+      startViewTransition: () => ({ ready: { catch() {} } }),
+      querySelector: selector => selector === '.draw-theme b' ? theme : null
+    },
+    navigate: view => { went.push(view); context.currentView = view; },
+    setTimeout: (callback, ms) => pending.push({ callback, ms })
+  };
+  vm.createContext(context);
+  vm.runInContext(body(app, 'softTransition'), context); vm.runInContext(body(app, 'carryGenre'), context);
+  const screen = { querySelector: selector => selector === '.meta-chip.selected' ? chip : art };
+  context.carryGenre(screen, 'draw');
+  assert.equal(chip.style.viewTransitionName, 'genre-tag');
+  pending[0].callback();
+  assert.deepEqual(went, ['draw']);
+  assert.equal(theme['view-transition-name'], 'genre-tag');
+});
+
+test('the decide screen keeps the drawn cards in view and the cards shrink into it', () => {
+  const decide = body(app, 'renderDecision');
+  assert.match(decide, /<\/div>\n      \$\{decisionCards\(\)\}/);
+  const cards = body(app, 'decisionCards');
+  assert.match(cards, /data-action="card-detail" data-index="\$\{index\}"/);
+  const went = [];
+  const context = { activeSession: { mode: 'one' }, currentView: 'session', document: { querySelectorAll: () => [] }, navigate: view => went.push(view) };
+  vm.createContext(context); vm.runInContext(body(app, 'carryCardsToDecision'), context);
+  context.carryCardsToDecision();
+  assert.deepEqual(went, ['decide'], 'without transitions it simply moves on');
+});
+
+test('coming home from the farewell is quiet: the farewell fades over home, and home only pops on the first visit', () => {
+  const pending = [], classes = new Set(['is-open']); let removed = false;
+  const wrap = { classList: { contains: name => classes.has(name), add: name => classes.add(name), remove: name => classes.delete(name) }, remove: () => { removed = true; } };
+  const context = { document: { querySelector: () => wrap }, setBodyScrollLocked() {}, prefersReducedMotion: () => false, setTimeout: (callback, ms) => pending.push({ callback, ms }) };
+  vm.createContext(context); vm.runInContext(body(app, 'closeFarewell'), context);
+  context.closeFarewell({ fade: true });
+  assert.ok(classes.has('is-closing')); assert.ok(!classes.has('is-open')); assert.equal(removed, false);
+  pending[0].callback(); assert.equal(removed, true);
+  assert.match(app, /action === 'farewell-home'\) \{ closeFarewell\(\{fade:true\}\);/);
+  assert.match(body(app, 'renderHome'), /const quiet=homeEntrancePlayed; homeEntrancePlayed=true;/);
+  assert.match(css, /\.quickstart-screen\.is-quiet \.quickstart-plate \{ animation: none; \}/);
 });

@@ -37,7 +37,7 @@ test('準備のジャンル選択は1枚ならドロー、2枚なら選択肢へ
   for (const [mode, view, expected] of [['one','prepare-genre','draw'],['two','prepare-genre','prepare-options'],['two','prepare-options',null]]) {
     const classes=new Set(); const pending=[];
     const screen={isConnected:true,classList:{contains:v=>classes.has(v),add:v=>classes.add(v)}};
-    const state={currentView:view,activeSession:{mode},decisionDraft:{genre:'仕事'},document:{querySelector:()=>screen},prefersReducedMotion:()=>false,setTimeout:fn=>pending.push(fn),DECIDE_DECISION:{validGenre:v=>v},captureDecisionDraft(){},restoreDecisionDraft(){},sensoryFeedback(){},navigate:next=>{state.next=next;}};
+    const state={currentView:view,activeSession:{mode},decisionDraft:{genre:'仕事'},document:{querySelector:()=>screen},prefersReducedMotion:()=>false,setTimeout:fn=>pending.push(fn),DECIDE_DECISION:{validGenre:v=>v},captureDecisionDraft(){},restoreDecisionDraft(){},sensoryFeedback(){},navigate:next=>{state.next=next;},carryGenre:(_,next)=>state.navigate(next)};
     vm.runInNewContext(`${body(app,'selectGenre')}\nselectGenre('仕事');`,state);
     assert.equal(state.next,undefined);
     if(view==='prepare-genre') {
@@ -166,7 +166,7 @@ test('DECIDE confirmation moves once after the stamp settles, and cancels after 
   function harness(reduced=false) {
     const pending=[],destinations=[];
     const button={disabled:false,isConnected:true,setAttribute(){},classList:{add(){}}};
-    const context={activeSession:{id:'test'},currentView:'session',sensoryFeedback(){},prefersReducedMotion:()=>reduced,navigate:view=>destinations.push(view),setTimeout:(callback,ms)=>pending.push({callback,ms})};
+    const context={activeSession:{id:'test'},currentView:'session',sensoryFeedback(){},prefersReducedMotion:()=>reduced,navigate:view=>destinations.push(view),carryCardsToDecision:()=>destinations.push('decide'),setTimeout:(callback,ms)=>pending.push({callback,ms})};
     vm.createContext(context); vm.runInContext(body(app,'confirmDecisionStep'),context);
     return {context,button,pending,destinations};
   }

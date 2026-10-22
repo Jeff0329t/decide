@@ -531,6 +531,7 @@ function render() {
   }
 }
 
+let homeEntrancePlayed=false;
 function renderHome() {
   const last = logs[0];
   document.body.classList.toggle('has-logs',logs.length>0);
@@ -562,8 +563,10 @@ function renderHome() {
       </section>`;
     return;
   }
+  // 迷いを持って来た最初の1回だけ登場の動きを見せ、決めて戻ってきたときは静かに迎える
+  const quiet=homeEntrancePlayed; homeEntrancePlayed=true;
   app.innerHTML = `
-    <section class="screen home-screen quickstart-screen">
+    <section class="screen home-screen quickstart-screen${quiet ? ' is-quiet' : ''}">
       <header class="quickstart-brand" aria-label="DECIDE.">
         <small aria-hidden="true">TAROT FOR DECISIONS</small>
         <h1 aria-hidden="true"><span class="qb-word">DECIDE</span><span class="qb-dot">.</span></h1>
@@ -1006,14 +1009,20 @@ function lingerOnReveal(sessionId, ready, caption, proceed) {
     timer=setTimeout(go,REVEAL_LINGER_MS);
   });
 }
-// 開いた札が、そのまま結果画面のカード位置へ移っていく。演出が中断されて描き替えが呼ばれなくても、画面は必ず先へ進める
+// 画面の切り替えを View Transition で包む。演出が中断されて描き替えが呼ばれなくても、画面は必ず先へ進める
+function softTransition(update) {
+  if(!document.startViewTransition){ update(); return; }
+  let done=false;
+  const run=()=>{ if(done)return; done=true; update(); };
+  document.startViewTransition(run)?.ready?.catch(()=>{});
+  setTimeout(run,1500);
+}
+// 開いた札が、そのまま結果画面のカード位置へ移っていく
 function carryRevealedCards(next) {
   const faces=[...document.querySelectorAll('.draw-screen .flip-card.flipped .flip-front')];
   if(!document.startViewTransition || !faces.length){ next(); return; }
-  let moved=false;
-  const move=()=>{
-    if(moved)return;
-    moved=true;
+  faces.forEach((face,index)=>{ face.style.viewTransitionName=`reveal-card-${index}`; });
+  softTransition(()=>{
     if(currentView!=='draw')return;
     next();
     document.querySelectorAll('.card-detail-button').forEach((button,index)=>{
@@ -1021,10 +1030,7 @@ function carryRevealedCards(next) {
       button.style.animation='none';
       button.querySelector('.card-image-frame')?.style.setProperty('view-transition-name',`reveal-card-${index}`);
     });
-  };
-  faces.forEach((face,index)=>{ face.style.viewTransitionName=`reveal-card-${index}`; });
-  document.startViewTransition(move)?.ready?.catch(()=>{});
-  setTimeout(move,1500);
+  });
 }
 
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
@@ -1138,10 +1144,22 @@ function confirmDecisionStep(button) {
   button.classList.add('is-confirming');
   sensoryFeedback('tick');
   const proceed=()=>{
-    if(activeSession===session && currentView==='session' && button.isConnected)navigate('decide');
+    if(activeSession===session && currentView==='session' && button.isConnected)carryCardsToDecision();
   };
   if(prefersReducedMotion())proceed();
   else setTimeout(proceed,420);
+}
+// 結果画面のカードが、決定画面の上の小さな札へ縮んでついてくる
+function carryCardsToDecision() {
+  const count=activeSession?.mode==='two' ? 2 : 1;
+  const frames=[...document.querySelectorAll('.map-screen .card-detail-button .card-image-frame')].slice(0,count);
+  if(!document.startViewTransition || !frames.length){ navigate('decide'); return; }
+  frames.forEach((frame,index)=>frame.style.setProperty('view-transition-name',`reveal-card-${index}`));
+  softTransition(()=>{
+    if(currentView!=='session')return;
+    navigate('decide');
+    document.querySelectorAll('.decide-card .card-image-frame').forEach((frame,index)=>frame.style.setProperty('view-transition-name',`reveal-card-${index}`));
+  });
 }
 function renderReflection() {
   const question=activeSession.mode==='two'?'この結果、しっくりきましたか？':'このカード、しっくりきましたか？';
@@ -1177,6 +1195,13 @@ function decisionSummaryHtml() {
   const filled=rows.filter(Boolean);
   return filled.length ? filled.join('') : `<span class="decision-summary-empty">${activeSession?.mode==='two'?'ジャンル・選択肢は未設定':'ジャンルは未設定'}</span>`;
 }
+// 決めるあいだも、引いたカードが目に入るように。タップでもう一度意味を読める
+function decisionCards() {
+  const two=activeSession?.mode==='two';
+  const nodes=(activeSession?.nodes || []).slice(0,two?2:1).filter(node=>node?.card);
+  if(!nodes.length)return '';
+  return `<div class="decide-cards${two ? ' is-pair' : ''}" aria-label="引いたカード">${nodes.map((node,index)=>`<button type="button" class="decide-card" data-action="card-detail" data-index="${index}" aria-label="${esc(node.card.name)}の意味をもう一度見る"><span class="card-image-frame">${cardPicture(node.card,{className:node.card.orientation === 'reversed' ? 'reversed-image' : '',sizes:'48px'})}</span><span class="decide-card-text">${two ? `<b>${'AB'[index]}</b>` : '<b>NOW</b>'}<strong>${esc(node.card.name)}</strong><small>${orientationLabel(node.card)}</small></span></button>`).join('')}</div>`;
+}
 function renderDecision() {
   if (!activeSession) return navigate('home');
   const options = activeSession.mode === 'two' ? ['選択肢1','選択肢2','保留する'] : ['進む','見送る','保留する'];
@@ -1184,6 +1209,7 @@ function renderDecision() {
     <section class="screen decide-screen">
       <button class="text-back" data-action="session">← マップに戻る</button>
       <p class="eyebrow">Decide</p><div class="decide-title"><span class="decide-kicker">THE FINAL CALL</span><h1>今回は、<wbr>どうする？</h1><span class="decide-sub">YOU DECIDE, NOT THE CARDS.</span></div>
+      ${decisionCards()}
       <p class="lead">カードではなく、<wbr>あなたが決めます。<wbr>いちばん納得できるものを<wbr>選んでください。</p>
       <div class="decision-options">${options.map((o,i) => `<button class="decision-option ${selectedDecision === o ? 'selected' : ''}" data-action="select-decision" data-value="${o}" aria-pressed="${selectedDecision === o}"><b class="decision-index">${(activeSession.mode === 'two' ? ['A','B','HOLD'] : ['GO','PASS','HOLD'])[i]}</b><span>${DECIDE_DECISION.choiceText(o)}<small data-option-text="${o}"${decisionOptionText(o) ? '' : ' hidden'}>${esc(decisionOptionText(o))}</small></span><i>${selectedDecision === o ? '✓' : ''}</i></button>`).join('')}</div>
       <form id="save-form" class="save-form">
@@ -1277,14 +1303,28 @@ function selectGenre(value) {
     screen.classList.add('is-genre-chosen');
     const session=activeSession;
     setTimeout(()=>{
-      if(currentView==='prepare-genre' && activeSession===session && screen.isConnected){
-        navigate(session.mode==='two'?'prepare-options':'draw');
-      }
+      if(currentView!=='prepare-genre' || activeSession!==session || !screen.isConnected)return;
+      const next=session.mode==='two'?'prepare-options':'draw';
+      if(prefersReducedMotion()){ navigate(next); return; }
+      carryGenre(screen,next);
     },prefersReducedMotion()?160:360);
     return;
   }
   decisionDraft.genre=decisionDraft.genre===value?'':DECIDE_DECISION.validGenre(value);
   restoreDecisionDraft(); sensoryFeedback('tick');
+}
+
+// 選んだジャンルの札が、次の画面の THEME 札へそのまま移る（2枚引きでは扉の絵がつながる）
+function carryGenre(screen,next) {
+  const chip=screen.querySelector('.meta-chip.selected');
+  if(chip && next==='draw')chip.style.viewTransitionName='genre-tag';
+  screen.querySelector('.prepare-art')?.style.setProperty('view-transition-name','prepare-art');
+  softTransition(()=>{
+    if(currentView!=='prepare-genre')return;
+    navigate(next);
+    document.querySelector('.draw-theme b')?.style.setProperty('view-transition-name','genre-tag');
+    document.querySelector('.prepare-art')?.style.setProperty('view-transition-name','prepare-art');
+  });
 }
 
 function selectPair(index) {
@@ -1672,9 +1712,13 @@ function shareFarewellInstagram() {
   if(!id || !logs.some(log=>log.id===id)){toast('相談する記録が見つかりません');return;}
   closeFarewell();openShare('result',id);
 }
-function closeFarewell() {
-  const wrap=document.querySelector('.farewell'); if(!wrap)return;
-  wrap.remove(); setBodyScrollLocked(false);
+// fade: 締め画面を暗いままパッと消さず、下に用意したホームへゆっくり明けていく
+function closeFarewell({fade=false}={}) {
+  const wrap=document.querySelector('.farewell'); if(!wrap || wrap.classList.contains('is-closing'))return;
+  setBodyScrollLocked(false);
+  if(!fade || prefersReducedMotion()){ wrap.remove(); return; }
+  wrap.classList.add('is-closing'); wrap.classList.remove('is-open');
+  setTimeout(()=>wrap.remove(),600);
 }
 
 function renderDetailDate(iso) {
@@ -2164,7 +2208,7 @@ document.addEventListener('click', event => {
   else if (action === 'due-review-later') { const log=logs.find(item=>item.id===el.dataset.id); const saved=!log || commitLogChange(log,REMIND_KEYS,item=>writeRemind(item,new Date(Date.now()+3*DAY_MS).toISOString(),3)); if(!saved)toast(SAVE_FAILED_MESSAGE); else { closeModal('#due-review-modal'); toast(log ? `${formatDate(log.remindAt)} ごろにまたお聞きします` : '3日後にまたお聞きします'); } }
   else if (action === 'satisfied') openFarewell();
   else if (action === 'farewell-share-instagram') shareFarewellInstagram();
-  else if (action === 'farewell-home') { closeFarewell(); activeSession=null; completionId=null; homeStage='quickstart'; navigate('home'); }
+  else if (action === 'farewell-home') { closeFarewell({fade:true}); activeSession=null; completionId=null; homeStage='quickstart'; navigate('home'); }
   else if (action === 'deck-preset') selectDeckMode(el.dataset.value);
   else if (action === 'deck-scope') { const orientation=settings.deckMode.endsWith('reversed')?'reversed':'upright'; selectDeckMode(`${el.dataset.value}-${orientation}`); }
   else if (action === 'deck-orientation') { const scope=settings.deckMode.startsWith('major')?'major':'all'; selectDeckMode(`${scope}-${el.dataset.value}`); }
