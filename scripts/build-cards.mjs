@@ -125,88 +125,105 @@ function picture(c, { eager = false, sizes = '(max-width: 600px) 60vw, 280px', w
   return `<picture><source type="image/webp" srcset="${b}-320.webp 320w, ${b}-480.webp 480w" sizes="${sizes}"><img src="${b}.jpg" alt="${esc(altOf(c))}" width="${w}" height="${h}"${eager ? '' : ' loading="lazy"'} decoding="async"></picture>`;
 }
 
-const CSS = `:root{--ink:#1e2430;--soft:#f2efe7;--muted:#5b6270;--line:#d9d4c7;--card:#fffdf8;--accent:#f1d625}
+const CSS = `:root{--ink:#111;--soft:#f4efe3;--muted:#5a554c;--line:rgba(17,17,17,.2);--card:#fffdf7;--accent:#f1d527;--black:#0b0b0b}
 *{box-sizing:border-box}
-body{margin:0;background:var(--soft);color:var(--ink);font-family:Inter,"Hiragino Sans","Yu Gothic UI","Yu Gothic",sans-serif;font-size:16.5px;line-height:1.9;-webkit-text-size-adjust:100%}
-a{color:inherit}
-main{max-width:720px;margin:0 auto;padding:24px 16px 64px}
-h1,h2,.serif{font-family:Didot,"Bodoni 72","Hiragino Mincho ProN","Yu Mincho",serif}
-h1{font-size:1.7rem;line-height:1.35;margin:8px 0 4px}
-h2{font-size:1.15rem;margin:36px 0 8px;padding-top:16px;border-top:1px solid var(--line)}
-h3{font-size:1rem;margin:20px 0 4px}
-.crumbs{font-size:.8rem;color:var(--muted)}
+body{margin:0;background:var(--soft);color:var(--ink);font-family:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"Noto Serif JP",serif;font-size:16.5px;line-height:1.95;-webkit-text-size-adjust:100%}
+a{color:inherit;text-underline-offset:3px}
+main{max-width:760px;margin:0 auto;padding:18px 16px 48px}
+h1,h2,h3{font-family:inherit;font-weight:700}
+.serif,.kicker{font-family:Didot,"Bodoni 72","Times New Roman",serif}
+.kicker{margin:0;font-size:.7rem;font-weight:700;letter-spacing:.18em;line-height:1.4}
+.page-k{margin-top:14px}
+h1{font-size:2rem;line-height:1.25;margin:6px 0 6px;letter-spacing:.02em}
+h2{font-size:1.4rem;line-height:1.35;margin:44px 0 12px;padding:0 0 8px;border-bottom:2px solid var(--ink)}
+.sec-k{margin-top:46px}
+.sec-k+h2{margin-top:4px}
+h3{font-size:1.02rem;margin:22px 0 4px}
+.crumbs{font-size:.74rem;color:var(--muted);line-height:1.6}
 .crumbs ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px}
 .crumbs li+li::before{content:"›";margin-right:4px}
-.en{color:var(--muted);margin:0 0 16px;letter-spacing:.04em}
-.hero{display:grid;grid-template-columns:minmax(0,220px) 1fr;gap:20px;align-items:start}
-.hero img{width:100%;height:auto;display:block;border:2px solid #111;border-radius:6px;background:#111}
-@media (max-width:560px){.hero{grid-template-columns:1fr}.hero picture{max-width:220px;margin:0 auto;display:block}}
-.facts{margin:0;padding:0;list-style:none;font-size:.92rem}
-.facts li{padding:6px 0;border-bottom:1px dashed var(--line)}
-.facts b{display:inline-block;min-width:5.5em;color:var(--muted);font-weight:600}
-.kw{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px;padding:0;list-style:none}
-.kw li{border:1.5px solid #111;background:var(--accent);color:#111;padding:0 10px;border-radius:999px;font-size:.85rem;font-weight:600}
-.score{font-size:.9rem;color:var(--muted)}
+.en{color:var(--muted);margin:0 0 18px;letter-spacing:.08em;font-size:1.05rem}
+.hero{display:grid;grid-template-columns:minmax(0,220px) 1fr;gap:24px;align-items:start}
+.hero img{width:100%;height:auto;display:block;border:1.5px solid var(--ink);background:var(--ink);box-shadow:6px 6px 0 var(--accent),6px 6px 0 1.5px var(--ink)}
+@media (max-width:560px){.hero{grid-template-columns:1fr}.hero picture{max-width:220px;margin:0 auto 8px;display:block}}
+.facts{margin:0 0 14px;padding:0;list-style:none;font-size:.9rem;border-top:2px solid var(--ink)}
+.facts li{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);line-height:1.7}
+.facts b{flex:none;min-width:4.5em;color:var(--muted);font-size:.8rem}
+.kw{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px;padding:0;list-style:none}
+.kw li{border:1.5px solid var(--ink);background:var(--accent);color:var(--ink);padding:1px 10px;font-size:.84rem;font-weight:700}
+.score{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:.86rem;color:var(--muted)}
 .score strong{color:var(--ink)}
-dl.themes{margin:8px 0 0}
-dl.themes dt{font-weight:700;font-size:.9rem;margin-top:10px}
-dl.themes dd{margin:0}
-.cta{margin:32px 0;padding:20px 16px;background:var(--accent);color:#111;border:2px solid #111;border-radius:8px;box-shadow:4px 4px 0 #111;text-align:center}
-.cta p{margin:0 0 10px;font-size:.9rem}
-.cta a{display:inline-block;background:#111;color:var(--accent);font-weight:700;text-decoration:none;padding:10px 18px;border-radius:6px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:12px;margin:12px 0 0;padding:0;list-style:none}
-.grid a{display:block;text-decoration:none;font-size:.82rem;line-height:1.4;text-align:center}
-.grid img{width:100%;height:auto;display:block;border:1.5px solid #111;border-radius:4px;margin-bottom:4px;background:#111}
-.note{font-size:.85rem;color:var(--muted)}
+.meter{display:inline-flex;gap:3px}
+.meter i{width:16px;height:9px;border:1.5px solid var(--ink)}
+.meter i.on{background:var(--ink)}
+dl.themes{margin:14px 0 0;border-top:2px solid var(--ink)}
+dl.themes dt{display:flex;align-items:center;gap:8px;margin:0;padding-top:10px;font-weight:700;font-size:.86rem}
+dl.themes dt::before{content:"";flex:none;width:9px;height:9px;background:var(--accent);border:1.5px solid var(--ink)}
+dl.themes dd{margin:0;padding:0 0 10px;border-bottom:1px solid var(--line)}
+.cta{margin:40px 0;padding:18px 16px;background:var(--accent);color:var(--ink);border:1.5px solid var(--ink);box-shadow:5px 5px 0 var(--ink)}
+.cta::before{content:"YOUR TURN";display:block;margin-bottom:6px;font-family:Didot,"Bodoni 72",serif;font-size:.7rem;font-weight:700;letter-spacing:.18em}
+.cta p{margin:0 0 12px;font-size:.92rem;font-weight:700;line-height:1.75}
+.cta a{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 16px;background:#111;color:var(--accent);font-weight:700;line-height:1.5;text-decoration:none}
+.cta a::after{content:"→";flex:none;font-family:Arial,sans-serif;font-size:1.15rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:14px 8px;margin:12px 0 0;padding:0;list-style:none}
+.grid a{display:block;text-decoration:none;font-size:.8rem;font-weight:700;line-height:1.4;text-wrap:balance}
+.grid img{width:100%;height:auto;display:block;border:1px solid var(--ink);margin-bottom:6px;background:var(--ink)}
+.note{font-size:.84rem;color:var(--muted)}
 .pager{display:flex;justify-content:space-between;gap:12px;margin:28px 0 0;padding:0;list-style:none;font-size:.88rem}
 .pager li{flex:1}
 .pager li.next{text-align:right}
-.pager a{display:block;padding:10px 12px;border:1.5px solid var(--line);border-radius:6px;text-decoration:none;background:var(--card)}
-.pager small{display:block;color:var(--muted);font-size:.75rem}
+.pager a{display:block;padding:10px 12px;border:1.5px solid var(--ink);background:var(--card);box-shadow:3px 3px 0 var(--ink);font-weight:700;text-decoration:none;line-height:1.5}
+.pager small{display:block;color:var(--muted);font-size:.72rem;font-weight:400}
 .wcards{margin:12px 0 0;padding:0;list-style:none}
-.wcards li{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:start;padding:12px 0;border-bottom:1px dashed var(--line)}
-.wcards img{width:100%;height:auto;display:block;border:1.5px solid #111;border-radius:4px;background:#111}
+.wcards li{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:start;padding:14px 0;border-bottom:1px solid var(--line)}
+.wcards img{width:100%;height:auto;display:block;border:1px solid var(--ink);background:var(--ink)}
 .wcards h3{margin:0 0 4px}
-.wcards p{margin:0 0 4px}
-.cats{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;padding:0;list-style:none;font-size:.88rem}
-.cats a{display:inline-block;padding:2px 12px;border:1.5px solid var(--line);border-radius:999px;text-decoration:none}
-.dateline{font-size:.82rem;color:var(--muted);margin:0 0 16px}
+.wcards h3 a{text-decoration:none}
+.wcards h3 a::after{content:" →";font-family:Arial,sans-serif}
+.wcards p{margin:0 0 4px;font-size:.92rem;line-height:1.8}
+.cats{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;padding:0;list-style:none;font-size:.84rem}
+.cats a,.cats [aria-current]{display:inline-block;padding:4px 12px;border:1.5px solid var(--ink);background:var(--card);font-weight:700;line-height:1.6;text-decoration:none}
+.cats [aria-current]{background:var(--accent);color:var(--ink)}
+.dateline{font-size:.8rem;color:var(--muted);margin:0 0 16px}
 .draft{margin:0 0 16px;padding:8px 12px;border:2px dashed #d8402f;color:#d8402f;font-weight:700;font-size:.85rem}
-blockquote{margin:16px 0;padding:4px 16px;border-left:3px solid var(--accent);color:var(--muted)}
+blockquote{margin:16px 0;padding:4px 16px;border-left:4px solid var(--accent);color:var(--muted)}
 .alist{margin:12px 0 0;padding:0;list-style:none}
-.alist li{padding:12px 0;border-bottom:1px dashed var(--line)}
+.alist li{padding:12px 0;border-bottom:1px solid var(--line)}
 .alist h3{margin:0 0 4px}
 .alist p{margin:0}
-.cats [aria-current]{border:1.5px solid #111;background:var(--accent);color:#111;padding:2px 12px;border-radius:999px;font-weight:600}
-footer{max-width:720px;margin:0 auto;padding:16px 16px 48px;border-top:1px solid var(--line);font-size:.8rem;color:var(--muted)}
+footer{max-width:760px;margin:0 auto;padding:18px 16px 48px;border-top:2px solid var(--ink);font-size:.78rem;color:var(--muted)}
 footer p{margin:4px 0}
 .topbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}
-.back{display:inline-flex;align-items:center;gap:6px;flex:none;padding:6px 14px 6px 10px;border:1.5px solid #111;border-radius:999px;background:var(--card);color:#111;font-size:.85rem;font-weight:700;text-decoration:none;box-shadow:2px 2px 0 #111;line-height:1.4}
-.back:active{transform:translate(1px,1px);box-shadow:1px 1px 0 #111}
+.back{display:inline-flex;align-items:center;gap:6px;flex:none;padding:6px 14px 6px 10px;border:1.5px solid var(--ink);background:var(--card);color:var(--ink);font-size:.85rem;font-weight:700;text-decoration:none;box-shadow:3px 3px 0 var(--ink);line-height:1.4}
+.back:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
 .topbar .crumbs{flex:1;min-width:0}
 main p{margin:0 0 1em}
 .lede{font-size:1.02rem}
-.steps{counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:12px 0 0;padding:0;list-style:none}
-.steps li{position:relative;padding:14px 14px 12px 52px;background:var(--card);border:1.5px solid var(--line);border-radius:10px;font-size:.92rem;line-height:1.7}
-.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--accent);border:1.5px solid #111;color:#111;font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center}
+.steps{counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:12px 0 0;padding:0;list-style:none}
+.steps li{position:relative;padding:14px 14px 12px 52px;background:var(--card);border:1.5px solid var(--ink);font-size:.9rem;line-height:1.7}
+.steps li::before{counter-increment:s;content:counter(s,decimal-leading-zero);position:absolute;left:12px;top:14px;width:28px;height:24px;background:var(--ink);color:var(--accent);font-family:Didot,"Bodoni 72",serif;font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center}
 .steps b{display:block;margin-bottom:2px}
 .wjump{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0;padding:0;list-style:none}
-.wjump a{display:inline-block;padding:4px 14px;border:1.5px solid #111;border-radius:999px;background:var(--card);text-decoration:none;font-size:.85rem;font-weight:600}
-.wgroup-lead{color:var(--muted);font-size:.92rem;margin:0 0 4px}
+.wjump a{display:inline-block;padding:4px 12px;border:1.5px solid var(--ink);background:var(--card);text-decoration:none;font-size:.84rem;font-weight:700}
+.wgroup-lead{color:var(--muted);font-size:.9rem;margin:0 0 4px}
 .wtiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:12px 0 0;padding:0;list-style:none}
-.wtile{display:flex;flex-direction:column;background:var(--card);border:1.5px solid #111;border-radius:12px;box-shadow:3px 3px 0 #111;overflow:hidden}
-.wtile-head{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center;padding:14px 14px 10px;text-decoration:none}
-.wtile-head img{width:100%;height:auto;display:block;border:1.5px solid #111;border-radius:4px;background:#111}
-.wtile-head h3{margin:0;font-size:1.05rem;line-height:1.45}
-.wtile-head small{display:block;color:var(--muted);font-size:.78rem;font-weight:400;margin-top:2px}
-.wtile-body{padding:0 14px 12px;font-size:.9rem;line-height:1.75;flex:1}
+.wtile{display:flex;flex-direction:column;background:var(--card);border:1.5px solid var(--ink);box-shadow:4px 4px 0 var(--ink);overflow:hidden}
+.wtile-head{display:grid;grid-template-columns:56px 1fr;gap:12px;align-items:center;padding:14px 14px 10px;text-decoration:none}
+.wtile-head img{width:100%;height:auto;display:block;border:1px solid var(--ink);background:var(--ink)}
+.wtile-head h3{margin:0;font-size:1.08rem;line-height:1.45}
+.wtile-head small{display:block;color:var(--muted);font-size:.76rem;font-weight:400;margin-top:2px}
+.wtile-body{padding:0 14px 12px;font-size:.88rem;line-height:1.75;flex:1}
 .wtile-body p{margin:0 0 8px}
-.wtile-q{margin:0;padding:8px 12px;background:var(--soft);border-radius:8px;font-size:.86rem}
+.wtile-q{margin:0;padding:8px 12px;background:var(--soft);border-left:4px solid var(--accent);font-size:.84rem;font-weight:700}
 .wtile-cards{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding:0;list-style:none}
-.wtile-cards a{display:inline-block;padding:1px 10px;border:1px solid var(--line);border-radius:999px;font-size:.78rem;text-decoration:none;background:var(--soft)}
-.wtile-more{display:block;padding:10px 14px;border-top:1.5px solid #111;background:var(--accent);color:#111;font-weight:700;font-size:.88rem;text-decoration:none;text-align:right}`;
+.wtile-cards a{display:inline-block;padding:1px 9px;border:1px solid var(--ink);font-size:.76rem;text-decoration:none;background:var(--soft)}
+.wtile-more{display:flex;justify-content:space-between;padding:10px 14px;border-top:1.5px solid var(--ink);background:var(--ink);color:var(--accent);font-weight:700;font-size:.86rem;text-decoration:none}
+.asks{margin-top:40px;padding:2px 16px 6px;background:var(--card);border:1.5px solid var(--ink);box-shadow:5px 5px 0 var(--accent),5px 5px 0 1.5px var(--ink)}
+.asks .sec-k{margin-top:16px}
+.asks h2{margin-bottom:10px}
+@media (min-width:620px){h1{font-size:2.4rem}}`;
 
-function layout({ title, description, path, ogImage, ogType = 'article', ld, body, noindex = false }) {
+function layout({ title, description, path, ogImage, ogType = 'article', ld, body, noindex = false, css = '' }) {
   const seo = seoForPath(path);
   if (seo) ({ title, description } = seo);
   const url = ORIGIN + path;
@@ -218,7 +235,7 @@ function layout({ title, description, path, ogImage, ogType = 'article', ld, bod
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${url}">${noindex ? '\n<meta name="robots" content="noindex">' : ''}
-<meta name="theme-color" content="#f2efe7">
+<meta name="theme-color" content="#f4efe3">
 <meta property="og:type" content="${ogType}">
 <meta property="og:site_name" content="DECIDE.">
 <meta property="og:locale" content="ja_JP">
@@ -234,7 +251,7 @@ function layout({ title, description, path, ogImage, ogType = 'article', ld, bod
 <meta name="twitter:image" content="${ogImage}">
 <link rel="icon" href="../icon.svg" type="image/svg+xml">
 ${ld.map((o) => `<script type="application/ld+json">${jsonLd(o)}</script>`).join('\n')}
-<style>${CSS}</style>
+<style>${CSS}${css ? '\n' + css : ''}</style>
 </head>
 <body>
 ${body}
@@ -261,6 +278,9 @@ const crumbsLd = (items) => ({
   itemListElement: items.map((it, i) => ({ '@type': 'ListItem', position: i + 1, name: it.name, item: ORIGIN + it.path })),
 });
 
+const kick = (t, cls = 'sec-k') => `<p class="kicker ${cls}">${esc(t)}</p>`;
+const meter = (n) => `<span class="meter" aria-hidden="true">${[1, 2, 3, 4, 5].map((i) => `<i${i <= n ? ' class="on"' : ''}></i>`).join('')}</span>`;
+
 const ctaHtml = (c, where) => `<aside class="cta" aria-label="DECIDE. で考える">
 <p>${where === 'mid' ? `${esc(c.name)}が示す視点を、あなた自身の選択肢に当てはめてみませんか。` : '二つの選択肢を並べて、カードと一緒に整理できます。'}</p>
 <a href="../?from=${c.id}">${CTA_TEXT}</a>
@@ -270,10 +290,11 @@ function sideHtml(c, key) {
   const o = c[key];
   const label = key === 'upright' ? '正位置' : '逆位置';
   return `<section>
+${kick(key === 'upright' ? 'UPRIGHT' : 'REVERSED')}
 <h2>${label}の意味</h2>
 <ul class="kw" aria-label="${label}のキーワード">${o.keywords.map((k) => `<li>${esc(k)}</li>`).join('')}</ul>
 <p>${esc(o.meaning)}</p>
-<p class="score">${esc(deck.scoring.axis)}：<strong>${o.score} / 5（${esc(LEVELS[o.score])}）</strong></p>
+<p class="score">${esc(deck.scoring.axis)}${meter(o.score)}<strong>${o.score} / 5（${esc(LEVELS[o.score])}）</strong></p>
 <dl class="themes">${Object.entries(THEMES).map(([k, t]) => `<dt>${esc(t)}</dt><dd>${esc(o.themes[k])}</dd>`).join('')}</dl>
 </section>`;
 }
@@ -307,6 +328,7 @@ function cardPage(c) {
   const body = `<main>
 ${crumbsHtml(crumbs)}
 <article>
+${kick(SUIT_KICKER[c.arcana], 'page-k')}
 <h1>${esc(c.name)}の意味</h1>
 <p class="en serif">${esc(c.en)}</p>
 <div class="hero">
@@ -322,6 +344,7 @@ ${picture(c, { eager: true })}
 </div>
 </div>
 <section>
+${kick('SYMBOLS')}
 <h2>描かれている象徴</h2>
 <p>${esc(c.background)}</p>
 </section>
@@ -329,6 +352,7 @@ ${sideHtml(c, 'upright')}
 ${ctaHtml(c, 'mid')}
 ${sideHtml(c, 'reversed')}
 <section>
+${kick('FOR YOUR DECISION')}
 <h2>決断・迷いにおけるヒント</h2>
 <h3>決断の場面での読み方</h3>
 <p>${esc(x.hint)}</p>
@@ -340,6 +364,7 @@ ${sideHtml(c, 'reversed')}
 </section>
 ${ctaHtml(c, 'end')}
 <section>
+${kick('RELATED CARDS')}
 <h2>関連するカード</h2>
 ${gridHtml(rel)}
 ${same.length ? `<h3>正位置の${esc(deck.scoring.axis)}が同じ（${c.upright.score} / 5）カード</h3>
@@ -360,40 +385,149 @@ function indexPage() {
   const title = 'タロットカード78枚の意味一覧｜決断のヒント - DECIDE.';
   const description = 'ライダー版タロット78枚それぞれの象徴、正位置・逆位置の意味、迷いや決断の場面での読み方をまとめた解説一覧です。';
   const crumbs = [{ name: 'DECIDE.', href: '../', path: '/' }, { name: 'カード解説', path }];
-  const groups = ARCANA_ORDER.map((a) => {
+  const worryCell = (w) => {
+    const c = byId.get(w.primary);
+    const ask = w.sections.find((x) => x.h2 === '自分への問いかけ');
+    return `<li><a class="wcell" href="./worry-${w.slug}">${picture(c, { sizes: '48px' })}<span><b>${esc(WORRY_SHORT[w.slug] || w.h1)}</b><small>${esc(ask ? firstQuestion(ask.p) : w.description)}</small></span></a></li>`;
+  };
+  const worryGroups = groupedWorries().map((g) => `<h3 class="grp"><span class="kicker">${esc(GROUP_KICKER[g.id] || 'OTHER')}</span>${esc(g.name)}</h3>
+<ul class="wgrid">
+${g.items.map(worryCell).join('\n')}
+</ul>`).join('\n');
+  const suits = ARCANA_ORDER.map((a) => {
     const list = cards.filter((c) => c.arcana === a);
-    return `<section>
-<h2 id="${a === '大アルカナ' ? 'major' : SUIT_PREFIX[a]}"><a href="./${CATEGORY[a].slug}">${esc(a)}（${list.length}枚）</a></h2>
-<p class="note">${esc(SUIT_NOTE[a])} <a href="./${CATEGORY[a].slug}">${esc(a)}の解説を読む</a></p>
-${gridHtml(list)}
+    const cells = list.map((c) => {
+      const q = [c.name, c.en, a, ...c.upright.keywords, ...c.reversed.keywords].join(' ');
+      return `<li data-q="${esc(q)}"><a href="./${c.id}">${picture(c, { sizes: '(max-width: 620px) 30vw, 160px' })}<b>${esc(c.name)}</b><small>${esc(c.upright.keywords.slice(0, 2).join('・'))}</small></a></li>`;
+    }).join('\n');
+    return `<section class="suit" id="${a === '大アルカナ' ? 'major' : SUIT_PREFIX[a]}">
+<div class="suit-head"><p class="kicker">${esc(SUIT_KICKER[a])}</p><h3><a href="./${CATEGORY[a].slug}">${esc(a)}<small>${list.length}枚</small></a></h3><p>${esc(SUIT_NOTE[a])}</p></div>
+<ul class="cgrid">
+${cells}
+</ul>
 </section>`;
   }).join('\n');
   const itemList = {
     '@context': 'https://schema.org', '@type': 'ItemList', name: 'タロットカード78枚の解説',
     itemListElement: cards.map((c, i) => ({ '@type': 'ListItem', position: i + 1, url: `${ORIGIN}/cards/${c.id}`, name: c.name })),
   };
-  const body = `<main>
+  const body = `<main class="idx">
 ${crumbsHtml(crumbs)}
-<h1>タロットカード78枚の意味</h1>
-<p>DECIDE. は、二つの選択肢で迷ったときにタロットの視点を借りて考えを整理するアプリです。ここでは78枚それぞれの象徴と、正位置・逆位置の意味、そして決断の場面での読み方を紹介します。カードは未来を言い当てるものではなく、見落としていた視点に気づくための問いかけとして使ってください。</p>
-<div class="cta"><p>カードを引いて、いまの迷いを整理する</p><a href="../">${CTA_TEXT}</a></div>
-<section>
-<h2 id="worries"><a href="./worries">悩み別に読む</a></h2>
-<p class="note">転職・別れ・引っ越しなど、よくある迷いごとに考え方と関係するカードをまとめています。</p>
-${worriesNav()}
+<header class="idx-head">
+<p class="kicker">INDEX — CARDS &amp; WORRIES</p>
+<h1>カード・悩み一覧</h1>
+<p class="idx-sub">タロット78枚の意味と、${worries.length}の悩み別ガイド</p>
+<p class="idx-lead">迷っていることに近いテーマから考え方を読むか、引いたカードの意味を調べられます。カードは未来の予言ではなく、見落としに気づくための問いかけです。</p>
+<nav class="doors" aria-label="探し方を選ぶ">
+<a class="door dark" href="#worries"><span class="kicker">BY WORRY</span><strong>悩みから探す</strong><span>転職・恋愛・お金ほか、${worries.length}のテーマ</span></a>
+<a class="door lite" href="#cards"><span class="kicker">BY CARD</span><strong>カードから探す</strong><span>引いたカードの意味を調べる</span></a>
+</nav>
+</header>
+<section class="idx-sec" id="worries">
+<div class="sec-head"><p class="kicker">01 — BY WORRY</p><h2>悩みから探す</h2></div>
+<p class="sec-lead">近いテーマを開くと、迷いの正体・整理の視点・関係するカードが読めます。</p>
+${worryGroups}
+<p class="more"><a href="./worries">${worries.length}の悩みを、説明つきで比べる →</a></p>
 </section>
-${published.length ? `<section>
-<h2 id="articles"><a href="../articles/">読みもの</a></h2>
-<p class="note">迷いや決断について、もう少し踏み込んで考えるための記事です。</p>
-<ul class="cats">${published.slice(0, 5).map((a) => `<li><a href="../articles/${a.slug}">${esc(a.h1)}</a></li>`).join('')}<li><a href="../articles/">記事の一覧</a></li></ul>
+<section class="idx-sec" id="cards">
+<div class="sec-head"><p class="kicker">02 — BY CARD</p><h2>カードから探す</h2></div>
+<div class="csearch" hidden><label for="card-q">カード名・キーワードで探す</label><input id="card-q" type="search" placeholder="例：恋人、ワンド、お金" autocomplete="off" enterkeyhint="search"><p class="cs-count" aria-live="polite"></p></div>
+<nav class="suits" aria-label="スートへ移動">${ARCANA_ORDER.map((a) => `<a href="#${a === '大アルカナ' ? 'major' : SUIT_PREFIX[a]}">${esc(a)}<small>${cards.filter((c) => c.arcana === a).length}</small></a>`).join('')}</nav>
+${suits}
+<p class="cs-empty" hidden>見つかりませんでした。別のことばで試してみてください。</p>
+<p class="more">スートごとの解説：${ARCANA_ORDER.map((a) => `<a href="./${CATEGORY[a].slug}">${esc(a)}</a>`).join(' ／ ')}</p>
+</section>
+${published.length ? `<section class="idx-sec" id="articles">
+<div class="sec-head"><p class="kicker">03 — READING</p><h2>読みもの</h2></div>
+<ul class="alist">${published.slice(0, 5).map((a) => `<li><a href="../articles/${a.slug}">${esc(a.h1)}</a></li>`).join('')}</ul>
+<p class="more"><a href="../articles/">記事の一覧 →</a></p>
 </section>` : ''}
-${groups}
+<aside class="idx-cta" aria-label="DECIDE. で決める">
+<p class="kicker">YOUR TURN</p>
+<p>読んだら、次はあなたの迷いを。<br>カードを引いて、選択肢を整理します。</p>
+<a href="../?go=home">カードを引いて決める<span aria-hidden="true">→</span></a>
+</aside>
+<script>${INDEX_SEARCH_JS}</script>
 </main>`;
   return layout({
     title, description, path, ogType: 'website', ogImage: `${ORIGIN}/og-image-v3.png`,
-    ld: [itemList, crumbsLd(crumbs)], body,
+    ld: [itemList, crumbsLd(crumbs)], body, css: INDEX_CSS,
   });
 }
+
+const SUIT_KICKER = { 大アルカナ: 'MAJOR ARCANA', ワンド: 'WANDS · 火', カップ: 'CUPS · 水', ソード: 'SWORDS · 風', ペンタクル: 'PENTACLES · 地' };
+const GROUP_KICKER = { work: 'WORK', love: 'LOVE', life: 'LIFE' };
+const WORRY_SHORT = {
+  tenshoku: '転職', shukatsu: '就活', fukugyo: '副業', dokuritsu: '独立・起業', manabi: '学び直し',
+  renai: '恋愛', kekkon: '結婚', wakare: '別れ', kaigo: '介護',
+  hikkoshi: '引っ越し', okane: 'お金・買い物', ningen: '人間関係',
+};
+
+// カード名・キーワードの絞り込み（JS がないときは検索欄ごと隠れたまま）。カタカナはひらがなに寄せて比べる
+const INDEX_SEARCH_JS = `(function(){var box=document.querySelector('.csearch');if(!box)return;box.hidden=false;var input=box.querySelector('input'),count=box.querySelector('.cs-count'),empty=document.querySelector('.cs-empty'),items=[].slice.call(document.querySelectorAll('.cgrid li')),suits=[].slice.call(document.querySelectorAll('.suit'));function norm(s){return String(s).toLowerCase().replace(/\\s+/g,'').replace(/[\\u30a1-\\u30f6]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-96)})}items.forEach(function(li){li._q=norm(li.getAttribute('data-q'))});input.addEventListener('input',function(){var q=norm(input.value),n=0;items.forEach(function(li){var hit=!q||li._q.indexOf(q)>-1;li.hidden=!hit;if(hit)n++});suits.forEach(function(s){s.hidden=!!q&&!s.querySelector('.cgrid li:not([hidden])')});count.textContent=q?n+'枚見つかりました':'';empty.hidden=n>0})})();`;
+
+const INDEX_CSS = `.idx-head{padding:14px 0 0}
+.idx h1{margin:6px 0 2px;font-size:2.15rem;line-height:1.2}
+.idx-sub{margin:0 0 10px;font-weight:700;font-size:.98rem}
+.idx-lead{margin:0 0 18px;color:#3d3a34;font-size:.9rem;line-height:1.85}
+.doors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.door{position:relative;display:flex;flex-direction:column;min-height:136px;padding:12px 12px 36px;border:1.5px solid #111;text-decoration:none}
+.idx .door.dark{background:#0b0b0b;color:#f4efe3}
+.idx .door.lite{background:#f1d527;color:#111}
+.door .kicker{padding-bottom:6px;margin-bottom:12px;border-bottom:1px solid currentColor}
+.door.dark .kicker{color:#f1d527}
+.door strong{font-size:1.12rem;line-height:1.35;word-break:keep-all}
+.door span:last-child{margin-top:4px;font-size:.74rem;line-height:1.5}
+.door::after{content:"→";position:absolute;right:12px;bottom:8px;font-family:Arial,sans-serif;font-size:1.3rem}
+.door:active{transform:scale(.98)}
+.idx-sec{margin-top:44px;scroll-margin-top:12px}
+.sec-head{padding-bottom:8px;margin-bottom:10px;border-bottom:2px solid #111}
+.idx h2{margin:4px 0 0;padding:0;border:0;font-size:1.6rem;line-height:1.25}
+.sec-lead{margin:0 0 4px;color:#3d3a34;font-size:.86rem;line-height:1.75}
+.grp{display:flex;align-items:center;gap:10px;margin:20px 0 8px;font-size:1rem}
+.grp .kicker{padding:3px 7px;background:#111;color:#f1d527}
+.wgrid,.cgrid,.alist{margin:0;padding:0;list-style:none}
+.wgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.wcell{display:grid;grid-template-columns:40px minmax(0,1fr);gap:10px;align-items:start;height:100%;padding:10px;background:#fffdf7;border:1.5px solid #111;box-shadow:3px 3px 0 #111;text-decoration:none;transition:transform .12s ease,box-shadow .12s ease}
+.wcell:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #111}
+.wcell img,.cgrid img{width:100%;height:auto;display:block;border:1px solid #111;background:#111}
+.wcell b{display:block;font-size:1.05rem;line-height:1.3}
+.wcell small{display:block;margin-top:4px;color:#4c4841;font-size:.7rem;line-height:1.55}
+.more{margin:16px 0 0;font-size:.84rem;font-weight:700}
+.more a{text-underline-offset:3px}
+.csearch{margin:12px 0 0}
+.csearch label{display:block;margin-bottom:6px;font-size:.8rem;font-weight:700}
+.csearch input{width:100%;padding:11px 12px;border:1.5px solid #111;border-radius:0;background:#fffdf7;box-shadow:3px 3px 0 #111;color:#111;font:inherit;font-size:16px;-webkit-appearance:none;appearance:none}
+.csearch input:focus{outline:3px solid #f1d527;outline-offset:2px}
+.cs-count{min-height:1.4em;margin:6px 0 0;font-size:.78rem;font-weight:700}
+.suits{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;margin:4px -16px 0;padding:8px 16px;background:#f4efe3;border-bottom:1px solid rgba(17,17,17,.18);scrollbar-width:none}
+.suits::-webkit-scrollbar{display:none}
+.suits a{flex:none;display:flex;align-items:baseline;gap:5px;padding:6px 11px;border:1.5px solid #111;background:#fffdf7;font-size:.8rem;font-weight:700;text-decoration:none}
+.suits a:active{background:#f1d527}
+.suits small,.suit-head small{font-family:Didot,"Bodoni 72",serif;font-weight:700}
+.suit{margin-top:18px;scroll-margin-top:56px}
+.suit[hidden],.cgrid li[hidden]{display:none}
+.suit-head{padding:12px 14px;background:#0b0b0b;color:#f4efe3}
+.suit-head .kicker{color:#f1d527}
+.suit-head h3{margin:4px 0 2px;font-size:1.25rem}
+.idx .suit-head a{display:inline-flex;align-items:baseline;gap:8px;color:#f4efe3;text-decoration:none}
+.idx .suit-head a::after{content:"解説 →";font-size:.72rem;color:#f1d527}
+.suit-head small{font-size:.8rem;color:#cfc8b8}
+.suit-head p{margin:0;color:#cfc8b8;font-size:.76rem;line-height:1.6}
+.cgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 8px;margin-top:12px}
+.cgrid a{display:block;text-decoration:none}
+.cgrid a:active{transform:scale(.97)}
+.cgrid b{display:block;margin-top:6px;font-size:.82rem;line-height:1.35;text-wrap:balance}
+.cgrid small{display:block;margin-top:2px;color:#5a554c;font-size:.66rem;line-height:1.45}
+.cs-empty{margin:18px 0 0;padding:14px;border:1.5px dashed #111;font-size:.86rem}
+.alist li{padding:10px 0;border-bottom:1px solid rgba(17,17,17,.18)}
+.idx-cta{margin:48px 0 0;padding:20px 16px 18px;background:#0b0b0b;color:#f4efe3;box-shadow:5px 5px 0 #f1d527}
+.idx-cta .kicker{color:#f1d527}
+.idx-cta p:not(.kicker){margin:8px 0 14px;font-size:1rem;font-weight:700;line-height:1.7}
+.idx .idx-cta a{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:#f1d527;color:#111;font-weight:700;text-decoration:none}
+.idx-cta a:active{transform:scale(.98)}
+@media (min-width:620px){.wgrid{grid-template-columns:repeat(3,minmax(0,1fr))}.cgrid{grid-template-columns:repeat(4,minmax(0,1fr))}.idx h1{font-size:2.6rem}.door{min-height:150px}.door strong{font-size:1.45rem}}
+@media (prefers-reduced-motion:reduce){.idx *{transition:none!important}}`;
 
 function catsNav(current) {
   return `<ul class="cats" aria-label="カテゴリ">${ARCANA_ORDER.map((a) => a === current
@@ -421,6 +555,7 @@ function categoryPage(a) {
   const rows = list.map((c) => `<li><a href="./${c.id}"><b>${esc(c.name)}</b></a>：正位置「${esc(c.upright.keywords.join('・'))}」／逆位置「${esc(c.reversed.keywords.join('・'))}」</li>`).join('\n');
   const body = `<main>
 ${crumbsHtml(crumbs)}
+${kick(SUIT_KICKER[a], 'page-k')}
 <h1>${esc(a)}の意味一覧（${list.length}枚）</h1>
 ${catsNav(a)}
 <p>${esc(cat.intro)}</p>
@@ -471,14 +606,17 @@ function worryPage(w) {
   const body = `<main>
 ${crumbsHtml(crumbs)}
 <article>
+${kick(`WORRY GUIDE — ${GROUP_KICKER[WORRY_GROUPS.find((g) => g.slugs.includes(w.slug))?.id] || 'OTHER'}`, 'page-k')}
 <h1>${esc(w.h1)}</h1>
 <p>${esc(w.lead)}</p>
 ${cta(`${esc(primary.name)}の視点から、あなた自身の二つの選択肢を並べてみませんか。`)}
-${w.sections.map((s) => `<section>
+${w.sections.map((s, i) => `<section${s.h2 === '自分への問いかけ' ? ' class="asks"' : ''}>
+${kick(`POINT ${String(i + 1).padStart(2, '0')}`)}
 <h2>${esc(s.h2)}</h2>
 <p>${esc(s.p)}</p>
 </section>`).join('\n')}
 <section>
+${kick('CARDS')}
 <h2>この悩みに関係するカード</h2>
 <ul class="wcards">
 ${cardRows}
@@ -486,6 +624,7 @@ ${cardRows}
 </section>
 ${cta('二つの選択肢を並べて、カードと一緒に整理できます。')}
 <section>
+${kick('MORE WORRIES')}
 <h2>ほかの悩みから読む</h2>
 ${worriesNav(w.slug)}
 <p class="note"><a href="./">78枚すべてのカード解説を見る</a></p>
@@ -506,6 +645,14 @@ const WORRY_GROUPS = [
   { id: 'love', name: '恋愛・家族', lead: '大切な人との関係にかかわる迷い。気持ちと現実のあいだで揺れるときに。', slugs: ['renai', 'kekkon', 'wakare', 'kaigo'] },
   { id: 'life', name: '暮らし・お金・人づきあい', lead: '毎日の土台にかかわる迷い。小さく見えて、あとから効いてくる選択に。', slugs: ['hikkoshi', 'okane', 'ningen'] },
 ];
+
+function groupedWorries() {
+  const grouped = new Set(WORRY_GROUPS.flatMap((g) => g.slugs));
+  const groups = WORRY_GROUPS.map((g) => ({ ...g, items: g.slugs.map((x) => worryBySlug.get(x)).filter(Boolean) }));
+  const rest = worries.filter((w) => !grouped.has(w.slug));
+  if (rest.length) groups.push({ id: 'other', name: 'そのほかの迷い', lead: '', items: rest });
+  return groups;
+}
 
 function firstSentence(text) {
   const i = text.indexOf('。');
@@ -531,11 +678,7 @@ function worriesIndex() {
     '@context': 'https://schema.org', '@type': 'ItemList', name: '悩み別のタロット解説',
     itemListElement: worries.map((w, i) => ({ '@type': 'ListItem', position: i + 1, url: `${ORIGIN}/cards/worry-${w.slug}`, name: w.h1 })),
   };
-  const bySlug = new Map(worries.map((w) => [w.slug, w]));
-  const grouped = new Set(WORRY_GROUPS.flatMap((g) => g.slugs));
-  const groups = WORRY_GROUPS.map((g) => ({ ...g, items: g.slugs.map((x) => bySlug.get(x)).filter(Boolean) }));
-  const rest = worries.filter((w) => !grouped.has(w.slug));
-  if (rest.length) groups.push({ id: 'other', name: 'そのほかの迷い', lead: '', items: rest });
+  const groups = groupedWorries();
   const tile = (w) => {
     const c = byId.get(w.primary);
     const ask = w.sections.find((x) => x.h2 === '自分への問いかけ');
@@ -553,6 +696,7 @@ ${g.items.map(tile).join('\n')}
 </section>`).join('\n');
   const body = `<main>
 ${crumbsHtml(crumbs)}
+${kick('WORRY GUIDE', 'page-k')}
 <h1>悩み別に読むタロット</h1>
 ${WORRIES_INTRO.map((p, i) => `<p${i === 0 ? ' class="lede"' : ''}>${esc(p)}</p>`).join('\n')}
 <h2>このページの使い方</h2>
@@ -607,6 +751,7 @@ function articlePage(a) {
 ${crumbsHtml(crumbs)}
 <article>
 ${a.draft ? '<p class="draft">下書き（未公開）— このページは確認用です。公開するには draft: false にして再ビルドします。</p>' : ''}
+${kick('READING', 'page-k')}
 <h1>${esc(a.h1)}</h1>
 <p class="dateline"><time datetime="${a.date}">${fmtDate(a.date)}</time>${a.updated ? `（更新 <time datetime="${a.updated}">${fmtDate(a.updated)}</time>）` : ''} ・ DECIDE. 編集部</p>
 ${bodyHtml}
@@ -642,6 +787,7 @@ function articlesIndex(list) {
   const rows = list.map((a) => `<li><h3><a href="./${a.slug}">${esc(a.h1)}</a>${a.draft ? '（下書き）' : ''}</h3><p class="dateline"><time datetime="${a.date}">${fmtDate(a.date)}</time></p><p>${esc(a.description)}</p></li>`).join('\n');
   const body = `<main>
 ${crumbsHtml(crumbs)}
+${kick('READING', 'page-k')}
 <h1>読みもの</h1>
 <p>大きな決断の前で立ち止まったときに、考えを整理するための記事です。カードは未来を言い当てるものではなく、見落としていた気持ちや条件に気づくための問いかけとして紹介しています。</p>
 <ul class="alist">
@@ -662,7 +808,7 @@ function notFoundPage() {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ページが見つかりません - DECIDE.</title>
 <meta name="robots" content="noindex">
-<meta name="theme-color" content="#f2efe7">
+<meta name="theme-color" content="#f4efe3">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <style>${CSS}</style>
 </head>
