@@ -129,7 +129,6 @@ let homeStage = 'splash';
 let detailId = null;
 let completionId = null;
 let selectedDecision = '';
-let decideStep = 'choose'; // 2択の決定画面：'choose'（3つから選ぶ）→ 'memo'（一言メモ）
 let decisionDraft = {genre:'',option1:'',option2:'',title:'',memo:''};
 let historyMode = 'list';
 let calendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
@@ -479,7 +478,7 @@ function updateNavigationState(view=currentView) {
   const back=document.querySelector('.nav-back');
   if(back){
     // 表示は「戻る」に統一し、戻り先は読み上げ用ラベルで補う
-    const labels={detail:detailReturn==='stats'?'統計へ戻る':'ログへ戻る',decide:decideStep==='memo'&&activeSession?.mode==='two'?'選び直す':'結果へ戻る',learn:'ホームへ戻る'};
+    const labels={detail:detailReturn==='stats'?'統計へ戻る':'ログへ戻る',decide:'結果へ戻る',learn:'ホームへ戻る'};
     back.querySelector('span').textContent='戻る';
     back.setAttribute('aria-label',labels[view]||'戻る');
     back.disabled=view==='home'&&homeStage==='splash';
@@ -488,7 +487,6 @@ function updateNavigationState(view=currentView) {
 function navigateBack() {
   if(currentView==='detail')return navigate(detailReturn);
   if(currentView==='prepare-options'){ captureDecisionDraft(); return navigate('prepare-genre'); }
-  if(currentView==='decide' && decideStep==='memo' && activeSession?.mode==='two'){ captureDecisionDraft(); decideStep='choose'; return navigate('decide'); }
   if(currentView==='decide'){ captureDecisionDraft(); return navigate('session'); }
   if(currentView==='learn'){ window.DECIDE_LEARN?.close?.(); return; }
   if(currentView==='home'&&homeStage==='quickstart'){ homeStage='splash'; return renderHome(); }
@@ -1125,12 +1123,13 @@ function confirmDecisionStep(button) {
   button.classList.add('is-confirming');
   sensoryFeedback('tick');
   const proceed=()=>{
-    if(activeSession===session && currentView==='session' && button.isConnected){ decideStep='choose'; navigate('decide'); }
+    if(activeSession===session && currentView==='session' && button.isConnected)navigate('decide');
   };
   if(prefersReducedMotion())proceed();
   else setTimeout(proceed,420);
 }
 function renderReflection() {
+  if(activeSession.mode==='two')return renderTwoDecision();
   const question=activeSession.mode==='two'?'この結果、しっくりきましたか？':'このカード、しっくりきましたか？';
   return `<section class="reflection-card"><h3>${question}</h3><div class="reflection-actions"><button class="button decide-confirm" data-action="decide" aria-label="DECIDE.">${decideWordmark()}</button></div></section>`;
 }
@@ -1166,7 +1165,7 @@ function decisionSummaryHtml() {
 }
 function renderDecision() {
   if (!activeSession) return navigate('home');
-  if (activeSession.mode === 'two') return decideStep==='memo' && selectedDecision ? renderDecisionMemo() : renderDecisionChoices();
+  if (activeSession.mode === 'two') return selectedDecision ? renderDecisionMemo() : navigate('session');
   const options = ['進む','見送る','保留する'];
   app.innerHTML = `
     <section class="screen decide-screen">
@@ -1184,23 +1183,29 @@ function renderDecision() {
   restoreDecisionDraft();
 }
 
-// 2択は、カードの比較を見たあと「どれにするか」だけを選ぶ。選んだら一言メモへ進む
+// 2択は、カードの比較の下で「どれにするか」を選び、そのまま一言メモへ進む
+function twoChoiceText(value) {
+  if(value==='保留する')return '保留する';
+  return decisionOptionText(value) || DECIDE_DECISION.choiceText(value);
+}
 function twoChoiceLabel(value) {
   if(value==='保留する')return '保留にする';
   const text=decisionOptionText(value);
   return text ? `『${text}』にする` : `${DECIDE_DECISION.choiceText(value)}にする`;
 }
-function renderDecisionChoices() {
-  app.innerHTML = `
-    <section class="screen decide-screen decide-two-choose">
-      <button class="text-back" data-action="session">← 結果に戻る</button>
-      <p class="eyebrow">Decide</p><div class="decide-title"><span class="decide-kicker">THE FINAL CALL</span><h1>今回は、<wbr>どうする？</h1><span class="decide-sub">YOU DECIDE, NOT THE CARDS.</span></div>
-      <div class="decision-options">${['選択肢1','選択肢2','保留する'].map((o,i) => `<button class="decision-option ${selectedDecision === o ? 'selected' : ''}" data-action="choose-decision" data-value="${o}"><b class="decision-index">${['A','B','HOLD'][i]}</b><span>${esc(twoChoiceLabel(o))}</span></button>`).join('')}</div>
-    </section>`;
+function renderTwoDecision() {
+  return `<section class="reflection-card two-decide"><h3>今回は、どうする？</h3><div class="reflection-actions">${['選択肢1','選択肢2','保留する'].map((o,i) => `<button class="button two-decide-option${selectedDecision === o ? ' selected' : ''}" data-action="choose-decision" data-value="${o}" aria-pressed="${selectedDecision === o}"><b class="decision-index">${['A','B','HOLD'][i]}</b><span>${esc(twoChoiceText(o))}</span></button>`).join('')}</div></section>`;
 }
-function chooseDecision(value) {
-  if(!activeSession || !['選択肢1','選択肢2','保留する'].includes(value))return;
-  captureDecisionDraft(); sensoryFeedback('tap'); selectedDecision=value; decideStep='memo'; navigate('decide');
+function chooseDecision(button) {
+  const value=button.dataset.value;
+  if(!activeSession || currentView!=='session' || !['選択肢1','選択肢2','保留する'].includes(value) || button.closest('.is-choosing'))return;
+  const session=activeSession;
+  captureDecisionDraft(); sensoryFeedback('tick'); selectedDecision=value;
+  button.closest('.reflection-actions')?.classList.add('is-choosing');
+  document.querySelectorAll('[data-action="choose-decision"]').forEach(item=>{ const selected=item===button; item.classList.toggle('selected',selected); item.setAttribute('aria-pressed',String(selected)); });
+  const proceed=()=>{ if(activeSession===session && currentView==='session')navigate('decide'); };
+  if(prefersReducedMotion())proceed();
+  else setTimeout(proceed,320);
 }
 function renderDecisionMemo() {
   const index={'選択肢1':'A','選択肢2':'B','保留する':'HOLD'}[selectedDecision];
@@ -1372,7 +1377,7 @@ function saveDecision(form) {
   if(requestPersistence)requestPersistentStorage();
   pendingSave=null;
   if(firstRecord && shouldShowA2HS())a2hsBannerLogId=log.id;
-  activeSession = null; selectedDecision = ''; decideStep = 'choose'; detailId = log.id;
+  activeSession = null; selectedDecision = ''; detailId = log.id;
   decisionDraft = {genre:'',option1:'',option2:'',title:'',memo:''};
   completionId=log.id; currentView = 'detail'; render(); toast('決定を記録しました');
 }
@@ -2181,8 +2186,8 @@ document.addEventListener('click', event => {
   else if (action === 'select-back') selectBack(el.dataset.value);
   else if (action === 'decide') confirmDecisionStep(el);
   else if (action === 'select-decision') selectDecision(el.dataset.value);
-  else if (action === 'choose-decision') chooseDecision(el.dataset.value);
-  else if (action === 'decide-rechoose') { captureDecisionDraft(); decideStep='choose'; navigate('decide'); }
+  else if (action === 'choose-decision') chooseDecision(el);
+  else if (action === 'decide-rechoose') { captureDecisionDraft(); navigate('session'); }
   else if (action === 'skip-memo') skipDecisionMemo(el);
   else if (action === 'toggle-decision-meta') toggleDecisionMeta(el);
   else if (action === 'select-genre') selectGenre(el.dataset.value);
