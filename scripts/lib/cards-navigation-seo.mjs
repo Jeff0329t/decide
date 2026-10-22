@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { seoForPath, updateSeoHead } from './cards-seo.mjs';
 import { applyReadingFeel } from './reading-feel.mjs';
+import { addAppNav } from './app-nav.mjs';
 
 const ORIGIN = 'https://decisionprocess.net';
 const INDEX_NAME = 'タロットカード78枚の意味';
@@ -90,5 +91,5 @@ export function enhanceCardsPage(html, path) {
     const cta = `<aside class="cta" aria-label="DECIDE.で迷いを整理する">\n<p>${esc(message)}</p>\n<a href="${href}">${esc(button)}</a>\n</aside>`;
     html = html.slice(0, last.index) + cta + html.slice(last.index + last[0].length);
   }
-  return applyReadingFeel(updateSeoHead(html, seo));
+  return addAppNav(applyReadingFeel(updateSeoHead(html, seo)));
 }

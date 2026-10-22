@@ -2302,7 +2302,32 @@ if ('serviceWorker' in navigator) {
 window.DECIDE_APP_BRIDGE={getLogs:()=>logs,setLogs:v=>{logs=v},getSettings:()=>settings,persist,render,
   rebuildStory:theme=>{ if(activeShareData?.cards) activeShareData.storyBlobPromise=createStoryImageBlob(activeShareData,theme).catch(()=>null); }};
 loadCardContent();
+// カード解説ページの下部ナビ（?go=history など）から来たら、その画面をそのまま開く
+const cardsNavTarget=(()=>{
+  try {
+    const url=new URL(location.href); const go=url.searchParams.get('go');
+    if(!go)return null;
+    url.searchParams.delete('go'); history.replaceState(history.state,'',url.pathname+url.search+url.hash);
+    return ['home','history','stats','settings'].includes(go)&&!sharedPayload ? go : null;
+  } catch { return null; }
+})();
+if(cardsNavTarget){ homeStage='quickstart'; if(cardsNavTarget==='history'||cardsNavTarget==='stats')currentView=cardsNavTarget; }
 render();
+if(cardsNavTarget==='settings')openSettings();
+// 解説ページへ移る前に今の画面を URL に残し、「戻る」で読み込み直しても同じ画面へ帰れるようにする
+document.addEventListener('click',event=>{
+  const link=event.target.closest?.('a[href*="cards/"]');
+  if(!link || link.target==='_blank' || sharedPayload)return;
+  const go=['history','stats'].includes(currentView)?currentView:'home';
+  try { history.replaceState(history.state,'',`${location.pathname}?go=${go}`); } catch {}
+});
+// 表紙の読みものリンクは、押したら記事が開くまで光らせておく（「戻る」で帰ってきたら消す）
+document.addEventListener('click',event=>{
+  const link=event.target.closest?.('.home-reading-links a');
+  if(!link || event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey)return;
+  link.classList.add('is-going');
+});
+window.addEventListener('pageshow',()=>document.querySelectorAll('.home-reading-links a.is-going').forEach(a=>a.classList.remove('is-going')));
 // 購入完了やログインで権限が変わった後、前面に戻った時に退避分を保存する
 setTimeout(restoreBlockedSave,1200);
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible')setTimeout(restoreBlockedSave,800); });
