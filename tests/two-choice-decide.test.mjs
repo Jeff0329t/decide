@@ -75,3 +75,9 @@ test('1枚引きの決定画面はこれまでどおり', () => {
   assert.match(one, /data-action="select-decision"/);
   assert.match(one, /決定を記録する/);
 });
+
+test('記録したあとは「記録しました」のポップアップを出さない', () => {
+  const save = fnSource('saveDecision');
+  assert.match(save, /completionId=log\.id; currentView = 'detail'; render\(\);/);
+  assert.doesNotMatch(save, /toast\(/);
+});

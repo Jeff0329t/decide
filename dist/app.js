@@ -1379,7 +1379,7 @@ function saveDecision(form) {
   if(firstRecord && shouldShowA2HS())a2hsBannerLogId=log.id;
   activeSession = null; selectedDecision = ''; detailId = log.id;
   decisionDraft = {genre:'',option1:'',option2:'',title:'',memo:''};
-  completionId=log.id; currentView = 'detail'; render(); toast('決定を記録しました');
+  completionId=log.id; currentView = 'detail'; render();
 }
 
 // 保存上限で止まった決定は、購入・ログインで画面を離れても失われないよう退避しておく
