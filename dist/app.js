@@ -935,7 +935,8 @@ function flipCard(slot) {
   const instruction = document.querySelector('.draw-instruction');
   if (instruction) instruction.textContent = 'カードを開いています…';
   preloadCardImages([card]);
-  if(activeSession?.tutorial)loadCardContent();
+  // 原稿の読み込みはめくり演出と並行して始め、両方そろってから進む
+  const contentReady=loadCardContent();
   if(!activeSession || activeSession.id!==sessionId)return;
   const button = document.querySelector(`.flip-card[data-slot="${slot}"]`);
   if (button) {
@@ -949,12 +950,12 @@ function flipCard(slot) {
     if (image) image.alt = card.name;
   }
   activeSession.nodes = [{question:'いま必要な視点',label:'NOW',card}];
-  setTimeout(async () => {
-    await loadCardContent();
+  Promise.all([contentReady, wait(520)]).then(() => {
     if (activeSession?.id===sessionId){ if(tutorial?.stage===2)beginTutorialResult(); else navigate('session'); }
-  }, 520);
+  });
 }
 
+const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const REVEAL_HOLD_MS=900;
 let revealHold=null;
 function prefersReducedMotion(){ return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches; }
@@ -993,6 +994,7 @@ function flipBoth() {
   const instruction = document.querySelector('.draw-instruction');
   if (instruction) instruction.textContent = '2枚のカードを準備しています…';
   preloadCardImages(activeSession.drawOptions.slice(0,2));
+  const contentReady=loadCardContent();
   if(!activeSession || activeSession.id!==sessionId)return;
   document.querySelectorAll('.flip-card').forEach((item, slot) => {
     const card = activeSession.drawOptions[slot];
@@ -1009,10 +1011,9 @@ function flipBoth() {
     {question:'選択肢1を選んだとき',label:'選択肢 1',card:activeSession.drawOptions[0]},
     {question:'選択肢2を選んだとき',label:'選択肢 2',card:activeSession.drawOptions[1]}
   ];
-  setTimeout(async () => {
-    await loadCardContent();
+  Promise.all([contentReady, wait(prefersReducedMotion() ? 520 : 900)]).then(() => {
     if (activeSession?.id===sessionId) navigate('session');
-  }, prefersReducedMotion() ? 520 : 900);
+  });
 }
 
 function renderCard(node, index, showReflection=false) {
@@ -1222,9 +1223,23 @@ function useRecentChoice(index) {
   restoreDecisionDraft(); sensoryFeedback('tick');
 }
 
+// 記録は決断の節目なので、判子を押す間をおいてから保存する
+function sealDecision(form) {
+  const button=form.querySelector('[data-save-decision]');
+  if (!selectedDecision || !activeSession || button?.classList.contains('is-sealing')) return;
+  sensoryFeedback('save');
+  if(!button || prefersReducedMotion()){ saveDecision(form); return; }
+  const session=activeSession;
+  button.classList.add('is-sealing');
+  button.disabled=true;
+  button.setAttribute('aria-busy','true');
+  setTimeout(()=>{
+    if(activeSession===session && currentView==='decide' && form.isConnected)saveDecision(form);
+    if(button.isConnected){ button.classList.remove('is-sealing'); button.disabled=!selectedDecision; button.removeAttribute('aria-busy'); }
+  },380);
+}
 function saveDecision(form) {
   if (!selectedDecision || !activeSession) return;
-  sensoryFeedback('save');
   const fd = new FormData(form);
   const createdAt = new Date().toISOString();
   const genre=DECIDE_DECISION.validGenre(decisionDraft.genre)||null;
@@ -2108,7 +2123,7 @@ document.addEventListener('click', event => {
   else if (action === 'close-settings') closeSettings();
   else if (action === 'open-app') { history.replaceState(null,'',location.pathname); sharedPayload=null; activeSession=null; navigate('home'); if(shouldAutoStartTutorial())requestAnimationFrame(startTutorialIntro); }
 });
-document.addEventListener('submit', event => { if(event.target.id === 'save-form'){ event.preventDefault(); saveDecision(event.target); } });
+document.addEventListener('submit', event => { if(event.target.id === 'save-form'){ event.preventDefault(); sealDecision(event.target); } });
 document.addEventListener('input', event => { if(event.target.id === 'story-text' && detailId){ setStoryDraft(detailId,event.target.value,logs.find(item=>item.id===detailId)?.story); return; } if(event.target.id === 'option-1' || event.target.id === 'option-2'){ captureDecisionDraft(); updateDraftDisplays(); return; } if(event.target.id === 'history-search'){ historyQuery=event.target.value; const results=document.querySelector('[data-history-results]'); if(results)results.innerHTML=renderHistoryResults(); const count=event.target.closest('.history-search')?.querySelector('small'); if(count)count.textContent=historyQuery?`${filteredLogs().length}件`:''; } });
 document.addEventListener('change', event => { if(['import-file','import-markdown-file'].includes(event.target.id)) { const [file]=event.target.files || []; readImportFile(file).finally(()=>{ event.target.value=''; }); } });
 document.addEventListener('pointerdown', event => {
