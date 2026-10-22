@@ -112,8 +112,24 @@
       });
       enabled = false; lastSent = ''; return true;
     } catch {
-      notify('メール通知を停止できませんでした。通信を確認して、もう一度ログアウトしてください');
+      // auth.js explains and offers to sign out anyway (every email carries a stop link).
       return false;
+    } finally { busy = false; refresh(); }
+  }
+  // Stops this account on every device, including a lost phone or cleared browser that still has schedules on the server.
+  async function stopAll() {
+    if(busy || !available() || !owner) return;
+    busy = true; clearTimeout(timer); clearTimeout(retryTimer); refresh();
+    const generation = epoch;
+    try {
+      await serialize(async () => {
+        const { error: failure } = await auth().client().rpc('disable_all_email_reminders', {});
+        if(failure) throw failure;
+      });
+      if(generation === epoch) { enabled = false; loaded = true; lastSent = ''; error = ''; }
+      notify('すべての端末でメールのリマインドを停止しました');
+    } catch {
+      notify('停止できませんでした。通信を確認して、もう一度お試しください');
     } finally { busy = false; refresh(); }
   }
   function renderSettings() {
@@ -123,7 +139,7 @@
       : !device ? '端末への設定の保存を許可してください。'
       : !loaded ? error || '設定を確認しています…'
       : `この端末で選んだ日に、${escape(user.email)} へ、記録の題名を添えて送ります。題名は配信用に保存します。題名以外の記録は載せません。`;
-    return `<div class="feedback-setting email-remind-setting" data-email-remind-setting><div><b>メールでリマインド</b><p>${note}</p>${loaded && error ? `<p role="status">${escape(error)}</p>` : ''}${user && available() && error ? '<button type="button" class="text-button" data-email-remind-action="retry">再試行</button>' : ''}</div>${loaded ? `<button class="toggle-button ${isOn()?'on':''}" type="button" aria-label="メールでリマインド" data-email-remind-action="toggle" aria-pressed="${isOn()}" ${busy?'disabled aria-busy="true"':''}><span></span><b>${busy?'…':isOn()?'ON':'OFF'}</b></button>`:''}</div>`;
+    return `<div class="feedback-setting email-remind-setting" data-email-remind-setting><div><b>メールでリマインド</b><p>${note}</p>${loaded && error ? `<p role="status">${escape(error)}</p>` : ''}${user && available() && error ? '<button type="button" class="text-button" data-email-remind-action="retry">再試行</button>' : ''}${user && available() && loaded ? `<button type="button" class="sync-help-button" data-email-remind-action="stop-all" ${busy?'disabled':''}>ほかの端末の分もまとめて停止</button>` : ''}</div>${loaded ? `<button class="toggle-button ${isOn()?'on':''}" type="button" aria-label="メールでリマインド" data-email-remind-action="toggle" aria-pressed="${isOn()}" ${busy?'disabled aria-busy="true"':''}><span></span><b>${busy?'…':isOn()?'ON':'OFF'}</b></button>`:''}</div>`;
   }
   function mountSettings(wrap) {
     const old = wrap?.querySelector?.('[data-email-remind-setting]');
@@ -137,11 +153,12 @@
     if(!button) return;
     event.preventDefault();
     if(button.dataset.emailRemindAction === 'toggle') toggle();
+    if(button.dataset.emailRemindAction === 'stop-all') stopAll();
     if(button.dataset.emailRemindAction === 'retry') { if(loaded) syncNow(); else loadUser(auth()?.getUser?.()); }
   });
   document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') loadUser(auth()?.getUser?.()); });
   window.addEventListener?.('online', () => { if(loaded) syncNow(); else loadUser(auth()?.getUser?.()); });
   auth()?.onChange?.(loadUser);
   auth()?.ready?.()?.then?.(loadUser);
-  window.DECIDE_EMAIL_REMINDERS = Object.freeze({ isOn, renderSettings, mountSettings, schedule, syncNow, toggle, disableForSignOut });
+  window.DECIDE_EMAIL_REMINDERS = Object.freeze({ isOn, isBusy: () => busy, renderSettings, mountSettings, schedule, syncNow, toggle, stopAll, disableForSignOut });
 })();

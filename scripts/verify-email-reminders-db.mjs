@@ -18,6 +18,7 @@ try {
   await db.exec(fs.readFileSync(new URL('../supabase/migrations/20261016000000_email_reminders.sql',import.meta.url),'utf8'));
   await db.exec(fs.readFileSync(new URL('../supabase/migrations/20261016010000_reminder_title_copy.sql',import.meta.url),'utf8'));
   await db.exec(fs.readFileSync(new URL('../supabase/migrations/20261022000000_reminder_brand_dot.sql',import.meta.url),'utf8'));
+  await db.exec(fs.readFileSync(new URL('../supabase/migrations/20261023000000_email_unsubscribe.sql',import.meta.url),'utf8'));
   await db.query('insert into auth.users values ($1,$2,now()),($3,$4,now())',[alice,'alice@example.test',bob,'bob@example.test']);
   await db.query("select set_config('request.jwt.claim.sub',$1,false)",[alice]);
   const due=(await db.query("select (now()-interval '1 minute')::text as at")).rows[0].at;
@@ -83,8 +84,31 @@ try {
   await set(a,true,[{id:'legacy-log',remindAt:due}]);
   jobs=await claim();
   eq(jobs.find(job=>job.log_id==='legacy-log').payload.subject,'DECIDE.｜記録した決定を振り返ってみませんか？');
+  // Stop link: works without the registered device, stops every device, and only an explicit request with the token counts.
+  const link=titled.payload.text.match(/\nhttps:\/\/example\.test\/unsubscribe\?t=([0-9a-f-]{36})\n/);
+  eq(Boolean(link),true);
+  eq(titled.payload.text.includes('登録した端末の設定で'),false);
+  await set(a,true,[{id:'stop-log',remindAt:due}]); await set(b,true,[{id:'stop-log-b',remindAt:due}]);
+  const queued=(await claim()).find(job=>job.log_id==='stop-log');
+  eq(Boolean(queued),true);
+  await db.exec('set role anon');
+  eq((await db.query('select public.email_unsubscribe($1) as ok',['20000000-0000-4000-8000-000000000009'])).rows[0].ok,false);
+  await assert.rejects(db.query('select * from public.email_unsubscribe_tokens')); assertions++;
+  await assert.rejects(db.query('select public.disable_all_email_reminders()')); assertions++;
+  eq((await db.query('select public.email_unsubscribe($1) as ok',[link[1]])).rows[0].ok,true);
+  await db.exec('reset role');
+  eq(await active(queued),false); // already-queued mail is not sent after stopping
+  for(const device of [a,b]) eq((await db.query('select public.get_email_reminder_setting($1) as on',[device])).rows[0].on,false);
+  eq(Number((await db.query('select count(*) from public.email_reminders where user_id=$1',[alice])).rows[0].count),0);
+  eq((await claim()).length,0);
+  // Settings button: the signed-in account stops every device too.
+  await set(a,true,[{id:'stop-again',remindAt:due}]); await set(b,true,[{id:'stop-again-b',remindAt:due}]);
+  await db.exec('set role authenticated'); await db.query('select public.disable_all_email_reminders()'); await db.exec('reset role');
+  for(const device of [a,b]) eq((await db.query('select public.get_email_reminder_setting($1) as on',[device])).rows[0].on,false);
+  eq(Number((await db.query('select count(*) from public.email_reminders where user_id=$1',[alice])).rows[0].count),0);
   await db.query('delete from auth.users where id=$1',[alice]);
   eq(Number((await db.query('select count(*) from public.email_reminders where user_id=$1',[alice])).rows[0].count),0);
   eq(Number((await db.query('select count(*) from public.email_reminder_deliveries where user_id=$1',[alice])).rows[0].count),0);
-  console.log(`EMAIL_DATABASE_OK (${assertions} assertions: privileges, account isolation, verified recipients, leases, retries, cancellation, deduplication, cascade)`);
+  eq(Number((await db.query('select count(*) from public.email_unsubscribe_tokens where user_id=$1',[alice])).rows[0].count),0);
+  console.log(`EMAIL_DATABASE_OK (${assertions} assertions: privileges, account isolation, verified recipients, leases, retries, cancellation, deduplication, stop link, cascade)`);
 } finally { await db.close(); }

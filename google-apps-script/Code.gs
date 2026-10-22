@@ -61,6 +61,34 @@ function disableSending() {
   console.log('Sending disabled and reminder triggers removed.');
 }
 
+// MailApp keeps a copy of every email in this account's Sent mail, i.e. every recipient's address and record title.
+// Move DECIDE.'s own sent copies to Trash (Gmail deletes Trash after 30 days). Replies from recipients are left alone.
+var SENT_SEARCH_ = 'in:sent subject:"DECIDE."';
+function trashSentReminders_(config, maxThreads) {
+  var moved = 0;
+  GmailApp.search(SENT_SEARCH_, 0, maxThreads || 100).forEach(function(thread) {
+    thread.getMessages().forEach(function(message) {
+      var from = String(message.getFrom() || '').toLowerCase();
+      var own = from === config.sender || from.slice(-(config.sender.length + 2)) === '<' + config.sender + '>';
+      if(own && !message.isInTrash() && String(message.getSubject() || '').indexOf('DECIDE.｜') === 0) {
+        message.moveToTrash(); moved++;
+      }
+    });
+  });
+  return moved;
+}
+
+// Run once after installing this version: clears sent copies left from earlier runs. Sends nothing.
+function purgeSentReminders() {
+  var config = workerConfig_();
+  var started = Date.now(), total = 0, moved;
+  do {
+    moved = trashSentReminders_(config, 100);
+    total += moved;
+  } while(moved > 0 && Date.now() - started < 240000);
+  console.log(JSON.stringify({ movedToTrash: total, finished: moved === 0 }));
+}
+
 function runReminders() {
   if(PropertiesService.getScriptProperties().getProperty('SEND_ENABLED') !== 'true') return;
   var lock = LockService.getScriptLock();
@@ -103,7 +131,10 @@ function runReminders() {
       }
       if(!completed) uncertain++;
     }
-    console.log(JSON.stringify({ sent: sent, requiresReview: uncertain }));
+    var trashed = 0;
+    // Bookkeeping only: a failure here must not change the delivery outcome. The next run tries again.
+    if(sent > 0) { try { trashed = trashSentReminders_(config, 50); } catch(error) { console.log('Sent copies not trashed: ' + error); } }
+    console.log(JSON.stringify({ sent: sent, requiresReview: uncertain, sentCopiesTrashed: trashed }));
     if(uncertain > 0) throw new Error('Some reminder outcomes require review. They will not be resent automatically.');
   } finally { lock.releaseLock(); }
 }
@@ -119,5 +150,5 @@ function sendTestEmail() {
     body: 'DECIDEのメール送信テストです。\n\nこのメールが届いていれば、専用GmailとGoogle Apps Scriptからの送信ができています。\n\nhttps://decisionprocess.net',
     name: 'DECIDE.'
   });
-  console.log('Setup test accepted for the dedicated account itself.');
+  console.log('Setup test accepted for the dedicated account itself. Its sent copy is trashed by the next reminder run.');
 }

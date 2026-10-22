@@ -181,9 +181,14 @@
     }
   }
 
-  async function signOut() {
+  async function signOut({ keepEmailReminders = false } = {}) {
     if(!client) return;
-    if(await window.DECIDE_EMAIL_REMINDERS?.disableForSignOut?.() === false) return;
+    const email = window.DECIDE_EMAIL_REMINDERS;
+    if(!keepEmailReminders && await email?.disableForSignOut?.() === false) {
+      // 変更中なら email-reminders.js が知らせる。通信できずに止められなかったときは、止めずにログアウトするか選べる
+      if(!email.isBusy?.()) openEmailStopFailed();
+      return;
+    }
     // セッションが残っているうちに、この端末の通知の宛先をサーバーから外す
     try { await window.DECIDE_PUSH?.disableForSignOut?.(); } catch(error) {}
     await client.auth.signOut().catch(() => {});
@@ -280,6 +285,15 @@
     else document.querySelector(`#${id}`)?.remove();
   }
 
+  // オフラインなどでメールのリマインドを止められなかったとき。どのメールにも停止リンクがあるので、ログアウトは止めない
+  function openEmailStopFailed() {
+    openSheet('auth-email-stop-modal', 'メールのリマインドを止められませんでした',
+      `<p>通信できなかったため、この端末から登録したリマインドメールを停止できませんでした。</p>
+       <p>このままログアウトすると、予定していたメールは届きます。届いたメールの「リマインドメールを停止する」リンクから、いつでも止められます。</p>`,
+      `<button class="button" type="button" data-auth-action="logout-keep-email">このままログアウト</button>
+       <button class="button secondary" type="button" data-auth-action="close">やめる</button>`);
+  }
+
   function openDeleteConfirm() {
     if(typeof closeModal === 'function') closeModal('#settings-modal');
     setTimeout(() => openSheet('auth-delete-modal', 'アカウントを削除しますか？',
@@ -297,6 +311,7 @@
     if(action === 'close') { if(modal) closeSheet(modal.id); return; }
     if(action === 'login') { await signInWithGoogle(); return; }
     if(action === 'logout') { await signOut(); return; }
+    if(action === 'logout-keep-email') { if(modal) closeSheet(modal.id); await signOut({ keepEmailReminders: true }); return; }
     if(action === 'delete-confirm') { openDeleteConfirm(); return; }
     if(action === 'delete') {
       target.disabled = true;
