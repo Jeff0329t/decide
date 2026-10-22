@@ -383,7 +383,12 @@ body[data-view="prepare-options"] .thumb-prepare .prepare-art { height:auto; asp
 html, body { overscroll-behavior-y:none; }
 body .bottom-nav { position:fixed; top:auto; bottom:0; left:50%; transform:translate3d(-50%,0,0); margin:0; border-radius:0; background:#040404; -webkit-backdrop-filter:none; backdrop-filter:none; }
 body[data-detail-mode="complete"] .bottom-nav { display:grid !important; }
-body[data-detail-mode="complete"] .app-shell { padding-bottom:calc(70px + env(safe-area-inset-bottom)); }
+/* Completion fits one screen: the screen itself reserves the nav's space, the collage shrinks first, the saved-decision dock keeps its size. */
+body[data-detail-mode="complete"] .app-shell { padding-bottom:0; }
+.screen.completion-screen { min-height:0; height:100dvh; padding-bottom:calc(86px + env(safe-area-inset-bottom)); }
+.screen.completion-screen > .completion-hero { flex:1 1 auto; height:auto; min-height:120px; max-height:520px; }
+.screen.completion-screen > .completion-dock { flex:none; gap:12px; }
+.completion-dock .completion-copy { padding:4px 10px 6px; }
 
 /* Decision-first log: opaque reading surfaces over the existing collage. */
 .history-screen .history-search { margin:22px 0 14px; padding:0; border:1px solid #827b6d; border-radius:0; background:rgba(10,10,10,.94); box-shadow:none; }
