@@ -383,7 +383,12 @@ body[data-view="prepare-options"] .thumb-prepare .prepare-art { height:auto; asp
 html, body { overscroll-behavior-y:none; }
 body .bottom-nav { position:fixed; top:auto; bottom:0; left:50%; transform:translate3d(-50%,0,0); margin:0; border-radius:0; background:#040404; -webkit-backdrop-filter:none; backdrop-filter:none; }
 body[data-detail-mode="complete"] .bottom-nav { display:grid !important; }
-body[data-detail-mode="complete"] .app-shell { padding-bottom:calc(70px + env(safe-area-inset-bottom)); }
+/* Completion fits one screen: the screen itself reserves the nav's space, the collage shrinks first, the saved-decision dock keeps its size. */
+body[data-detail-mode="complete"] .app-shell { padding-bottom:0; }
+.screen.completion-screen { min-height:0; height:100dvh; padding-bottom:calc(86px + env(safe-area-inset-bottom)); }
+.screen.completion-screen > .completion-hero { flex:1 1 auto; height:auto; min-height:120px; max-height:520px; }
+.screen.completion-screen > .completion-dock { flex:none; gap:12px; }
+.completion-dock .completion-copy { padding:4px 10px 6px; }
 
 /* Decision-first log: opaque reading surfaces over the existing collage. */
 .history-screen .history-search { margin:22px 0 14px; padding:0; border:1px solid #827b6d; border-radius:0; background:rgba(10,10,10,.94); box-shadow:none; }
@@ -391,22 +396,6 @@ body[data-detail-mode="complete"] .app-shell { padding-bottom:calc(70px + env(sa
 .history-screen .history-search input::placeholder { color:#b8b09f; opacity:1; }
 .history-screen .history-search > span { left:13px; color:#b8b09f; }
 .history-screen .history-list { display:grid; gap:12px; border:0; }
-.decision-log-item { display:grid; gap:12px; width:100%; min-width:0; padding:16px; border:1px solid #827b6d; border-radius:0; background:rgba(8,8,8,.95); color:#f4efe3; text-align:left; cursor:pointer; font-family:"Hiragino Mincho ProN","Yu Mincho",serif; }
-.decision-log-meta { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
-.decision-log-meta time { color:#c8c2b7; font-size:12px; line-height:1.5; }
-.decision-log-status { padding:4px 8px; border:1px solid transparent; font-style:normal; font-size:12px; font-weight:700; line-height:1.4; white-space:nowrap; }
-.decision-log-status.status-pending { border:1px dashed #b8b09e; color:#ded7c7; }
-.decision-log-status.status-good { background:#f1d527; color:#0b0b0b; }
-.decision-log-status.status-fair { background:#cfe3c4; color:#0b0b0b; }
-.decision-log-status.status-neutral { background:#ddd6c6; color:#0b0b0b; }
-.decision-log-status.status-bad { background:#c8321e; color:#fff; }
-.decision-log-title { min-width:0; font-size:16px; font-weight:700; line-height:1.6; overflow-wrap:anywhere; }
-.decision-log-choice { display:flex; align-items:center; gap:12px; min-width:0; padding-left:12px; border-left:4px solid #f1d527; font-size:21px; font-weight:700; line-height:1.6; }
-.decision-log-choice > span { flex:1; min-width:0; overflow-wrap:anywhere; }
-.decision-log-choice i { flex:none; color:#f1d527; font-style:normal; font-size:24px; }
-.decision-log-item:focus-visible { outline:2px solid #f1d527; outline-offset:3px; }
-.decision-log-item:active { background:#202018; }
-.calendar-detail .decision-log-item + .decision-log-item { margin-top:12px; }
 
 /* Always-open reflection, with paper buttons and a distinct yellow selection. */
 .detail-screen :is(.review-section,.story-section) { padding-top:20px; margin-top:20px; }
@@ -426,7 +415,6 @@ body[data-detail-mode="complete"] .app-shell { padding-bottom:calc(70px + env(sa
 .detail-screen .story-prompt .story-prompt-kicker { margin:0 0 5px; color:#f1d527; font-size:12px; line-height:1.5; }
 .detail-screen .story-prompt h3 { margin:0; color:#f4efe3; font-size:21px; line-height:1.6; overflow-wrap:anywhere; }
 .detail-screen .story-prompt-note { margin:0; color:#f4efe3; font-size:12px; line-height:1.6; }
-@media (max-width:360px) { .decision-log-item { padding:14px; gap:10px; } .decision-log-choice { font-size:20px; } }
 
 /* Home-screen app: the dock is outside the scrollable content. */
 html.standalone-shell { height:100%; overflow:hidden; }
