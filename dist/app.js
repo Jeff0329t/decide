@@ -2364,6 +2364,8 @@ if(currentView==='settings') document.addEventListener('DOMContentLoaded',()=>{ 
 document.addEventListener('click',event=>{
   const link=event.target.closest?.('a[href*="cards/"]');
   if(!link || link.target==='_blank' || sharedPayload)return;
+  // 表紙（スプラッシュ）から来たときは ?go を付けず、「戻る」で表紙に帰す
+  if(currentView==='home'&&homeStage==='splash')return;
   const go=['history','stats'].includes(currentView)?currentView:'home';
   try { history.replaceState(history.state,'',`${location.pathname}?go=${go}`); } catch {}
 });
