@@ -819,9 +819,12 @@ function notFoundPage() {
 <meta name="theme-color" content="#f4efe3">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <style>${CSS}</style>
+<style>.brand{margin:0 0 18px;padding-bottom:10px;border-bottom:2px solid var(--ink)}.brand a{font:700 1.6rem/1 Didot,"Bodoni 72","Times New Roman",serif;letter-spacing:.02em;text-decoration:none}.brand span{color:var(--accent);-webkit-text-stroke:.5px var(--ink)}h1{text-wrap:balance}h1,main p{word-break:auto-phrase}footer .meta a{white-space:nowrap}</style>
 </head>
 <body>
 <main>
+<p class="brand"><a href="/" aria-label="DECIDE. トップへ">DECIDE<span>.</span></a></p>
+<p class="kicker page-k">404 · NOT FOUND</p>
 <h1>ページが見つかりません</h1>
 <p>お探しのページは、移動したか削除された可能性があります。</p>
 <ul class="cats"><li><a href="/">DECIDE. を開く</a></li><li><a href="/cards/">78枚のカード解説</a></li><li><a href="/cards/worries">悩み別に読む</a></li></ul>

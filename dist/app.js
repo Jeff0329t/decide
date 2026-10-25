@@ -767,7 +767,7 @@ function beginTutorialLog() {
   tutorial.phase='log'; tutorial.decision=null; tutorialEvent('step',3);
   document.querySelectorAll('.tutorial-guidance').forEach(element=>element.remove()); restoreTutorialControls();
   const {wrap,dialog}=tutorialOverlay(2,'tutorial-logstep','決めたことを、｜メモしよう。');
-  const lead=phraseText(document.createElement('p'),'保存したメモは、｜下の「ログ」から｜読めます。'); lead.className='tutorial-log-lead';
+  const lead=phraseText(document.createElement('p'),'保存したメモは、｜あとで「ログ」から｜読めます。'); lead.className='tutorial-log-lead';
   const log=document.createElement('article'); log.className='tutorial-mock-log';
   const meta=document.createElement('p'); meta.className='tutorial-mock-meta'; meta.innerHTML=`<b>決めたことのメモ</b><span>${new Date().toLocaleDateString('ja-JP',{month:'long',day:'numeric'})}（今日）</span>`;
   const title=phraseText(document.createElement('h3'),'例：｜久しぶりの友人に、｜連絡してみる？');
@@ -964,6 +964,12 @@ function drawCardButton(card, slot, label='') {
   </${tag}>`;
 }
 
+// 伏せたカードの下に、入力した選択肢名を出す（両方空なら出さない）
+function drawOptionNames() {
+  const names=[decisionDraft.option1,decisionDraft.option2];
+  if(!names[0] && !names[1])return '';
+  return names.map((name,i)=>`<p class="draw-option-name${name ? '' : ' is-empty'}" data-slot="${i}">${name ? esc(name) : '（未入力）'}</p>`).join('');
+}
 function drawTheme() {
   return decisionDraft.genre ? `<p class="draw-theme"><span>THEME</span><b>${esc(decisionDraft.genre)}</b></p>` : '';
 }
@@ -978,6 +984,7 @@ function renderDraw() {
     ${two ? '' : `<div class="deck-count"><b>${activeSession.drawOptions.length}枚</b><span>すべてのカードから選べます</span></div>`}
     <div class="${two ? 'dual-draw' : 'fan-deck'}">
       ${activeSession.drawOptions.map((card,i) => drawCardButton(card,i,two ? 'AB'[i] : '')).join('')}
+      ${two ? drawOptionNames() : ''}
       ${two ? `<span class="draw-vs" aria-hidden="true">OR</span>
       <p class="draw-instruction">${activeSession.revealed.length ? '2つの視点を読み取っています…' : '2つを思い浮かべたら、カードを開きます'}</p>` : ''}
     </div>
@@ -1572,7 +1579,7 @@ function renderDetail() {
       <div class="completion-dock">
         <div class="completion-copy"><h1>よし、決めた。</h1><p>この決断を記録しました。</p><strong data-completion-title></strong></div>
         ${completionRemindHtml(log)}
-        <div class="completion-actions"><button class="button decide-confirm completion-decide" data-action="satisfied" aria-label="DECIDE.">${decideWordmark()}</button></div>
+        <div class="completion-actions"><button class="button decide-confirm completion-decide" data-action="satisfied" aria-label="DECIDE. 押して、完了する">${decideWordmark()}<small class="completion-decide-hint" aria-hidden="true">押して、完了する</small></button></div>
       </div>
     </section>`;
     app.querySelector('[data-completion-title]').textContent=DECIDE_DECISION.decisionText(log);
@@ -1600,7 +1607,7 @@ function renderDetail() {
     </div></section>
     <div class="saved-cards"><p class="panel-title">引いたカードと意味</p>${log.nodes.map((node,index) => renderSavedCard(log,node,index)).join('')}</div>
     <div class="detail-action-dock"><button class="detail-edit" data-action="edit-log" data-id="${esc(log.id)}">編集</button><button class="button" data-action="share-log" data-id="${esc(log.id)}">Instagram投稿作成 ↗</button></div>
-    <div class="danger-zone"><button class="danger-button" data-action="delete-log" data-id="${esc(log.id)}"><span class="danger-icon" aria-hidden="true">🗑</span>この履歴を削除</button></div>
+    <div class="danger-zone"><button class="danger-button" data-action="delete-log" data-id="${esc(log.id)}"><svg class="danger-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>この履歴を削除</button></div>
   </section>`;
   app.querySelector('[data-detail-title]').textContent=log.title;
   const memo=app.querySelector('[data-detail-memo]'); if(memo)memo.textContent=log.memo;

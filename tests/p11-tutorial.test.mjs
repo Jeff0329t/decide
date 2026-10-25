@@ -90,7 +90,7 @@ test('LOOK BACK shows a sample log and an unsaved trial review before completion
 test('DECIDE log step shows what a log records and why, without saving',()=>{
   assert.match(app,/action === 'tutorial-next'\) beginTutorialLog\(\)/);
   assert.match(app,/action === 'tutorial-decision'\) chooseTutorialDecision\(el\.dataset\.value\)/);
-  for(const copy of ['決めたことを、メモしよう。','保存したメモは、下の「ログ」から読めます。','（今日）','決めたこと','進む','見送る','保留する','決めた理由・今の気持ち','あとで思い出せます','短いひとことだけでもOKです','その時の気持ち'])assert.ok(copyText.includes(copy),copy);
+  for(const copy of ['決めたことを、メモしよう。','保存したメモは、あとで「ログ」から読めます。','（今日）','決めたこと','進む','見送る','保留する','決めた理由・今の気持ち','あとで思い出せます','短いひとことだけでもOKです','その時の気持ち'])assert.ok(copyText.includes(copy),copy);
   const logStep=app.slice(app.indexOf('function beginTutorialLog'),app.indexOf('function beginTutorialLookBack'));
   assert.doesNotMatch(logStep,/saveLogs|logs\.push|safeSetItem\(STORAGE_KEY/);
   assert.match(css,/\.tutorial-mock-decisions button \{ min-height: 44px;[^}]*font-size: 15px/);
