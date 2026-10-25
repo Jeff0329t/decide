@@ -146,7 +146,7 @@ body[data-view="home"][data-home-stage="quickstart"] .app-shell { padding-bottom
 .quickstart-screen .quickstart-brand .qb-dot { margin-left:2px; color:#f1d527; -webkit-text-stroke:0; text-shadow:none; animation:none; }
 .quickstart-screen .quickstart-brand p { display:block; margin:10px 0 0; padding:0; background:none; border:0; box-shadow:none; transform:none; font-size:17px; letter-spacing:.08em; }
 .quickstart-screen .quickstart-brand p i { display:none; }
-.quickstart-screen .quickstart-art { flex:none; height:clamp(160px,28svh,245px); margin:12px -20px 8px; background:url('./assets/editorial/choice-collage.webp') center 65% / cover no-repeat; }
+.quickstart-screen .quickstart-art { flex:none; height:clamp(160px,28svh,245px); margin:12px -20px 8px; background:url('./assets/editorial/choice-collage.webp') center 52.6% / auto 216% no-repeat; -webkit-mask-image:linear-gradient(90deg,transparent 12%,#000 24%,#000 76%,transparent 88%),linear-gradient(180deg,transparent 0,#000 14%); -webkit-mask-composite:source-in; mask-image:linear-gradient(90deg,transparent 12%,#000 24%,#000 76%,transparent 88%),linear-gradient(180deg,transparent 0,#000 14%); mask-composite:intersect; }
 .quickstart-screen .quickstart-title { display:block; position:static; margin:8px 0 14px; font-size:clamp(17px,4.7vw,21px); font-weight:700; line-height:1.5; color:#111; }
 .home-screen.quickstart-screen .choice-grid { position:relative; left:auto; right:auto; bottom:auto; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; width:100%; margin:0; }
 /* Override the old home-stage bottom offset; keep choices in document flow. */
@@ -248,7 +248,7 @@ body[data-view="prepare-options"] .thumb-prepare .prepare-art { height:auto; asp
 .detail-screen .detail-fold :is(.story-panel,.review-panel) { color:#f4efe3; }
 .detail-screen .story-panel textarea { color:#f4efe3; background:rgba(8,8,8,.7); border-color:#aaa18f; }
 .detail-screen .story-panel textarea::placeholder { color:#bdb6a9; }
-.detail-screen .detail-action-dock { background:rgba(12,12,12,.94); border-color:#615a50; }
+.detail-screen .detail-action-dock { background:#0b0b0b; border-top:1.5px solid rgba(244,239,227,.28); }
 .detail-action-dock .detail-edit { color:#f4efe3; border-color:#aaa18f; }
 .detail-screen .saved-card-image-button { width:72px; }
 .detail-screen .saved-card-image-frame { width:100%; }
@@ -423,3 +423,5 @@ html.standalone-shell body { position:fixed; inset:0; height:100%; min-height:0;
 .app-viewport > .app-shell { position:relative; top:auto; height:100%; min-height:0; overflow-x:hidden; overflow-y:auto; overscroll-behavior-y:none; -webkit-overflow-scrolling:touch; }
 .app-viewport > .bottom-nav { position:absolute; bottom:0; }
 .modal-open .app-viewport > .app-shell { position:relative; top:auto; overflow-y:hidden; }
+.completion-actions .completion-decide { flex-direction:column; gap:6px; }
+.completion-decide-hint { color:#f1d527; font:700 .78rem/1 "Hiragino Mincho ProN","Yu Mincho",serif; letter-spacing:.18em; }

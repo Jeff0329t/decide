@@ -4549,3 +4549,95 @@ body[data-view="settings"] .app-shell { padding-bottom: calc(70px + env(safe-are
 }
 #settings-modal .settings-page .sheet-head { top: 0; padding-top: 12px; }
 #settings-modal .settings-page .sheet-head h1 { margin: 0; color: #fff; font-family: Didot,"Times New Roman",serif; font-size: 1.7rem; letter-spacing: .03em; }
+
+/* Editorial card-detail and log-editor sheets: square black/yellow parts like the confirm sheets */
+.settings-sheet.card-detail-sheet, .settings-sheet.log-editor-sheet { border-radius: 0; border-top: 4px solid #0b0b0b; }
+.settings-sheet.card-detail-sheet .sheet-handle, .settings-sheet.log-editor-sheet .sheet-handle { background: #0b0b0b; border-radius: 0; }
+.settings-sheet.card-detail-sheet .sheet-head button, .settings-sheet.log-editor-sheet .sheet-head button { border: 1.5px solid #0b0b0b; border-radius: 0; background: #0b0b0b; color: #f4efe3; box-shadow: 3px 3px 0 #f1d527; }
+.settings-sheet.card-detail-sheet .sheet-head .eyebrow { display: inline-block; padding: 2px 8px; background: #0b0b0b; color: #f1d527; transform: rotate(-1.5deg); }
+.settings-sheet.card-detail-sheet .card-direction-help { border-left-color: #f1d527; color: #0b0b0b; }
+.settings-sheet.card-detail-sheet .theme-tabs button { border: 1.5px solid #0b0b0b; border-radius: 0; background: #fffdf6; color: #0b0b0b; }
+.settings-sheet.card-detail-sheet .theme-tabs button.selected, .settings-sheet.card-detail-sheet .theme-tabs button[aria-selected="true"] { border-color: #0b0b0b; background: #0b0b0b; color: #f1d527; }
+.settings-sheet.card-detail-sheet .theme-panel { border: 1.5px solid #0b0b0b; border-radius: 0; background: #fffdf6; box-shadow: 3px 3px 0 #f1d527; }
+.settings-sheet.card-detail-sheet .theme-panel b { color: #0b0b0b; }
+.settings-sheet.card-detail-sheet .opposite-meaning { border: 1.5px solid #0b0b0b; border-radius: 0; }
+.settings-sheet.card-detail-sheet .learn-card-type, .settings-sheet.card-detail-sheet .learn-related, .settings-sheet.card-detail-sheet .learn-related-link { font-style: normal; }
+.settings-sheet.card-detail-sheet .button, .settings-sheet.log-editor-sheet .button { border-radius: 0; box-shadow: 3px 3px 0 #f1d527; }
+.settings-sheet.log-editor-sheet input, .settings-sheet.log-editor-sheet textarea { border: 1.5px solid #0b0b0b; border-radius: 0; }
+.settings-sheet.log-editor-sheet .sheet-bottom-close { border: 1.5px solid #0b0b0b; border-radius: 0; background: #fffdf6; box-shadow: 3px 3px 0 #0b0b0b; }
+
+/* Leftover blue accents: log kicker and two-card score stars */
+.history-screen .history-head .eyebrow { color: #f1d527; }
+.score-stars svg.filled { fill: #0b0b0b; }
+
+/* Log rows: status badge sits above the date so the title gets the full width */
+.history-item em.status-badge { grid-column: 2 / 4; grid-row: 1; justify-self: start; margin-bottom: 2px; }
+.history-item .history-copy { grid-row: 2; }
+
+/* Japanese line breaks: avoid 1-2 character last lines and break at phrase boundaries where supported */
+:where(h4, p, li, dd, dt, strong, b, span, button, a, label, summary) { text-wrap: pretty; word-break: auto-phrase; }
+
+/* Gutter alignment: memo field, log calendar and settings title share the surrounding left edge */
+body[data-view="decide"] .decide-screen .save-form > label > textarea { margin-left: -12px; width: calc(100% + 12px); }
+.history-screen .calendar-wrap { margin-inline: 0; }
+#settings-modal .settings-page .sheet-head { padding-left: 10px; padding-right: 10px; }
+
+/* HOLD choice: dashed outline until chosen, so it doesn't read as pre-selected */
+.map-screen .reflection-card.decide-choices .reflection-actions .decide-choice:nth-child(3):not(.selected) { background: #f4efe3; color: #0b0b0b; border: 2px dashed #0b0b0b; box-shadow: none; }
+.map-screen .reflection-card.decide-choices .reflection-actions .decide-choice:nth-child(3):not(.selected) .decision-index { background: transparent; color: #0b0b0b; border-right: 2px dashed #0b0b0b; }
+
+/* Tutorial guidance: editorial cream plate with a hard yellow shadow, inside the 16px gutter */
+body .tutorial-callout { max-width: none; margin: 12px 16px; border: 1.5px solid #0b0b0b; border-left-width: 6px; border-radius: 0; background: #fffdf6; box-shadow: 4px 4px 0 #f1d527, 4px 4px 0 1.5px #0b0b0b; }
+body .tutorial-stage-controls { border: 1.5px solid #0b0b0b; border-radius: 0; box-shadow: 3px 3px 0 #0b0b0b; }
+body .tutorial-stage-controls [data-action="tutorial-skip"] { color: #0b0b0b; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Tutorial guidance controls: square chips (selected = yellow) and square buttons with hard shadows */
+body .tutorial-callout button:not(.button) { border: 1.5px solid #0b0b0b; border-radius: 0; background: #fffdf6; color: #0b0b0b; box-shadow: 2px 2px 0 #0b0b0b; }
+body .tutorial-callout button:not(.button).selected { background: #f1d527; color: #0b0b0b; }
+body .tutorial-callout .button { border: 1.5px solid #0b0b0b; border-radius: 0; }
+body .tutorial-callout .button:not(.secondary) { box-shadow: 3px 3px 0 #f1d527; }
+body .tutorial-callout .button.secondary { background: #fffdf6; box-shadow: 3px 3px 0 #0b0b0b; }
+
+/* Retire the old red tape decoration: it floated in empty space on every non-home screen */
+body .screen:not(.home-screen):not(.deep-menu-open):not(.is-revealing)::after { display: none; }
+
+/* Settings legal links: 2x2 grid instead of "·" separators, so no line starts with a dot */
+#settings-modal .settings-legal { display: grid; grid-template-columns: auto auto; justify-content: center; justify-items: center; gap: 0 20px; }
+#settings-modal .settings-legal a { padding: 8px 0; white-space: nowrap; text-decoration: underline; text-decoration-color: #5c574f; text-underline-offset: 3px; }
+#settings-modal .settings-legal a + a::before { content: none; }
+
+/* Two-card option fields: no resize grip; grow with the text (30 chars can wrap to 2 lines) where field-sizing is supported */
+body .option-editor textarea, body .thumb-prepare[data-prepare-art] .option-editor textarea { resize: none; field-sizing: content; height: auto; min-height: 56px; }
+
+/* "入力せず引く" clears typed options, so hide it once either option has text */
+.thumb-prepare:has(.option-editor textarea:not(:placeholder-shown)) .prepare-actions .prepare-skip { display: none; }
+
+/* Two-card draw: the typed option names sit under each face-down card, in flow so long names push the reveal button down */
+.draw-screen.draw-two .dual-draw .draw-option-name { grid-row: 3; align-self: start; margin: 0; padding: 6px 8px; border: 1.5px solid #f4efe3; background: #0b0b0b; color: #f4efe3; font: 700 .86rem/1.45 "Hiragino Mincho ProN", "Yu Mincho", serif; text-align: center; overflow-wrap: anywhere; }
+.draw-screen.draw-two .dual-draw .draw-option-name[data-slot="0"] { grid-column: 1; }
+.draw-screen.draw-two .dual-draw .draw-option-name[data-slot="1"] { grid-column: 2; }
+.draw-screen.draw-two .dual-draw .draw-option-name.is-empty { color: #8a847a; font-weight: 400; }
+
+/* Delete log: line icon instead of emoji, outlined so a rare destructive action doesn't outshout the page */
+.danger-zone .danger-button { background: #0b0b0b; color: #ff8a73; border: 1.5px solid #c8321e; box-shadow: none; }
+.danger-zone .danger-button:active { box-shadow: none; }
+.danger-zone .danger-button .danger-icon { width: 16px; height: 16px; flex: none; }
+
+/* One-card result: keep the heading centred under the card, but set the multi-line meaning flush left */
+body .map-screen .reading p { text-align: left; }
+
+/* One-card fan: snap the nearest card to the centre when the swipe ends (cards already carry scroll-snap-align) */
+body .draw-screen .fan-deck { scroll-snap-type: x mandatory; }
+
+/* Narrow phones: the one-line splash tagline lands on the white statue, so give it a black plate */
+@media (max-width: 359px) {
+  .splash-screen .splash-sidecopy { width: max-content; max-width: 100%; padding: 3px 8px; background: #0b0b0b; color: #f4efe3; text-shadow: none; }
+}
+
+/* Monthly strip: drop the grey track so empty months show only the 2px baseline, not a bar that reads as data */
+.calendar-months .calendar-month:not(.selected) i { background: transparent; }
+.calendar-months .calendar-month:not(.selected) b { color: rgba(244,239,227,.5); }
+
+/* Two-card reveal flash: undo the old tape's display/size/tilt so the full-screen flash at .draw-two.is-revealing::after actually shows */
+.draw-screen.draw-two.is-revealing::after { display: block; width: auto; height: auto; transform: none; }
+@media (prefers-reduced-motion: reduce) { .draw-screen.draw-two.is-revealing::after { display: none; } }
