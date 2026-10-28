@@ -1,11 +1,11 @@
 // DECIDE. 無料枠とUNLIMITED EDITION判定
-// 無料枠：ドロー累計10回・ログ保存10件（別カウンタ）。ドロー回数はログを消しても戻らない。
+// 無料枠：ドロー累計5回・ログ保存5件（別カウンタ）。ドロー回数はログを消しても戻らない。
 // 無料枠は端末内判定（回避可能なのは既知の制約として許容）。サーバーで守るのはPRO判定（profiles.plan_type）のみ。
 (function(){
   const STORE_KEY = 'decide.tarot.entitlements.v1';
   const CHECKOUT_FLAG = 'decide.tarot.pendingCheckout';
-  const FREE_DRAWS = 10;
-  const FREE_SAVES = 10;
+  const FREE_DRAWS = 5;
+  const FREE_SAVES = 5;
   // PROキャッシュの有効期限：返金・解約後に端末だけPROのまま残らないよう、期限切れなら無料扱い（再同期で復帰）
   const PRO_CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
   // フォアグラウンド復帰時の再取得は最短この間隔で

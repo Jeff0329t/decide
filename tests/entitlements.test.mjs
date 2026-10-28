@@ -65,23 +65,23 @@ function fakeClient(plan) {
 }
 const flush = () => new Promise(resolve => setTimeout(resolve, 0));
 
-test('無料枠は ドロー10回・ログ10件', () => {
+test('無料枠は ドロー5回・ログ5件', () => {
   const { ent } = load();
-  assert.equal(ent.FREE_DRAWS, 10);
-  assert.equal(ent.FREE_SAVES, 10);
+  assert.equal(ent.FREE_DRAWS, 5);
+  assert.equal(ent.FREE_SAVES, 5);
 });
 
-test('canDraw: 10回目までは可、11回目はブロック', () => {
-  const { ent, localStorage } = load({ stored: { draws: 9 } });
+test('canDraw: 5回目までは可、6回目はブロック', () => {
+  const { ent, localStorage } = load({ stored: { draws: 4 } });
   assert.equal(ent.canDraw(), true);
   ent.recordDraw();
-  assert.equal(ent.drawCount(), 10);
+  assert.equal(ent.drawCount(), 5);
   assert.equal(ent.canDraw(), false);
-  assert.equal(JSON.parse(localStorage.getItem(STORE_KEY)).draws, 10);
+  assert.equal(JSON.parse(localStorage.getItem(STORE_KEY)).draws, 5);
 });
 
 test('canDraw: 保存済みのドロー回数を引き継ぐ（ログ削除で戻らない）', () => {
-  assert.equal(load({ stored: { draws: 10 } }).ent.canDraw(), false);
+  assert.equal(load({ stored: { draws: 5 } }).ent.canDraw(), false);
   assert.equal(load({ stored: { draws: 0 } }).ent.canDraw(), true);
   assert.equal(load({ stored: { draws: 'abc' } }).ent.canDraw(), true);
 });
@@ -89,8 +89,8 @@ test('canDraw: 保存済みのドロー回数を引き継ぐ（ログ削除で�
 test('canSaveLog: 現在の保存件数で判定', () => {
   const { ent } = load();
   assert.equal(ent.canSaveLog(0), true);
-  assert.equal(ent.canSaveLog(9), true);
-  assert.equal(ent.canSaveLog(10), false);
+  assert.equal(ent.canSaveLog(4), true);
+  assert.equal(ent.canSaveLog(5), false);
   assert.equal(ent.canSaveLog(25), false);
 });
 
