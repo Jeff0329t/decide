@@ -1,0 +1,95 @@
+{
+  "alphaThreshold": 128,
+  "cards": [
+    {
+      "id": "forest-orbit",
+      "file": "dist/assets/card-backs/forest-orbit.webp",
+      "sha256": "2c3ca35f79167c898063ffa2b0f1ddd782060c710c502cf8ffe1ad33d5cfdb18",
+      "canvas": {
+        "width": 500,
+        "height": 800
+      },
+      "visibleBounds": {
+        "left": 9,
+        "top": 5,
+        "width": 482,
+        "height": 791
+      }
+    },
+    {
+      "id": "ivory-orbit",
+      "file": "dist/assets/card-backs/ivory-orbit.webp",
+      "sha256": "3b1f1d947ab1bd3acb67f967346ed28295c016888e84287f7975ad022f2fa30c",
+      "canvas": {
+        "width": 500,
+        "height": 800
+      },
+      "visibleBounds": {
+        "left": 11,
+        "top": 5,
+        "width": 478,
+        "height": 791
+      }
+    },
+    {
+      "id": "midnight-compass",
+      "file": "dist/assets/card-backs/midnight-compass.webp",
+      "sha256": "96249cbc65082398bc31be564a268fb3caeebc51d9004b026f35db5c107d12be",
+      "canvas": {
+        "width": 500,
+        "height": 800
+      },
+      "visibleBounds": {
+        "left": 17,
+        "top": 6,
+        "width": 467,
+        "height": 789
+      }
+    },
+    {
+      "id": "moonlit-navy",
+      "file": "dist/assets/card-backs/moonlit-navy.webp",
+      "sha256": "30d2e07f934326a9d303ebb8f81e20bd55cc69679b06c87c40e2bd1df5ab5f27",
+      "canvas": {
+        "width": 500,
+        "height": 800
+      },
+      "visibleBounds": {
+        "left": 15,
+        "top": 5,
+        "width": 471,
+        "height": 791
+      }
+    },
+    {
+      "id": "obsidian-brass",
+      "file": "dist/assets/card-backs/obsidian-brass.webp",
+      "sha256": "4a13b2c31916e2d982cf66891ed5b9e52b6bdfdd8d5f1ebfe659430d1509c44d",
+      "canvas": {
+        "width": 500,
+        "height": 800
+      },
+      "visibleBounds": {
+        "left": 15,
+        "top": 5,
+        "width": 470,
+        "height": 790
+      }
+    },
+    {
+      "id": "rose-moon",
+      "file": "dist/assets/card-backs/rose-moon.webp",
+      "sha256": "0d3a74cc3986e1c5d8ae62485f4af6c1b13d0eacee044222270b6d57c6f1d670",
+      "canvas": {
+        "width": 500,
+        "height": 800
+      },
+      "visibleBounds": {
+        "left": 11,
+        "top": 5,
+        "width": 478,
+        "height": 790
+      }
+    }
+  ]
+}

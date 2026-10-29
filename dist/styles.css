@@ -1755,16 +1755,16 @@ select {
 .mode-art .card-back > i,
 .back-choice .card-back > i { display: none; }
 
-/* Optional artwork backs share the same face in settings, the home tiles and draws. */
-.back-ivory-orbit { --card-back-art: url('./assets/card-backs/ivory-orbit.webp'); }
-.back-rose-moon { --card-back-art: url('./assets/card-backs/rose-moon.webp'); }
-.back-moonlit-navy { --card-back-art: url('./assets/card-backs/moonlit-navy.webp'); }
-.back-obsidian-brass { --card-back-art: url('./assets/card-backs/obsidian-brass.webp'); }
-.back-midnight-compass { --card-back-art: url('./assets/card-backs/midnight-compass.webp'); }
-.back-forest-orbit { --card-back-art: url('./assets/card-backs/forest-orbit.webp'); }
+/* Compensate only for transparent margins so each visible card fills its frame. */
+.back-ivory-orbit { --card-back-art: url('./assets/card-backs/ivory-orbit.webp'); --card-back-size: 104.602510% 101.137800%; --card-back-position: 50.000000% 55.555556%; }
+.back-rose-moon { --card-back-art: url('./assets/card-backs/rose-moon.webp'); --card-back-size: 104.602510% 101.265823%; --card-back-position: 50.000000% 50.000000%; }
+.back-moonlit-navy { --card-back-art: url('./assets/card-backs/moonlit-navy.webp'); --card-back-size: 106.157113% 101.137800%; --card-back-position: 51.724138% 55.555556%; }
+.back-obsidian-brass { --card-back-art: url('./assets/card-backs/obsidian-brass.webp'); --card-back-size: 106.382979% 101.265823%; --card-back-position: 50.000000% 50.000000%; }
+.back-midnight-compass { --card-back-art: url('./assets/card-backs/midnight-compass.webp'); --card-back-size: 107.066381% 101.394170%; --card-back-position: 51.515152% 54.545455%; }
+.back-forest-orbit { --card-back-art: url('./assets/card-backs/forest-orbit.webp'); --card-back-size: 103.734440% 101.137800%; --card-back-position: 50.000000% 55.555556%; }
 .card-back:is(.back-ivory-orbit,.back-rose-moon,.back-moonlit-navy,.back-obsidian-brass,.back-midnight-compass,.back-forest-orbit) {
   border: 0 !important;
-  background: var(--card-back-art) center / contain no-repeat !important;
+  background: var(--card-back-art) var(--card-back-position,center) / var(--card-back-size,100% 100%) no-repeat !important;
   box-shadow: none;
 }
 .card-back:is(.back-ivory-orbit,.back-rose-moon,.back-moonlit-navy,.back-obsidian-brass,.back-midnight-compass,.back-forest-orbit)::before,
