@@ -83,7 +83,7 @@
 
 - `dist/app.js`：画面遷移、状態、保存とイベントの接続。依然として大きいため、大規模な一括書き換えは避け、機能単位で切り出す。
 - `dist/backup-format.js`：Markdown表示文と、欠落なく戻すための埋め込みデータの変換。読み込み後の検証・重複判定は `app.js` のJSON経路と共通。
-- `dist/card-backs.js`：カード裏面は `celestial`（星と月）の1種類のみ。`app.js` の `DEFAULT_CARD_BACK` で起動時に固定し、以前に保存された裏面設定も上書きする。
+- `dist/card-backs.js`：既存の `celestial`（星と月）を初期値として、画像の裏面6種類を設定画面から選択できます。選択は端末内に保存し、未登録のIDだけ初期値へ戻します。画像は `dist/assets/card-backs/` のWebPで、オフライン用キャッシュにも含めています。
 - `dist/styles.css`：後半の「P33: editorial collage redesign」以降がエディトリアルデザインの定義。背景コラージュ画像は `dist/assets/editorial/` に置く。
 - `dist/service-worker.js`：アプリ本体・学習データ（`learn.json`）・コラージュ（WebP）・カード画像（320pxのWebP）をプリキャッシュする。480pxのカード画像は表示時に取得して上限100枚でキャッシュし、オフラインで取得できないときは320pxで代用する。本体ファイルや画像を変更したら `SHELL_CACHE` のバージョン名を必ず上げる。
 - `dist/learn.js`：図鑑と学習画面。進捗は `decide.tarot.learn.v1` に保存。

@@ -113,7 +113,7 @@ const MAJOR_EXTRA_KEYWORDS={
 const savedSettings = load(SETTINGS_KEY, {});
 const DEFAULT_CARD_BACK = DECIDE_CARD_BACKS[0][0];
 let settings = { back:DEFAULT_CARD_BACK, feedback: savedSettings.feedback === true, cloudSync: savedSettings.cloudSync === true, deckMode: savedSettings.deckMode || (typeof savedSettings.reversed === 'boolean' ? (savedSettings.reversed ? 'all-reversed' : 'all-upright') : 'major-upright'), ...savedSettings };
-settings.back = DEFAULT_CARD_BACK;
+if(!DECIDE_CARD_BACKS.some(([id])=>id===settings.back))settings.back=DEFAULT_CARD_BACK;
 const DECK_MODES = ['major-upright','major-reversed','all-upright','all-reversed'];
 if(!DECK_MODES.includes(settings.deckMode))settings.deckMode='major-upright';
 const DECK_PRESETS = [
@@ -918,13 +918,13 @@ function continuePreparation(skip=false) {
 }
 
 function backPicker() {
-  const choice=([id,label])=>`<button class="back-choice ${settings.back === id ? 'selected' : ''}" data-action="select-back" data-value="${id}" aria-label="${label}" aria-pressed="${settings.back === id}"><i class="card-back back-${id}"></i><small>${label}</small><b aria-hidden="true">${settings.back === id ? '✓' : ''}</b></button>`;
+  const choice=([id,label])=>`<button class="back-choice ${settings.back === id ? 'selected' : ''}" data-action="select-back" data-value="${id}" aria-label="${label}" aria-pressed="${settings.back === id}"><i class="card-back back-${id}" aria-hidden="true"></i><small>${label}</small><b aria-hidden="true">${settings.back === id ? '✓' : ''}</b></button>`;
   // 裏面が1種類だけのときは、押しても何も変わらないボタンにせず説明だけ出す
   if(DECIDE_CARD_BACKS.length <= 1) {
     const [id,label]=DECIDE_CARD_BACKS[0] || ['celestial','星と月'];
     return `<div class="back-single"><i class="card-back back-${id}" aria-hidden="true"></i><p><b>${label}</b><small>今は1種類です。デザインは今後追加予定です。</small></p></div>`;
   }
-  return `<div class="back-picker" aria-label="カードの裏面を選ぶ">
+  return `<div class="back-picker" role="group" aria-label="カードの裏面を選ぶ">
     ${DECIDE_CARD_BACKS.map(choice).join('')}
   </div>`;
 }

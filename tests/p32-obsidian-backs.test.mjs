@@ -39,12 +39,33 @@ test('old JSON backups still import and Markdown shares the same import validati
   assert.match(worker,/\.\/backup-format\.js/);
 });
 
-test('the single celestial card back defines the visual identity',()=>{
-  assert.equal(backs.length,1);
+test('the original celestial back remains available alongside six optional artwork backs',async()=>{
+  assert.equal(backs.length,7);
   assert.deepEqual(Array.from(backs[0]),['celestial','星と月']);
+  assert.equal(new Set(backs.map(([id])=>id)).size,backs.length);
   for(const [id] of backs)assert.match(css,new RegExp(`\\.back-${id}(?:,|\\s*\\{)`),`${id} missing style`);
+  for(const [id] of backs.slice(1)) {
+    const file=`./assets/card-backs/${id}.webp`;
+    const bytes=await readFile(new URL(`../dist/${file}`,import.meta.url));
+    assert.equal(bytes.subarray(0,4).toString(),'RIFF',`${id} missing WebP data`);
+    assert.equal(bytes.subarray(8,12).toString(),'WEBP',`${id} missing WebP format`);
+    assert.ok(worker.includes(`'${file}'`),`${id} missing offline cache entry`);
+  }
   assert.match(app,/DECIDE_CARD_BACKS\.map\(choice\)/);
-  assert.match(app,/settings\.back = DEFAULT_CARD_BACK/);
   assert.match(html,/\.\/card-backs\.js/);
   assert.match(worker,/\.\/card-backs\.js/);
+});
+
+test('saved card-back choices survive startup and unknown choices fall back safely',()=>{
+  const initialization=app.slice(app.indexOf('const savedSettings = '),app.indexOf('const DECK_MODES = '));
+  for(const [id] of backs) {
+    const saved={back:id,feedback:true,cloudSync:false,deckMode:'major-upright'};
+    const result=vm.runInNewContext(`${initialization}\nsettings`,{load:()=>saved,SETTINGS_KEY:'settings',DECIDE_CARD_BACKS:backs});
+    assert.equal(result.back,id);
+    assert.equal(result.feedback,true);
+  }
+  for(const saved of [{},{back:'deleted-design'},{back:null},{back:'<bad>'}]) {
+    const result=vm.runInNewContext(`${initialization}\nsettings`,{load:()=>saved,SETTINGS_KEY:'settings',DECIDE_CARD_BACKS:backs});
+    assert.equal(result.back,'celestial');
+  }
 });
