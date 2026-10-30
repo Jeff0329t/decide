@@ -918,7 +918,7 @@ function continuePreparation(skip=false) {
 }
 
 function backPicker() {
-  const choice=([id,label])=>`<button class="back-choice ${settings.back === id ? 'selected' : ''}" data-action="select-back" data-value="${id}" aria-label="${label}" aria-pressed="${settings.back === id}"><i class="card-back back-${id}" aria-hidden="true"></i><small>${label}</small><b aria-hidden="true">${settings.back === id ? '✓' : ''}</b></button>`;
+  const choice=([id,label])=>`<button class="back-choice ${settings.back === id ? 'selected' : ''}" data-action="select-back" data-value="${id}" aria-label="${label}" aria-pressed="${settings.back === id}"><i class="card-back back-${id}" aria-hidden="true"></i><small>${label.split('・').map(part=>`<span>${part}</span>`).join('')}</small><b aria-hidden="true">${settings.back === id ? '✓' : ''}</b></button>`;
   // 裏面が1種類だけのときは、押しても何も変わらないボタンにせず説明だけ出す
   if(DECIDE_CARD_BACKS.length <= 1) {
     const [id,label]=DECIDE_CARD_BACKS[0] || ['celestial','星と月'];

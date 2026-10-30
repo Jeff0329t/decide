@@ -69,3 +69,16 @@ test('saved card-back choices survive startup and unknown choices fall back safe
     assert.equal(result.back,'celestial');
   }
 });
+
+test('card-back names retain their complete words in at most two explicit lines',()=>{
+  const source=app.slice(app.indexOf('function backPicker()'),app.indexOf('function selectBack('));
+  const markup=vm.runInNewContext(`${source}\nbackPicker()`,{DECIDE_CARD_BACKS:backs,settings:{back:'celestial'}});
+  const buttons=[...markup.matchAll(/<button\b[^>]*aria-label="([^"]+)"[^>]*>[\s\S]*?<small>([\s\S]*?)<\/small>/g)];
+  assert.equal(buttons.length,backs.length);
+  for(const [,label,content] of buttons){
+    const lines=[...content.matchAll(/<span>([^<]+)<\/span>/g)].map(match=>match[1]);
+    assert.ok(lines.length>=1&&lines.length<=2,`${label}: unexpected line count`);
+    assert.equal(lines.join('・'),label,`${label}: the full accessible name must remain available`);
+    assert.ok(lines.every(line=>[...line].length<=7),`${label}: a word is too wide for the mobile grid`);
+  }
+});
