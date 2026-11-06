@@ -781,7 +781,7 @@ ${others.length ? `<section>
 </section>` : ''}
 </article>
 </main>`;
-  return layout({ title: a.title, description: a.description, path, ogImage, ld: [ld, crumbsLd(crumbs)], body, noindex: a.draft });
+  return layout({ title: a.title, description: a.description, path, ogImage, ld: [ld, crumbsLd(crumbs)], body, noindex: a.draft, css: '.art-img{margin:20px 0;text-align:center}.art-img img{width:170px;max-width:55%;height:auto;border-radius:10px;border:4px solid #fff;box-shadow:0 10px 24px rgba(17,17,17,.18)}' });
 }
 
 function articlesIndex(list) {
