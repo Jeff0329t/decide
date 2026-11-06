@@ -1,5 +1,5 @@
 // 記事用の小さな Markdown / front matter パーサ（依存なし）。
-// 対応: ## / ### 見出し、段落、- / 1. リスト、> 引用、**太字**、[文字](URL)、<!-- コメント（出力しない） -->
+// 対応: ## / ### 見出し、段落、- / 1. リスト、> 引用、**太字**、[文字](URL)、![代替文](/assets/...) 画像（単独行・サイト内パスのみ）、<!-- コメント（出力しない） -->
 // 生の HTML はすべてエスケープする。リンクは http(s) とサイト内の "/..." のみ許可（"/x" は記事ページから見た "../x" に変換し、末尾の .html は外す）。
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 
@@ -85,6 +85,15 @@ export function renderMarkdown(md) {
       if (list && list.tag !== tag) flushList();
       if (!list) list = { tag, items: [] };
       list.items.push(m[2]);
+      continue;
+    }
+    if ((m = line.match(/^!\[([^\]]*)\]\(([^)\s]+)\)\s*$/))) {
+      flushAll();
+      const raw = m[2].trim();
+      const href = raw.startsWith('/') ? safeHref(raw) : null;
+      if (href && /\.(jpe?g|png|webp)$/i.test(raw)) {
+        blocks.push({ type: 'img', html: `<figure class="art-img"><img src="${esc(href)}" alt="${esc(m[1])}" loading="lazy"></figure>` });
+      }
       continue;
     }
     if ((m = line.match(/^>\s?(.*)$/))) {
