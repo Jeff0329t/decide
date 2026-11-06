@@ -2,7 +2,8 @@
  "ar00": [
   "tenshoku",
   "dokuritsu",
-  "shukatsu"
+  "shukatsu",
+  "jikka"
  ],
  "ar01": [
   "shukatsu",
@@ -339,7 +340,8 @@
  "pe02": [
   "kekkon",
   "okane",
-  "fukugyo"
+  "fukugyo",
+  "mochiie"
  ],
  "pe03": [
   "fukugyo",
@@ -380,7 +382,8 @@
  "pe10": [
   "kaigo",
   "ningen",
-  "kekkon"
+  "kekkon",
+  "ie"
  ],
  "pe11": [
   "manabi",
