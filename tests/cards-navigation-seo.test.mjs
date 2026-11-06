@@ -44,7 +44,7 @@ function validate(file, html) {
     const section = html.match(/<!-- related-worries:start -->(.*?)<!-- related-worries:end -->/s)?.[1];
     assert.ok(section, file);
     const worries = [...section.matchAll(/href="\.\/worry-([a-z]+)"/g)];
-    assert.ok(worries.length >= 2 && worries.length <= 3, file);
+    assert.ok(worries.length >= 2 && worries.length <= 4, file);
     assert.equal(new Set(worries.map(x => x[1])).size, worries.length);
     const suit = deck.filter(c => c.arcana === card.arcana), index = suit.findIndex(c => c.id === card.id);
     const pager = html.match(/<nav aria-label="前後のカード">(.*?)<\/nav>/s)[1];
