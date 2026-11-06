@@ -54,7 +54,7 @@ function validate(file, html) {
   if (file.startsWith('worry-')) {
     const section = body.match(/<h2>他の悩みから探す<\/h2>(.*?)<\/section>/s)?.[1];
     assert.ok(section, file);
-    assert.equal(new Set([...section.matchAll(/href="\.\/worry-([^\"]+)"/g)].map(x => x[1])).size, 23);
+    assert.equal(new Set([...section.matchAll(/href="\.\/worry-([^\"]+)"/g)].map(x => x[1])).size, 26);
     assert.match(section, /すべてのカード・悩み一覧を見る/);
   }
   if (card || file.startsWith('worry-')) {
@@ -68,8 +68,8 @@ function validate(file, html) {
   }
 }
 
-test('all 109 pages have synchronized structured data, crawlable navigation and persistent CTAs', () => {
-  assert.equal(Object.keys(cardsSeo).length, 109);
+test('all 112 pages have synchronized structured data, crawlable navigation and persistent CTAs', () => {
+  assert.equal(Object.keys(cardsSeo).length, 112);
   for (const file of Object.keys(cardsSeo)) validate(file, read(`dist/cards/${file}`));
   const article = '<html><head></head><body><h1>Unrelated</h1></body></html>';
   assert.equal(enhanceCardsPage(article, '/articles/example'), article);
