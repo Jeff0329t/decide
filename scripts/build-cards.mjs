@@ -771,6 +771,7 @@ ${a.draft ? '<p class="draft">下書き（未公開）— このページは確�
 ${kick('READING', 'page-k')}
 <h1>${esc(a.h1)}</h1>
 <p class="dateline"><time datetime="${a.date}">${fmtDate(a.date)}</time>${a.updated ? `（更新 <time datetime="${a.updated}">${fmtDate(a.updated)}</time>）` : ''} ・ DECIDE. 編集部</p>
+<figure class="art-hero">${picture(byId.get(a.primary), { eager: true, sizes: '(max-width: 600px) 68vw, 300px' })}</figure>
 ${bodyHtml}
 ${cta('二つの選択肢を並べて、カードと一緒に整理できます。')}
 ${relWorries.length ? `<section>
@@ -789,7 +790,7 @@ ${others.length ? `<section>
 </section>` : ''}
 </article>
 </main>`;
-  return layout({ title: a.title, description: a.description, path, ogImage, ld: [ld, crumbsLd(crumbs)], body, noindex: a.draft, css: '.art-img{margin:20px 0;text-align:center}.art-img img{width:170px;max-width:55%;height:auto;border-radius:10px;border:4px solid #fff;box-shadow:0 10px 24px rgba(17,17,17,.18)}' });
+  return layout({ title: a.title, description: a.description, path, ogImage, ld: [ld, crumbsLd(crumbs)], body, noindex: a.draft, css: '.art-hero{margin:22px 0 4px;text-align:center}.art-hero img{width:300px;max-width:68%;height:auto;border-radius:12px;border:5px solid #fff;box-shadow:0 14px 30px rgba(17,17,17,.22)}.art-img{margin:20px 0;text-align:center}.art-img img{width:170px;max-width:55%;height:auto;border-radius:10px;border:4px solid #fff;box-shadow:0 10px 24px rgba(17,17,17,.18)}' });
 }
 
 function articlesIndex(list) {
