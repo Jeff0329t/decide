@@ -465,6 +465,8 @@ const WORRY_SHORT = {
   renai: '恋愛', kekkon: '結婚', wakare: '別れ', kaigo: '介護',
   hikkoshi: '引っ越し', okane: 'お金・買い物', ningen: '人間関係',
   taishoku: '退職', kuruma: '車の購入', nemurenai: '眠れない夜', iku: '行く・行かない',
+  kotowaru: '断る', renraku: '連絡', ayamaru: '謝る', kokuhaku: '告白',
+  kaiyaku: '解約', ryokou: '旅行', present: 'プレゼント', yasumu: '休む',
 };
 
 // カード名・キーワードの絞り込み（JS がないときは検索欄ごと隠れたまま）。カタカナはひらがなに寄せて比べる
@@ -616,6 +618,7 @@ function worryPage(w) {
     const c = byId.get(id);
     return `<li><a href="./${id}">${picture(c, { sizes: '96px' })}<div><h3>${esc(c.name)}</h3><p>${esc(reason)}</p></div></a></li>`;
   }).join('\n');
+  const relArticles = published.filter((a) => a.worries.includes(w.slug));
   const body = `<main>
 ${crumbsHtml(crumbs)}
 <article>
@@ -635,7 +638,12 @@ ${cardRows}
 </ul>
 </section>
 ${cta('二つの選択肢を並べて、カードと一緒に整理できます。')}
-<section>
+${relArticles.length ? `<section>
+${kick('READING')}
+<h2>この悩みをもっと深く読む</h2>
+<ul class="cats">${relArticles.map((a) => `<li><a href="../articles/${a.slug}">${esc(a.h1)}</a></li>`).join('')}</ul>
+</section>
+` : ''}<section>
 ${kick('MORE WORRIES')}
 <h2>ほかの悩みから読む</h2>
 ${worriesNav(w.slug)}
@@ -653,9 +661,9 @@ const WORRIES_INTRO = [
 ];
 
 const WORRY_GROUPS = [
-  { id: 'work', name: '仕事・キャリア', lead: '働き方や収入にかかわる迷い。条件の比較だけでは決めきれないときに。', slugs: ['tenshoku', 'shukatsu', 'fukugyo', 'dokuritsu', 'manabi', 'taishoku'] },
-  { id: 'love', name: '恋愛・家族', lead: '大切な人との関係にかかわる迷い。気持ちと現実のあいだで揺れるときに。', slugs: ['renai', 'kekkon', 'wakare', 'kaigo'] },
-  { id: 'life', name: '暮らし・お金・人づきあい', lead: '毎日の土台にかかわる迷い。小さく見えて、あとから効いてくる選択に。', slugs: ['hikkoshi', 'okane', 'ningen', 'kuruma', 'nemurenai', 'iku'] },
+  { id: 'work', name: '仕事・キャリア', lead: '働き方や収入にかかわる迷い。条件の比較だけでは決めきれないときに。', slugs: ['tenshoku', 'shukatsu', 'fukugyo', 'dokuritsu', 'manabi', 'taishoku', 'yasumu'] },
+  { id: 'love', name: '恋愛・家族', lead: '大切な人との関係にかかわる迷い。気持ちと現実のあいだで揺れるときに。', slugs: ['renai', 'kekkon', 'wakare', 'kaigo', 'kokuhaku', 'present'] },
+  { id: 'life', name: '暮らし・お金・人づきあい', lead: '毎日の土台にかかわる迷い。小さく見えて、あとから効いてくる選択に。', slugs: ['hikkoshi', 'okane', 'ningen', 'kuruma', 'nemurenai', 'iku', 'kotowaru', 'renraku', 'ayamaru', 'kaiyaku', 'ryokou'] },
 ];
 
 function groupedWorries() {
