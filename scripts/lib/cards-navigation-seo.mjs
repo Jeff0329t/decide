@@ -15,7 +15,7 @@ const decode = s => s.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&l
 const script = data => `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`;
 for (const c of cards) {
   const slugs = worryLinks[c.id];
-  if (!Array.isArray(slugs) || slugs.length < 2 || slugs.length > 3 || new Set(slugs).size !== slugs.length || slugs.some(s => !worryBySlug.has(s))) {
+  if (!Array.isArray(slugs) || slugs.length < 2 || slugs.length > 4 || new Set(slugs).size !== slugs.length || slugs.some(s => !worryBySlug.has(s))) {
     throw new Error(`Invalid related worries: ${c.id}`);
   }
 }
