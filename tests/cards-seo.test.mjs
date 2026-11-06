@@ -190,10 +190,10 @@ test('card and worry pages point og:image at a generated 1200x630 JPEG under 250
   }
 });
 
-test('sitemap lists extensionless URLs only and keeps the same 113 entries', () => {
+test('sitemap lists extensionless URLs only and keeps the same 121 entries', () => {
   const sm = read('dist/sitemap.xml');
   const locs = [...sm.matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1]);
-  assert.equal(locs.length, 113);
+  assert.equal(locs.length, 121);
   assert.ok(locs.every((u) => !u.endsWith('.html')), 'no .html in sitemap');
   assert.ok(locs.includes('https://decisionprocess.net/cards/ar00'));
   assert.ok(locs.includes('https://decisionprocess.net/privacy'));
