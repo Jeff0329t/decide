@@ -466,7 +466,7 @@ const WORRY_SHORT = {
   hikkoshi: '引っ越し', okane: 'お金・買い物', ningen: '人間関係',
   taishoku: '退職', kuruma: '車の購入', nemurenai: '眠れない夜', iku: '行く・行かない',
   kotowaru: '断る', renraku: '連絡', ayamaru: '謝る', kokuhaku: '告白',
-  kaiyaku: '解約', ryokou: '旅行', present: 'プレゼント', yasumu: '休む',
+  kaiyaku: '解約', ryokou: '旅行', present: 'プレゼント', yasumu: '休む', ie: '家を買う', mochiie: '持ち家・賃貸', jikka: '実家を出る',
 };
 
 // カード名・キーワードの絞り込み（JS がないときは検索欄ごと隠れたまま）。カタカナはひらがなに寄せて比べる
