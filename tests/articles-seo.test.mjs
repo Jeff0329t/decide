@@ -11,7 +11,7 @@ const ids = [
   ...Array.from({ length: 22 }, (_, i) => `ar${String(i).padStart(2, '0')}`),
   ...['wa', 'cu', 'sw', 'pe'].flatMap((s) => Array.from({ length: 14 }, (_, i) => `${s}${String(i + 1).padStart(2, '0')}`)),
 ];
-const worries = ['tenshoku', 'wakare', 'hikkoshi', 'kekkon', 'manabi', 'dokuritsu', 'ningen', 'okane', 'renai', 'shukatsu', 'kaigo', 'fukugyo', 'taishoku', 'kuruma', 'nemurenai', 'iku'];
+const worries = ['tenshoku', 'wakare', 'hikkoshi', 'kekkon', 'manabi', 'dokuritsu', 'ningen', 'okane', 'renai', 'shukatsu', 'kaigo', 'fukugyo', 'taishoku', 'kuruma', 'nemurenai', 'iku', 'kotowaru', 'renraku', 'ayamaru', 'kokuhaku', 'kaiyaku', 'ryokou', 'present', 'yasumu', 'ie', 'mochiie', 'jikka'];
 const CTA = 'カードを引いて、決めたいことを整理する';
 const ARTICLES_SRC = fileURLToPath(new URL('../scripts/data/articles/', import.meta.url));
 const ARTICLES_DIST = fileURLToPath(new URL('../dist/articles/', import.meta.url));
