@@ -594,6 +594,35 @@ function worriesNav(current) {
     : `<li><a href="./worry-${w.slug}">${esc(w.h1)}</a></li>`).join('')}<li><a href="./worries">悩み別の一覧</a></li></ul>`;
 }
 
+const CARD_ALIASES = { ar06: ['恋人'], ar05: ['法王'], wa01: ['ワンドの1'], pe01: ['ペンタクルの1'], cu01: ['カップの1'], sw01: ['ソードの1'] };
+
+function cardSegments(w, text) {
+  const starts = [];
+  let pos = 0;
+  for (const { id } of w.cards) {
+    const names = [byId.get(id).name, ...(CARD_ALIASES[id] || [])];
+    let best = -1;
+    for (const name of names) {
+      for (let i = text.indexOf(name, pos); i !== -1; i = text.indexOf(name, i + 1)) {
+        const before = i === 0 ? '' : text[i - 1];
+        const after = text[i + name.length] || '';
+        if ((before === '' || before === '。' || before === '、') && 'はのがにを、'.includes(after)) { if (best === -1 || i < best) best = i; break; }
+      }
+    }
+    if (best === -1) continue;
+    starts.push({ id, at: best });
+    pos = best + 1;
+  }
+  if (starts.length < 2) return null;
+  const segs = [];
+  if (starts[0].at > 0) segs.push({ id: null, text: text.slice(0, starts[0].at) });
+  starts.forEach((s, i) => {
+    const end = i + 1 < starts.length ? starts[i + 1].at : text.length;
+    segs.push({ id: s.id, text: text.slice(s.at, end) });
+  });
+  return segs;
+}
+
 function worryPage(w) {
   const path = `/cards/worry-${w.slug}`;
   const ogImage = `${ORIGIN}/assets/og/worry-${w.slug}.jpg`;
@@ -619,17 +648,26 @@ function worryPage(w) {
     return `<li><a href="./${id}">${picture(c, { sizes: '96px' })}<div><h3>${esc(c.name)}</h3><p>${esc(reason)}</p></div></a></li>`;
   }).join('\n');
   const relArticles = published.filter((a) => a.worries.includes(w.slug));
+  const sectionsHtml = w.sections.map((s, i) => {
+    let inner;
+    const segs = s.h2 === 'カードの読み方' ? cardSegments(w, s.p) : null;
+    if (segs) {
+      inner = segs.map((seg) => seg.id
+        ? `<figure class="art-img">${picture(byId.get(seg.id), { sizes: '(max-width: 600px) 55vw, 170px' })}</figure>\n<p>${esc(seg.text)}</p>`
+        : `<p>${esc(seg.text)}</p>`).join('\n');
+    } else {
+      inner = `<p>${esc(s.p)}</p>`;
+    }
+    return `<section${s.h2 === '自分への問いかけ' ? ' class="asks"' : ''}>\n${kick(`POINT ${String(i + 1).padStart(2, '0')}`)}\n<h2>${esc(s.h2)}</h2>\n${inner}\n</section>`;
+  }).join('\n');
   const body = `<main>
 ${crumbsHtml(crumbs)}
 <article>
 ${kick(`WORRY GUIDE — ${GROUP_KICKER[WORRY_GROUPS.find((g) => g.slugs.includes(w.slug))?.id] || 'OTHER'}`, 'page-k')}
 <h1>${esc(w.h1)}</h1>
 <p>${esc(w.lead)}</p>
-${w.sections.map((s, i) => `<section${s.h2 === '自分への問いかけ' ? ' class="asks"' : ''}>
-${kick(`POINT ${String(i + 1).padStart(2, '0')}`)}
-<h2>${esc(s.h2)}</h2>
-<p>${esc(s.p)}</p>
-</section>`).join('\n')}
+<figure class="art-hero">${picture(byId.get(w.primary), { eager: true, sizes: '(max-width: 600px) 68vw, 300px' })}</figure>
+${sectionsHtml}
 <section>
 ${kick('CARDS')}
 <h2>この悩みに関係するカード</h2>
@@ -651,7 +689,7 @@ ${worriesNav(w.slug)}
 </section>
 </article>
 </main>`;
-  return layout({ title: w.title, description: w.description, path, ogImage, ld: [article, crumbsLd(crumbs)], body });
+  return layout({ title: w.title, description: w.description, path, ogImage, ld: [article, crumbsLd(crumbs)], body, css: '.art-hero{margin:22px 0 4px;text-align:center}.art-hero img{width:300px;max-width:68%;height:auto;border-radius:12px;border:5px solid #fff;box-shadow:0 14px 30px rgba(17,17,17,.22)}.art-img{margin:20px 0;text-align:center}.art-img img{width:170px;max-width:55%;height:auto;border-radius:10px;border:4px solid #fff;box-shadow:0 10px 24px rgba(17,17,17,.18)}' });
 }
 
 const WORRIES_INTRO = [
