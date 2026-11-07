@@ -4140,6 +4140,13 @@ a.settings-link{text-decoration:none;color:inherit}
 .quickstart-cards { position: absolute; left: 50%; bottom: calc(78px + env(safe-area-inset-bottom)); transform: translateX(-50%); display: inline-flex; align-items: baseline; gap: 8px; padding: 4px 6px; color: #0b0b0b; text-decoration: none; white-space: nowrap; font: 600 .78rem/1 "Hiragino Mincho ProN","Yu Mincho",serif; letter-spacing: .04em; transition: opacity .2s ease; }
 .quickstart-cards b { font: italic 700 .78rem/1 Didot,"Bodoni 72",serif; letter-spacing: .12em; padding-bottom: 2px; border-bottom: 2px solid #f1d527; }
 .quickstart-cards span { border-bottom: 1px solid rgba(11,11,11,.35); padding-bottom: 2px; }
+.quickstart-links { align-self: center; display: inline-flex; gap: 24px; margin-top: 2px; white-space: nowrap; }
+.quickstart-links button { padding: 4px 2px; border: 0; border-bottom: 1px solid rgba(11,11,11,.35); background: none; color: #0b0b0b; font: 600 .78rem/1.5 "Hiragino Mincho ProN","Yu Mincho",serif; letter-spacing: .04em; cursor: pointer; }
+.quickstart-links button span { margin-left: 5px; color: #8a6d00; }
+.completion-article { display: block; width: 100%; padding: 11px 14px; border: 1px solid rgba(255,255,255,.35); background: rgba(0,0,0,.45); color: #fff; text-align: left; cursor: pointer; backdrop-filter: blur(6px); }
+.completion-article-kicker { display: block; font-size: .75rem; letter-spacing: .14em; color: #f1d625; font-weight: 700; }
+.completion-article-title { display: block; margin-top: 4px; font-size: .92rem; line-height: 1.5; font-weight: 700; }
+.completion-article-meta { display: block; margin-top: 3px; font-size: .75rem; color: rgba(255,255,255,.75); }
 .quickstart-cards::after { content: "→"; font-family: Didot,"Bodoni 72",serif; font-size: .8rem; }
 .quickstart-screen.is-choosing .quickstart-cards { opacity: 0; pointer-events: none; }
 

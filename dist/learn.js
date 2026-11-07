@@ -40,6 +40,45 @@
       fetchData(); navigate('learn'); signal('open');
     },190);
   }
+  function openArticles() {
+    if(tutorial)finishTutorial('skipped',false);
+    closeSettings();
+    setTimeout(()=>{
+      history.pushState({...history.state,decideLearn:true},'',location.href);
+      tab='articles'; lessonId=null; articleId=null;
+      fetchData(); fetchArticles(); navigate('learn'); signal('open');
+    },190);
+  }
+  function openArticle(id) {
+    if(tutorial)finishTutorial('skipped',false);
+    closeSettings();
+    setTimeout(()=>{
+      history.pushState({...history.state,decideLearn:true},'',location.href);
+      tab='articles'; lessonId=null; articleId=id;
+      fetchData(); fetchArticles(); navigate('learn'); signal('open');
+    },190);
+  }
+  const GENRE_CATEGORY={'仕事':'work-life','お金':'work-life','人間関係・恋愛':'relationships','その他':'feelings'};
+  async function pickArticle(genre) {
+    try{
+      fetchArticles();
+      if(articlePending)await articlePending;
+      if(!articles)return null;
+      const order=[GENRE_CATEGORY[genre]||'feelings','feelings','habits','relationships','work-life','tarot'];
+      const seen=new Set();
+      const dayIndex=Math.floor(Date.now()/86400000);
+      for(const category of order){
+        if(seen.has(category))continue; seen.add(category);
+        const inCategory=articles.articles.filter(a=>a.category===category);
+        if(!inCategory.length)continue;
+        const unread=inCategory.filter(a=>!articlesRead.includes(a.id));
+        const pool=unread.length?unread:inCategory;
+        const pick=pool[dayIndex%pool.length];
+        return {id:pick.id,title:pick.title,minutes:pick.minutes||2};
+      }
+      return null;
+    }catch(error){return null;}
+  }
   function goHome() {
     if(history.state?.decideLearn)history.back();
     else navigate('home');
@@ -397,5 +436,5 @@
     bar.style.transform=`scaleX(${range>0?Math.min(1,Math.max(0,appScrollTop()/range)):1})`;
   }
   document.addEventListener('scroll',updateReadProgress,{capture:true,passive:true});
-  window.DECIDE_LEARN={open,render,close:goBack};
+  window.DECIDE_LEARN={open,openArticles,openArticle,pickArticle,render,close:goBack};
 })();

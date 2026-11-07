@@ -576,6 +576,7 @@ function renderHome() {
         <button class="draw-choice" data-action="start" data-mode="two"><span class="choice-kicker" aria-hidden="true">DUEL · A or B</span><span class="mode-art two-art" aria-hidden="true"><i class="card-back back-${settings.back}"></i><i class="card-back back-${settings.back}"></i><b class="choice-vs">OR</b></span><span class="choice-stamp" aria-hidden="true">DRAW!</span><strong>2枚引き</strong><span>2つの選択肢を比べる</span><small>${deckCount} CARDS</small></button>
       </div>
       <button class="quickstart-help" data-action="tutorial-open">使い方を見る</button>
+      <nav class="quickstart-links" aria-label="図鑑と読みもの"><button type="button" data-action="open-learn">カード図鑑<span aria-hidden="true">›</span></button><button type="button" data-action="open-articles">読みもの<span aria-hidden="true">›</span></button></nav>
       <a class="quickstart-cards" href="./cards/"><b>78 CARDS</b><span>カードの意味と、決めるときのヒント</span></a>
       ${homeInstallBanner()}
       ${last ? `<button class="last-log" data-action="detail" data-id="${esc(last.id)}"><span>最近の決定</span><strong>${esc(last.title)}</strong><small>${esc(DECIDE_DECISION.choiceText(last.decision))} · ${formatDate(last.createdAt)}</small></button>` : ''}
@@ -1572,10 +1573,16 @@ function renderDetail() {
       <div class="completion-dock">
         <div class="completion-copy"><h1>よし、決めた。</h1><p>この決断を記録しました。</p><strong data-completion-title></strong></div>
         ${completionRemindHtml(log)}
+        <div data-completion-article></div>
         <div class="completion-actions"><button class="button decide-confirm completion-decide" data-action="satisfied" aria-label="DECIDE. 押して、完了する">${decideWordmark()}<small class="completion-decide-hint" aria-hidden="true">押して、完了する</small></button></div>
       </div>
     </section>`;
     app.querySelector('[data-completion-title]').textContent=DECIDE_DECISION.decisionText(log);
+    window.DECIDE_LEARN?.pickArticle?.(log.genre).then(article=>{
+      const slot=app.querySelector('[data-completion-article]');
+      if(!article || !slot || completionId!==log.id)return;
+      slot.innerHTML=`<button type="button" class="completion-article" data-action="completion-article" data-id="${esc(article.id)}"><span class="completion-article-kicker">決めたあとに、ひとつ</span><span class="completion-article-title">${esc(article.title)}</span><span class="completion-article-meta">読みもの · ${article.minutes}分</span></button>`;
+    }).catch(()=>{});
     return;
   }
   document.body.dataset.detailMode='review';
@@ -2163,6 +2170,8 @@ document.addEventListener('click', event => {
   else if (action === 'tutorial-open') startTutorialIntro();
   else if (action === 'start-app') { const splash=app.querySelector('.splash-screen'); const go=()=>{ homeStage='quickstart'; renderHome(); app.focus({preventScroll:true}); }; if(splash && !prefersReducedMotion() && !splash.classList.contains('peeling')){ splash.classList.add('peeling'); setTimeout(go,460); } else if(!splash?.classList.contains('peeling')) go(); }
   else if (action === 'open-learn') window.DECIDE_LEARN.open();
+  else if (action === 'open-articles') window.DECIDE_LEARN.openArticles();
+  else if (action === 'completion-article') window.DECIDE_LEARN.openArticle(el.dataset.id);
   else if (action === 'open-paywall') { closeModal('#settings-modal'); window.DECIDE_ENTITLEMENTS?.openPaywall?.('settings'); }
   else if (action === 'open-settings') openSettings();
   else if (action === 'start') pickDrawMode(el, event);
