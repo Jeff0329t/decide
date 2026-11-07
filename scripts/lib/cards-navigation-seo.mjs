@@ -5,7 +5,7 @@ import { addAppNav } from './app-nav.mjs';
 
 const ORIGIN = 'https://decisionprocess.net';
 const INDEX_NAME = 'タロットカード78枚の意味';
-const INDEX_LINK = 'すべてのカード・悩み一覧を見る';
+const INDEX_LINK = 'すべてのカード・迷い一覧を見る';
 const cards = JSON.parse(readFileSync(new URL('../../dist/assets/cards.json', import.meta.url), 'utf8')).cards;
 const worries = JSON.parse(readFileSync(new URL('../data/worries.json', import.meta.url), 'utf8'));
 const worryLinks = JSON.parse(readFileSync(new URL('../data/card-worry-links.json', import.meta.url), 'utf8'));
@@ -88,11 +88,11 @@ export function enhanceCardsPage(html, path) {
     const neighbor = (c, direction) => c ? `<a href="./${c.id}" rel="${direction}"><small>${direction === 'prev' ? '← 前のカード' : '次のカード →'}</small>${esc(c.name)}</a>` : '';
     const pager = `<nav aria-label="前後のカード"><ul class="pager">\n<li class="prev">${neighbor(suit[pos - 1], 'prev')}</li>\n<li class="next">${neighbor(suit[pos + 1], 'next')}</li>\n</ul></nav>`;
     html = html.replace(/<nav aria-label="前後のカード">[\s\S]*?<\/nav>/, pager);
-    const section = `<!-- related-worries:start -->\n<section>\n<h2>このカードの視点で考えたい悩み</h2>\n<p>${id === 'cu12' ? '想いを伝えるか、相手の提案を受けるか。近いテーマから、迷いを整理するヒントを探せます。' : 'いまの迷いに近いテーマから、考え方と自分への問いかけを探せます。'}</p>\n<ul class="cats" aria-label="関連する悩み">\n${worryLinks[id].map(s => `<li><a href="./worry-${s}">${esc(worryBySlug.get(s).h1)}</a></li>`).join('\n')}\n</ul>\n<p class="note"><a href="./">${INDEX_LINK}</a></p>\n</section>\n<!-- related-worries:end -->`;
+    const section = `<!-- related-worries:start -->\n<section>\n<h2>このカードの視点で考えたい迷い</h2>\n<p>${id === 'cu12' ? '想いを伝えるか、相手の提案を受けるか。近いテーマから、迷いを整理するヒントを探せます。' : 'いまの迷いに近いテーマから、考え方と自分への問いかけを探せます。'}</p>\n<ul class="cats" aria-label="関連する迷い">\n${worryLinks[id].map(s => `<li><a href="./worry-${s}">${esc(worryBySlug.get(s).h1)}</a></li>`).join('\n')}\n</ul>\n<p class="note"><a href="./">${INDEX_LINK}</a></p>\n</section>\n<!-- related-worries:end -->`;
     if (html.includes('<!-- related-worries:start -->')) html = html.replace(/<!-- related-worries:start -->[\s\S]*?<!-- related-worries:end -->/, section);
     else html = html.replace('</article>', section + '\n</article>');
   }
-  if (slug) html = html.replace('<h2>ほかの悩みから読む</h2>', '<h2>他の悩みから探す</h2>').replace(/78枚すべてのカード解説を見る/g, INDEX_LINK);
+  if (slug) html = html.replace('<h2>ほかの迷いから読む</h2>', '<h2>他の迷いから探す</h2>').replace(/78枚すべてのカード解説を見る/g, INDEX_LINK);
   if (id || slug) {
     const ctas = [...html.matchAll(/<aside class="cta"[\s\S]*?<\/aside>/g)];
     const last = ctas.at(-1);
