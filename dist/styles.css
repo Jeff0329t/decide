@@ -318,6 +318,15 @@ input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px
 .confirm-sheet { max-width: 520px; padding-top: 16px; }
 .confirm-sheet h2 { margin-bottom: 10px; }
 .confirm-sheet > p:not(.eyebrow) { color: var(--muted); font-size: .86rem; line-height: 1.7; }
+.paywall-points { list-style: none; margin: 16px 0 4px; padding: 0; border-top: 1px solid var(--line); text-align: left; }
+.paywall-points li { padding: 10px 2px; border-bottom: 1px solid var(--line); font-size: .9rem; line-height: 1.55; }
+.paywall-points li::before { content: "✓"; margin-right: 8px; font-weight: 700; color: var(--accent); }
+.paywall-points li span { display: block; margin-top: 2px; color: var(--muted); font-size: .78rem; }
+.paywall-pitch { margin-top: 16px; }
+.paywall-price { display: flex; align-items: baseline; gap: 10px; margin-top: 16px; }
+.paywall-amount { font-size: 1.9rem; font-weight: 700; color: var(--ink); }
+.paywall-note { font-size: .8rem; }
+.paywall-assure { margin-top: 4px; font-size: .75rem !important; }
 .confirm-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 22px; }
 .google-signin { grid-column: 1 / -1; display: flex; justify-content: center; min-height: 44px; }
 .google-signin[hidden] { display: none; }
@@ -3464,6 +3473,11 @@ body.ritual-enter .thumb-prepare .prepare-controls { animation: ritual-rise .7s 
 .confirm-sheet .confirm-actions .button:not(.secondary):not(.danger){background:#f1d527;color:#0b0b0b;border-color:#f1d527;box-shadow:3px 3px 0 #f4efe3}
 .confirm-sheet .confirm-actions .button.secondary{background:transparent;color:#f4efe3;border:1.5px solid #f4efe3}
 .confirm-sheet .confirm-actions .button.danger{background:#b3261e;color:#fff;border-color:#b3261e}
+.confirm-sheet .paywall-points{border-top-color:rgba(244,239,227,.2)}
+.confirm-sheet .paywall-points li{border-bottom-color:rgba(244,239,227,.2);color:#f4efe3}
+.confirm-sheet .paywall-points li::before{color:#f1d527}
+.confirm-sheet .paywall-points li span{color:rgba(244,239,227,.62)}
+.confirm-sheet .paywall-amount{color:#f4efe3;font-family:"Hiragino Mincho ProN","Yu Mincho",serif}
 
 .learn-header{flex-wrap:wrap;row-gap:4px}
 .learn-kicker{flex-basis:auto;order:1;align-self:flex-start;margin:0 100% 0 0;padding:5px 9px 4px;font:italic 700 .75rem/1 Didot,"Bodoni 72",serif;letter-spacing:.32em;color:#f1d527;background:#0b0b0b;box-shadow:3px 3px 0 #f1d527;transform:rotate(-1.5deg);width:max-content;white-space:nowrap}

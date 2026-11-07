@@ -202,18 +202,22 @@
     const id = 'paywall-modal';
     if(document.querySelector(`#${id}`)) return;
     const user = currentUser();
-    const title = reason === 'save' ? '保存できる上限に達しました'
-      : reason === 'draw' ? '無料で引ける回数を使い切りました'
-      : '本1冊分で、決める力を育てる';
+    const title = reason === 'save' ? '決めた記録を、全部残せます'
+      : reason === 'draw' ? 'この迷いも、引いて決められます'
+      : '迷うたびに開ける道具に';
     const lead = reason === 'save'
       ? `無料で保存できる決定ログは${FREE_SAVES}件までです。`
       : reason === 'draw'
         ? `無料で引けるのは累計${FREE_DRAWS}回までです。`
         : `無料プランはドロー${FREE_DRAWS}回・ログ保存${FREE_SAVES}件までです。`;
-    const pitch = '本1冊分の¥980で、この先ずっと引き放題・残し放題。月額ではないので、何度使っても追加料金はかかりません。読み終わる本とちがって、あなたの答えは何度でも引き出せます。';
-    const next = user
-      ? pitch
-      : `${pitch}<br><small>購入にはGoogleでのログインが必要です（ログイン後に購入へ進みます）。</small>`;
+    const body = `<ul class="paywall-points">
+          <li><b>カードの引き放題</b><span>回数を気にせず、その日の迷いに何度でも</span></li>
+          <li><b>決定ログの残し放題</b><span>決めた記録が積み上がり、あとで振り返れます</span></li>
+          <li><b>ログのクラウド同期</b><span>別の端末でも、機種変更でも引き継げます</span></li>
+        </ul>
+        <p class="paywall-pitch">迷いはこれからも何度も来ます。そのたびに開いて、決めて、残す。本1冊分の値段で、その繰り返しはずっと続きます。</p>
+        <p class="paywall-price"><span class="paywall-amount">¥980</span><span class="paywall-note">税込・買い切り</span></p>
+        <p class="paywall-assure">月額料金・追加課金はありません。購入はGoogleアカウントに記録されます。${user ? '' : '<br>購入にはGoogleでのログインが必要です（ログイン後に購入へ進みます）。'}</p>`;
     const primary = user
       ? `<button class="button" type="button" data-ent-action="checkout">¥980で手に入れる</button>`
       : `<div class="google-signin" data-google-button hidden></div>
@@ -227,7 +231,7 @@
         <p class="eyebrow">UNLIMITED EDITION</p>
         <h2 id="${id}-title">${title}</h2>
         <p>${lead}</p>
-        <p>${next}</p>
+        ${body}
         <div class="confirm-actions">${primary}
           <button class="button secondary" type="button" data-ent-action="close">閉じる</button></div>
         <p class="paywall-legal"><a href="./tokushoho" target="_blank" rel="noopener">特定商取引法に基づく表記</a> · <a href="./terms" target="_blank" rel="noopener">利用規約</a></p>
