@@ -15,19 +15,15 @@ fs.mkdirSync(out, { recursive: true });
       const page = await context.newPage(), errors = [];
       page.on('pageerror', e => errors.push(e.message));
       await page.goto(base);
-      await page.locator('.home-reading-links').waitFor();
-      for (const locator of [page.locator('.splash-help'), page.locator('.splash-atlas'), ...await page.locator('.home-reading-links a').all()]) {
-        const box = await locator.boundingBox();
-        assert.ok(box && box.x >= 0 && box.x + box.width <= width && box.y >= 0 && box.y + box.height <= height, 'cover link fits viewport');
-        assert.ok(box.height >= 44, 'touch target has 44px height');
-        assert.ok(await locator.evaluate(el => { const r = el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)); }), 'cover link is not covered');
-      }
-      const start = await page.locator('.splash-start').boundingBox(), links = await page.locator('.splash-links').boundingBox();
-      assert.ok(start.y + start.height <= links.y, 'start control does not overlap reading links');
+      await page.locator('.splash-screen').waitFor();
+      assert.equal(await page.locator('.splash-links').count(), 0, 'cover has no auxiliary link buttons');
+      assert.equal(await page.locator('.home-reading-links').count(), 0, 'cover has no reading links');
+      const startEl = page.locator('.splash-start');
+      const startBox = await startEl.boundingBox();
+      assert.ok(startBox && startBox.x >= 0 && startBox.x + startBox.width <= width && startBox.y >= 0 && startBox.y + startBox.height <= height, 'start control fits viewport');
+      assert.ok(await startEl.evaluate(el => { const r = el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)); }), 'start control is not covered');
       await page.screenshot({ path: path.join(out, `${width}-home.png`), fullPage: true });
-      await page.locator('.home-reading-links a[href="./cards/worry-okane.html"]').click();
-      await page.waitForURL('**/cards/worry-okane.html');
-      for (const filename of ['worry-okane.html', 'cu12.html']) {
+      for (const filename of ['worry-okane', 'cu12']) {
         await page.goto(`${base}/cards/${filename}`);
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${filename}: no horizontal overflow`);
         const cta = page.locator('aside.cta').last();
@@ -42,15 +38,11 @@ fs.mkdirSync(out, { recursive: true });
         assert.equal(await page.locator('.card-entry-guide').count(), 0);
       }
       await page.goto(base);
-      await page.locator('.splash-atlas').click();
-      await page.locator('.learn-tile').first().waitFor();
-      assert.equal(await page.locator('.learn-tile').count(), 78);
-      await page.locator('.bottom-nav [data-action="nav-back"]').click();
       await page.locator('.splash-start button').click();
       await page.locator('.quickstart-screen').waitFor();
       assert.equal(await page.locator('.draw-choice').count(), 2);
       assert.deepEqual(errors, [], 'no JavaScript page errors');
-      results.push({ width, height, coverLinks: 'passed', originalNavigation: 'passed', articleCtas: 'passed', horizontalOverflow: false, pageErrors: errors });
+      results.push({ width, height, coverStartOnly: 'passed', articleCtas: 'passed', horizontalOverflow: false, pageErrors: errors });
       await context.close();
     }
     fs.writeFileSync(path.join(out, 'browser-audit.json'), JSON.stringify(results, null, 2) + '\n');
