@@ -90,7 +90,7 @@ function worryHtml(w) {
 ${fan.map((f) => `<img class="card" src="${img(f.id)}" style="right:${f.right}px;top:${f.top}px;height:420px;transform:rotate(${f.rot}deg)">`).join('')}
 <div style="position:absolute;left:72px;top:70px;width:600px">
   <p class="tag">TAROT × THINKING × YOU</p>
-  <p style="margin-top:40px;display:inline-block;background:#111;color:#f2efe7;font-size:22px;font-weight:700;letter-spacing:.14em;padding:6px 16px">悩み別ガイド</p>
+  <p style="margin-top:40px;display:inline-block;background:#111;color:#f2efe7;font-size:22px;font-weight:700;letter-spacing:.14em;padding:6px 16px">迷い別ガイド</p>
   <h1 style="margin-top:22px;font-family:'Hiragino Mincho ProN',serif;font-weight:600;font-size:${size}px;line-height:1.15;white-space:nowrap">${esc(main)}${sub ? `<br><span style="font-size:52px">${esc(sub)}</span>` : ''}</h1>
   <p style="margin-top:20px;font-size:24px;font-weight:600;letter-spacing:.06em">タロットの視点で、考えを整理する</p>
 </div>

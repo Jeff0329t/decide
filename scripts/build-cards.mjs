@@ -5,7 +5,7 @@
 //       dist/cards/{id}.html, dist/cards/worries.html, dist/cards/worry-{slug}.html,
 //       dist/articles/index.html, dist/articles/{slug}.html（記事が1本以上あるとき）,
 //       dist/sitemap.xml, dist/robots.txt, dist/404.html
-// 悩み別ページの文章: scripts/data/worries.json / 記事: scripts/data/articles/*.md
+// 迷い別ページの文章: scripts/data/worries.json / 記事: scripts/data/articles/*.md
 // 使い方: node scripts/build-cards.mjs [--drafts]
 //   --drafts: draft: true の記事も noindex 付きで出力する（確認用。sitemap には入れない）
 import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
@@ -418,19 +418,19 @@ ${cells}
 ${crumbsHtml(crumbs)}
 <header class="idx-head">
 <p class="kicker">INDEX — CARDS &amp; WORRIES</p>
-<h1>カード・悩み一覧</h1>
-<p class="idx-sub">タロット78枚の意味と、${worries.length}の悩み別ガイド</p>
+<h1>カード・迷い一覧</h1>
+<p class="idx-sub">タロット78枚の意味と、${worries.length}の迷い別ガイド</p>
 <p class="idx-lead">迷っていることに近いテーマから考え方を読むか、引いたカードの意味を調べられます。カードは未来の予言ではなく、見落としに気づくための問いかけです。</p>
 <nav class="doors" aria-label="探し方を選ぶ">
-<a class="door dark" href="#worries"><span class="kicker">BY WORRY</span><strong>悩みから探す</strong><span>転職・恋愛・お金ほか、${worries.length}のテーマ</span></a>
+<a class="door dark" href="#worries"><span class="kicker">BY WORRY</span><strong>迷いから探す</strong><span>転職・恋愛・お金ほか、${worries.length}のテーマ</span></a>
 <a class="door lite" href="#cards"><span class="kicker">BY CARD</span><strong>カードから探す</strong><span>引いたカードの意味を調べる</span></a>
 </nav>
 </header>
 <section class="idx-sec" id="worries">
-<div class="sec-head"><p class="kicker">01 — BY WORRY</p><h2>悩みから探す</h2></div>
+<div class="sec-head"><p class="kicker">01 — BY WORRY</p><h2>迷いから探す</h2></div>
 <p class="sec-lead">近いテーマを開くと、迷いの正体・整理の視点・関係するカードが読めます。</p>
 ${worryGroups}
-<p class="more"><a href="./worries">${worries.length}の悩みを、説明つきで比べる →</a></p>
+<p class="more"><a href="./worries">${worries.length}の迷いを、説明つきで比べる →</a></p>
 </section>
 <section class="idx-sec" id="cards">
 <div class="sec-head"><p class="kicker">02 — BY CARD</p><h2>カードから探す</h2></div>
@@ -589,9 +589,9 @@ ${rows}
 }
 
 function worriesNav(current) {
-  return `<ul class="cats" aria-label="悩み別">${worries.map((w) => w.slug === current
+  return `<ul class="cats" aria-label="迷い別">${worries.map((w) => w.slug === current
     ? `<li aria-current="page">${esc(w.h1)}</li>`
-    : `<li><a href="./worry-${w.slug}">${esc(w.h1)}</a></li>`).join('')}<li><a href="./worries">悩み別の一覧</a></li></ul>`;
+    : `<li><a href="./worry-${w.slug}">${esc(w.h1)}</a></li>`).join('')}<li><a href="./worries">迷い別の一覧</a></li></ul>`;
 }
 
 const CARD_ALIASES = { ar06: ['恋人'], ar05: ['法王'], wa01: ['ワンドの1'], pe01: ['ペンタクルの1'], cu01: ['カップの1'], sw01: ['ソードの1'] };
@@ -629,7 +629,7 @@ function worryPage(w) {
   const crumbs = [
     { name: 'DECIDE.', href: '../', path: '/' },
     { name: 'カード解説', href: './', path: '/cards/' },
-    { name: '悩み別に読む', href: './worries', path: '/cards/worries' },
+    { name: '迷い別に読む', href: './worries', path: '/cards/worries' },
     { name: w.h1, path },
   ];
   const article = {
@@ -670,7 +670,7 @@ ${kick(`WORRY GUIDE — ${GROUP_KICKER[WORRY_GROUPS.find((g) => g.slugs.includes
 ${sectionsHtml}
 <section>
 ${kick('CARDS')}
-<h2>この悩みに関係するカード</h2>
+<h2>この迷いに関係するカード</h2>
 <ul class="wcards">
 ${cardRows}
 </ul>
@@ -678,12 +678,12 @@ ${cardRows}
 ${cta('二つの選択肢を並べて、カードと一緒に整理できます。')}
 ${relArticles.length ? `<section>
 ${kick('READING')}
-<h2>この悩みをもっと深く読む</h2>
+<h2>この迷いをもっと深く読む</h2>
 <ul class="cats">${relArticles.map((a) => `<li><a href="../articles/${a.slug}">${esc(a.h1)}</a></li>`).join('')}</ul>
 </section>
 ` : ''}<section>
 ${kick('MORE WORRIES')}
-<h2>ほかの悩みから読む</h2>
+<h2>ほかの迷いから読む</h2>
 ${worriesNav(w.slug)}
 <p class="note"><a href="./">78枚すべてのカード解説を見る</a></p>
 </section>
@@ -727,15 +727,15 @@ function firstQuestion(text) {
 
 function worriesIndex() {
   const path = '/cards/worries';
-  const title = '悩み別に読むタロット｜転職・恋愛・引っ越しなど決断の考え方 - DECIDE.';
+  const title = '迷い別に読むタロット｜転職・恋愛・引っ越しなど決断の考え方 - DECIDE.';
   const description = `転職、就活、副業、恋愛、結婚、別れ、介護、引っ越し、お金など、よくある${worries.length}の迷いについて、考え方の整理のしかたと視点を貸してくれるタロットカードを紹介します。`;
   const crumbs = [
     { name: 'DECIDE.', href: '../', path: '/' },
     { name: 'カード解説', href: './', path: '/cards/' },
-    { name: '悩み別に読む', path },
+    { name: '迷い別に読む', path },
   ];
   const itemList = {
-    '@context': 'https://schema.org', '@type': 'ItemList', name: '悩み別のタロット解説',
+    '@context': 'https://schema.org', '@type': 'ItemList', name: '迷い別のタロット解説',
     itemListElement: worries.map((w, i) => ({ '@type': 'ListItem', position: i + 1, url: `${ORIGIN}/cards/worry-${w.slug}`, name: w.h1 })),
   };
   const groups = groupedWorries();
@@ -757,7 +757,7 @@ ${g.items.map(tile).join('\n')}
   const body = `<main>
 ${crumbsHtml(crumbs)}
 ${kick('WORRY GUIDE', 'page-k')}
-<h1>悩み別に読むタロット</h1>
+<h1>迷い別に読むタロット</h1>
 ${WORRIES_INTRO.map((p, i) => `<p${i === 0 ? ' class="lede"' : ''}>${esc(p)}</p>`).join('\n')}
 <h2>このページの使い方</h2>
 <ol class="steps">
@@ -813,8 +813,8 @@ ${kick('READING', 'page-k')}
 ${bodyHtml}
 ${cta('二つの選択肢を並べて、カードと一緒に整理できます。')}
 ${relWorries.length ? `<section>
-<h2>関係する悩み別ガイド</h2>
-<ul class="cats">${relWorries.map((w) => `<li><a href="../cards/worry-${w.slug}">${esc(w.h1)}</a></li>`).join('')}<li><a href="../cards/worries">悩み別の一覧</a></li></ul>
+<h2>関係する迷い別ガイド</h2>
+<ul class="cats">${relWorries.map((w) => `<li><a href="../cards/worry-${w.slug}">${esc(w.h1)}</a></li>`).join('')}<li><a href="../cards/worries">迷い別の一覧</a></li></ul>
 </section>` : ''}
 <section>
 <h2>この記事に関係するカード</h2>
@@ -850,7 +850,7 @@ ${kick('READING', 'page-k')}
 ${rows}
 </ul>
 <div class="cta"><p>カードの意味を読んだら、次はあなた自身の選択肢で。</p><a href="${CTA_HREF}">${CTA_TEXT}</a></div>
-<p class="note"><a href="../cards/worries">悩み別に読む</a> ／ <a href="../cards/">78枚のカード解説</a></p>
+<p class="note"><a href="../cards/worries">迷い別に読む</a> ／ <a href="../cards/">78枚のカード解説</a></p>
 </main>`;
   return layout({ title, description, path, ogType: 'website', ogImage: `${ORIGIN}/og-image-v3.png`, ld: [itemList, crumbsLd(crumbs)], body, noindex: !list.some((a) => !a.draft) });
 }
@@ -875,7 +875,7 @@ function notFoundPage() {
 <p class="kicker page-k">404 · NOT FOUND</p>
 <h1>ページが見つかりません</h1>
 <p>お探しのページは、移動したか削除された可能性があります。</p>
-<ul class="cats"><li><a href="/">DECIDE. を開く</a></li><li><a href="/cards/">78枚のカード解説</a></li><li><a href="/cards/worries">悩み別に読む</a></li></ul>
+<ul class="cats"><li><a href="/">DECIDE. を開く</a></li><li><a href="/cards/">78枚のカード解説</a></li><li><a href="/cards/worries">迷い別に読む</a></li></ul>
 </main>
 <footer>
 <p class="meta"><a href="/tokushoho">特定商取引法に基づく表記</a> ／ <a href="/terms">利用規約</a> ／ <a href="/privacy">プライバシーポリシー</a></p>
@@ -907,7 +907,7 @@ for (const w of worries) {
 }
 {
   const n = countChars(WORRIES_INTRO.join('') + worries.map((w) => w.description).join(''));
-  if (n < MIN_CHARS) thin.push({ id: 'worries', name: '悩み別一覧', chars: n });
+  if (n < MIN_CHARS) thin.push({ id: 'worries', name: '迷い別一覧', chars: n });
   writeFileSync(DIST + 'cards/worries.html', worriesIndex());
 }
 writeFileSync(DIST + '404.html', notFoundPage());

@@ -11,14 +11,14 @@ node scripts/build-cards.mjs
 - `dist/cards/index.html` … 78枚の一覧
 - `dist/cards/{id}.html` … 各カード（ar00〜ar21 / wa,cu,sw,pe + 01〜14）
 - `dist/cards/{major,wands,cups,swords,pentacles}.html` … 分類別一覧（大アルカナ・各スート）
-- `dist/cards/worries.html` / `dist/cards/worry-{slug}.html` … 悩み別ページ（転職・別れ・引っ越し・結婚・学び直し・独立・起業・副業・人間関係・お金・恋愛・就活・介護）
+- `dist/cards/worries.html` / `dist/cards/worry-{slug}.html` … 迷い別ページ（転職・別れ・引っ越し・結婚・学び直し・独立・起業・副業・人間関係・お金・恋愛・就活・介護）
 - `dist/sitemap.xml` / `dist/robots.txt`
 - `og:image` は `dist/assets/og/{id}.jpg` / `worry-{slug}.jpg` を参照（下の build-og.mjs で生成）
 
 ### 文章を直すとき
 
 1. カード固有の追加文は `scripts/data/cards-extra-*.json`（`{ id: { hint, scene, check } }`）を編集
-   - 悩み別ページの文章は `scripts/data/worries.json`（slug・本文・関連カードid）を編集
+   - 迷い別ページの文章は `scripts/data/worries.json`（slug・本文・関連カードid）を編集
 2. `node scripts/build-cards.mjs` を再実行（文字数が800字未満のページがあると警告が出ます）
 3. `node --test tests/*.test.mjs` で確認
 
@@ -27,7 +27,7 @@ node scripts/build-cards.mjs
 ### SEO・回遊リンク・CTAの更新
 
 - 最新title/description: `scripts/data/cards-seo.json`。
-- 個別カードに関連付ける悩み（各2〜3件）: `scripts/data/card-worry-links.json`。無関係な自動選択を避けるため、カードごとに明示。
+- 個別カードに関連付ける迷い（各2〜3件）: `scripts/data/card-worry-links.json`。無関係な自動選択を避けるため、カードごとに明示。
 - 共通のJSON-LD・パンくず・同分類の前後リンク・末尾CTA: `scripts/lib/cards-navigation-seo.mjs`。
 - 本文を再生成せず上記だけを同期: `node scripts/update-cards-seo.mjs`。
 - 全体生成の `build-cards.mjs` も同じ共通処理を使う。SEOの更新後もJSON-LDに古いdescriptionが残らない。
@@ -57,7 +57,7 @@ date: 2026-10-08
 updated: 2026-10-20               # 任意
 keyword: 狙うキーワード（1記事1つ）
 primary: cu08                     # CTA ?from= と OGP に使う代表カード
-worries: [tenshoku]               # 任意・関連する悩み別ページ
+worries: [tenshoku]               # 任意・関連する迷い別ページ
 cards: [cu08, ar00]               # 任意・関連カード
 draft: true                       # true の間は公開されない
 ```
@@ -77,7 +77,7 @@ draft: true                       # true の間は公開されない
 node scripts/build-og.mjs [--only=ar00,worry-tenshoku]
 ```
 
-- SNSシェア用の 1200x630 JPEG を `dist/assets/og/` に出力（カード78枚 + 悩み別ページ）
+- SNSシェア用の 1200x630 JPEG を `dist/assets/og/` に出力（カード78枚 + 迷い別ページ）
 - Chrome で撮った PNG を `sips` で JPEG（品質80、1枚150〜190KB程度）に変換。古い PNG は削除されます
 - ローカルの Google Chrome（headless）で撮影します。パスが違う場合は環境変数 `CHROME` で指定
 - `cards.json`・`worries.json` を編集したら再実行（`--only=` で一部だけ再生成可）
