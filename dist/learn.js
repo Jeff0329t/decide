@@ -51,6 +51,24 @@
     goHome();
   }
   function allCards() {return DECK.map(card=>({base:card,copy:cardContent(card)})).filter(item=>item.copy);}
+  // 決定ログの中で実際に出会ったカード（コレクション）
+  function encounters(){
+    const map=new Map();
+    try{
+      const list=(typeof logs!=='undefined' && Array.isArray(logs))?logs:[];
+      for(const log of list){
+        for(const node of (log?.nodes||[])){
+          const id=node?.card?.id;
+          if(typeof id!=='string' || !id)continue;
+          const cur=map.get(id)||{count:0,first:''};
+          cur.count+=1;
+          if(log?.createdAt && (!cur.first || log.createdAt<cur.first))cur.first=log.createdAt;
+          map.set(id,cur);
+        }
+      }
+    }catch(error){}
+    return map;
+  }
   function filtered() {
     const q=query.trim().toLocaleLowerCase('ja');
     return allCards().filter(({copy})=>{
@@ -96,9 +114,12 @@
   }
   function fillGrid(grid) {
     observer?.disconnect();visible=filtered();grid.replaceChildren();
+    const enc=encounters();
     if(!visible.length){grid.append(el('p','learn-empty','見つかりませんでした'));return;}
     visible.forEach(({base,copy},index)=>{
       const tile=btn('','card','learn-tile');tile.dataset.index=String(index);tile.setAttribute('aria-label',`${copy.name}の詳しい意味を見る`);
+      const met=enc.get(base.id);
+      tile.classList.add(met?'is-met':'is-unmet');
       const frame=el('span','learn-thumb');
       const img=el('img');img.alt='';img.width=320;img.height=Math.round(cardImageHeight(base)*2/3);
       img.loading='lazy';img.decoding='async';img.dataset.src=cardImage(base).replace(/\.jpg$/,'-320.webp');

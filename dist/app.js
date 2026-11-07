@@ -1669,12 +1669,18 @@ function checkDueReview() {
 function sealCompletion(button) {
   if(button.classList.contains('is-confirming'))return;
   button.classList.add('is-confirming');
-  if(prefersReducedMotion())openFarewell();
-  else setTimeout(()=>{ if(button.isConnected)openFarewell(); },420);
+  if(prefersReducedMotion()){ sensoryFeedback('save'); openFarewell(); return; }
+  if(!document.querySelector('.seal-stamp')){
+    const stamp=document.createElement('span');
+    stamp.className='seal-stamp'; stamp.setAttribute('aria-hidden','true'); stamp.textContent='DECIDED';
+    (typeof appOverlayRoot==='function'?appOverlayRoot():document.body).appendChild(stamp);
+  }
+  setTimeout(()=>sensoryFeedback('save'),240);
+  setTimeout(()=>{ if(button.isConnected)openFarewell(); },560);
 }
 function openFarewell() {
   if(document.querySelector('.farewell'))return;
-  sensoryFeedback('save');
+  document.querySelector('.seal-stamp')?.remove();
   const wrap=document.createElement('div'); wrap.className='farewell'; wrap.setAttribute('role','dialog'); wrap.setAttribute('aria-modal','true'); wrap.setAttribute('aria-labelledby','farewell-title');
   const count=logs.length; const reviewed=logs.filter(log=>log.review).length;
   wrap.innerHTML=`<div class="farewell-inner">
