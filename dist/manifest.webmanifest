@@ -31,5 +31,70 @@
   "categories": [
     "lifestyle",
     "productivity"
+  ],
+  "screenshots": [
+    {
+      "src": "./screenshots/home.jpg",
+      "sizes": "780x1688",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "今日は、何を決める？ 1枚引き・2枚引き"
+    },
+    {
+      "src": "./screenshots/genre.jpg",
+      "sizes": "780x1688",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "何を決めますか？ ジャンルを選んでカードを引く"
+    },
+    {
+      "src": "./screenshots/intro.jpg",
+      "sizes": "780x1688",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "心から納得いく決断を。"
+    },
+    {
+      "src": "./screenshots/log.jpg",
+      "sizes": "780x1688",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "決めたことは、決断ログに残る"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "カードを引く",
+      "url": "./?go=home",
+      "icons": [
+        {
+          "src": "icon-192.png?v=2",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "決断ログを見る",
+      "url": "./?go=history",
+      "icons": [
+        {
+          "src": "icon-192.png?v=2",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "カード図鑑",
+      "url": "./cards/",
+      "icons": [
+        {
+          "src": "icon-192.png?v=2",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
   ]
 }
