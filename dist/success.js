@@ -42,6 +42,13 @@
       const data = await fetchPlan(client, user.id);
       if(data && isProPlan(data.plan_type)) {
         cachePro(user.id, data.plan_type, data.pro_since);
+        try {
+          const key = 'decide.ga.purchaseReported';
+          if(localStorage.getItem(key) !== String(data.pro_since)) {
+            localStorage.setItem(key, String(data.pro_since));
+            if(typeof gtag === 'function') gtag('event', 'purchase', { value: 980, currency: 'JPY' });
+          }
+        } catch(error) {}
         return 'done';
       }
       if(now() - start + interval > timeout) return 'timeout';

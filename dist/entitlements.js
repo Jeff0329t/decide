@@ -202,6 +202,7 @@
     const id = 'paywall-modal';
     if(document.querySelector(`#${id}`)) return;
     const user = currentUser();
+    window.DECIDE_TRACK?.('paywall_view', { reason: reason || 'open' });
     const title = reason === 'save' ? '決めた記録を、全部残せます'
       : reason === 'draw' ? 'この迷いも、引いて決められます'
       : '迷うたびに開ける道具に';
@@ -272,6 +273,7 @@
   async function startCheckout() {
     if(!currentUser()) { openPaywall('login'); return; }
     if(hasPurchased()) { notify('すでに購入済みです'); return; }
+    window.DECIDE_TRACK?.('begin_checkout');
     if(checkoutBusy) return;
     const endpoint = checkoutEndpoint();
     if(typeof fetch !== 'function' || !endpoint || !auth()?.isEnabled?.()) { notify('購入は準備中です'); return; }

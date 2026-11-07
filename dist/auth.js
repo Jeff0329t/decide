@@ -30,7 +30,7 @@
       setUser(data?.session?.user || null);
       return currentUser;
     }).catch(() => null);
-    client.auth.onAuthStateChange((_event, session) => setUser(session?.user || null));
+    client.auth.onAuthStateChange((_event, session) => { if(_event === 'SIGNED_IN') window.DECIDE_TRACK?.('login', { method: 'Google' }); setUser(session?.user || null); });
   }
 
   function setUser(user) {

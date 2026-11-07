@@ -1,4 +1,6 @@
 const app = document.querySelector('#app');
+// GA4イベント送信（計測専用。決断の内容は送らない）
+window.DECIDE_TRACK=(name,params)=>{ try{ if(typeof gtag==='function') gtag('event',name,params||{}); }catch(error){} };
 // Home-screen apps scroll their content independently of the native root.
 // Keyboard dismissal can then reset the root without losing the reading position.
 function installViewportNavigation() {
@@ -993,6 +995,7 @@ function recordDrawOnce() {
   if(!activeSession || activeSession.tutorial || activeSession.drawRecorded)return;
   activeSession.drawRecorded=true;
   window.DECIDE_ENTITLEMENTS?.recordDraw?.();
+  window.DECIDE_TRACK('draw_complete');
 }
 function flipCard(slot) {
   if (!activeSession || activeSession.mode === 'two' || activeSession.revealed.includes(slot)) return;
@@ -1343,6 +1346,7 @@ function saveDecision(form) {
   if(!persist()) { pendingSave={log,firstRecord,requestPersistence}; openSaveFailure(log); return; }
   if(requestPersistence)requestPersistentStorage();
   pendingSave=null;
+  window.DECIDE_TRACK('log_save',{first_record:firstRecord});
   if(firstRecord && shouldShowA2HS())a2hsBannerLogId=log.id;
   activeSession = null; selectedDecision = ''; detailId = log.id;
   decisionDraft = {genre:'',option1:'',option2:'',title:'',memo:''}; draftRemind={days:DEFAULT_REMIND_DAYS,date:''};
@@ -1415,7 +1419,7 @@ async function installApp() {
   document.querySelectorAll('[data-a2hs-settings]').forEach(el=>{ if(!deferredInstallPrompt) el.remove(); });
 }
 window.addEventListener('beforeinstallprompt', event => { event.preventDefault(); deferredInstallPrompt=event; refreshHomeInstallBanner(); });
-window.addEventListener('appinstalled', () => { deferredInstallPrompt=null; hideA2HS(); document.querySelectorAll('[data-a2hs-settings]').forEach(el=>el.remove()); toast('ホーム画面に追加しました'); });
+window.addEventListener('appinstalled', () => { deferredInstallPrompt=null; hideA2HS(); window.DECIDE_TRACK('app_installed'); document.querySelectorAll('[data-a2hs-settings]').forEach(el=>el.remove()); toast('ホーム画面に追加しました'); });
 window.matchMedia('(display-mode: standalone)').addEventListener('change', refreshHomeInstallBanner);
 window.addEventListener('pageshow', refreshHomeInstallBanner);
 document.addEventListener('visibilitychange', () => { if(document.visibilityState==='visible')refreshHomeInstallBanner(); });
