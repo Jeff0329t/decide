@@ -39,7 +39,7 @@ test('defaultRemindAt: ONなら3日後、OFFや壊れた日時は null', () => {
 
 test('pendingItems: ふり返り前で予定のあるログの {id, remindAt} だけ', () => {
   const logs = [
-    { id: 'a', remindAt: '2026-10-04T00:00:00Z', question: '秘密の悩み' },
+    { id: 'a', remindAt: '2026-10-04T00:00:00Z', question: '秘密の迷い' },
     { id: 'b', remindAt: '2026-10-04T00:00:00Z', review: { result: 'good' } },
     { id: 'c' },
     { id: '', remindAt: '2026-10-04T00:00:00Z' },

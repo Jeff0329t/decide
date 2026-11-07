@@ -52,10 +52,10 @@ function validate(file, html) {
     assert.deepEqual([...pager.matchAll(/href="\.\/([^\"]+)"/g)].map(m => m[1]), expected, file);
   }
   if (file.startsWith('worry-')) {
-    const section = body.match(/<h2>他の悩みから探す<\/h2>(.*?)<\/section>/s)?.[1];
+    const section = body.match(/<h2>他の迷いから探す<\/h2>(.*?)<\/section>/s)?.[1];
     assert.ok(section, file);
     assert.equal(new Set([...section.matchAll(/href="\.\/worry-([^\"]+)"/g)].map(x => x[1])).size, 26);
-    assert.match(section, /すべてのカード・悩み一覧を見る/);
+    assert.match(section, /すべてのカード・迷い一覧を見る/);
   }
   if (card || file.startsWith('worry-')) {
     const ctas = [...body.matchAll(/<aside class="cta"(.*?)<\/aside>/gs)];
