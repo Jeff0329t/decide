@@ -1211,7 +1211,6 @@ body[data-view="detail"] .app-shell { padding-bottom: 70px; }
 .splash-copy { position: relative; z-index: 2; }
 .splash-screen .home-wordmark { font-size: clamp(4.1rem,22vw,6.2rem); line-height: .9; text-shadow: 0 3px 20px #000; }
 .splash-screen .home-tagline { margin-top: 9px; color: #fff; font-size: 1rem; text-shadow: 0 2px 12px #000; }
-.splash-subline { display: inline-block; margin: 8px 0 0; padding: 3px 8px; background: rgba(0,0,0,.72); color: #ded7ca; font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; font-size: .85rem; letter-spacing: .06em; text-shadow: 0 2px 12px #000; }
 .splash-sidecopy {
   position: absolute;
   z-index: 2;
