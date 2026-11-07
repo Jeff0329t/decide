@@ -75,14 +75,11 @@ test('all 112 pages have synchronized structured data, crawlable navigation and 
   assert.equal(enhanceCardsPage(article, '/articles/example'), article);
 });
 
-test('reading links survive initial and runtime home rendering without replacing existing actions', () => {
+test('cover screen is start-only, without auxiliary or reading links', () => {
   for (const file of ['dist/index.html', 'dist/app.js']) {
-    const source = read(file), nav = source.match(/<div class="home-reading-links"(.*?)<\/div>/s)?.[1];
-    assert.ok(nav, file);
-    for (const href of ['./cards/', ...['tenshoku', 'renai', 'okane'].map(s => `./cards/worry-${s}`)]) assert.ok(nav.includes(`href="${href}"`));
+    const source = read(file);
+    assert.doesNotMatch(source, /splash-links|splash-help|splash-atlas|home-reading-links/, file);
     assert.doesNotMatch(source, /href="\.\/(?:cards\/[^"]*|privacy|terms|tokushoho)\.html"/, file);
-    assert.match(source, /class="splash-atlas" data-action="open-learn"/);
-    assert.match(source, /class="splash-help" data-action="tutorial-open"/);
   }
 });
 
