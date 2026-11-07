@@ -4350,12 +4350,6 @@ body[data-view="decide"] .decide-screen .pair-chip.selected { background: #0b0b0
 .tutorial-mock-decisions button span, .tutorial-mock-decisions button small { display: block; }
 .tutorial-mock-decisions button small { margin-top: 4px; font-size: 12px; font-weight: 500; line-height: 1.4; }
 
-/* A visible tutorial entry on the opening cover. */
-body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(82px + env(safe-area-inset-bottom)); z-index: 5; }
-.splash-links { position: absolute; z-index: 5; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom)); transform: translateX(-50%); width: min(360px, calc(100% - 36px)); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.splash-help, .splash-atlas { min-width: 0; min-height: 44px; padding: 10px 8px; border: 1px solid #f4efe3; border-radius: 0; background: rgba(8,8,8,.85); color: #f4efe3; font: 700 15px/1.5 "Hiragino Mincho ProN","Yu Mincho",serif; cursor: pointer; }
-.splash-help:focus-visible, .splash-atlas:focus-visible { outline: 3px solid #f1d527; outline-offset: 4px; }
-.splash-screen.peeling .splash-links { pointer-events: none; }
 
 .card-direction-help { margin: 14px 0; padding: 12px; border-left: 3px solid var(--accent); font-size: 15px; line-height: 1.7; }
 
@@ -4379,15 +4373,6 @@ body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(82
 .learn-articles .learn-filters { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px; }
 .learn-articles .learn-filter { flex: 0 0 auto; white-space: nowrap; }
 
-/* Crawlable reading links share the cover's existing auxiliary navigation. */
-/* Each link is a bordered chip like the buttons above it, so it reads as tappable rather than as body text. */
-.home-reading-links { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1.9fr) repeat(3, minmax(0, 1fr)); gap: 6px; }
-.home-reading-links a { display: inline-flex; align-items: center; justify-content: center; gap: 3px; min-width: 0; min-height: 44px; padding: 4px 4px; border: 1px solid rgba(244,239,227,.6); background: rgba(8,8,8,.85); color: #f4efe3; font-size: 13px; font-weight: 700; line-height: 1.3; text-decoration: none; white-space: nowrap; }
-.home-reading-links a::after { content: "›"; color: #f1d527; font-size: 15px; line-height: 1; }
-.home-reading-links a:first-child::after { content: "→"; font-size: 13px; }
-.home-reading-links a:focus-visible { outline: 3px solid #f1d527; outline-offset: 1px; }
-@media (max-width: 359px) { .home-reading-links { gap: 4px; } .home-reading-links a { padding: 2px; font-size: 12px; } .home-reading-links a:first-child::after { content: none; } }
-body[data-view="home"][data-home-stage="splash"] .splash-start { bottom: calc(136px + env(safe-area-inset-bottom)); }
 
 /* Tutorial readability: wrap only between phrases, one idea per line, and a clear main line on each page. */
 .tp { display: inline-block; max-width: 100%; }
@@ -4535,13 +4520,6 @@ body.tutorial-running :is(.draw-screen, .map-screen) { padding-top: calc(max(8px
 .learn-mark-read { border: 2px solid #0b0b0b; border-radius: 0; background: #0b0b0b; color: #f1d527; box-shadow: 3px 3px 0 #f1d527, 3px 3px 0 1px #0b0b0b; font-family: "Hiragino Mincho ProN","Yu Mincho",serif; }
 .learn-mark-read:active { scale: 1; translate: 2px 2px; box-shadow: 1px 1px 0 #f1d527, 1px 1px 0 1px #0b0b0b; }
 @media (max-width: 360px) { .learn-fig-row:not(.learn-fig-row-2) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.home-reading-links a { transition: background-color .15s ease, color .15s ease, scale .2s cubic-bezier(.3,1.5,.5,1); -webkit-tap-highlight-color: transparent; }
-.home-reading-links a:active, .home-reading-links a.is-going { scale: .94; border-color: #f1d527; background: #f1d527; color: #0b0b0b; transition-duration: .06s; }
-.home-reading-links a:active::after, .home-reading-links a.is-going::after { color: #0b0b0b; }
-/* Stays lit until the article opens, so a slow network still shows the tap landed. */
-.home-reading-links a.is-going { scale: 1; animation: reading-link-going .9s ease-in-out infinite alternate; }
-@keyframes reading-link-going { to { background: #f8e889; } }
-@media (prefers-reduced-motion: reduce) { .home-reading-links a.is-going { animation: none; } }
 
 /* Memo and look-back day on one screen: the picker sits inside the RECORD card, and "よし、決めた。" just confirms the day. */
 .save-form .remind-picker { position: static; margin: 2px 0 0; padding: 0; border: 0; background: none; box-shadow: none; transform: none; }

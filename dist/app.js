@@ -556,16 +556,6 @@ function renderHome() {
           <button data-action="start-app" aria-label="DECIDE.をはじめる"><span>→</span></button>
           <b>はじめる</b>
         </div>
-        <nav class="splash-links" aria-label="使い方とカード図鑑">
-          <button class="splash-help" data-action="tutorial-open">使い方を見る</button>
-          <button class="splash-atlas" data-action="open-learn">カード図鑑</button>
-          <div class="home-reading-links" aria-label="カードと迷いを読む">
-            <a href="./cards/">カード・迷い一覧</a>
-            <a href="./cards/worry-tenshoku">転職</a>
-            <a href="./cards/worry-renai">恋愛</a>
-            <a href="./cards/worry-okane">お金</a>
-          </div>
-        </nav>
       </section>`;
     return;
   }
@@ -2375,13 +2365,6 @@ document.addEventListener('click',event=>{
   const go=['history','stats'].includes(currentView)?currentView:'home';
   try { history.replaceState(history.state,'',`${location.pathname}?go=${go}`); } catch {}
 });
-// 表紙の読みものリンクは、押したら記事が開くまで光らせておく（「戻る」で帰ってきたら消す）
-document.addEventListener('click',event=>{
-  const link=event.target.closest?.('.home-reading-links a');
-  if(!link || event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey)return;
-  link.classList.add('is-going');
-});
-window.addEventListener('pageshow',()=>document.querySelectorAll('.home-reading-links a.is-going').forEach(a=>a.classList.remove('is-going')));
 // 購入完了やログインで権限が変わった後、前面に戻った時に退避分を保存する
 setTimeout(restoreBlockedSave,1200);
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible')setTimeout(restoreBlockedSave,800); });
