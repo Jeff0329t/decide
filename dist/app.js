@@ -560,8 +560,8 @@ function renderHome() {
         <nav class="splash-links" aria-label="使い方とカード図鑑">
           <button class="splash-help" data-action="tutorial-open">使い方を見る</button>
           <button class="splash-atlas" data-action="open-learn">カード図鑑</button>
-          <div class="home-reading-links" aria-label="カードと悩みを読む">
-            <a href="./cards/">カード・悩み一覧</a>
+          <div class="home-reading-links" aria-label="カードと迷いを読む">
+            <a href="./cards/">カード・迷い一覧</a>
             <a href="./cards/worry-tenshoku">転職</a>
             <a href="./cards/worry-renai">恋愛</a>
             <a href="./cards/worry-okane">お金</a>

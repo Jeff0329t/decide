@@ -1,6 +1,6 @@
 // DECIDE. プッシュ通知（ログインした人だけ）
 // アプリを閉じていても「あの決断、どうなった？」が届くように、サーバーから通知を送る（iPhone はホーム画面に追加したアプリで iOS 16.4 以降）。
-// サーバーに送るのは「通知の宛先（購読情報）」と、ふり返り前のログの {id, remindAt} だけ。悩みや選択肢などログの中身は送らない。
+// サーバーに送るのは「通知の宛先（購読情報）」と、ふり返り前のログの {id, remindAt} だけ。迷いや選択肢などログの中身は送らない。
 // 通知の文面は決まった一文だけ。VAPID の公開鍵は config.js（公開してよい値）。秘密鍵はサーバー（Supabase Secrets）にだけ置く。
 (function(){
   const retired = () => window.DECIDE_CONFIG?.PUSH_REMINDERS_ENABLED === false;

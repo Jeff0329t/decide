@@ -1,7 +1,7 @@
 // DECIDE. ふり返りの通知（設定でONにした人だけ）
 // ONのとき、新しい決定ログに「3日後にふり返る」予定（remindAt）を付ける。いつ聞くかは決定ごとに履歴の詳細から変えられる。
 // ふり返り前のログの {id, remindAt} だけを IndexedDB にコピーし、Service Worker が定期バックグラウンド同期で通知する。
-// 通知の文面は決まった一文だけで、ログの中身（悩みや選択肢）は通知に出さない。
+// 通知の文面は決まった一文だけで、ログの中身（迷いや選択肢）は通知に出さない。
 (function(){
   const STORE_KEY = 'decide.tarot.remind.v1';
   const LOGS_KEY = 'decide.tarot.logs.v1';
