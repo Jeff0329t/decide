@@ -55,7 +55,7 @@ function validate(file, html) {
     const section = body.match(/<h2>他の迷いから探す<\/h2>(.*?)<\/section>/s)?.[1];
     assert.ok(section, file);
     assert.equal(new Set([...section.matchAll(/href="\.\/worry-([^\"]+)"/g)].map(x => x[1])).size, 26);
-    assert.match(section, /すべてのカード・迷い一覧を見る/);
+    assert.match(section, /タロットカード78枚の意味一覧/);
   }
   if (card || file.startsWith('worry-')) {
     const ctas = [...body.matchAll(/<aside class="cta"(.*?)<\/aside>/gs)];
