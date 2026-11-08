@@ -35,6 +35,7 @@
 
 ## サイトについて
 
+- [DECIDE.について](https://decisionprocess.net/about): DECIDE.がどんな道具か、できること、使い方、料金とよくある質問をまとめた紹介ページです。
 - [プライバシーポリシー](https://decisionprocess.net/privacy)
 - [利用規約](https://decisionprocess.net/terms)
 - [特定商取引法に基づく表記](https://decisionprocess.net/tokushoho)
