@@ -5,7 +5,7 @@ import { addAppNav } from './app-nav.mjs';
 
 const ORIGIN = 'https://decisionprocess.net';
 const INDEX_NAME = 'タロットカード78枚の意味';
-const INDEX_LINK = 'すべてのカード・迷い一覧を見る';
+const INDEX_LINK = 'タロットカード78枚の意味一覧';
 const cards = JSON.parse(readFileSync(new URL('../../dist/assets/cards.json', import.meta.url), 'utf8')).cards;
 const worries = JSON.parse(readFileSync(new URL('../data/worries.json', import.meta.url), 'utf8'));
 const worryLinks = JSON.parse(readFileSync(new URL('../data/card-worry-links.json', import.meta.url), 'utf8'));
