@@ -4,7 +4,7 @@
 // 出力: dist/cards/index.html, dist/cards/{major,wands,cups,swords,pentacles}.html,
 //       dist/cards/{id}.html, dist/cards/worries.html, dist/cards/worry-{slug}.html,
 //       dist/articles/index.html, dist/articles/{slug}.html（記事が1本以上あるとき）,
-//       dist/sitemap.xml, dist/robots.txt, dist/404.html
+//       dist/sitemap.xml, dist/robots.txt, dist/llms.txt, dist/404.html
 // 迷い別ページの文章: scripts/data/worries.json / 記事: scripts/data/articles/*.md
 // 使い方: node scripts/build-cards.mjs [--drafts]
 //   --drafts: draft: true の記事も noindex 付きで出力する（確認用。sitemap には入れない）
@@ -202,6 +202,7 @@ footer p{margin:4px 0}
 .topbar .crumbs{flex:1;min-width:0}
 main p{margin:0 0 1em}
 .lede{font-size:1.02rem}
+.verdict{margin:24px 0 0;padding:13px 16px;background:var(--card);border-left:4px solid var(--accent);font-size:.98rem;line-height:1.85}
 .steps{counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:12px 0 0;padding:0;list-style:none}
 .steps li{position:relative;padding:14px 14px 12px 52px;background:var(--card);border:1.5px solid var(--ink);font-size:.9rem;line-height:1.7}
 .steps li::before{counter-increment:s;content:counter(s,decimal-leading-zero);position:absolute;left:12px;top:14px;width:28px;height:24px;background:var(--ink);color:var(--accent);font-family:Didot,"Bodoni 72",serif;font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center}
@@ -347,6 +348,7 @@ ${picture(c, { eager: true })}
 <p>${esc(c.story)}</p>
 </div>
 </div>
+<p class="verdict">「${esc(c.name)}」は、正位置では「${esc(c.upright.keywords.join('・'))}」、逆位置では「${esc(c.reversed.keywords.join('・'))}」を表すカードです。${esc(c.upright.meaning)}</p>
 <section>
 ${kick('SYMBOLS')}
 <h2>描かれている象徴</h2>
@@ -942,6 +944,41 @@ Allow: /
 Disallow: /success
 Sitemap: ${ORIGIN}/sitemap.xml
 `);
+
+// AI 検索・LLM 向けのサイト要約（https://llmstxt.org/ 形式）。sitemap には入れない
+const LLMS_WORRIES = ['tenshoku', 'renai', 'okane', 'hikkoshi', 'nemurenai'];
+const LLMS_ARTICLES = ['kimerarenai', 'tenshoku-mayou-30dai', 'guruguru-kangaeru', 'kaimono-mayou'];
+const llmsTxt = `# DECIDE.
+
+> DECIDE. は、日常の迷いを整理し、自分で決めるきっかけを作る意思決定ツールです。タロットは未来を当てるためのものではなく、迷いを言葉にし、二つの選択肢を並べて考えるための手段として使います。引いたカードの視点と決断の記録を通して、納得して選ぶための材料をそろえます。
+
+## アプリ
+
+- [DECIDE.（Webアプリ本体）](${ORIGIN}/): 迷っていることを言葉にし、タロットカードを引いて選択肢を整理できます。決めた理由は記録に残せます。無料で始められます。
+- 料金: 有料版「UNLIMITED」は買い切り980円（税込、追加課金なし）です。カードを引く回数と記録の上限がなくなり、クラウド同期が使えます。
+
+## カード解説
+
+- [タロットカード78枚の意味一覧](${ORIGIN}/cards/): 全78枚について、描かれている象徴、正位置・逆位置の意味、決断や迷いの場面での読み方を1枚ずつ解説しています。
+${ARCANA_ORDER.map((a) => `- [${a}（${cards.filter((c) => c.arcana === a).length}枚）の意味一覧](${ORIGIN}/cards/${CATEGORY[a].slug}): ${SUIT_NOTE[a]}`).join('\n')}
+
+## 迷い別ガイド
+
+- [迷い別に読むタロット（全${worries.length}テーマ）](${ORIGIN}/cards/worries.html): よくある迷いごとに、判断を難しくしているものと整理の順番、視点を貸してくれるカードを紹介しています。
+${LLMS_WORRIES.map((s) => worryBySlug.get(s)).filter(Boolean).map((w) => `- [${w.h1}](${ORIGIN}/cards/worry-${w.slug}): ${w.description}`).join('\n')}
+
+## 読みもの
+
+- [読みもの一覧](${ORIGIN}/articles/): 迷いや決断について、タロットの視点も借りながら考えを整理するための記事です。
+${LLMS_ARTICLES.map((s) => published.find((a) => a.slug === s)).filter(Boolean).map((a) => `- [${a.h1}](${ORIGIN}/articles/${a.slug}): ${a.description}`).join('\n')}
+
+## サイトについて
+
+- [プライバシーポリシー](${ORIGIN}/privacy)
+- [利用規約](${ORIGIN}/terms)
+- [特定商取引法に基づく表記](${ORIGIN}/tokushoho)
+`;
+writeFileSync(DIST + 'llms.txt', llmsTxt);
 
 const counts = cards.map((c) => countChars(cardText(c)));
 console.log(`cards: ${cards.length} pages + index + ${ARCANA_ORDER.length} categories + ${worries.length} worries + worries index, sitemap ${urls.length} URLs`);
