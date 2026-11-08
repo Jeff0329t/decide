@@ -263,7 +263,7 @@ ${body}
 <footer>
 <p>${CREDIT}（ライダー＝ウェイト＝スミス版 1909年）</p>
 <p>解釈は決断を考えるための一つの視点です。占いの結果や将来を保証するものではありません。</p>
-<p class="meta"><a href="../tokushoho">特定商取引法に基づく表記</a> ／ <a href="../terms">利用規約</a> ／ <a href="../privacy">プライバシーポリシー</a> ／ <a href="../">DECIDE. に戻る</a></p>
+<p class="meta"><a href="../tokushoho">特定商取引法に基づく表記</a> ／ <a href="../terms">利用規約</a> ／ <a href="../privacy">プライバシーポリシー</a> ／ <a href="../about">DECIDE.について</a> ／ <a href="../">DECIDE. に戻る</a></p>
 </footer>
 </body>
 </html>
@@ -932,7 +932,7 @@ const urls = [
   ...worries.map((w) => [`/cards/worry-${w.slug}`, '0.7']),
   ...cards.map((c) => [`/cards/${c.id}`, '0.6']),
   ...(published.length ? [['/articles/', '0.7'], ...published.map((a) => [`/articles/${a.slug}`, '0.6'])] : []),
-  ['/privacy', '0.2'], ['/terms', '0.2'], ['/tokushoho', '0.2'],
+  ['/about', '0.5'], ['/privacy', '0.2'], ['/terms', '0.2'], ['/tokushoho', '0.2'],
 ];
 writeFileSync(DIST + 'sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -974,6 +974,7 @@ ${LLMS_ARTICLES.map((s) => published.find((a) => a.slug === s)).filter(Boolean).
 
 ## サイトについて
 
+- [DECIDE.について](${ORIGIN}/about): DECIDE.がどんな道具か、できること、使い方、料金とよくある質問をまとめた紹介ページです。
 - [プライバシーポリシー](${ORIGIN}/privacy)
 - [利用規約](${ORIGIN}/terms)
 - [特定商取引法に基づく表記](${ORIGIN}/tokushoho)
