@@ -372,7 +372,7 @@ ${kick('RELATED CARDS')}
 ${gridHtml(rel)}
 ${same.length ? `<h3>正位置の${esc(deck.scoring.axis)}が同じ（${c.upright.score} / 5）カード</h3>
 ${gridHtml(same)}` : ''}
-<p class="note"><a href="./${cat.slug}">${esc(cat.label)}のカード一覧（${cards.filter((o) => o.arcana === c.arcana).length}枚）</a> ／ <a href="./">78枚すべてのカード解説を見る</a></p>
+<p class="note"><a href="./${cat.slug}">${esc(cat.label)}のカード一覧（${cards.filter((o) => o.arcana === c.arcana).length}枚）</a> ／ <a href="./">タロットカード78枚の意味一覧</a></p>
 <nav aria-label="前後のカード"><ul class="pager">
 <li class="prev">${prev ? `<a href="./${prev.id}" rel="prev"><small>← 前のカード</small>${esc(prev.name)}</a>` : ''}</li>
 <li class="next">${next ? `<a href="./${next.id}" rel="next"><small>次のカード →</small>${esc(next.name)}</a>` : ''}</li>
@@ -583,7 +583,7 @@ ${gridHtml(list)}
 ${rows}
 </ul>
 </section>
-<p class="note"><a href="./">78枚すべてのカード解説を見る</a></p>
+<p class="note"><a href="./">タロットカード78枚の意味一覧</a></p>
 </main>`;
   return layout({ title, description, path, ogType: 'website', ogImage: `${ORIGIN}/assets/rider-waite/${list[0].id}.jpg`, ld: [itemList, crumbsLd(crumbs)], body });
 }
@@ -685,7 +685,7 @@ ${kick('READING')}
 ${kick('MORE WORRIES')}
 <h2>ほかの迷いから読む</h2>
 ${worriesNav(w.slug)}
-<p class="note"><a href="./">78枚すべてのカード解説を見る</a></p>
+<p class="note"><a href="./">タロットカード78枚の意味一覧</a></p>
 </section>
 </article>
 </main>`;
@@ -771,7 +771,7 @@ ${worries.map((w) => `<li><a href="./worry-${w.slug}">${esc(w.h1.replace(/(で|�
 </ul></nav>
 ${sections}
 <div class="cta"><p>カードの意味を読んだら、次はあなた自身の選択肢で。</p><a href="${CTA_HREF}">${CTA_TEXT}</a></div>
-<p class="note"><a href="./">78枚すべてのカード解説を見る</a></p>
+<p class="note"><a href="./">タロットカード78枚の意味一覧</a></p>
 </main>`;
   return layout({ title, description, path, ogType: 'website', ogImage: `${ORIGIN}/og-image-v3.png`, ld: [itemList, crumbsLd(crumbs)], body });
 }
@@ -819,7 +819,7 @@ ${relWorries.length ? `<section>
 <section>
 <h2>この記事に関係するカード</h2>
 <ul class="grid">${relCards.map((c) => `<li><a href="../cards/${c.id}">${picture(c, { sizes: '120px' })}${esc(c.name)}</a></li>`).join('')}</ul>
-<p class="note"><a href="../cards/">78枚すべてのカード解説を見る</a></p>
+<p class="note"><a href="../cards/">タロットカード78枚の意味一覧</a></p>
 </section>
 ${others.length ? `<section>
 <h2>ほかの読みもの</h2>
