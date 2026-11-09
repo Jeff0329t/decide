@@ -8,7 +8,8 @@
  "ar01": [
   "shukatsu",
   "fukugyo",
-  "tenshoku"
+  "tenshoku",
+  "naitei"
  ],
  "ar02": [
   "renai",
@@ -19,22 +20,26 @@
  "ar03": [
   "renai",
   "kekkon",
-  "ningen"
+  "ningen",
+  "pet"
  ],
  "ar04": [
   "kaigo",
   "ningen",
-  "kekkon"
+  "kekkon",
+  "hoken"
  ],
  "ar05": [
   "manabi",
   "ningen",
-  "tenshoku"
+  "tenshoku",
+  "shikaku"
  ],
  "ar06": [
   "kekkon",
   "renai",
-  "ningen"
+  "ningen",
+  "kekkonshiki"
  ],
  "ar07": [
   "shukatsu",
@@ -50,12 +55,14 @@
  "ar09": [
   "manabi",
   "ningen",
-  "tenshoku"
+  "tenshoku",
+  "tenkin"
  ],
  "ar10": [
   "hikkoshi",
   "okane",
-  "tenshoku"
+  "tenshoku",
+  "tenkin"
  ],
  "ar11": [
   "ningen",
@@ -71,7 +78,8 @@
  "ar13": [
   "tenshoku",
   "wakare",
-  "ningen"
+  "ningen",
+  "pet"
  ],
  "ar14": [
   "ningen",
@@ -82,37 +90,44 @@
  "ar15": [
   "wakare",
   "ningen",
-  "renai"
+  "renai",
+  "toshi"
  ],
  "ar16": [
   "wakare",
   "ningen",
-  "renai"
+  "renai",
+  "fukuen"
  ],
  "ar17": [
   "renai",
   "kekkon",
-  "ningen"
+  "ningen",
+  "shingaku"
  ],
  "ar18": [
   "ningen",
   "kaigo",
-  "tenshoku"
+  "tenshoku",
+  "fukugyo-kaisha"
  ],
  "ar19": [
   "ningen",
   "kaigo",
-  "tenshoku"
+  "tenshoku",
+  "pet"
  ],
  "ar20": [
   "kekkon",
   "kaigo",
-  "ningen"
+  "ningen",
+  "fukuen"
  ],
  "ar21": [
   "hikkoshi",
   "okane",
-  "tenshoku"
+  "tenshoku",
+  "ryugaku"
  ],
  "wa01": [
   "tenshoku",
@@ -123,7 +138,8 @@
  "wa02": [
   "tenshoku",
   "dokuritsu",
-  "shukatsu"
+  "shukatsu",
+  "naitei"
  ],
  "wa03": [
   "shukatsu",
@@ -134,7 +150,8 @@
  "wa04": [
   "ningen",
   "kaigo",
-  "tenshoku"
+  "tenshoku",
+  "kekkonshiki"
  ],
  "wa05": [
   "ningen",
@@ -144,7 +161,8 @@
  "wa06": [
   "tenshoku",
   "dokuritsu",
-  "shukatsu"
+  "shukatsu",
+  "shingaku"
  ],
  "wa07": [
   "shukatsu",
@@ -159,12 +177,14 @@
  "wa09": [
   "ningen",
   "kaigo",
-  "tenshoku"
+  "tenshoku",
+  "fukugyo-kaisha"
  ],
  "wa10": [
   "dokuritsu",
   "kaigo",
-  "ningen"
+  "ningen",
+  "nomikai"
  ],
  "wa11": [
   "ningen",
@@ -200,17 +220,20 @@
  "cu03": [
   "renai",
   "kekkon",
-  "ningen"
+  "ningen",
+  "nomikai"
  ],
  "cu04": [
   "fukugyo",
   "ningen",
-  "kaigo"
+  "kaigo",
+  "nomikai"
  ],
  "cu05": [
   "wakare",
   "ningen",
-  "renai"
+  "renai",
+  "kasu"
  ],
  "cu06": [
   "kaigo",
@@ -221,7 +244,8 @@
  "cu07": [
   "hikkoshi",
   "okane",
-  "tenshoku"
+  "tenshoku",
+  "ryugaku"
  ],
  "cu08": [
   "tenshoku",
@@ -232,12 +256,14 @@
  "cu09": [
   "renai",
   "kekkon",
-  "ningen"
+  "ningen",
+  "kekkonshiki"
  ],
  "cu10": [
   "hikkoshi",
   "kekkon",
-  "renai"
+  "renai",
+  "pet"
  ],
  "cu11": [
   "renai",
@@ -273,7 +299,8 @@
  "sw03": [
   "wakare",
   "ningen",
-  "renai"
+  "renai",
+  "fukuen"
  ],
  "sw04": [
   "kaigo",
@@ -284,22 +311,26 @@
  "sw05": [
   "ningen",
   "kaigo",
-  "tenshoku"
+  "tenshoku",
+  "kasu"
  ],
  "sw06": [
   "hikkoshi",
   "okane",
-  "tenshoku"
+  "tenshoku",
+  "tenkin"
  ],
  "sw07": [
   "wakare",
   "ningen",
-  "renai"
+  "renai",
+  "fukugyo-kaisha"
  ],
  "sw08": [
   "ningen",
   "wakare",
-  "renai"
+  "renai",
+  "fukuen"
  ],
  "sw09": [
   "ningen",
@@ -315,7 +346,8 @@
  "sw11": [
   "manabi",
   "ningen",
-  "tenshoku"
+  "tenshoku",
+  "shikaku"
  ],
  "sw12": [
   "ningen",
@@ -335,7 +367,8 @@
  "pe01": [
   "tenshoku",
   "manabi",
-  "dokuritsu"
+  "dokuritsu",
+  "naitei"
  ],
  "pe02": [
   "kekkon",
@@ -357,27 +390,32 @@
  "pe05": [
   "ningen",
   "kaigo",
-  "tenshoku"
+  "tenshoku",
+  "ryugaku"
  ],
  "pe06": [
   "hikkoshi",
   "okane",
-  "tenshoku"
+  "tenshoku",
+  "kasu"
  ],
  "pe07": [
   "tenshoku",
   "manabi",
-  "okane"
+  "okane",
+  "toshi"
  ],
  "pe08": [
   "shukatsu",
   "fukugyo",
-  "manabi"
+  "manabi",
+  "shikaku"
  ],
  "pe09": [
   "dokuritsu",
   "ningen",
-  "kaigo"
+  "kaigo",
+  "hoken"
  ],
  "pe10": [
   "kaigo",
@@ -388,17 +426,20 @@
  "pe11": [
   "manabi",
   "ningen",
-  "tenshoku"
+  "tenshoku",
+  "shingaku"
  ],
  "pe12": [
   "hikkoshi",
   "okane",
-  "tenshoku"
+  "tenshoku",
+  "toshi"
  ],
  "pe13": [
   "ningen",
   "kaigo",
-  "tenshoku"
+  "tenshoku",
+  "hoken"
  ],
  "pe14": [
   "hikkoshi",
