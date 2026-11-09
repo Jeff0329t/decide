@@ -207,6 +207,10 @@ footer p{margin:4px 0}
 main p{margin:0 0 1em}
 .lede{font-size:1.02rem}
 .verdict{margin:24px 0 0;padding:13px 16px;background:var(--card);border-left:4px solid var(--accent);font-size:.98rem;line-height:1.85}
+.dscene{margin:16px 0 0;padding:12px 16px;border:1px solid var(--line);font-size:.95rem;line-height:1.85}
+.dscene p{margin:0}
+.dscene p+p{margin-top:6px}
+.dscene-link{font-size:.9rem}
 .steps{counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:12px 0 0;padding:0;list-style:none}
 .steps li{position:relative;padding:14px 14px 12px 52px;background:var(--card);border:1.5px solid var(--ink);font-size:.9rem;line-height:1.7}
 .steps li::before{counter-increment:s;content:counter(s,decimal-leading-zero);position:absolute;left:12px;top:14px;width:28px;height:24px;background:var(--ink);color:var(--accent);font-family:Didot,"Bodoni 72",serif;font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center}
@@ -312,6 +316,16 @@ ${kick(key === 'upright' ? 'UPRIGHT' : 'REVERSED')}
 </section>`;
 }
 
+function dsceneHtml(x) {
+  const d = x && x.decision;
+  if (!d) return '';
+  const w = worryBySlug.get(d.worry);
+  return `<div class="dscene">
+<p><b>決断の場面で読むと</b>　${esc(d.text)}</p>
+<p class="dscene-link">この場面の迷い：<a href="./worry-${d.worry}">${esc(w ? w.h1 : d.worry)}</a></p>
+</div>`;
+}
+
 function cardPage(c) {
   const x = extra[c.id];
   const path = `/cards/${c.id}`;
@@ -357,6 +371,7 @@ ${picture(c, { eager: true })}
 </div>
 </div>
 <p class="verdict">「${esc(c.name)}」は、正位置では「${esc(c.upright.keywords.join('・'))}」、逆位置では「${esc(c.reversed.keywords.join('・'))}」を表すカードです。${esc(c.upright.meaning)}</p>
+${dsceneHtml(x)}
 <section>
 ${kick('SYMBOLS')}
 <h2>描かれている象徴</h2>
