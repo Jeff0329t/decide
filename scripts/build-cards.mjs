@@ -36,7 +36,7 @@ const cards = deck.cards;
 const byId = new Map(cards.map((c) => [c.id, c]));
 const worries = JSON.parse(readFileSync(DATA + 'worries.json', 'utf8'));
 for (const w of worries) {
-  if (!/^[a-z]+$/.test(w.slug)) throw new Error(`bad worry slug: ${w.slug}`);
+  if (!/^[a-z-]+$/.test(w.slug)) throw new Error(`bad worry slug: ${w.slug}`);
   for (const id of [w.primary, ...w.cards.map((x) => x.id)]) {
     if (!byId.has(id)) throw new Error(`unknown card in worry ${w.slug}: ${id}`);
   }
@@ -44,6 +44,7 @@ for (const w of worries) {
 const articles = loadArticles(DATA + 'articles/', { drafts: DRAFTS, worrySlugs: worries.map((w) => w.slug), cardIds: cards.map((c) => c.id) });
 const published = articles.filter((a) => !a.draft);
 const worryBySlug = new Map(worries.map((w) => [w.slug, w]));
+const cardWorryLinks = JSON.parse(readFileSync(DATA + 'card-worry-links.json', 'utf8'));
 const worryText = (w) => [w.lead, ...w.sections.flatMap((s) => [s.h2, s.p])].join('');
 const THEMES = deck.themes;
 const LEVELS = deck.scoring.levels;
@@ -194,6 +195,9 @@ blockquote{margin:16px 0;padding:4px 16px;border-left:4px solid var(--accent);co
 .alist li{padding:12px 0;border-bottom:1px solid var(--line)}
 .alist h3{margin:0 0 4px}
 .alist p{margin:0}
+.next-worries h3{margin:24px 0 0;font-size:.95rem}
+.next-worries ul{margin:8px 0 0;padding:0;list-style:none}
+.next-worries li{padding:8px 0;border-bottom:1px solid var(--line)}
 footer{max-width:760px;margin:0 auto;padding:18px 16px 48px;border-top:2px solid var(--ink);font-size:.78rem;color:var(--muted)}
 footer p{margin:4px 0}
 .topbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}
@@ -232,6 +236,10 @@ function layout({ title, description, path, ogImage, ogType = 'article', ld, bod
   const seo = seoForPath(path);
   if (seo) ({ title, description } = seo);
   const url = ORIGIN + path;
+  // 全生成ページ共通の回遊ブロック「次の迷い」を、本文の末尾（フッター直前）に入れる
+  const next = nextWorriesHtml(path);
+  const mainEnd = body.lastIndexOf('</main>');
+  const fullBody = next && mainEnd !== -1 ? body.slice(0, mainEnd) + next + '\n' + body.slice(mainEnd) : body;
   const html = `<!doctype html>
 <html lang="ja">
 <head>
@@ -259,7 +267,7 @@ ${ld.map((o) => `<script type="application/ld+json">${jsonLd(o)}</script>`).join
 <style>${CSS}${css ? '\n' + css : ''}</style>
 </head>
 <body>
-${body}
+${fullBody}
 <footer>
 <p>${CREDIT}（ライダー＝ウェイト＝スミス版 1909年）</p>
 <p>解釈は決断を考えるための一つの視点です。占いの結果や将来を保証するものではありません。</p>
@@ -469,6 +477,9 @@ const WORRY_SHORT = {
   taishoku: '退職', kuruma: '車の購入', nemurenai: '眠れない夜', iku: '行く・行かない',
   kotowaru: '断る', renraku: '連絡', ayamaru: '謝る', kokuhaku: '告白',
   kaiyaku: '解約', ryokou: '旅行', present: 'プレゼント', yasumu: '休む', ie: '家を買う', mochiie: '持ち家・賃貸', jikka: '実家を出る',
+  naitei: '内定', tenkin: '転勤', shikaku: '資格', ryugaku: '留学', shingaku: '進学',
+  toshi: '投資', hoken: '保険', kasu: 'お金を貸す', nomikai: '飲み会', pet: 'ペット',
+  'fukugyo-kaisha': '副業を言う', kekkonshiki: '結婚式', fukuen: '復縁',
 };
 
 // カード名・キーワードの絞り込み（JS がないときは検索欄ごと隠れたまま）。カタカナはひらがなに寄せて比べる
@@ -701,9 +712,9 @@ const WORRIES_INTRO = [
 ];
 
 const WORRY_GROUPS = [
-  { id: 'work', name: '仕事・キャリア', lead: '働き方や収入にかかわる迷い。条件の比較だけでは決めきれないときに。', slugs: ['tenshoku', 'shukatsu', 'fukugyo', 'dokuritsu', 'manabi', 'taishoku', 'yasumu'] },
-  { id: 'love', name: '恋愛・家族', lead: '大切な人との関係にかかわる迷い。気持ちと現実のあいだで揺れるときに。', slugs: ['renai', 'kekkon', 'wakare', 'kaigo', 'kokuhaku', 'present'] },
-  { id: 'life', name: '暮らし・お金・人づきあい', lead: '毎日の土台にかかわる迷い。小さく見えて、あとから効いてくる選択に。', slugs: ['hikkoshi', 'okane', 'ningen', 'kuruma', 'nemurenai', 'iku', 'kotowaru', 'renraku', 'ayamaru', 'kaiyaku', 'ryokou'] },
+  { id: 'work', name: '仕事・キャリア', lead: '働き方や収入にかかわる迷い。条件の比較だけでは決めきれないときに。', slugs: ['tenshoku', 'shukatsu', 'fukugyo', 'dokuritsu', 'manabi', 'taishoku', 'yasumu', 'naitei', 'tenkin', 'shikaku', 'ryugaku', 'shingaku', 'fukugyo-kaisha'] },
+  { id: 'love', name: '恋愛・家族', lead: '大切な人との関係にかかわる迷い。気持ちと現実のあいだで揺れるときに。', slugs: ['renai', 'kekkon', 'wakare', 'kaigo', 'kokuhaku', 'present', 'kekkonshiki', 'fukuen'] },
+  { id: 'life', name: '暮らし・お金・人づきあい', lead: '毎日の土台にかかわる迷い。小さく見えて、あとから効いてくる選択に。', slugs: ['hikkoshi', 'okane', 'ningen', 'kuruma', 'nemurenai', 'iku', 'kotowaru', 'renraku', 'ayamaru', 'kaiyaku', 'ryokou', 'toshi', 'hoken', 'kasu', 'nomikai', 'pet'] },
 ];
 
 function groupedWorries() {
@@ -712,6 +723,56 @@ function groupedWorries() {
   const rest = worries.filter((w) => !grouped.has(w.slug));
   if (rest.length) groups.push({ id: 'other', name: 'そのほかの迷い', lead: '', items: rest });
   return groups;
+}
+
+// ---- 共通の回遊ブロック「次の迷い」（全生成ページの末尾、フッター直前） ----
+// 主力セットは llms.txt の掲載選定と同じ顔ぶれにそろえる。順位やランキングの見せ方はしない。
+const POPULAR_WORRIES = ['tenshoku', 'renai', 'okane', 'hikkoshi', 'nemurenai'];
+
+// そのページで既に出ている迷い（起点）: 迷いページは自分自身、カードページは「関連する迷い」、記事は「関係する迷い別ガイド」
+function nextWorrySeeds(path) {
+  const worry = path.match(/\/worry-([a-z-]+)$/)?.[1];
+  if (worry) return [worry];
+  const card = path.match(/\/cards\/((?:ar|cu|wa|sw|pe)\d{2})$/)?.[1];
+  if (card) return cardWorryLinks[card] || [];
+  const article = path.match(/\/articles\/([a-z0-9-]+)$/)?.[1];
+  if (article) return articles.find((a) => a.slug === article)?.worries || [];
+  return [];
+}
+
+function nextWorriesHtml(path) {
+  const base = path.startsWith('/articles/') ? '../cards/' : './';
+  const seeds = nextWorrySeeds(path);
+  const shown = new Set(seeds);
+  const item = (w) => `<li><a href="${base}worry-${w.slug}">${esc(w.h1)}</a></li>`;
+  const popular = POPULAR_WORRIES.map((s) => worryBySlug.get(s)).filter((w) => w && !shown.has(w.slug));
+  popular.forEach((w) => shown.add(w.slug));
+  // 同じジャンル: 起点の迷いが属するグループ（WORRY_GROUPS）から、表示済みを除いて最大3件
+  let genreName = '';
+  let genreItems = [];
+  for (const seed of seeds) {
+    const g = groupedWorries().find((x) => x.items.some((w) => w.slug === seed));
+    if (!g) continue;
+    const picks = g.items.filter((w) => !shown.has(w.slug)).slice(0, 3);
+    if (picks.length) {
+      genreName = g.id === 'other' ? g.name : `${g.name}の迷い`;
+      genreItems = picks;
+      break;
+    }
+  }
+  if (!popular.length && !genreItems.length) return '';
+  return `<section class="next-worries">
+${kick('NEXT WORRIES')}
+<h2>次の迷い</h2>
+<h3>よくある迷い</h3>
+<ul>
+${popular.map(item).join('\n')}
+</ul>${genreItems.length ? `
+<h3>${esc(genreName)}</h3>
+<ul>
+${genreItems.map(item).join('\n')}
+</ul>` : ''}
+</section>`;
 }
 
 function firstSentence(text) {
