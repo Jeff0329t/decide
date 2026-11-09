@@ -1575,6 +1575,7 @@ function renderDetail() {
         ${completionRemindHtml(log)}
         <div data-completion-article></div>
         <div class="completion-actions"><button class="button decide-confirm completion-decide" data-action="satisfied" aria-label="DECIDE. 押して、完了する">${decideWordmark()}<small class="completion-decide-hint" aria-hidden="true">押して、完了する</small></button></div>
+        <button type="button" class="completion-save-image" data-action="save-result-image" data-id="${esc(log.id)}">結果を画像で保存</button>
       </div>
     </section>`;
     app.querySelector('[data-completion-title]').textContent=DECIDE_DECISION.decisionText(log);
@@ -1926,6 +1927,103 @@ async function createShareImageBlob(data) {
   ctx.save(); ctx.translate(72,1218); ctx.rotate(-.012); ctx.fillStyle=YELLOW; ctx.fillRect(10,10,936,84); ctx.fillStyle=CREAM; ctx.fillRect(0,0,936,84); ctx.fillStyle=INK; ctx.font=`700 22px ${SERIF}`; ctx.textBaseline='middle'; ctx.fillText('DECIDED',28,42); ctx.font=`700 36px ${MINCHO}`; ctx.fillText(data.decision||'',180,44,730); ctx.restore();
   return await new Promise(resolve=>canvas.toBlob(resolve,'image/png',.94));
 }
+function canvasTextLines(ctx,text,maxWidth,maxLines){
+  const lines=[]; let rest=String(text||'');
+  while(rest&&lines.length<maxLines){
+    let line='';
+    for(const char of rest){ const next=line+char; if(ctx.measureText(next).width>maxWidth&&line)break; line=next; }
+    if(!line)line=rest[0];
+    lines.push(line); rest=rest.slice(line.length);
+  }
+  if(rest&&lines.length){ let last=lines[lines.length-1]; while(last&&ctx.measureText(`${last}…`).width>maxWidth)last=last.slice(0,-1); lines[lines.length-1]=`${last}…`; }
+  return lines;
+}
+// 完了画面の「結果を画像で保存」用。クリーム地に文字とカードだけを置く静かな結果カードを端末内だけで生成する（サーバー送信なし）。
+async function createResultImageBlob(log) {
+  try{ await document.fonts?.ready; }catch{}
+  const canvas=document.createElement('canvas'); canvas.width=1080; canvas.height=1350; const ctx=canvas.getContext('2d');
+  const BG='#f2efe7', INK='#0b0b0b', NAME='#4f4a41', MUTED='#6b6458', FOOT='#8a8378', RED='#e03c1e', FRAME='rgba(11,11,11,.55)';
+  const SERIF='Didot,"Bodoni 72","Bodoni MT",serif', MINCHO='"Hiragino Mincho ProN","Yu Mincho",serif';
+  const setSpacing=px=>{ try{ ctx.letterSpacing=px; }catch{} };
+  ctx.fillStyle=BG; ctx.fillRect(0,0,1080,1350);
+  ctx.textBaseline='alphabetic';
+  // ロゴ: 上部中央、明朝系・字間広め
+  ctx.fillStyle=INK; ctx.font=`700 84px ${SERIF}`; ctx.textAlign='center'; setSpacing('14px');
+  ctx.fillText('DECIDE.',540,158);
+  setSpacing('0px');
+  const cards=shareCards((log.nodes||[]).slice(0,2));
+  const duel=cards.length>1;
+  const cardWidth=duel?320:400; const cardHeight=Math.round(cardWidth*1.7); const gap=duel?80:0;
+  const total=cardWidth*cards.length+gap*Math.max(0,cards.length-1); const startX=(1080-total)/2; const cardsTop=200;
+  const drawCard=async(card,cx)=>{
+    ctx.save(); ctx.translate(cx+cardWidth/2,cardsTop+cardHeight/2);
+    try{ const image=await loadShareImage(card.image); if(card.orientation==='reversed')ctx.rotate(Math.PI); ctx.drawImage(image,-cardWidth/2,-cardHeight/2,cardWidth,cardHeight); }catch{}
+    ctx.restore();
+    ctx.strokeStyle=FRAME; ctx.lineWidth=1.5; ctx.strokeRect(cx-.75,cardsTop-.75,cardWidth+1.5,cardHeight+1.5);
+  };
+  let nextY;
+  if(!duel){
+    const card=cards[0];
+    await drawCard(card,startX);
+    // カード名: 小さく薄く控えめに
+    ctx.fillStyle=NAME; ctx.font=`500 42px ${MINCHO}`; ctx.textAlign='center';
+    ctx.fillText(`${card.name}${card.orientation==='reversed'?'（逆位置）':''}`,540,cardsTop+cardHeight+92);
+    nextY=cardsTop+cardHeight+92;
+  }else{
+    let labelLines=1;
+    for(const [index,card] of cards.entries()){
+      const cx=startX+index*(cardWidth+gap);
+      await drawCard(card,cx);
+      const nodeLabel=DECIDE_DECISION.nodeLabel(log,(log.nodes||[])[index]||{},index);
+      const labelParts=nodeLabel.split('：');
+      const labelText=labelParts.length>1?labelParts[0]:`選択肢${index?'B':'A'}`;
+      const optionName=labelParts.length>1?labelParts.slice(1).join('：'):card.name;
+      ctx.fillStyle=MUTED; ctx.font=`700 24px ${MINCHO}`; ctx.textAlign='center';
+      ctx.fillText(labelText,cx+cardWidth/2,cardsTop+cardHeight+52);
+      ctx.fillStyle=INK; ctx.font=`700 36px ${MINCHO}`;
+      const nameLines=canvasTextLines(ctx,optionName,cardWidth+56,2);
+      labelLines=Math.max(labelLines,nameLines.length);
+      nameLines.forEach((line,lineIndex)=>ctx.fillText(line,cx+cardWidth/2,cardsTop+cardHeight+102+lineIndex*44));
+    }
+    nextY=cardsTop+cardHeight+102+(labelLines-1)*44;
+  }
+  // 迷い
+  ctx.font=`500 36px ${MINCHO}`;
+  const questionLine=canvasTextLines(ctx,`迷い　${log.title||'決定の記録'}`,980,1)[0]||'';
+  const questionY=nextY+84;
+  ctx.fillStyle=MUTED; ctx.textAlign='center'; ctx.fillText(questionLine,540,questionY);
+  // 決断: 主役。右横に赤いDECIDED判子を証書に押す位置で重ねる
+  let decisionSize=duel?58:62;
+  const decisionFull=`決断　${DECIDE_DECISION.decisionText(log)}`;
+  ctx.font=`700 ${decisionSize}px ${MINCHO}`;
+  const fullWidth=ctx.measureText(decisionFull).width;
+  if(fullWidth>736){ decisionSize=Math.max(40,Math.floor(decisionSize*736/fullWidth)); ctx.font=`700 ${decisionSize}px ${MINCHO}`; }
+  const decisionLine=canvasTextLines(ctx,decisionFull,736,1)[0]||'';
+  const decisionWidth=ctx.measureText(decisionLine).width;
+  const decisionY=questionY+108;
+  const stampW=330, stampH=122;
+  const textX=(1080-(decisionWidth+stampW-6))/2;
+  ctx.fillStyle=INK; ctx.textAlign='left'; ctx.fillText(decisionLine,textX,decisionY);
+  ctx.save(); ctx.translate(textX+decisionWidth+stampW/2-6,decisionY-26); ctx.rotate(-.10);
+  ctx.strokeStyle=RED; ctx.lineWidth=5; ctx.strokeRect(-stampW/2,-stampH/2,stampW,stampH);
+  ctx.fillStyle=RED; ctx.font=`700 56px ${SERIF}`; ctx.textAlign='center'; ctx.textBaseline='middle'; setSpacing('4px');
+  ctx.fillText('DECIDED',0,4);
+  setSpacing('0px'); ctx.restore(); ctx.textBaseline='alphabetic';
+  // フッター: 日付とURLを1行に、小さくグレーで
+  const date=new Date(log.createdAt);
+  const dateText=Number.isNaN(date.getTime())?'':`${date.getFullYear()}.${String(date.getMonth()+1).padStart(2,'0')}.${String(date.getDate()).padStart(2,'0')}`;
+  ctx.fillStyle=FOOT; ctx.font=`500 28px ${SERIF}`; ctx.textAlign='left';
+  ctx.fillText(dateText?`${dateText}　decisionprocess.net`:'decisionprocess.net',startX,1292);
+  return await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+}
+async function saveResultImage(id) {
+  const log=logs.find(item=>item.id===id) || logs.find(item=>item.id===completionId);
+  if(!log){ toast('記録が見つかりません'); return; }
+  const blob=await createResultImageBlob(log).catch(()=>null);
+  if(!blob){ toast('画像を作れませんでした'); return; }
+  const link=document.createElement('a'); link.href=URL.createObjectURL(blob); link.download='decide-result.png'; link.click(); setTimeout(()=>URL.revokeObjectURL(link.href),1000);
+  toast('画像を保存しました');
+}
 // Instagramストーリーズ用 9:16（上下約250pxは安全域として空ける）
 async function createStoryImageBlob(data, theme) {
   const W=1080, H=1920; const canvas=document.createElement('canvas'); canvas.width=W; canvas.height=H; const ctx=canvas.getContext('2d');
@@ -2203,6 +2301,7 @@ document.addEventListener('click', event => {
   else if (action === 'due-review-open') { const log=logs.find(item=>item.id===el.dataset.id); closeModal('#due-review-modal'); const saved=!log || commitLogChange(log,REMIND_KEYS,item=>writeRemind(item,null,null)); completionId=null; detailReturn='history'; navigate('detail',el.dataset.id); if(!saved)toast(SAVE_FAILED_MESSAGE); }
   else if (action === 'due-review-later') { const log=logs.find(item=>item.id===el.dataset.id); const saved=!log || commitLogChange(log,REMIND_KEYS,item=>writeRemind(item,new Date(Date.now()+3*DAY_MS).toISOString(),3)); if(!saved)toast(SAVE_FAILED_MESSAGE); else { closeModal('#due-review-modal'); toast(log ? `${formatDate(log.remindAt)} ごろにまたお聞きします` : '3日後にまたお聞きします'); } }
   else if (action === 'satisfied') sealCompletion(el);
+  else if (action === 'save-result-image') saveResultImage(el.dataset.id);
   else if (action === 'farewell-share-instagram') shareFarewellInstagram();
   else if (action === 'farewell-home') { closeFarewell(); activeSession=null; completionId=null; homeStage='quickstart'; navigate('home'); }
   else if (action === 'deck-preset') selectDeckMode(el.dataset.value);

@@ -4004,6 +4004,9 @@ body[data-detail-mode="complete"] .app-shell { padding-bottom: 0; }
 
 .completion-dock .completion-sub .button { border-radius: 0; border-width: 2px; font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; }
 
+.completion-save-image { align-self: center; border: 0; background: none; padding: 6px 12px; color: #f4efe3; font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; font-size: .85rem; font-weight: 700; letter-spacing: .08em; text-decoration: underline; text-underline-offset: 5px; cursor: pointer; }
+.completion-save-image:focus-visible { outline: 3px solid #f1d625; outline-offset: 2px; }
+
 /* Prepare screen: match editorial black / yellow style, 2026-10-07. */
 .prepare-screen .eyebrow {
   display: inline-block; margin: 14px 0 10px; padding: 5px 10px 4px; background: #0b0b0b; color: #f1d527;
