@@ -82,6 +82,9 @@ blockquote{margin:16px 0;padding:4px 16px;border-left:4px solid var(--accent);co
 .alist li{padding:12px 0;border-bottom:1px solid var(--line)}
 .alist h3{margin:0 0 4px}
 .alist p{margin:0}
+.next-worries h3{margin:24px 0 0;font-size:.95rem}
+.next-worries ul{margin:8px 0 0;padding:0;list-style:none}
+.next-worries li{padding:8px 0;border-bottom:1px solid var(--line)}
 footer{max-width:760px;margin:0 auto;padding:18px 16px 48px;border-top:2px solid var(--ink);font-size:.78rem;color:var(--muted)}
 footer p{margin:4px 0}
 .topbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}
@@ -245,10 +248,10 @@ html:active-view-transition-type(back)::view-transition-new(root){animation-name
 <header class="idx-head">
 <p class="kicker">INDEX — CARDS &amp; WORRIES</p>
 <h1>カード・迷い一覧</h1>
-<p class="idx-sub">タロット78枚の意味と、27の迷い別ガイド</p>
+<p class="idx-sub">タロット78枚の意味と、40の迷い別ガイド</p>
 <p class="idx-lead">迷っていることに近いテーマから考え方を読むか、引いたカードの意味を調べられます。カードは未来の予言ではなく、見落としに気づくための問いかけです。</p>
 <nav class="doors" aria-label="探し方を選ぶ">
-<a class="door dark" href="#worries"><span class="kicker">BY WORRY</span><strong>迷いから探す</strong><span>転職・恋愛・お金ほか、27のテーマ</span></a>
+<a class="door dark" href="#worries"><span class="kicker">BY WORRY</span><strong>迷いから探す</strong><span>転職・恋愛・お金ほか、40のテーマ</span></a>
 <a class="door lite" href="#cards"><span class="kicker">BY CARD</span><strong>カードから探す</strong><span>引いたカードの意味を調べる</span></a>
 </nav>
 </header>
@@ -264,6 +267,12 @@ html:active-view-transition-type(back)::view-transition-new(root){animation-name
 <li><a class="wcell" href="./worry-manabi"><picture><source type="image/webp" srcset="../assets/rider-waite/pe11-320.webp 320w, ../assets/rider-waite/pe11-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/pe11.jpg" alt="ペンタクルのペイジ（Page of Pentacles）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>学び直し</b><small>この学びを終えたとき、自分はどんな状態になっていたいか？</small></span></a></li>
 <li><a class="wcell" href="./worry-taishoku"><picture><source type="image/webp" srcset="../assets/rider-waite/cu08-320.webp 320w, ../assets/rider-waite/cu08-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/cu08.jpg" alt="カップの8（Eight of Cups）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>退職</b><small>辞めたい理由を一つだけ挙げるなら何か？</small></span></a></li>
 <li><a class="wcell" href="./worry-yasumu"><picture><source type="image/webp" srcset="../assets/rider-waite/sw04-320.webp 320w, ../assets/rider-waite/sw04-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/sw04.jpg" alt="ソードの4（Four of Swords）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>休む</b><small>熱、睡眠、食欲、集中力は、それぞれ何点くらいか？</small></span></a></li>
+<li><a class="wcell" href="./worry-naitei"><picture><source type="image/webp" srcset="../assets/rider-waite/pe01-320.webp 320w, ../assets/rider-waite/pe01-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/pe01.jpg" alt="ペンタクルのエース（Ace of Pentacles）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>内定</b><small>引っかかっている条件は、交渉すれば動くものか、それとも会社の本質にかかわるものか？</small></span></a></li>
+<li><a class="wcell" href="./worry-tenkin"><picture><source type="image/webp" srcset="../assets/rider-waite/ar10-320.webp 320w, ../assets/rider-waite/ar10-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/ar10.jpg" alt="運命の輪（Wheel of Fortune）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>転勤</b><small>赴任先での役割と期間は、自分のキャリアにとってどんな意味を持つか？</small></span></a></li>
+<li><a class="wcell" href="./worry-shikaku"><picture><source type="image/webp" srcset="../assets/rider-waite/pe08-320.webp 320w, ../assets/rider-waite/pe08-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/pe08.jpg" alt="ペンタクルの8（Eight of Pentacles）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>資格</b><small>その資格を取ったあと、自分は何を変えたいのか？</small></span></a></li>
+<li><a class="wcell" href="./worry-ryugaku"><picture><source type="image/webp" srcset="../assets/rider-waite/ar00-320.webp 320w, ../assets/rider-waite/ar00-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/ar00.jpg" alt="愚者（The Fool）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>留学</b><small>留学で本当に手に入れたいのは、語学力か、学位か、経験そのものか？</small></span></a></li>
+<li><a class="wcell" href="./worry-shingaku"><picture><source type="image/webp" srcset="../assets/rider-waite/ar05-320.webp 320w, ../assets/rider-waite/ar05-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/ar05.jpg" alt="教皇（The Hierophant）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>進学</b><small>学びたいのは、仕事に直結する知識か、自分の世界を広げる教養か？</small></span></a></li>
+<li><a class="wcell" href="./worry-fukugyo-kaisha"><picture><source type="image/webp" srcset="../assets/rider-waite/sw07-320.webp 320w, ../assets/rider-waite/sw07-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/sw07.jpg" alt="ソードの7（Seven of Swords）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>副業を言う</b><small>自社の就業規則は、副業について実際どう定めているか？</small></span></a></li>
 </ul>
 <h3 class="grp"><span class="kicker">LOVE</span>恋愛・家族</h3>
 <ul class="wgrid">
@@ -273,6 +282,8 @@ html:active-view-transition-type(back)::view-transition-new(root){animation-name
 <li><a class="wcell" href="./worry-kaigo"><picture><source type="image/webp" srcset="../assets/rider-waite/pe10-320.webp 320w, ../assets/rider-waite/pe10-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/pe10.jpg" alt="ペンタクルの10（Ten of Pentacles）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>介護</b><small>今の介護の形を、一年後も続けられそうか？</small></span></a></li>
 <li><a class="wcell" href="./worry-kokuhaku"><picture><source type="image/webp" srcset="../assets/rider-waite/wa01-320.webp 320w, ../assets/rider-waite/wa01-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/wa01.jpg" alt="ワンドのエース（Ace of Wands）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>告白</b><small>この気持ちは、いつから続いているか？</small></span></a></li>
 <li><a class="wcell" href="./worry-present"><picture><source type="image/webp" srcset="../assets/rider-waite/cu06-320.webp 320w, ../assets/rider-waite/cu06-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/cu06.jpg" alt="カップの6（Six of Cups）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>プレゼント</b><small>相手が最近、困っていることやほしそうにしていたものは何か？</small></span></a></li>
+<li><a class="wcell" href="./worry-kekkonshiki"><picture><source type="image/webp" srcset="../assets/rider-waite/wa04-320.webp 320w, ../assets/rider-waite/wa04-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/wa04.jpg" alt="ワンドの4（Four of Wands）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>結婚式</b><small>この式は、誰のために、何のために挙げるのか？</small></span></a></li>
+<li><a class="wcell" href="./worry-fukuen"><picture><source type="image/webp" srcset="../assets/rider-waite/cu06-320.webp 320w, ../assets/rider-waite/cu06-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/cu06.jpg" alt="カップの6（Six of Cups）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>復縁</b><small>戻りたいのは、相手そのものか、あの頃の安心感か？</small></span></a></li>
 </ul>
 <h3 class="grp"><span class="kicker">LIFE</span>暮らし・お金・人づきあい</h3>
 <ul class="wgrid">
@@ -287,6 +298,11 @@ html:active-view-transition-type(back)::view-transition-new(root){animation-name
 <li><a class="wcell" href="./worry-ayamaru"><picture><source type="image/webp" srcset="../assets/rider-waite/ar14-320.webp 320w, ../assets/rider-waite/ar14-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/ar14.jpg" alt="節制（Temperance）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>謝る</b><small>相手に起きたことで、一番重かったのは何か？</small></span></a></li>
 <li><a class="wcell" href="./worry-kaiyaku"><picture><source type="image/webp" srcset="../assets/rider-waite/pe04-320.webp 320w, ../assets/rider-waite/pe04-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/pe04.jpg" alt="ペンタクルの4（Four of Pentacles）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>解約</b><small>直近3か月で、実際に何回使ったか？</small></span></a></li>
 <li><a class="wcell" href="./worry-ryokou"><picture><source type="image/webp" srcset="../assets/rider-waite/wa03-320.webp 320w, ../assets/rider-waite/wa03-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/wa03.jpg" alt="ワンドの3（Three of Wands）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>旅行</b><small>この旅で一番得たいものは、休息か、非日常か、誰かとの時間か？</small></span></a></li>
+<li><a class="wcell" href="./worry-toshi"><picture><source type="image/webp" srcset="../assets/rider-waite/pe01-320.webp 320w, ../assets/rider-waite/pe01-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/pe01.jpg" alt="ペンタクルのエース（Ace of Pentacles）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>投資</b><small>投資に回せるのは、生活に影響しない余裕資金のうち、いくらまでか？</small></span></a></li>
+<li><a class="wcell" href="./worry-hoken"><picture><source type="image/webp" srcset="../assets/rider-waite/pe04-320.webp 320w, ../assets/rider-waite/pe04-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/pe04.jpg" alt="ペンタクルの4（Four of Pentacles）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>保険</b><small>自分が一番怖いのは、どの場面で、いくらの不足が出ることか？</small></span></a></li>
+<li><a class="wcell" href="./worry-kasu"><picture><source type="image/webp" srcset="../assets/rider-waite/pe06-320.webp 320w, ../assets/rider-waite/pe06-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/pe06.jpg" alt="ペンタクルの6（Six of Pentacles）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>お金を貸す</b><small>頼まれた金額は、返ってこなくても生活に響かない範囲か？</small></span></a></li>
+<li><a class="wcell" href="./worry-nomikai"><picture><source type="image/webp" srcset="../assets/rider-waite/cu03-320.webp 320w, ../assets/rider-waite/cu03-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/cu03.jpg" alt="カップの3（Three of Cups）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>飲み会</b><small>今日の体調で、最後まで楽しめそうか？</small></span></a></li>
+<li><a class="wcell" href="./worry-pet"><picture><source type="image/webp" srcset="../assets/rider-waite/ar03-320.webp 320w, ../assets/rider-waite/ar03-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/ar03.jpg" alt="女帝（The Empress）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>ペット</b><small>毎日の世話の時間を、今の生活のどこに置くのか？</small></span></a></li>
 </ul>
 <h3 class="grp"><span class="kicker">OTHER</span>そのほかの迷い</h3>
 <ul class="wgrid">
@@ -294,7 +310,7 @@ html:active-view-transition-type(back)::view-transition-new(root){animation-name
 <li><a class="wcell" href="./worry-mochiie"><picture><source type="image/webp" srcset="../assets/rider-waite/pe02-320.webp 320w, ../assets/rider-waite/pe02-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/pe02.jpg" alt="ペンタクルの2（Two of Pentacles）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>持ち家・賃貸</b><small>同じ条件で比べたとき、10年の総額の差はどれくらいか？</small></span></a></li>
 <li><a class="wcell" href="./worry-jikka"><picture><source type="image/webp" srcset="../assets/rider-waite/ar00-320.webp 320w, ../assets/rider-waite/ar00-480.webp 480w" sizes="48px"><img src="../assets/rider-waite/ar00.jpg" alt="愚者（The Fool）のカード画像。ライダー版タロット" width="300" height="520" loading="lazy" decoding="async"></picture><span><b>実家を出る</b><small>一人暮らしの初期費用と月々の生活費を、数字で言えるか？</small></span></a></li>
 </ul>
-<p class="more"><a href="./worries">27の迷いを、説明つきで比べる →</a></p>
+<p class="more"><a href="./worries">40の迷いを、説明つきで比べる →</a></p>
 </section>
 <section class="idx-sec" id="cards">
 <div class="sec-head"><p class="kicker">02 — BY CARD</p><h2>カードから探す</h2></div>
@@ -408,7 +424,7 @@ html:active-view-transition-type(back)::view-transition-new(root){animation-name
 </section>
 <section class="idx-sec" id="articles">
 <div class="sec-head"><p class="kicker">03 — READING</p><h2>読みもの</h2></div>
-<ul class="alist"><li><a href="../articles/tsuzukeru-yameru">続けるか、やめるかで迷ったときに。執着を手放す判断基準</a></li><li><a href="../articles/tarot-tool-riyuu">占いは信じない私が、タロットを意思決定ツールにした理由</a></li><li><a href="../articles/soudan-dekinakunaru">相談するほど決断できなくなる理由と、自分の声の取り戻し方</a></li><li><a href="../articles/shigoto-tsuzukeru">今の仕事を続けるか迷うときに。キャリアの踊り場の見極め方</a></li><li><a href="../articles/seikai-sagasu">正解を探すのをやめると、決断はどう変わるか</a></li></ul>
+<ul class="alist"><li><a href="../articles/tarot-shindan-muryou">無料タロット診断の種類と違い——当たる感の正体と決断への使い方</a></li><li><a href="../articles/tsuzukeru-yameru">続けるか、やめるかで迷ったときに。執着を手放す判断基準</a></li><li><a href="../articles/tarot-tool-riyuu">占いは信じない私が、タロットを意思決定ツールにした理由</a></li><li><a href="../articles/soudan-dekinakunaru">相談するほど決断できなくなる理由と、自分の声の取り戻し方</a></li><li><a href="../articles/shigoto-tsuzukeru">今の仕事を続けるか迷うときに。キャリアの踊り場の見極め方</a></li></ul>
 <p class="more"><a href="../articles/">記事の一覧 →</a></p>
 </section>
 <aside class="idx-cta" aria-label="DECIDE. で決める">
@@ -417,6 +433,18 @@ html:active-view-transition-type(back)::view-transition-new(root){animation-name
 <a href="../?go=home">カードを引いて決める<span aria-hidden="true">→</span></a>
 </aside>
 <script>(function(){var box=document.querySelector('.csearch');if(!box)return;box.hidden=false;var input=box.querySelector('input'),count=box.querySelector('.cs-count'),empty=document.querySelector('.cs-empty'),items=[].slice.call(document.querySelectorAll('.cgrid li')),suits=[].slice.call(document.querySelectorAll('.suit'));function norm(s){return String(s).toLowerCase().replace(/\s+/g,'').replace(/[\u30a1-\u30f6]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-96)})}items.forEach(function(li){li._q=norm(li.getAttribute('data-q'))});input.addEventListener('input',function(){var q=norm(input.value),n=0;items.forEach(function(li){var hit=!q||li._q.indexOf(q)>-1;li.hidden=!hit;if(hit)n++});suits.forEach(function(s){s.hidden=!!q&&!s.querySelector('.cgrid li:not([hidden])')});count.textContent=q?n+'枚見つかりました':'';empty.hidden=n>0})})();(function(){var main=document.querySelector('main.idx');if(!main)return;var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,how=reduce?'auto':'smooth',origin=null;var back=document.createElement('button');back.type='button';back.className='jump-back';back.hidden=true;document.body.appendChild(back);var landing=null,landTimer=0;function land(){clearTimeout(landTimer);if(landing){flash(landing);landing=null}}window.addEventListener('scrollend',land);function flash(t){var h=t.querySelector('.suit-head,.sec-head')||t;h.classList.remove('flash');void h.offsetWidth;h.classList.add('flash')}main.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href^="#"]');if(!a)return;var t=document.getElementById(a.getAttribute('href').slice(1));if(!t)return;e.preventDefault();var dist=t.getBoundingClientRect().top,down=dist>0;origin=window.scrollY;t.scrollIntoView({behavior:how,block:'start'});history.replaceState(null,'','#'+t.id);clearTimeout(landTimer);if(reduce||Math.abs(dist)<80){flash(t)}else{landing=t;landTimer=setTimeout(land,'onscrollend' in window?3000:900)}back.textContent=(down?'↑':'↓')+' 元の場所へ戻る';back.hidden=false});back.addEventListener('click',function(){if(origin!==null)window.scrollTo({top:origin,behavior:how});origin=null;back.hidden=true});var bar=document.querySelector('.suits'),links={},cur=null,suits=[].slice.call(document.querySelectorAll('.suit'));[].forEach.call(document.querySelectorAll('.suits a'),function(a){links[a.getAttribute('href').slice(1)]=a});function setCur(id){if(id===cur)return;cur=id;for(var k in links){if(k===id)links[k].setAttribute('aria-current','true');else links[k].removeAttribute('aria-current')}var a=id&&links[id];if(a&&bar)bar.scrollTo({left:a.offsetLeft-(bar.clientWidth-a.offsetWidth)/2,behavior:how})}function spy(){var line=(bar?bar.getBoundingClientRect().bottom:0)+24,id=null,last=null;suits.forEach(function(s){if(s.hidden)return;last=s;if(s.getBoundingClientRect().top<=line)id=s.id});if(last&&last.getBoundingClientRect().bottom<line)id=null;setCur(id)}var tick=false;window.addEventListener('scroll',function(){if(tick)return;tick=true;requestAnimationFrame(function(){tick=false;spy()})},{passive:true});var q=document.getElementById('card-q');if(q)q.addEventListener('input',spy);spy()})();</script>
+<section class="next-worries">
+<p class="kicker sec-k">NEXT WORRIES</p>
+<h2>次の迷い</h2>
+<h3>よくある迷い</h3>
+<ul>
+<li><a href="./worry-tenshoku">転職するか迷うとき</a></li>
+<li><a href="./worry-renai">恋愛で迷うとき</a></li>
+<li><a href="./worry-okane">大きな買い物・お金の使い方で迷うとき</a></li>
+<li><a href="./worry-hikkoshi">引っ越しを決められないとき</a></li>
+<li><a href="./worry-nemurenai">考えすぎて眠れない夜の決断</a></li>
+</ul>
+</section>
 </main>
 <footer>
 <p>images: sixseeds/tarot-api, public domain（ライダー＝ウェイト＝スミス版 1909年）</p>
