@@ -4556,6 +4556,11 @@ body.tutorial-running :is(.draw-screen, .map-screen) { padding-top: calc(max(8px
 .save-form .remind-status { margin-top: 8px; }
 .completion-remind { position: relative; margin: 0; padding: 18px 14px 12px; border: 2px solid #0b0b0b; background: #f4efe3; color: #4a453c; box-shadow: 5px 5px 0 #f1d527; font-size: .85rem; line-height: 1.6; text-align: left; transform: rotate(.4deg); }
 .completion-remind b { color: #0b0b0b; background: linear-gradient(transparent 55%, #f1d527 55%); }
+.completion-due-review { margin: 0; padding: 12px 14px; border: 2px solid #0b0b0b; background: #f4efe3; color: #4a453c; box-shadow: 5px 5px 0 #0b0b0b; text-align: left; }
+.due-strip-copy { margin: 0 0 10px; font-size: .88rem; line-height: 1.6; }
+.due-strip-copy strong { color: #0b0b0b; }
+.due-strip-actions { display: flex; gap: 8px; }
+.due-strip-actions .button { min-height: 40px; padding: 6px 14px; font-size: .85rem; }
 body[data-view="decide"] .decide-screen .save-form .remind-date { color: #0b0b0b; font-weight: 800; }
 body[data-view="decide"] .decide-screen .save-form .remind-date.selected { color: #f1d527; }
 

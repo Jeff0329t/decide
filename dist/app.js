@@ -1597,9 +1597,11 @@ function renderDetail() {
         <div data-completion-article></div>
         <div class="completion-actions"><button class="button decide-confirm completion-decide" data-action="satisfied" aria-label="DECIDE. 押して、完了する">${decideWordmark()}<small class="completion-decide-hint" aria-hidden="true">押して、完了する</small></button></div>
         <button type="button" class="completion-save-image" data-action="save-result-image" data-id="${esc(log.id)}">結果を画像で保存</button>
+        <div data-completion-due-review></div>
       </div>
     </section>`;
     app.querySelector('[data-completion-title]').textContent=DECIDE_DECISION.decisionText(log);
+    fillDueReviewStrip(log.id);
     window.DECIDE_LEARN?.pickArticle?.(log.genre).then(article=>{
       const slot=app.querySelector('[data-completion-article]');
       if(!article || !slot || completionId!==log.id)return;
@@ -1656,7 +1658,7 @@ function draftRemindAt(from=new Date().toISOString()) {
   const [y,m,d]=draftRemind.date.split('-').map(Number); const now=new Date();
   return new Date(y,m-1,d,now.getHours(),now.getMinutes()).toISOString();
 }
-const remindMessage=()=>window.DECIDE_EMAIL_REMINDERS?.isOn?.() ? '選んだ日の夕方に、｜記録の題名を添えた｜メールでお届けします。' : 'アプリを開いたときに、｜「その後どう？」と｜お聞きします。';
+const remindMessage=()=>window.DECIDE_EMAIL_REMINDERS?.isOn?.() ? '選んだ日の夕方に、｜記録の題名を添えた｜メールでお届けします。' : 'カードを引いて記録したあとに、｜「そういえば、どう？」と｜お聞きします。';
 function draftRemindHtml() {
   const at=new Date(draftRemindAt());
   return `<section class="remind-picker" data-draft-remind aria-labelledby="remind-title">
@@ -1685,14 +1687,23 @@ function dueReviewLog() {
   const now=Date.now();
   return logs.filter(log=>!log.review && log.remindAt && new Date(log.remindAt).getTime()<=now).sort((a,b)=>new Date(a.remindAt)-new Date(b.remindAt))[0] || null;
 }
-function checkDueReview() {
-  if(document.querySelector('.modal-wrap, .tutorial-intro, .farewell'))return;
-  const log=dueReviewLog(); if(!log)return;
-  const wrap=document.createElement('div'); wrap.className='modal-wrap'; wrap.id='due-review-modal';
-  wrap.innerHTML=`<button class="modal-shade" data-action="due-review-later" data-id="${esc(log.id)}" aria-label="あとで"></button><section class="settings-sheet confirm-sheet due-review-sheet" role="dialog" aria-modal="true" aria-labelledby="due-review-title"><div class="sheet-handle"></div><p class="due-review-kicker">LOOK BACK</p><div class="sheet-head"><h2 id="due-review-title">あの決断、その後どうですか？</h2><button data-action="due-review-later" data-id="${esc(log.id)}" aria-label="閉じる">×</button></div><div class="due-review-log"><time>${formatDate(log.createdAt)}</time><strong data-due-title></strong><span data-due-decision></span></div><p class="due-review-note">結果がどうであれ、振り返ることで次の決断が少しラクになります。</p><div class="confirm-actions"><button class="button" data-action="due-review-open" data-id="${esc(log.id)}">振り返る</button><button class="button ghost" data-action="due-review-later" data-id="${esc(log.id)}">あとで（3日後）</button></div></section>`;
-  wrap.querySelector('[data-due-title]').textContent=log.title || '無題の決断';
-  wrap.querySelector('[data-due-decision]').textContent=`結論：${DECIDE_DECISION.decisionText(log)}`;
-  mountModal(wrap,'[data-action="due-review-open"]');
+const DUE_REVIEW_SHOWN_KEY='decide.dueReview.shown.v1';
+// 振り返りのお声がけは、決断を記録し終えた画面でだけ、1日1回までそっと出す（起動時やホームでは出さない）
+function fillDueReviewStrip(currentLogId) {
+  const slot=app.querySelector('[data-completion-due-review]'); if(!slot)return;
+  const log=dueReviewLog(); if(!log || log.id===currentLogId)return;
+  const today=ymd(new Date());
+  if(load(DUE_REVIEW_SHOWN_KEY,'')===today)return;
+  safeSetItem(DUE_REVIEW_SHOWN_KEY,JSON.stringify(today));
+  const aside=document.createElement('aside'); aside.className='completion-due-review';
+  const copy=document.createElement('p'); copy.className='due-strip-copy';
+  copy.append('そういえば、');
+  const strong=document.createElement('strong'); strong.textContent=log.title || '無題の決断'; copy.append(strong);
+  copy.append(' はどうでした？');
+  const actions=document.createElement('div'); actions.className='due-strip-actions';
+  const open=document.createElement('button'); open.type='button'; open.className='button secondary'; open.dataset.action='due-review-open'; open.dataset.id=log.id; open.textContent='振り返る';
+  const later=document.createElement('button'); later.type='button'; later.className='button ghost'; later.dataset.action='due-review-later'; later.dataset.id=log.id; later.textContent='あとで（3日後）';
+  actions.append(open,later); aside.append(copy,actions); slot.replaceWith(aside);
 }
 // The DECIDE. button presses down like a seal before the farewell opens, as it did on the result screen.
 function sealCompletion(button) {
@@ -2294,7 +2305,7 @@ document.addEventListener('click', event => {
   else if (action === 'open-paywall') { closeModal('#settings-modal'); window.DECIDE_ENTITLEMENTS?.openPaywall?.('settings'); }
   else if (action === 'open-settings') openSettings();
   else if (action === 'start') pickDrawMode(el, event);
-  else if (action === 'home') { activeSession=null; completionId=null; homeStage='quickstart'; navigate('home'); requestAnimationFrame(checkDueReview); }
+  else if (action === 'home') { activeSession=null; completionId=null; homeStage='quickstart'; navigate('home'); }
   else if (action === 'nav-back') navigateBack();
   else if (action === 'history') { completionId=null; navigate('history'); }
   else if (action === 'stats') navigate('stats');
@@ -2321,7 +2332,7 @@ document.addEventListener('click', event => {
   else if (action === 'review') setReview(el.dataset.value);
   else if (action === 'draft-remind') setDraftRemind(Number(el.dataset.days));
   else if (action === 'due-review-open') { const log=logs.find(item=>item.id===el.dataset.id); closeModal('#due-review-modal'); const saved=!log || commitLogChange(log,REMIND_KEYS,item=>writeRemind(item,null,null)); completionId=null; detailReturn='history'; navigate('detail',el.dataset.id); if(!saved)toast(SAVE_FAILED_MESSAGE); }
-  else if (action === 'due-review-later') { const log=logs.find(item=>item.id===el.dataset.id); const saved=!log || commitLogChange(log,REMIND_KEYS,item=>writeRemind(item,new Date(Date.now()+3*DAY_MS).toISOString(),3)); if(!saved)toast(SAVE_FAILED_MESSAGE); else { closeModal('#due-review-modal'); toast(log ? `${formatDate(log.remindAt)} ごろにまたお聞きします` : '3日後にまたお聞きします'); } }
+  else if (action === 'due-review-later') { const log=logs.find(item=>item.id===el.dataset.id); const saved=!log || commitLogChange(log,REMIND_KEYS,item=>writeRemind(item,new Date(Date.now()+3*DAY_MS).toISOString(),3)); if(!saved)toast(SAVE_FAILED_MESSAGE); else { closeModal('#due-review-modal'); document.querySelector('.completion-due-review')?.remove(); toast(log ? `${formatDate(log.remindAt)} ごろにまたお聞きします` : '3日後にまたお聞きします'); } }
   else if (action === 'satisfied') sealCompletion(el);
   else if (action === 'save-result-image') saveResultImage(el.dataset.id);
   else if (action === 'farewell-share-instagram') shareFarewellInstagram();
@@ -2509,7 +2520,6 @@ document.addEventListener('click',event=>{
 setTimeout(restoreBlockedSave,1200);
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible')setTimeout(restoreBlockedSave,800); });
 if(shouldAutoStartTutorial())requestAnimationFrame(startTutorialIntro);
-else setTimeout(checkDueReview,900);
 
 /* Touch feel: switches inside a screen keep the page still and give the new choice a small pop. Runs after the click handlers (window bubbles last). */
 const SOFT_SWITCH='[data-action^="stats-"],[data-action="history-mode"],[data-action="deck-preset"],[data-learn="tab"],[data-learn="filter"],[data-learn="article-filter"]';
