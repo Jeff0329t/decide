@@ -876,7 +876,11 @@ function startSession(mode) {
 }
 
 function genreChips() {
-  return `<div class="genre-chips">${DECIDE_DECISION.GENRES.map(genre=>`<button type="button" class="meta-chip" data-action="select-genre" data-value="${genre}" aria-pressed="false">${genre}</button>`).join('')}</div>`;
+  const chips=DECIDE_DECISION.GENRES.map(genre=>{
+    if(genre==='その他' && activeSession?.mode==='two')return `<button type="button" class="meta-chip" data-action="select-yesno" aria-pressed="false">YES／NO</button>`;
+    return `<button type="button" class="meta-chip" data-action="select-genre" data-value="${genre}" aria-pressed="false">${genre}</button>`;
+  }).join('');
+  return `<div class="genre-chips">${chips}</div>`;
 }
 function optionEditor() {
   return `<div class="option-editor"><label><span>選択肢A</span><textarea id="option-1" name="option1" maxlength="30" autocomplete="off" enterkeyhint="done" lang="ja" rows="2" placeholder="例：今の仕事を続ける"></textarea></label><button type="button" class="swap-options" data-action="swap-options" aria-label="選択肢AとBを入れ替える"><span aria-hidden="true">⇅</span></button><label><span>選択肢B</span><textarea id="option-2" name="option2" maxlength="30" autocomplete="off" enterkeyhint="done" lang="ja" rows="2" placeholder="例：新しい仕事に挑戦する"></textarea></label></div>`;
@@ -1295,6 +1299,23 @@ function selectGenre(value) {
   }
   decisionDraft.genre=decisionDraft.genre===value?'':DECIDE_DECISION.validGenre(value);
   restoreDecisionDraft(); sensoryFeedback('tick');
+}
+
+function selectYesNo() {
+  if(currentView!=='prepare-genre' || !activeSession || activeSession.mode!=='two')return;
+  const screen=document.querySelector('.thumb-prepare');
+  if(!screen || screen.classList.contains('is-genre-chosen'))return;
+  captureDecisionDraft();
+  decisionDraft.genre='';
+  decisionDraft.option1='YES';
+  decisionDraft.option2='NO';
+  document.querySelectorAll('[data-action="select-yesno"]').forEach(button=>{ button.classList.add('selected'); button.setAttribute('aria-pressed','true'); });
+  sensoryFeedback('tick');
+  screen.classList.add('is-genre-chosen');
+  const session=activeSession;
+  setTimeout(()=>{
+    if(currentView==='prepare-genre' && activeSession===session && screen.isConnected)navigate('draw');
+  },prefersReducedMotion()?160:360);
 }
 
 function selectPair(index) {
@@ -2291,6 +2312,7 @@ document.addEventListener('click', event => {
   else if (action === 'choose-decision') chooseDecision(el);
   else if (action === 'decide-rechoose') { captureDecisionDraft(); navigate('session'); }
   else if (action === 'select-genre') selectGenre(el.dataset.value);
+  else if (action === 'select-yesno') selectYesNo();
   else if (action === 'select-pair') selectPair(Number(el.dataset.pairIndex));
   else if (action === 'swap-options') swapOptions();
   else if (action === 'recent-option') useRecentChoice(Number(el.dataset.recentIndex));
