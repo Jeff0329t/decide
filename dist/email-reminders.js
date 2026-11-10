@@ -140,7 +140,7 @@
       : !user ? 'Googleでログインすると、メールで受け取れます。'
       : !device ? '端末への設定の保存を許可してください。'
       : !loaded ? error || '設定を確認しています…'
-      : `この端末で選んだ日に、${escape(user.email)} へ、記録の題名を添えて送ります。題名は配信用に保存します。題名以外の記録は載せません。`;
+      : `選んだ日の夕方（19時ごろ）に、その日の分をまとめて、${escape(user.email)} へ、記録の題名を添えて送ります。題名は配信用に保存します。題名以外の記録は載せません。`;
     return `<div class="feedback-setting email-remind-setting" data-email-remind-setting><div><b>メールでリマインド</b><p>${note}</p>${loaded && error ? `<p role="status">${escape(error)}</p>` : ''}${user && available() && error ? '<button type="button" class="text-button" data-email-remind-action="retry">再試行</button>' : ''}${user && available() && loaded ? `<button type="button" class="sync-help-button" data-email-remind-action="stop-all" ${busy?'disabled':''}>ほかの端末の分もまとめて停止</button>` : ''}</div>${loaded ? `<button class="toggle-button ${isOn()?'on':''}" type="button" aria-label="メールでリマインド" data-email-remind-action="toggle" aria-pressed="${isOn()}" ${busy?'disabled aria-busy="true"':''}><span></span><b>${busy?'…':isOn()?'ON':'OFF'}</b></button>`:''}</div>`;
   }
   function mountSettings(wrap) {

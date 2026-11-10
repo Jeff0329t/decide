@@ -1635,7 +1635,7 @@ function draftRemindAt(from=new Date().toISOString()) {
   const [y,m,d]=draftRemind.date.split('-').map(Number); const now=new Date();
   return new Date(y,m-1,d,now.getHours(),now.getMinutes()).toISOString();
 }
-const remindMessage=()=>window.DECIDE_EMAIL_REMINDERS?.isOn?.() ? '記録の題名を添えた｜メールで、｜振り返るきっかけを｜お届けします。' : 'アプリを開いたときに、｜「その後どう？」と｜お聞きします。';
+const remindMessage=()=>window.DECIDE_EMAIL_REMINDERS?.isOn?.() ? '選んだ日の夕方に、｜記録の題名を添えた｜メールでお届けします。' : 'アプリを開いたときに、｜「その後どう？」と｜お聞きします。';
 function draftRemindHtml() {
   const at=new Date(draftRemindAt());
   return `<section class="remind-picker" data-draft-remind aria-labelledby="remind-title">
