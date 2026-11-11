@@ -408,6 +408,14 @@ ${gridHtml(same)}` : ''}
   return layout({ title, description, path, ogImage, ld: [article, crumbsLd(crumbs)], body });
 }
 
+const INDEX_FAQ = [
+  { q: 'タロットカードは全部で何枚ありますか？', a: '78枚です。物事の大きな流れや人生のテーマを表す大アルカナ22枚と、日常の出来事や気持ちを表す小アルカナ56枚（ワンド・カップ・ソード・ペンタクルの4スート×14枚）で構成されます。このページでは78枚すべてを1枚ずつ解説しています。' },
+  { q: '正位置と逆位置で意味はどう変わりますか？', a: '正位置はそのカードのテーマが表に出ている状態、逆位置はテーマが過剰・不足・内向きになっている状態と読みます。逆位置は「悪い意味」ではなく、向き合い方を変えるサインです。各カードのページで両方を解説しています。' },
+  { q: '同じカードでも、迷いの場面によって読み方は変わりますか？', a: '変わります。たとえば「塔」は転職の場面では前提の崩れ、恋愛の場面では関係の見直しとして読みます。各カードのページには「決断の場面で読むと」という項目があり、場面ごとの読み解きを載せています。' },
+  { q: 'タロットの意味は暗記しないと使えませんか？', a: '暗記は不要です。カードは未来を当てる道具ではなく、自分の考えを整理するための問いかけとして使うものだからです。引いたカードのキーワードと「自分への問いかけ」を読むだけでも、見落としていた気持ちや条件に気づけます。' },
+  { q: 'どのカードから読み始めればいいですか？', a: '今の迷いに近いテーマから読むのがおすすめです。迷い別ガイドでは、転職・恋愛・お金・引っ越しなど40のテーマごとに、関係するカードと整理の視点をまとめています。引いたカードがある場合は、そのカードのページから読んでください。' },
+];
+
 function indexPage() {
   const path = '/cards/';
   const title = 'タロットカード78枚の意味一覧｜決断のヒント - DECIDE.';
@@ -439,6 +447,14 @@ ${cells}
     '@context': 'https://schema.org', '@type': 'ItemList', name: 'タロットカード78枚の解説',
     itemListElement: cards.map((c, i) => ({ '@type': 'ListItem', position: i + 1, url: `${ORIGIN}/cards/${c.id}`, name: c.name })),
   };
+  const faqLd = INDEX_FAQ.length ? {
+    '@context': 'https://schema.org', '@type': 'FAQPage',
+    mainEntity: INDEX_FAQ.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  } : null;
+  const faqHtml = INDEX_FAQ.length ? `<section class="idx-sec" id="faq">
+<div class="sec-head"><p class="kicker">04 — FAQ</p><h2>よくある質問</h2></div>
+${INDEX_FAQ.map((f) => `<h3>${esc(f.q)}</h3>\n<p>${esc(f.a)}</p>`).join('\n')}
+</section>` : '';
   const body = `<main class="idx">
 ${crumbsHtml(crumbs)}
 <header class="idx-head">
@@ -470,6 +486,7 @@ ${published.length ? `<section class="idx-sec" id="articles">
 <ul class="alist">${published.slice(0, 5).map((a) => `<li><a href="../articles/${a.slug}">${esc(a.h1)}</a></li>`).join('')}</ul>
 <p class="more"><a href="../articles/">記事の一覧 →</a></p>
 </section>` : ''}
+${faqHtml}
 <aside class="idx-cta" aria-label="DECIDE. で決める">
 <p class="kicker">YOUR TURN</p>
 <p>読んだら、次はあなたの迷いを。<br>カードを引いて、選択肢を整理します。</p>
@@ -479,7 +496,7 @@ ${published.length ? `<section class="idx-sec" id="articles">
 </main>`;
   return layout({
     title, description, path, ogType: 'website', ogImage: `${ORIGIN}/og-image-v3.png`,
-    ld: [itemList, crumbsLd(crumbs)], body, css: INDEX_CSS,
+    ld: [itemList, ...(faqLd ? [faqLd] : []), crumbsLd(crumbs)], body, css: INDEX_CSS,
   });
 }
 
@@ -688,6 +705,16 @@ function worryPage(w) {
     }
     return `<section${s.h2 === '自分への問いかけ' ? ' class="asks"' : ''}>\n${kick(`POINT ${String(i + 1).padStart(2, '0')}`)}\n<h2>${esc(s.h2)}</h2>\n${inner}\n</section>`;
   }).join('\n');
+  const faqLd = w.faq?.length ? {
+    '@context': 'https://schema.org', '@type': 'FAQPage',
+    mainEntity: w.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  } : null;
+  const faqHtml = w.faq?.length ? `<section>
+${kick('FAQ')}
+<h2>よくある質問</h2>
+${w.faq.map((f) => `<h3>${esc(f.q)}</h3>\n<p>${esc(f.a)}</p>`).join('\n')}
+</section>
+` : '';
   const body = `<main>
 ${crumbsHtml(crumbs)}
 <article>
@@ -703,7 +730,7 @@ ${kick('CARDS')}
 ${cardRows}
 </ul>
 </section>
-${cta('二つの選択肢を並べて、カードと一緒に整理できます。')}
+${faqHtml}${cta('二つの選択肢を並べて、カードと一緒に整理できます。')}
 ${relArticles.length ? `<section>
 ${kick('READING')}
 <h2>この迷いをもっと深く読む</h2>
@@ -717,7 +744,7 @@ ${worriesNav(w.slug)}
 </section>
 </article>
 </main>`;
-  return layout({ title: w.title, description: w.description, path, ogImage, ld: [article, crumbsLd(crumbs)], body, css: '.art-hero{margin:22px 0 4px;text-align:center}.art-hero img{width:300px;max-width:68%;height:auto;border-radius:12px;border:5px solid #fff;box-shadow:0 14px 30px rgba(17,17,17,.22)}.art-img{margin:20px 0;text-align:center}.art-img img{width:170px;max-width:55%;height:auto;border-radius:10px;border:4px solid #fff;box-shadow:0 10px 24px rgba(17,17,17,.18)}' });
+  return layout({ title: w.title, description: w.description, path, ogImage, ld: [article, ...(faqLd ? [faqLd] : []), crumbsLd(crumbs)], body, css: '.art-hero{margin:22px 0 4px;text-align:center}.art-hero img{width:300px;max-width:68%;height:auto;border-radius:12px;border:5px solid #fff;box-shadow:0 14px 30px rgba(17,17,17,.22)}.art-img{margin:20px 0;text-align:center}.art-img img{width:170px;max-width:55%;height:auto;border-radius:10px;border:4px solid #fff;box-shadow:0 10px 24px rgba(17,17,17,.18)}' });
 }
 
 const WORRIES_INTRO = [
