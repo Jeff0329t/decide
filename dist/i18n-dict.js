@@ -578,6 +578,10 @@ Object.assign(window.DECIDE_I18N_DICT, {
   'お問い合わせ': 'Contact',
   '規約・お問い合わせ': 'Legal & contact',
 
+  // ---- update bar (service worker) ----
+  '新しいバージョンがあります。': 'A new version is available',
+  '更新する': 'Update',
+
   // ---- A2HS banner ----
   'ホーム画面に追加': 'Add to Home Screen',
   'ホーム画面への追加': 'Add to Home Screen',

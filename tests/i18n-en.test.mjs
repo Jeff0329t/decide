@@ -39,6 +39,15 @@ test('dictionary covers the core flow and the correct free/price facts', () => {
   assert.ok(!JSON.stringify(dict).includes('10回'), 'no stale "10 draws" wording');
 });
 
+test('dictionary covers the service-worker update bar', () => {
+  const context = { window: {} };
+  vm.runInNewContext(read('dist/i18n-dict.js'), context);
+  const dict = context.window.DECIDE_I18N_DICT;
+  assert.equal(dict['新しいバージョンがあります。'], 'A new version is available');
+  assert.equal(dict['更新する'], 'Update');
+  assert.equal(dict['閉じる'], 'Close');
+});
+
 test('cards-en.json: all 78 cards, standard English names, full fields', () => {
   const ja = readJson('dist/assets/cards.json');
   const en = readJson('dist/assets/cards-en.json');
