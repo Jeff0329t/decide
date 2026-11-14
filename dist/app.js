@@ -334,7 +334,7 @@ function loadCardContent() {
 }
 function formatDate(iso, withTime=false) {
   const date=new Date(iso); if(Number.isNaN(date.getTime()))return '';
-  return new Intl.DateTimeFormat('ja-JP', { year:'numeric', month:'short', day:'numeric', ...(withTime ? {hour:'2-digit',minute:'2-digit'} : {}) }).format(date);
+  return new Intl.DateTimeFormat(window.DECIDE_I18N?.locale?.() || 'ja-JP', { year:'numeric', month:'short', day:'numeric', ...(withTime ? {hour:'2-digit',minute:'2-digit'} : {}) }).format(date);
 }
 function randomCard(exclude=[]) {
   const source = settings.deckMode.startsWith('major') ? MAJOR : DECK;

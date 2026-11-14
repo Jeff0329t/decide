@@ -1,0 +1,2897 @@
+{
+ "themes": {
+  "blind": "What you may not be noticing",
+  "caution": "What to watch out for",
+  "want": "What do you really want?",
+  "letgo": "A thought you can let go of",
+  "diff": "A hint for choosing"
+ },
+ "cards": {
+  "ar00": {
+   "name": "The Fool",
+   "arcana": "Major Arcana",
+   "symbol": "Air / Number 0 (the starting point of the journey)",
+   "story": "A card about taking a first step into something new.",
+   "background": "A young traveler walks near a cliff edge, carrying a small bundle. The dog at their feet seems to be warning them to watch their step. The card holds both the joy of something new and the importance of minding where you stand.",
+   "upright": {
+    "keywords": [
+     "A new step",
+     "Freedom",
+     "Giving it a try"
+    ],
+    "meaning": "Try the thing you want to do, in a small way. You do not need to understand everything first — you can start with whatever preparation is possible now.",
+    "themes": {
+     "blind": "Is there an approach you have not tried yet?",
+     "caution": "Decide in advance how you could turn back if things get difficult.",
+     "diff": "Which option could you test on a small scale, and stay interested in?",
+     "letgo": "You do not have to decide it is impossible just because you lack experience.",
+     "want": "Even as a beginner, what would you like to try?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "Underprepared",
+     "Momentum only",
+     "Hesitation"
+    ],
+    "meaning": "Are you rushing ahead just because something looks fun? Check whether you have a way back if trouble comes, then take your step.",
+    "themes": {
+     "blind": "Are you overlooking the hard parts because the picture in your head is so pleasant?",
+     "caution": "Check the time and money you will need before you start.",
+     "diff": "Which option is prepared well enough that you could keep going with it?",
+     "letgo": "For now, set aside deciding on the assumption that it will somehow work out.",
+     "want": "Do you want something new, or do you want to escape what you have now?"
+    }
+   }
+  },
+  "ar01": {
+   "name": "The Magician",
+   "arcana": "Major Arcana",
+   "symbol": "Mercury / Number 1",
+   "story": "A card about using the abilities and tools already in your hands.",
+   "background": "On the table lie a wand, a cup, a sword, and a coin. The magician points one hand to the sky and the other to the earth — turning what you are thinking into shape with the tools at hand.",
+   "upright": {
+    "keywords": [
+     "What you can do",
+     "Resourcefulness",
+     "Action"
+    ],
+    "meaning": "Before gathering new things, look at the knowledge and tools you already have. Combined well, they may be enough to begin.",
+    "themes": {
+     "blind": "Is there knowledge or a tool you can already use?",
+     "caution": "Be careful not to promise more than you can do.",
+     "diff": "Which option can you start with the abilities you already have?",
+     "letgo": "You do not have to wait until everything is in place.",
+     "want": "Using what you have now, what would you like to try?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "All talk",
+     "Spinning wheels",
+     "Underprepared"
+    ],
+    "meaning": "Are you focused on explanations and appearances while forgetting to actually move? Choose one thing you can do, and try it.",
+    "themes": {
+     "blind": "Are you thinking only about how things look?",
+     "caution": "Check that your words and your actions match.",
+     "diff": "Which option is clear about what can actually be done?",
+     "letgo": "It is fine to narrow an overgrown plan down to one thing.",
+     "want": "Do you want to make something, or to be praised?"
+    }
+   }
+  },
+  "ar02": {
+   "name": "The High Priestess",
+   "arcana": "Major Arcana",
+   "symbol": "The Moon / Number 2",
+   "story": "A card about not answering at once, and quietly listening to your own feelings.",
+   "background": "A woman holding a scroll sits between a white pillar and a black one. Part of the scroll is hidden. When some things are still unknown, it can matter to stay calm and watch for a while.",
+   "upright": {
+    "keywords": [
+     "Your inner voice",
+     "Thinking quietly",
+     "Looking closely"
+    ],
+    "meaning": "After hearing the people around you, consider how you yourself felt. Even if you cannot explain it yet, you can note down whatever catches your attention.",
+    "themes": {
+     "blind": "Is there something small that has been bothering you, which you are pretending not to notice?",
+     "caution": "Keep the time for thinking and the time for deciding separate.",
+     "diff": "When you think quietly, which option feels calmer?",
+     "letgo": "It is fine to write down a feeling even if you cannot yet give a reason for it.",
+     "want": "If you owed no one an explanation, which would you choose?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "Assumptions",
+     "Hidden feelings",
+     "Missing information"
+    ],
+    "meaning": "Are you deciding based on a vague hunch? Try separating your own feelings from facts you have actually confirmed.",
+    "themes": {
+     "blind": "Is there information you have not checked yet?",
+     "caution": "Separate rumor from fact.",
+     "diff": "Which option lets you check the facts before choosing?",
+     "letgo": "You do not have to decide how someone else feels based on imagination alone.",
+     "want": "Is there a feeling of your own you would rather not notice?"
+    }
+   }
+  },
+  "ar03": {
+   "name": "The Empress",
+   "arcana": "Major Arcana",
+   "symbol": "Venus / Number 3",
+   "story": "A card about nurturing what matters and receiving joy.",
+   "background": "The Empress sits at ease, surrounded by wheat fields and forest. The plants around her are a sign of things that grow over time. The card speaks of caring for people and things, and of being comfortable yourself.",
+   "upright": {
+    "keywords": [
+     "Nurturing",
+     "Kindness",
+     "Feeling fulfilled"
+    ],
+    "meaning": "Look for the small growth in what you have been continuing. Time to enjoy and to rest matters too, not only time spent striving.",
+    "themes": {
+     "blind": "Are you overlooking the pleasure of watching something grow?",
+     "caution": "Do not let comfort make you forget the preparation you need.",
+     "diff": "Which option could you grow over time, while enjoying it?",
+     "letgo": "You do not have to keep being strict with yourself.",
+     "want": "What person or thing would you like to nurture with care?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "Over-caring",
+     "Over-reliance",
+     "Exhaustion"
+    ],
+    "meaning": "Are you doing everything for someone else and wearing yourself out? Decide what to leave to them, and make time to rest yourself.",
+    "themes": {
+     "blind": "By caring too much, are you shrinking what the other person can do themselves?",
+     "caution": "Put your own rest into the schedule, too.",
+     "diff": "Which option can you continue without exhausting yourself?",
+     "letgo": "You do not have to do everything yourself.",
+     "want": "Might you actually be the one who wants to be helped?"
+    }
+   }
+  },
+  "ar04": {
+   "name": "The Emperor",
+   "arcana": "Major Arcana",
+   "symbol": "Aries / Number 4",
+   "story": "A card about setting rules and roles, and making a place feel secure.",
+   "background": "A king in armor sits on a stone throne, with rugged mountains behind him. The image stands for the responsibility of protecting what is around you, and the strength to move things forward steadily.",
+   "upright": {
+    "keywords": [
+     "Responsibility",
+     "Rules",
+     "Steady progress"
+    ],
+    "meaning": "Decide who does what, and how far each person can go. When promises are clear, it becomes easier to move with confidence.",
+    "themes": {
+     "blind": "Has who-does-what become vague anywhere?",
+     "caution": "When setting rules, listen to the other person's circumstances too.",
+     "diff": "Which option has clear roles and promises?",
+     "letgo": "You do not have to make everything go exactly your way.",
+     "want": "What do you want to protect?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "Imposing",
+     "Stubbornness",
+     "Too strict"
+    ],
+    "meaning": "Do you believe your way is the only right way? Value both keeping the rules and listening to the other person.",
+    "themes": {
+     "blind": "Are you imposing your way on others?",
+     "caution": "Avoid forcing compliance with harsh words.",
+     "diff": "Which option lets you decide the way forward through discussion?",
+     "letgo": "You do not have to decide everything alone.",
+     "want": "Do you want to decide, or do you want to feel safe?"
+    }
+   }
+  },
+  "ar05": {
+   "name": "The Hierophant",
+   "arcana": "Major Arcana",
+   "symbol": "Taurus / Number 5",
+   "story": "A card about learning from experienced people and from ways that have lasted.",
+   "background": "Two people sit before a teacher. Two keys lie at his feet. The scene is about not struggling alone, but learning and asking for advice.",
+   "upright": {
+    "keywords": [
+     "Learning",
+     "Asking for advice",
+     "A promise that matters"
+    ],
+    "meaning": "When you are stuck, ask someone you trust. Using an established procedure can also help you begin with confidence.",
+    "themes": {
+     "blind": "Could you ask someone who already knows?",
+     "caution": "Do not stop thinking just because you are following the rules.",
+     "diff": "Which option comes with a trusted person or procedure?",
+     "letgo": "You do not have to figure everything out by yourself.",
+     "want": "Whose words could you listen to with peace of mind?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "Questioning the rules",
+     "A way that does not fit",
+     "Rethinking"
+    ],
+    "meaning": "Consider what that rule is actually for. If it no longer fits you, you can check the reason first, then look for another way.",
+    "themes": {
+     "blind": "Have you checked whether an old rule still helps today?",
+     "caution": "Before opposing it, ask about the reason behind the rule.",
+     "want": "What would a way that fits you look like?",
+     "letgo": "You do not have to believe you must do it the same as everyone else.",
+     "diff": "Which option lets you check the reason and choose a way that fits you?"
+    }
+   }
+  },
+  "ar06": {
+   "name": "The Lovers",
+   "arcana": "Major Arcana",
+   "symbol": "Gemini / Number 6",
+   "story": "A card about choosing by thinking about what you truly value.",
+   "background": "An angel watches over two people, with trees and a mountain around them. Beyond romance, it also speaks of confirming feelings with another person, and of choosing for yourself.",
+   "upright": {
+    "keywords": [
+     "Hearts connecting",
+     "What matters",
+     "Choosing"
+    ],
+    "meaning": "Beyond surface appeal, consider whether it fits what you value. If another person is involved, hearing each other's feelings can help.",
+    "themes": {
+     "blind": "Beyond appearances, is there something you want to value?",
+     "caution": "Do not assume the other person feels the same way.",
+     "diff": "Which option fits what you value?",
+     "letgo": "You do not have to choose based only on how others see you.",
+     "want": "What is it that you want to value?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "Feelings out of sync",
+     "Hesitation",
+     "Surface charm"
+    ],
+    "meaning": "Something may look enjoyable yet clash with what you or the other person values. Put what is bothering you into words, one item at a time.",
+    "themes": {
+     "blind": "Are you ignoring differences because the good parts are fun?",
+     "caution": "Do not make promises you cannot keep just to match the other person.",
+     "diff": "Which option lets you talk honestly about what you both think?",
+     "letgo": "You do not have to take on everything just to avoid being disliked.",
+     "want": "Are you putting your own feelings last?"
+    }
+   }
+  },
+  "ar07": {
+   "name": "The Chariot",
+   "arcana": "Major Arcana",
+   "symbol": "Cancer / Number 7",
+   "story": "A card about the power to set a goal and move forward.",
+   "background": "Two creatures, one white and one black, stand before the chariot. The rider stands as if gathering forces that pull in different directions. It is the figure of deciding a destination even while feeling torn.",
+   "upright": {
+    "keywords": [
+     "A goal",
+     "Moving forward",
+     "Acting on your own"
+    ],
+    "meaning": "Decide the one thing you most want to aim for, and start acting. The faster you move, the more it matters to check your direction along the way.",
+    "themes": {
+     "blind": "Is your current goal clear?",
+     "caution": "The faster you go, the more you should check what is around you.",
+     "diff": "Which option makes it easier to decide your next action toward the goal?",
+     "letgo": "You do not have to wait until every doubt is gone.",
+     "want": "Where do you most want to arrive?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "Rushing",
+     "Losing direction",
+     "Colliding"
+    ],
+    "meaning": "In your push for quick results, are you overlooking the people around you or your own limits? Stop once, and check where you want to go.",
+    "themes": {
+     "blind": "In your hurry, have you forgotten the purpose?",
+     "caution": "Check the limits of your energy and schedule.",
+     "diff": "Which option can you advance calmly, under your own control?",
+     "letgo": "You do not have to blame yourself for not being fast.",
+     "want": "Do you want to finish quickly, or do you truly want to move forward?"
+    }
+   }
+  },
+  "ar08": {
+   "name": "Strength",
+   "arcana": "Major Arcana",
+   "symbol": "Leo / Number 8",
+   "story": "A card about a strength that faces things calmly, without forcing them down.",
+   "background": "A woman rests her hands gently on a lion. There is no sign of a struggle of force. It speaks of living slowly with fear or anger, rather than defeating them.",
+   "upright": {
+    "keywords": [
+     "Gentle strength",
+     "Persistence",
+     "Calm"
+    ],
+    "meaning": "When things do not go well, try not to blame yourself or others too much. Continuing while resting a little is also a form of strength.",
+    "themes": {
+     "blind": "Have you forgotten the strength you have built up in small steps?",
+     "caution": "Separate enduring from overdoing it.",
+     "diff": "Which option can you continue with calmly?",
+     "letgo": "You do not have to decide that being afraid makes you weak.",
+     "want": "What words would you like to say to yourself?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "Low confidence",
+     "Swept by feelings",
+     "Overdoing it"
+    ],
+    "meaning": "Are you bottling up hard feelings, or deciding that you are weak? Make time to settle, and shrink the scope of what you take on.",
+    "themes": {
+     "blind": "Might your tiredness be turning into anger or anxiety?",
+     "caution": "When feelings run strong, you do not have to reply right away.",
+     "diff": "Which option can you approach without blaming yourself?",
+     "letgo": "You do not have to hold every feeling inside.",
+     "want": "What would help you feel a little safer?"
+    }
+   }
+  },
+  "ar09": {
+   "name": "The Hermit",
+   "arcana": "Major Arcana",
+   "symbol": "Virgo / Number 9",
+   "story": "A card about stepping back from the noise around you and checking your own thoughts.",
+   "background": "An old man stands on a mountaintop, holding a lantern. Its light reaches the path nearby rather than everything far away. It shows thinking little by little, without forcing an answer all at once.",
+   "upright": {
+    "keywords": [
+     "Thinking alone",
+     "Reviewing",
+     "Your own answer"
+    ],
+    "meaning": "Rest from comparing yourself with others, and consider what you want. Writing things down in a quiet place can help sort your feelings.",
+    "themes": {
+     "blind": "Have you made time to listen to your own thoughts?",
+     "caution": "If thinking alone gets hard, talk to someone.",
+     "diff": "Which option gives you time to think quietly?",
+     "letgo": "You do not always have to match the people around you.",
+     "want": "If you stopped comparing, what would you want?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "Carrying it alone",
+     "Withdrawing",
+     "Not listening"
+    ],
+    "meaning": "Has your time alone grown so long that it hurts? Try telling someone you trust at least how you feel right now.",
+    "themes": {
+     "blind": "Are you keeping too much distance from people?",
+     "caution": "Do not decide everything based on your thoughts alone.",
+     "diff": "Which option lets you ask for advice when you need it?",
+     "letgo": "You do not have to solve everything alone.",
+     "want": "Is there something you actually want someone to hear?"
+    }
+   }
+  },
+  "ar10": {
+   "name": "Wheel of Fortune",
+   "arcana": "Major Arcana",
+   "symbol": "Jupiter / Number 10",
+   "story": "A card about changes in the flow of things that no one controls alone.",
+   "background": "A great wheel hangs in the sky, with various creatures around it. The turning wheel says that no state lasts forever.",
+   "upright": {
+    "keywords": [
+     "The flow changes",
+     "A chance",
+     "Timing"
+    ],
+    "meaning": "If your plans or surroundings change, review what you can do now. Staying prepared helps you notice a chance when it comes.",
+    "themes": {
+     "blind": "Has anything changed from before?",
+     "caution": "Even when the flow feels good, do not skip preparation.",
+     "diff": "Which option makes better use of the timing now?",
+     "letgo": "You do not have to assume the current state will last forever.",
+     "want": "What would you like to try, now of all times?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "Bad timing",
+     "Standing still",
+     "Waiting"
+    ],
+    "meaning": "When things do not go as hoped, you do not have to force an answer. Prepare what you can now, and think about when to move.",
+    "themes": {
+     "blind": "Are you overlooking the part you can change yourself?",
+     "caution": "Before making a big change in your frustration, check what you can do now.",
+     "want": "While you wait, what would you like to prepare?",
+     "letgo": "You do not have to feel you must produce results right now.",
+     "diff": "Which option can you keep going with even if the schedule slips?"
+    }
+   }
+  },
+  "ar11": {
+   "arcana": "Major Arcana",
+   "background": "A woman holds a sword and a set of scales. The scales are a tool for comparing two things. She shows how to think by the same standard, without favoring one side.",
+   "name": "Justice",
+   "reversed": {
+    "keywords": [
+     "Unfairness",
+     "Jumping to conclusions",
+     "Avoiding responsibility"
+    ],
+    "meaning": "Are you only looking at the story that suits you? Check for facts you may have missed, and for the other person's circumstances.",
+    "themes": {
+     "blind": "Are you only looking at information that suits you?",
+     "caution": "Do not hide difficult things behind lies or excuses.",
+     "diff": "Which option could you explain without feeling guilty about it?",
+     "letgo": "You do not have to decide right away that you alone are losing out.",
+     "want": "What would you value even if no one was watching?"
+    }
+   },
+   "story": "A card about checking facts and fairness instead of deciding on feeling alone.",
+   "symbol": "Libra / Number 11",
+   "upright": {
+    "keywords": [
+     "Fairness",
+     "Checking the facts",
+     "Balance"
+    ],
+    "meaning": "Compare the good points and the hard points of each option under the same conditions. It helps to check whether your reason is one you could explain to yourself and to others.",
+    "themes": {
+     "blind": "Are you separating facts from your own predictions?",
+     "caution": "Even a sound reason can hurt someone depending on how it is said.",
+     "diff": "Which option can you compare by the same standard and explain clearly?",
+     "letgo": "You do not have to worry only about how people see you.",
+     "want": "What kind of choice could you stand by if you had to explain it later?"
+    }
+   }
+  },
+  "ar12": {
+   "arcana": "Major Arcana",
+   "background": "A person hangs by one foot from a tree, yet their face is calm. A light glows around their head. Even when you cannot move, changing how you look can reveal something.",
+   "name": "The Hanged Man",
+   "reversed": {
+    "keywords": [
+     "Enduring too much",
+     "Putting things off",
+     "Standing still"
+    ],
+    "meaning": "Consider whether continuing to endure is really helping you or anyone else. It is fine to change the method, or to borrow someone's help.",
+    "themes": {
+     "blind": "Have you checked whether your endurance is helping anyone?",
+     "caution": "Do not keep waiting while it hurts.",
+     "diff": "Which option lets you move forward with less burden?",
+     "letgo": "You do not have to believe that enduring more makes you a better person.",
+     "want": "How would you really like to move?"
+    }
+   },
+   "story": "A card about stopping for a while and thinking from an unfamiliar angle.",
+   "symbol": "Water (Neptune) / Number 12",
+   "upright": {
+    "keywords": [
+     "Waiting",
+     "Changing your view",
+     "Accepting"
+    ],
+    "meaning": "If you cannot move right now, try seeing it from the other person's position. Decide why you are waiting, and until when.",
+    "themes": {
+     "blind": "Seen from the other person's position, how does it look?",
+     "caution": "Decide what you are waiting for, and until when.",
+     "diff": "Which option becomes easier if you change how you look at it?",
+     "letgo": "Time spent not moving is allowed to have meaning, too.",
+     "want": "What would you like to stop and think about?"
+    }
+   }
+  },
+  "ar13": {
+   "arcana": "Major Arcana",
+   "background": "A skeletal knight on a white horse, and a sunrise in the distance. It stands for an ending, and the beginning that comes after. This card does not predict anyone's death.",
+   "name": "Death",
+   "reversed": {
+    "keywords": [
+     "Cannot let go",
+     "Fear of change",
+     "Putting it off"
+    ],
+    "meaning": "You may feel both the wish to end something and the fear of changing. Instead of changing everything at once, think about a small ending first.",
+    "themes": {
+     "blind": "Are you stretching things out because ending them is frightening?",
+     "caution": "Separate what makes you resist change from the preparation you need.",
+     "diff": "Which option lets you start with a small ending?",
+     "letgo": "You do not have to keep going just because you have continued this far.",
+     "want": "What are you afraid you would lose if things changed?"
+    }
+   },
+   "story": "A card about finishing one thing so that something new can begin.",
+   "symbol": "Scorpio / Number 13",
+   "upright": {
+    "keywords": [
+     "An ending",
+     "Change",
+     "A new beginning"
+    ],
+    "meaning": "Consider drawing a line under a habit or method that no longer fits. Ending something can free up time and energy for what comes next.",
+    "themes": {
+     "blind": "Is there something that no longer fits who you are now?",
+     "caution": "When you change things, allow time for yourself and others to adjust.",
+     "diff": "Which option makes the next step easier to picture after the ending?",
+     "letgo": "You do not have to keep a habit whose role is finished.",
+     "want": "What would feel lighter if you drew a line under it?"
+    }
+   }
+  },
+  "ar14": {
+   "arcana": "Major Arcana",
+   "background": "An angel pours water between two cups. One foot is in the water, the other on the ground. It shows combining different things well, so you can continue without strain.",
+   "name": "Temperance",
+   "reversed": {
+    "keywords": [
+     "Imbalance",
+     "Overdoing it",
+     "Strain"
+    ],
+    "meaning": "Are you spending too much time or energy somewhere? Rather than adding more, think about reducing a little to restore balance.",
+    "themes": {
+     "blind": "Has the burden grown somewhere without you noticing?",
+     "caution": "Look not only at what is missing, but at what could be reduced.",
+     "diff": "Which option keeps the imbalance of time and energy smaller?",
+     "letgo": "You do not have to solve things only with extreme methods.",
+     "want": "What could you reduce a little to make some room?"
+    }
+   },
+   "story": "A card about finding the right measure — neither too much nor too little.",
+   "symbol": "Sagittarius / Number 14",
+   "upright": {
+    "keywords": [
+     "The right measure",
+     "Combining",
+     "Continuing without strain"
+    ],
+    "meaning": "Look for anything out of balance, like time spent striving versus time spent resting. Adjusting little by little may reveal a pace you can keep.",
+    "themes": {
+     "blind": "Is there something taking too much of your time or energy?",
+     "caution": "Adjust a little at a time instead of changing everything at once.",
+     "diff": "Which option lets you combine different things without strain?",
+     "letgo": "You do not have to have everything perfectly in place.",
+     "want": "At what pace could you continue comfortably?"
+    }
+   }
+  },
+  "ar15": {
+   "arcana": "Major Arcana",
+   "background": "Two people stand chained before the Devil. The chains are loose, and look as if they could be removed. Even when you feel unable to move freely, there may be a way to step away.",
+   "name": "The Devil",
+   "reversed": {
+    "keywords": [
+     "Noticing the bind",
+     "Taking distance",
+     "Becoming free"
+    ],
+    "meaning": "You may be able to think of a way to step back a little from a hard habit or relationship. If it is difficult alone, let someone you trust help.",
+    "themes": {
+     "blind": "Are you beginning to notice a way out?",
+     "caution": "You do not have to change everything alone, all at once — use help.",
+     "diff": "Which option lets you take distance from a hard habit or relationship?",
+     "letgo": "You do not have to decide that you cannot do it on your own.",
+     "want": "If you could take some distance, what would you like to do?"
+    }
+   },
+   "story": "A card about looking at feelings you cannot quit, and strong attachments.",
+   "symbol": "Capricorn / Number 15",
+   "upright": {
+    "keywords": [
+     "Cannot quit",
+     "Strong attachment",
+     "Being bound"
+    ],
+    "meaning": "Are you spending too much time or feeling for the pleasure in front of you? Write down what is troubling you, and think about how to create some distance.",
+    "themes": {
+     "blind": "In exchange for the pleasure, is anything troubling you?",
+     "caution": "Check for promises that are hard to decline and arrangements that are hard to quit.",
+     "diff": "Which option can you decline or quit by your own choice?",
+     "letgo": "Even something you have continued until now can be reviewed.",
+     "want": "Beyond the thing you want, what feeling are you seeking?"
+    }
+   }
+  },
+  "ar16": {
+   "arcana": "Major Arcana",
+   "background": "Lightning strikes a tall tower and knocks its crown away — a scene of great change and surprise. It is not a prediction of something frightening, but a hint to notice a way of doing things that has become strained.",
+   "name": "The Tower",
+   "reversed": {
+    "keywords": [
+     "Avoiding the problem",
+     "Fear of change",
+     "A review is needed"
+    ],
+    "meaning": "Are you pretending not to see a problem that bothers you? Before everything collapses, start with a small part you can fix.",
+    "themes": {
+     "blind": "Is there a problem you keep postponing?",
+     "caution": "While the problem is still small, try asking for advice.",
+     "diff": "Which option can you fix little by little?",
+     "letgo": "You do not have to keep pretending nothing happened.",
+     "want": "What feels risky about changing it?"
+    }
+   },
+   "story": "A card about reviewing what you had taken for granted.",
+   "symbol": "Mars / Number 16",
+   "upright": {
+    "keywords": [
+     "Sudden change",
+     "Noticing an assumption",
+     "Rebuilding"
+    ],
+    "meaning": "Check once more the reasons you believed things would go well. If you find strain, you can still change your method now.",
+    "themes": {
+     "blind": "Is there something you take for granted and have not checked?",
+     "caution": "If you find strain, change the method early.",
+     "diff": "Which option is easier to repair if a problem is found?",
+     "letgo": "You do not have to cling to protecting the current way of doing things.",
+     "want": "If you could start over, what shape would you want?"
+    }
+   }
+  },
+  "ar17": {
+   "arcana": "Major Arcana",
+   "background": "A woman pours water onto the shore and the ground, while stars shine in the sky. Pouring the water little by little shows energy and hope returning slowly.",
+   "name": "The Star",
+   "reversed": {
+    "keywords": [
+     "Hope out of sight",
+     "Losing confidence",
+     "A gap with the ideal"
+    ],
+    "meaning": "Things may not have gone as you imagined, and you may be tired. Step back a little from the big goal, and check what you managed to do today.",
+    "themes": {
+     "blind": "Are you overlooking the small things you are managing?",
+     "caution": "Separate the big goal from today's step.",
+     "diff": "Which option makes a small hope easier to find?",
+     "letgo": "You do not have to blame yourself for not matching the ideal.",
+     "want": "If no one expected anything of you, what would you want to do?"
+    }
+   },
+   "story": "A card about finding hope again after something hard.",
+   "symbol": "Aquarius / Number 17",
+   "upright": {
+    "keywords": [
+     "Hope",
+     "Regaining energy",
+     "A honest wish"
+    ],
+    "meaning": "You do not have to produce a big result right away. Find one thing you look forward to, or one thing that lets you feel a little at ease.",
+    "themes": {
+     "blind": "Have you noticed the ways things have become a little easier?",
+     "caution": "Do not strain yourself trying to reach the ideal quickly.",
+     "diff": "Which option lets you continue while treasuring your own wish?",
+     "letgo": "You do not have to feel you must recover right away.",
+     "want": "What can you look forward to, even a little, right now?"
+    }
+   }
+  },
+  "ar18": {
+   "arcana": "Major Arcana",
+   "background": "Under the moon, a dog and a wolf howl, and a crayfish emerges from the water. The road ahead is dark and hard to see. When much is unknown, anxiety tends to grow.",
+   "name": "The Moon",
+   "reversed": {
+    "keywords": [
+     "Gradually understanding",
+     "Sorting out anxiety",
+     "Checking"
+    ],
+    "meaning": "What was vague may become clearer, little by little. Do not decide just because you want relief — look at the facts you have newly learned.",
+    "themes": {
+     "blind": "What do you understand better than before?",
+     "caution": "Do not believe only the convenient story just because you want relief.",
+     "diff": "Which option makes it easier to separate fact from worry?",
+     "letgo": "It is fine to change your first assumption.",
+     "want": "With what you have newly learned, what do you want to do?"
+    }
+   },
+   "story": "A card about the anxiety and imagination that come with not knowing.",
+   "symbol": "Pisces / Number 18",
+   "upright": {
+    "keywords": [
+     "Anxiety",
+     "Not knowing",
+     "Imagination"
+    ],
+    "meaning": "Are you imagining the worst about things that have not happened yet? Separate the facts you know from the things you are worried about.",
+    "themes": {
+     "blind": "Are you worrying about something that is imagination, not fact?",
+     "caution": "Decide unclear matters only after checking them.",
+     "diff": "Which option lets you check the information you need?",
+     "letgo": "You do not have to believe every bad prediction.",
+     "want": "If your anxiety eased a little, what would you choose?"
+    }
+   }
+  },
+  "ar19": {
+   "arcana": "Major Arcana",
+   "background": "Under a great sun, a child rides a white horse, with sunflowers blooming behind. It shows enjoying things without hiding, and moving with energy.",
+   "name": "The Sun",
+   "reversed": {
+    "keywords": [
+     "Cannot enjoy it",
+     "Expecting too much",
+     "Low energy"
+    ],
+    "meaning": "Are you tired even though things should be fun, or assuming everything will go well? Check how you honestly feel right now.",
+    "themes": {
+     "blind": "Are you tiring yourself out by trying to look energetic?",
+     "caution": "Do not assume everything will go well.",
+     "diff": "Which option fits how you honestly feel right now?",
+     "letgo": "You do not have to be cheerful all the time.",
+     "want": "What do you actually want to rest from?"
+    }
+   },
+   "story": "A card about feeling joy and confidence honestly.",
+   "symbol": "The Sun / Number 19",
+   "upright": {
+    "keywords": [
+     "Joy",
+     "Confidence",
+     "Clarity"
+    ],
+    "meaning": "Turn your eyes to what makes you glad, and what is going well. Let confidence be your strength, while still remembering the checks you need.",
+    "themes": {
+     "blind": "Is there something joyful that has become so normal you stopped noticing it?",
+     "caution": "Even when things go well, do not forget checks and thanks.",
+     "diff": "Which option can you approach with a light heart, without strain?",
+     "letgo": "You do not have to hold back so much from enjoying things.",
+     "want": "What do you honestly find fun?"
+    }
+   }
+  },
+  "ar20": {
+   "arcana": "Major Arcana",
+   "background": "An angel in the sky blows a trumpet, and people rise up. They notice the call and begin to move. It shows using past experience to think about a new step.",
+   "name": "Judgement",
+   "reversed": {
+    "keywords": [
+     "Regret",
+     "Cannot decide",
+     "Blaming yourself"
+    ],
+    "meaning": "Are memories of a past failure keeping you from moving? Instead of blaming yourself, think of one thing you can change next time.",
+    "themes": {
+     "blind": "Buried in regret, are you overlooking what you can do now?",
+     "caution": "To avoid the same failure, decide what you will change.",
+     "diff": "Which option turns reflection into a next action more easily?",
+     "letgo": "You do not have to keep blaming yourself forever.",
+     "want": "Whatever anyone says, what would you like to try again?"
+    }
+   },
+   "story": "A card about looking back on what has been, and considering starting once more.",
+   "symbol": "Fire (Pluto) / Number 20",
+   "upright": {
+    "keywords": [
+     "Looking back",
+     "Starting over",
+     "Resolving"
+    ],
+    "meaning": "From your past experience, think about what you want to do next. If there is something you want to try again, you can choose a step you can take now.",
+    "themes": {
+     "blind": "Is there something to learn from a past experience?",
+     "caution": "Beyond feelings, check that you are ready to try again.",
+     "diff": "Which option makes better use of your experience so far?",
+     "letgo": "You do not have to let a past failure define who you are now.",
+     "want": "What would you like to take on once more?"
+    }
+   }
+  },
+  "ar21": {
+   "name": "The World",
+   "arcana": "Major Arcana",
+   "symbol": "Saturn / Number 21",
+   "story": "A card about things you have continued coming together and reaching a close.",
+   "background": "A figure dances inside a wreath of leaves, watched by figures in the four corners. Many experiences connect, and the card holds the joy of finishing one thing.",
+   "upright": {
+    "keywords": [
+     "Finishing",
+     "Coming together",
+     "A sense of achievement"
+    ],
+    "meaning": "Check what you have accomplished so far, and draw a line under it. Once you feel you have done enough, you can begin preparing for what is next.",
+    "themes": {
+     "blind": "Do you acknowledge what you have accomplished so far?",
+     "caution": "Before moving on, do a final check.",
+     "diff": "Which option lets you close things with a sense of satisfaction?",
+     "letgo": "Before aiming even higher, it is fine to feel glad.",
+     "want": "When it is over, how would you like to feel?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "One step short",
+     "Cannot close it",
+     "Things left undone"
+    ],
+    "meaning": "Consider whether you need a final check, or whether you are aiming for too much perfection. Deciding how far is enough to call it done makes it easier to move.",
+    "themes": {
+     "blind": "Can you separate what is truly missing from what is just over-worrying?",
+     "caution": "Do not keep adding conditions for calling it finished.",
+     "want": "What else needs to happen before you can call it done?",
+     "letgo": "It does not have to be perfect in every way to be closed.",
+     "diff": "Which option has clearer conditions for being finished?"
+    }
+   }
+  },
+  "wa01": {
+   "arcana": "Wands",
+   "background": "A hand emerging from a cloud holds a wand with fresh sprouts. The sprouts are a sign of pleasures yet to grow. The card speaks of inspiration and of a trigger to start acting.",
+   "name": "Ace of Wands",
+   "reversed": {
+    "keywords": [
+     "No motivation",
+     "Cannot start",
+     "Hesitation"
+    ],
+    "meaning": "The reason you want to do it may not be clear yet. Instead of forcing a start, look for what you could honestly find interesting.",
+    "themes": {
+     "blind": "Could it be tiredness rather than a lack of motivation?",
+     "caution": "Do not make a big promise while your heart is not in it.",
+     "diff": "Which option can you begin without rushing yourself?",
+     "letgo": "You do not have to continue just because others seem to enjoy it.",
+     "want": "Where did you stop finding it interesting?"
+    }
+   },
+   "story": "A card about the feeling of wanting to try something being born.",
+   "symbol": "Fire / Wands (passion, action) / Number 1 (beginnings)",
+   "upright": {
+    "keywords": [
+     "Motivation",
+     "Inspiration",
+     "Starting"
+    ],
+    "meaning": "Try, on a small scale, the thing that caught your interest. Looking it up, or making a little of it — think of a step you can take today.",
+    "themes": {
+     "blind": "Is there something interesting you have not tried yet?",
+     "caution": "While your motivation is high, check the preparation you need, too.",
+     "diff": "Which option lets you test your current interest on a small scale?",
+     "letgo": "You do not have to be good at it from the very start.",
+     "want": "What would you like to try even if no one asked you to?"
+    }
+   }
+  },
+  "wa02": {
+   "arcana": "Wands",
+   "background": "A person looks into the distance from atop a castle, holding a small globe. Two wands stand beside them — checking what they already have while thinking about where to go next.",
+   "name": "Two of Wands",
+   "reversed": {
+    "keywords": [
+     "Afraid to move",
+     "Underplanned",
+     "Staying the same"
+    ],
+    "meaning": "You may want to change, yet not want to let go of your current security. Instead of changing everything at once, look for a range you can test.",
+    "themes": {
+     "blind": "Do you keep choosing the safety of not changing?",
+     "caution": "Before moving, make the preparation you need concrete.",
+     "diff": "Which option lets you test small before deciding?",
+     "letgo": "You do not have to wait until every anxiety is gone.",
+     "want": "What are you afraid you would lose if things changed?"
+    }
+   },
+   "story": "A card about thinking of your next goal from where you stand now.",
+   "symbol": "Fire / Wands (passion, action) / Number 2 (choice, planning)",
+   "upright": {
+    "keywords": [
+     "Planning",
+     "The next goal",
+     "Choosing"
+    ],
+    "meaning": "Build on what you can already do, and think about what you want next. Writing down candidates and comparing what each needs can help.",
+    "themes": {
+     "blind": "How much strength and usable time do you have now?",
+     "caution": "Do not end with thinking only — set a small plan.",
+     "diff": "Which option makes your next goal easier to picture?",
+     "letgo": "It is fine to step a little away from a familiar place.",
+     "want": "What would you like to become able to do next?"
+    }
+   }
+  },
+  "wa03": {
+   "arcana": "Wands",
+   "background": "A person on a cliff watches ships cross the sea. Three wands stand around them — a scene of watching where what you started is heading.",
+   "name": "Three of Wands",
+   "reversed": {
+    "keywords": [
+     "Schedule slipping",
+     "Waiting for results",
+     "Reviewing"
+    ],
+    "meaning": "If things advance less than you thought, check your schedule and expectations. Separating 'just wait' from 'change the method' can help.",
+    "themes": {
+     "blind": "Has the timing or result you expected slipped anywhere?",
+     "caution": "Decide how long you will wait for a reply or an outcome.",
+     "diff": "Which option can you continue while adjusting the plan?",
+     "letgo": "You do not have to cling to the first schedule.",
+     "want": "What would you keep doing even if results are slow?"
+    }
+   },
+   "story": "A card about looking ahead of what you started and preparing what comes next.",
+   "symbol": "Fire / Wands (passion, action) / Number 3 (development, expansion)",
+   "upright": {
+    "keywords": [
+     "Expanding",
+     "Looking ahead",
+     "Preparing"
+    ],
+    "meaning": "Think about how you want to grow what you started. While waiting for results, you can also advance the preparation you will need next.",
+    "themes": {
+     "blind": "Now that things have started moving, what has come into view?",
+     "caution": "Before expanding, check your current plans and strength.",
+     "diff": "Which option connects to a goal a little further ahead?",
+     "letgo": "You do not have to watch over everything up close.",
+     "want": "How would you like to grow what you started?"
+    }
+   }
+  },
+  "wa04": {
+   "arcana": "Wands",
+   "background": "Beyond four wands decorated with flowers, people are celebrating, with a castle behind them. It speaks of sharing joy with companions and of a place where you can relax.",
+   "name": "Four of Wands",
+   "reversed": {
+    "keywords": [
+     "Restlessness",
+     "Underprepared",
+     "An uneasy place"
+    ],
+    "meaning": "Think about what is missing for you to spend time at ease. You can start with a small review, like checking schedules and promises.",
+    "themes": {
+     "blind": "Have you been able to say why you cannot settle?",
+     "caution": "Do not force a celebration just to match others.",
+     "diff": "Which option lets you check the promises and spend the time calmly?",
+     "letgo": "Your way of rejoicing does not have to match everyone's.",
+     "want": "What preparation would help you feel at ease?"
+    }
+   },
+   "story": "A card about celebrating a milestone and confirming a place where you feel safe.",
+   "symbol": "Fire / Wands (passion, action) / Number 4 (stability, a milestone)",
+   "upright": {
+    "keywords": [
+     "Celebration",
+     "Feeling safe",
+     "Companions"
+    ],
+    "meaning": "Share what you accomplished with the people around you. Before rushing to the next thing, making time to rest or to say thank you is also a good move.",
+    "themes": {
+     "blind": "Have you forgotten someone you could celebrate with?",
+     "caution": "Before rushing onward, confirm what you have accomplished.",
+     "diff": "Which option comes with people or a place where you feel safe?",
+     "letgo": "You do not have to keep striving — resting is fine.",
+     "want": "With what place or people do you feel relieved?"
+    }
+   }
+  },
+  "wa05": {
+   "arcana": "Wands",
+   "background": "Five people move about, each holding a wand, and their movements do not align. Different opinions and the wish not to lose are gathered together.",
+   "name": "Five of Wands",
+   "reversed": {
+    "keywords": [
+     "Holding words back",
+     "Avoiding conflict",
+     "Lingering discontent"
+    ],
+    "meaning": "Even if the argument ended, is there something left unsaid? Choose a person and a time when you can talk calmly, and share how you feel.",
+    "themes": {
+     "blind": "Is there discontent you could not say out loud?",
+     "caution": "Do not pretend nothing happened — check calmly.",
+     "diff": "Which option lets you talk without bottling up discontent?",
+     "letgo": "You do not have to endure everything just to avoid conflict.",
+     "want": "What do you really want the other person to understand?"
+    }
+   },
+   "story": "A card about people with different ideas clashing.",
+   "symbol": "Fire / Wands (passion, action) / Number 5 (conflict, change)",
+   "upright": {
+    "keywords": [
+     "Different opinions",
+     "Competing",
+     "Talking it out"
+    ],
+    "meaning": "When opinions differ, first listen to what exactly differs. Beyond winning, you can also look for ideas you can both use.",
+    "themes": {
+     "blind": "Might the other opinion have a part you can use?",
+     "caution": "Do not hurt people in order to win.",
+     "diff": "Which option lets you discuss different opinions openly?",
+     "letgo": "You do not all have to think the same way.",
+     "want": "What is it that you really want to change?"
+    }
+   }
+  },
+  "wa06": {
+   "arcana": "Wands",
+   "background": "A person wearing a wreath of flowers rides a horse, welcomed by the people around. The wand they hold also carries a wreath — a scene of celebrating what was accomplished and holding confidence.",
+   "name": "Six of Wands",
+   "reversed": {
+    "keywords": [
+     "Losing confidence",
+     "Wanting praise",
+     "Expecting too much"
+    ],
+    "meaning": "Do you feel it means nothing unless others recognize it? Check with your own eyes what you can do now that you could not before.",
+    "themes": {
+     "blind": "Are you judging what you accomplished only by others' reactions?",
+     "caution": "Do not add more strain just to be praised.",
+     "diff": "Which option lets you confirm your own growth yourself?",
+     "letgo": "You do not have to believe others' evaluation is everything.",
+     "want": "What would you keep doing even without praise?"
+    }
+   },
+   "story": "A card about having your hard work recognized.",
+   "symbol": "Fire / Wands (passion, action) / Number 6 (harmony, success)",
+   "upright": {
+    "keywords": [
+     "Being recognized",
+     "Confidence",
+     "Results"
+    ],
+    "meaning": "Acknowledge your own hard work, too. Thanking the people who helped makes it easier to work together next time.",
+    "themes": {
+     "blind": "Has others' help also been part of your strength?",
+     "caution": "Even when recognized, do not look down on people.",
+     "diff": "Which option lets your effort show more clearly?",
+     "letgo": "You do not have to play down your success.",
+     "want": "What would you like to praise yourself for?"
+    }
+   }
+  },
+  "wa07": {
+   "name": "Seven of Wands",
+   "arcana": "Wands",
+   "symbol": "Fire / Wands (passion, action) / Number 7 (trial, defense)",
+   "story": "A card about protecting an idea that matters and your own position.",
+   "background": "A person on high ground holds their wand against six wands reaching up from below — holding their place even when pushed by those around.",
+   "upright": {
+    "keywords": [
+     "Your own view",
+     "Protecting",
+     "Continuing without giving in"
+    ],
+    "meaning": "Even if you differ from those around you, put what you value into words. When what you want to protect is clear, it becomes easier to think about how to say it.",
+    "themes": {
+     "blind": "Has what you want to protect reached the other person?",
+     "caution": "Do not oppose everything — narrow it to the points that matter.",
+     "diff": "Which option lets you continue while protecting an idea that matters?",
+     "letgo": "You do not have to be liked by everyone.",
+     "want": "What do you not want to give up?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "Tired of defending",
+     "Being pushed",
+     "Needing help"
+    ],
+    "meaning": "Are you tired of catching opposing voices alone? Instead of answering everything, think about asking for advice or taking some distance.",
+    "themes": {
+     "blind": "Are you spending too much strength on defending?",
+     "caution": "Ask for help before you reach your limit.",
+     "want": "What would make things a little easier if it decreased?",
+     "letgo": "You do not have to answer every opinion.",
+     "diff": "Which option makes allies and help easier to find?"
+    }
+   }
+  },
+  "wa08": {
+   "arcana": "Wands",
+   "background": "Eight wands fly through the sky in the same direction. No person is drawn. It shows the speed of movement, and conversations advancing one after another.",
+   "name": "Eight of Wands",
+   "reversed": {
+    "keywords": [
+     "Delays",
+     "Miscommunication",
+     "Rushing too much"
+    ],
+    "meaning": "Check for gaps like replies that never came or messages that did not land. Rather than pressing repeatedly, organizing the date and content before you send can help.",
+    "themes": {
+     "blind": "Has the same content actually reached the other person?",
+     "caution": "Before sending again in your anxiety, gather the points that matter.",
+     "diff": "Which option lets you adjust the plan even if there are delays?",
+     "letgo": "You do not have to blame yourself for not moving fast.",
+     "want": "What would you like to advance, even if not right now?"
+    }
+   },
+   "story": "A card about things and messages moving quickly.",
+   "symbol": "Fire / Wands (passion, action) / Number 8 (movement, progress)",
+   "upright": {
+    "keywords": [
+     "Moving fast",
+     "Messages",
+     "Starting to move"
+    ],
+    "meaning": "When a conversation starts moving, check the replies and preparation you need. Even in a hurry, reading the content before answering matters.",
+    "themes": {
+     "blind": "Is there a conversation waiting for your reply?",
+     "caution": "The more you hurry, the more you should confirm dates and content.",
+     "diff": "Which option makes necessary communication easier?",
+     "letgo": "Rather than thinking forever, a small reply is fine.",
+     "want": "If the conversation moves, what do you want to do first?"
+    }
+   }
+  },
+  "wa09": {
+   "arcana": "Wands",
+   "background": "A person with a bandaged head holds a wand and looks around. Eight wands stand behind them. It holds both the experience of having worked hard, and the fear of being hurt again.",
+   "name": "Nine of Wands",
+   "reversed": {
+    "keywords": [
+     "Too tired",
+     "Too wary",
+     "Refusing help"
+    ],
+    "meaning": "Are you refusing even help because you fear more trouble? Rather than forcing yourself onward, resting and finding people you can rely on matter too.",
+    "themes": {
+     "blind": "From a past failure, are you protecting yourself too much?",
+     "caution": "Do not push away the very people who would help you.",
+     "diff": "Which option spares you from striving too hard alone?",
+     "letgo": "You do not have to assume you will be hurt again.",
+     "want": "What kind of help would you be willing to accept?"
+    }
+   },
+   "story": "A card about the strength of having continued this far, even with tiredness.",
+   "symbol": "Fire / Wands (passion, action) / Number 9 (a trial before completion)",
+   "upright": {
+    "keywords": [
+     "Persistence",
+     "Protecting yourself",
+     "One step to go"
+    ],
+    "meaning": "Check what you have managed so far. If you want to continue, you can build in rest and help, and think of a way that does not strain you.",
+    "themes": {
+     "blind": "What made it possible for you to continue this far?",
+     "caution": "Rather than straining to the very end, decide how you will rest, too.",
+     "diff": "Which option lets you continue while taking rest?",
+     "letgo": "Admitting tiredness does not erase the effort so far.",
+     "want": "What do you want to see through to the end?"
+    }
+   }
+  },
+  "wa10": {
+   "arcana": "Wands",
+   "background": "A person carries ten wands, walking bent forward. The wands block their view. It is the figure of someone whose tasks have piled up until there is no room left.",
+   "name": "Ten of Wands",
+   "reversed": {
+    "keywords": [
+     "Reducing the load",
+     "Delegating",
+     "Noticing your limit"
+    ],
+    "meaning": "When you notice you cannot carry any more, think about how to reduce it. Deciding who to ask for what makes it easier to let go.",
+    "themes": {
+     "blind": "Is there work or a promise you could still let go of?",
+     "caution": "When you ask someone, share the content and the deadline too.",
+     "diff": "Which option is clearer about how to reduce the burden?",
+     "letgo": "You can ask for help before you reach your limit, not only after.",
+     "want": "If the load lightened, what would you spend time on?"
+    }
+   },
+   "story": "A card about asking whether you are carrying too much work or too many roles.",
+   "symbol": "Fire / Wands (passion, action) / Number 10 (completion, pressure)",
+   "upright": {
+    "keywords": [
+     "Carrying too much",
+     "Responsibility",
+     "Burden"
+    ],
+    "meaning": "Are you trying to do everything yourself? Write out your tasks, and separate what you can ask others to do from what can wait.",
+    "themes": {
+     "blind": "Which of your tasks truly need to be yours?",
+     "caution": "Do not burn through your energy just from the wish to finish.",
+     "diff": "Which option lets you divide the roles and move forward?",
+     "letgo": "You do not have to accept everything you are asked to do.",
+     "want": "If you could put down one load, what would it be?"
+    }
+   }
+  },
+  "wa11": {
+   "arcana": "Wands",
+   "background": "A young person holds a wand and looks at the sprouts at its tip. The land around is wide and sandy. Experience is still small, but the feeling of finding something interesting is treasured.",
+   "name": "Page of Wands",
+   "reversed": {
+    "keywords": [
+     "Losing interest quickly",
+     "Lack of experience",
+     "Ideas only"
+    ],
+    "meaning": "Do you start on impulse and soon jump to something else? First decide how far you will test this one thing.",
+    "themes": {
+     "blind": "Are you only adding new things?",
+     "caution": "Before quitting, check how far you actually tested it.",
+     "diff": "Which option grows your experience one thing at a time?",
+     "letgo": "You do not have to put a hand to everything.",
+     "want": "Which interest is honestly still alive?"
+    }
+   },
+   "story": "A card about taking interest in something new and beginning to learn.",
+   "symbol": "Fire / Wands (passion, action) / Court card: Page (news, learning)",
+   "upright": {
+    "keywords": [
+     "Curiosity",
+     "New learning",
+     "Trying"
+    ],
+    "meaning": "Look into what caught your attention, or try a little of it. Even if you are not good at first, trying is how you learn whether it fits you.",
+    "themes": {
+     "blind": "What has caught your interest, even slightly, lately?",
+     "caution": "Before trying, do not promise big results.",
+     "diff": "Which option lets you experience and learn lightly?",
+     "letgo": "You do not have to hold back just because you are a beginner.",
+     "want": "Learning about what makes you excited?"
+    }
+   }
+  },
+  "wa12": {
+   "arcana": "Wands",
+   "background": "A knight holding a wand is about to ride out on horseback. The pattern on their clothes suggests flames. It shows the power to act, and the feeling of heading somewhere new.",
+   "name": "Knight of Wands",
+   "reversed": {
+    "keywords": [
+     "Charging ahead",
+     "Impatience",
+     "Not lasting"
+    ],
+    "meaning": "Is your wish to move fast so strong that you skip checking and asking? Confirm your own schedule and the people around you before you move.",
+    "themes": {
+     "blind": "Has moving fast itself become the goal?",
+     "caution": "Check the time and cost after you start, too.",
+     "diff": "Which option makes it easier to match the pace of those around you?",
+     "letgo": "You do not have to call a slow result a failure.",
+     "want": "If you did not have to hurry, what would you value?"
+    }
+   },
+   "story": "A card about moving with momentum toward what you want to do.",
+   "symbol": "Fire / Wands (passion, action) / Court card: Knight (action, drive)",
+   "upright": {
+    "keywords": [
+     "Power to act",
+     "Absorption",
+     "Challenge"
+    ],
+    "meaning": "Turn the feeling of wanting to try into an actual step. While using your momentum, you can also watch that you do not overspend time or money.",
+    "themes": {
+     "blind": "Is there a small action that could use your momentum?",
+     "caution": "Check other people's circumstances and your own schedule, too.",
+     "diff": "Which option turns motivation into real action more easily?",
+     "letgo": "You do not have to wait until preparation is perfect.",
+     "want": "What would you like to challenge yourself with now?"
+    }
+   }
+  },
+  "wa13": {
+   "arcana": "Wands",
+   "background": "The queen holds a wand and a sunflower, with a black cat at her feet. Her confident seat shows trust in herself, and a posture that welcomes people warmly.",
+   "name": "Queen of Wands",
+   "reversed": {
+    "keywords": [
+     "Comparing with others",
+     "Jealousy",
+     "Low confidence"
+    ],
+    "meaning": "Are you making yourself small by comparing with those around you? Turn your eyes to what you can enjoy for yourself, not to earn praise.",
+    "themes": {
+     "blind": "Looking only at others' good points, are you making yourself small?",
+     "caution": "Do not turn anxiety into harsh words toward others.",
+     "diff": "Which option lets you keep your own pace without comparing too much?",
+     "letgo": "You do not have to feel you must stand out more than anyone.",
+     "want": "What would you like to enjoy just for yourself?"
+    }
+   },
+   "story": "A card about treasuring who you are and sharing energy with those around you.",
+   "symbol": "Fire / Wands (passion, action) / Court card: Queen (charm, confidence)",
+   "upright": {
+    "keywords": [
+     "Being yourself",
+     "Brightness",
+     "Warmth"
+    ],
+    "meaning": "Instead of only imitating others, try your own favorite way too. Acknowledging your strengths makes it easier to notice others' strengths as well.",
+    "themes": {
+     "blind": "Have you forgotten your own favorite way of doing things?",
+     "caution": "Even with confidence, treasure others' differences too.",
+     "diff": "Which option lets you be with people as yourself?",
+     "letgo": "Acknowledging your good points is not the same as boasting.",
+     "want": "If you stopped comparing, what do you like about yourself?"
+    }
+   }
+  },
+  "wa14": {
+   "arcana": "Wands",
+   "background": "The king sits holding a wand with sprouts. Lions and similar motifs appear on the chair and clothes. It shows the power to tell people what you envision and turn it into action.",
+   "name": "King of Wands",
+   "story": "A card about sharing a goal and moving forward together with companions.",
+   "symbol": "Fire / Wands (passion, action) / Court card: King (leadership, vision)",
+   "upright": {
+    "keywords": [
+     "Showing the goal",
+     "Bringing people together",
+     "Challenge"
+    ],
+    "meaning": "Share not only what you want to do, but why. Listening to the opinions and strengths of the people around you makes it easier to move together.",
+    "themes": {
+     "blind": "Has the reason behind the goal reached your companions too?",
+     "caution": "Before moving people, listen to their opinions and circumstances.",
+     "diff": "Which option makes cooperation toward the same goal easier?",
+     "letgo": "You do not have to advance everything alone.",
+     "want": "With whom, and what, do you want to make real?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "Imposing",
+     "Self-centered",
+     "Rushing others"
+    ],
+    "meaning": "Are you rushing people along, assuming you are the only one who understands? Check the goal and the approach in words that reach the other person too.",
+    "themes": {
+     "blind": "Has the plan become one only you are satisfied with?",
+     "caution": "Before rushing others, check whether your explanation is enough.",
+     "want": "Do you want people to follow you, or to move forward together?",
+     "letgo": "It is fine to change your own plan.",
+     "diff": "Which option makes it easier for everyone to speak up?"
+    }
+   }
+  },
+  "cu01": {
+   "arcana": "Cups",
+   "background": "A hand from a cloud holds a cup, and water overflows from it. Flowers bloom on the water's surface and a white bird flies above — receiving the feelings born in your heart.",
+   "name": "Ace of Cups",
+   "reversed": {
+    "keywords": [
+     "Hiding feelings",
+     "A tired heart",
+     "Feeling unfulfilled"
+    ],
+    "meaning": "Are you holding your feelings in, or matching others too much? First, quietly check how you yourself are feeling.",
+    "themes": {
+     "blind": "Matching others, are you bottling up your feelings?",
+     "caution": "When you are tired, you do not have to force yourself to have fun.",
+     "diff": "Which option lets you express your feelings without strain?",
+     "letgo": "You do not always have to please the other person.",
+     "want": "What do you really want to tell, and to whom?"
+    }
+   },
+   "story": "A card about the beginning of caring for someone, and of a heart being moved.",
+   "symbol": "Water / Cups (feelings, relationships) / Number 1 (beginnings)",
+   "upright": {
+    "keywords": [
+     "Feelings are born",
+     "Kindness",
+     "A fulfilled heart"
+    ],
+    "meaning": "Turn your eyes to feelings like joy, affection, and gratitude. You can also try telling the other person, in a way that does not strain you.",
+    "themes": {
+     "blind": "Have you noticed what made you happy lately?",
+     "caution": "Even when feelings run high, do not make promises you cannot keep.",
+     "diff": "Which option lets you treasure your own feelings?",
+     "letgo": "You do not have to hold back from accepting kindness.",
+     "want": "What person or thing do you honestly hold dear?"
+    }
+   }
+  },
+  "cu02": {
+   "arcana": "Cups",
+   "background": "Two people face each other, each offering their cup. A winged lion appears above them — a scene of meeting another person at the same eye level.",
+   "name": "Two of Cups",
+   "reversed": {
+    "keywords": [
+     "Feelings out of sync",
+     "Miscommunication",
+     "One-way"
+    ],
+    "meaning": "Are you skipping the conversation because you assume they understand? Check how each of you is actually feeling now.",
+    "themes": {
+     "blind": "Even with the same intention, might you be receiving things differently?",
+     "caution": "Before blaming based on assumptions, listen.",
+     "diff": "Which option lets you talk things out even when you differ?",
+     "letgo": "It is fine for your feelings not to match in everything.",
+     "want": "What do you want the other person to understand about you?"
+    }
+   },
+   "story": "A card about caring for each other and exchanging feelings.",
+   "symbol": "Water / Cups (feelings, relationships) / Number 2 (dialogue, relationships)",
+   "upright": {
+    "keywords": [
+     "Hearts connecting",
+     "Cooperation",
+     "An equal relationship"
+    ],
+    "meaning": "After sharing your feelings, listen to the other person's. It is a hint for thinking about a relationship where neither side alone endures.",
+    "themes": {
+     "blind": "Are you making time to hear the other person?",
+     "caution": "Make sure neither side alone is enduring.",
+     "diff": "Which option lets you confirm each other's feelings?",
+     "letgo": "You do not have to decide the answer alone.",
+     "want": "What would you like to share with the other person?"
+    }
+   }
+  },
+  "cu03": {
+   "arcana": "Cups",
+   "background": "Three people stand in a circle, raising their cups high. Fruit lies at their feet — enjoying time together and celebrating what was accomplished.",
+   "name": "Three of Cups",
+   "reversed": {
+    "keywords": [
+     "Matching companions too much",
+     "Gossip",
+     "Too much play"
+    ],
+    "meaning": "Are you tiring yourself out or straining by going along with the mood? Treasure both the time together and the time you rest alone.",
+    "themes": {
+     "blind": "Are you tiring yourself by matching the mood of the room?",
+     "caution": "Even if you hear gossip, do not spread it without checking.",
+     "diff": "Which option lets you be with people at your own pace?",
+     "letgo": "You do not have to answer every invitation.",
+     "want": "Might you actually want some time alone, too?"
+    }
+   },
+   "story": "A card about sharing joy with companions and supporting each other.",
+   "symbol": "Water / Cups (feelings, relationships) / Number 3 (joy, sharing)",
+   "upright": {
+    "keywords": [
+     "Friendship",
+     "Sharing joy",
+     "Companions"
+    ],
+    "meaning": "Share your good news, or talk with a friend you trust. You may find an idea you would never have thought of alone.",
+    "themes": {
+     "blind": "Is there someone who would celebrate with you?",
+     "caution": "Even in fun company, avoid company that strains you.",
+     "diff": "Which option comes with companions who support each other?",
+     "letgo": "You do not have to keep striving alone.",
+     "want": "With what kind of people can you laugh with relief?"
+    }
+   }
+  },
+  "cu04": {
+   "arcana": "Cups",
+   "background": "Before a person sitting with crossed arms under a tree stand three cups. A hand from a cloud offers one more, but the person is not looking — not noticing what is already there, or a new invitation.",
+   "name": "Four of Cups",
+   "reversed": {
+    "keywords": [
+     "Noticing again",
+     "Interest returning",
+     "Beginning to move"
+    ],
+    "meaning": "Turn your eyes to something you never cared about before. From an easy invitation or a small pleasure, you can test whether your feelings move.",
+    "themes": {
+     "blind": "Have you noticed a good point you could not see before?",
+     "caution": "Even if interest returns, do not add too many plans.",
+     "diff": "Which option makes it easier to test the interest that returned?",
+     "letgo": "It is fine to reconsider something you once declined.",
+     "want": "What would you like to try, on a small scale?"
+    }
+   },
+   "story": "A card about times when your heart is not in it and the good in front of you is hard to notice.",
+   "symbol": "Water / Cups (feelings, relationships) / Number 4 (stagnation, reflection)",
+   "upright": {
+    "keywords": [
+     "Not feeling it",
+     "Brooding",
+     "Overlooking"
+    ],
+    "meaning": "If nothing feels interesting, check whether you are tired. After resting, you can look at the options you have once more.",
+    "themes": {
+     "blind": "Might you be unable to feel interest because you are tired?",
+     "caution": "Do not refuse everything based only on the mood of the moment.",
+     "diff": "Which option lets you rest, then think again?",
+     "letgo": "You do not have to love something right away.",
+     "want": "What might move your feelings, even a little?"
+    }
+   }
+  },
+  "cu05": {
+   "arcana": "Cups",
+   "background": "A person in black clothing looks at three fallen cups. Two more still stand behind them. It holds both permission to grieve, and the possibility that support remains.",
+   "name": "Five of Cups",
+   "reversed": {
+    "keywords": [
+     "Recovering",
+     "What remains",
+     "Accepting help"
+    ],
+    "meaning": "Check not only what was lost, but the support that remains. Even while sadness continues, you can lean on people little by little.",
+    "themes": {
+     "blind": "Are you overlooking the ways things have become a little easier?",
+     "caution": "Do not hide your feelings to appear fine.",
+     "diff": "Which option lets you move forward using the support you have?",
+     "letgo": "You do not have to give up on what comes next because of what happened before.",
+     "want": "From here on, with what kind of people do you want to spend time?"
+    }
+   },
+   "story": "A card about grief for what was lost, and seeing what still remains.",
+   "symbol": "Water / Cups (feelings, relationships) / Number 5 (loss, conflict)",
+   "upright": {
+    "keywords": [
+     "Sadness",
+     "Disappointment",
+     "What was lost"
+    ],
+    "meaning": "You do not have to force hard feelings away. When you settle, turn your eyes also to the people and things still beside you.",
+    "themes": {
+     "blind": "What support is still beside you now?",
+     "caution": "In your sadness, you do not have to rush a big decision.",
+     "diff": "Which option lets you accept support while acknowledging what was lost?",
+     "letgo": "You do not have to blame yourself for being sad.",
+     "want": "What do you want to treasure now?"
+    }
+   }
+  },
+  "cu06": {
+   "arcana": "Cups",
+   "background": "A child hands a cup of flowers to another child. Old houses and cups of flowers are around them. It shows the feeling of giving a gift, and memories that feel safe.",
+   "name": "Six of Cups",
+   "reversed": {
+    "keywords": [
+     "Wanting to go back",
+     "Leaning on memories",
+     "Not seeing the present"
+    ],
+    "meaning": "Thinking the past was better, are you overlooking what you have now? While treasuring the memories, think of a way of choosing that fits who you are today.",
+    "themes": {
+     "blind": "Are you remembering only the good parts of the past?",
+     "caution": "Check whether the old way still fits now.",
+     "diff": "Which option fits your current life and hopes?",
+     "letgo": "Your way of choosing does not have to match your past self.",
+     "want": "Do you want to return to the past, or do you want to feel safe?"
+    }
+   },
+   "story": "A card about fond memories and honest kindness.",
+   "symbol": "Water / Cups (feelings, relationships) / Number 6 (memories, innocence)",
+   "upright": {
+    "keywords": [
+     "Memories",
+     "Kindness",
+     "Someone you miss"
+    ],
+    "meaning": "Recall what you enjoyed before, and the people who helped you. From there, you may find what you still want to treasure now.",
+    "themes": {
+     "blind": "Is there a past experience that helped you?",
+     "caution": "Check what is different between then and now, too.",
+     "diff": "Which option lets you bring a treasured memory into the present?",
+     "letgo": "It is fine to show honest kindness.",
+     "want": "What has stayed precious to you, unchanged from before?"
+    }
+   }
+  },
+  "cu07": {
+   "arcana": "Cups",
+   "background": "Seven cups float on clouds, holding jewels, a castle, creatures, and more. A person looks up from below. Pleasant imagination spreads, and the real picture becomes hard to see.",
+   "name": "Seven of Cups",
+   "story": "A card about having so many attractive candidates that choosing becomes difficult.",
+   "symbol": "Water / Cups (feelings, relationships) / Number 7 (fantasy, indecision)",
+   "upright": {
+    "keywords": [
+     "Dreams expanding",
+     "Cannot choose",
+     "Imagination"
+    ],
+    "meaning": "Are you comparing only by the impression that something looks fun? Looking into the time and effort actually required makes choosing easier.",
+    "themes": {
+     "blind": "Are you comparing only by how fun things look?",
+     "caution": "Check the time and cost required, too.",
+     "diff": "Which option makes it easier to verify whether you can actually try it?",
+     "letgo": "You do not have to choose everything at once.",
+     "want": "What do you want even if no one praises you for it?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "Seeing reality",
+     "Narrowing down",
+     "Deciding"
+    ],
+    "meaning": "Separate imagination from what you can actually do. Rather than choosing everything, this is a hint to decide on one thing you can try now.",
+    "themes": {
+     "blind": "Has a reason to narrow the candidates come into view?",
+     "caution": "Do not erase what you like just because something is realistic.",
+     "want": "Which one does the person you are now truly want to take on?",
+     "letgo": "It is fine to change a plan you once imagined.",
+     "diff": "Which option is where what you can do and what you wish for overlap?"
+    }
+   }
+  },
+  "cu08": {
+   "arcana": "Cups",
+   "background": "A person leaves eight cups behind and walks toward the mountains with a staff. The moon is in the sky — feeling that something is missing, and searching for another path.",
+   "name": "Eight of Cups",
+   "reversed": {
+    "keywords": [
+     "Cannot leave",
+     "Cannot decide",
+     "Continuing vaguely"
+    ],
+    "meaning": "You may want to change, yet stay in the same place out of anxiety. Write down, separately, your reasons to stay and your reasons to leave.",
+    "themes": {
+     "blind": "Can you separate your reasons to stay from your fear of moving?",
+     "caution": "Do not endure for a long time while unable to decide.",
+     "diff": "Which option lets you decide on a small ending or a small preparation?",
+     "letgo": "You do not have to continue just because you have continued for a long time.",
+     "want": "If no one stopped you, what would you want to do?"
+    }
+   },
+   "story": "A card about drawing a line under where you are and searching for something that matters more.",
+   "symbol": "Water / Cups (feelings, relationships) / Number 8 (departure, searching)",
+   "upright": {
+    "keywords": [
+     "Leaving",
+     "An ending",
+     "Searching again"
+    ],
+    "meaning": "Consider whether what you are continuing still fits who you are now. Once you check your reason for wanting to leave, you can decide the preparation you need next.",
+    "themes": {
+     "blind": "Why does continuing leave you unfulfilled?",
+     "caution": "Think about the plan after you leave, and the people you can rely on.",
+     "diff": "Which option connects to what you hope for next?",
+     "letgo": "It is fine to review something you once chose.",
+     "want": "What do you want to value more than you do now?"
+    }
+   }
+  },
+  "cu09": {
+   "arcana": "Cups",
+   "background": "A person sits contentedly with nine cups lined up behind them. It is a scene where the things they find delightful are gathered. It is also a hint for thinking about what makes you happy.",
+   "name": "Nine of Cups",
+   "reversed": {
+    "keywords": [
+     "Something missing",
+     "Too greedy",
+     "Satisfaction in appearance only"
+    ],
+    "meaning": "Even with the thing you wanted, your heart may stay unfulfilled. Think again about what you truly wanted.",
+    "themes": {
+     "blind": "Do you keep seeking without deciding what would satisfy you?",
+     "caution": "Do not try to fill a gap in your heart with money or things alone.",
+     "diff": "Which option settles not only the surface, but your feelings too?",
+     "letgo": "You do not have to want what others envy.",
+     "want": "Do you truly want the thing itself, or peace of mind and connection?"
+    }
+   },
+   "story": "A card about confirming your own wishes and what satisfies you.",
+   "symbol": "Water / Cups (feelings, relationships) / Number 9 (satisfaction, wishes fulfilled)",
+   "upright": {
+    "keywords": [
+     "Satisfaction",
+     "Wishes",
+     "Enjoying"
+    ],
+    "meaning": "Take your time to savor the good things you already have. It is a hint to choose what satisfies you, rather than what others wish for.",
+    "themes": {
+     "blind": "What are you already fulfilled by?",
+     "caution": "Even when happy, do not grow greedy and add too much.",
+     "diff": "Which option leads to your own satisfaction rather than others' evaluation?",
+     "letgo": "It is fine to enjoy what you have gained.",
+     "want": "What kind of state is happiness, for you?"
+    }
+   }
+  },
+  "cu10": {
+   "arcana": "Cups",
+   "background": "Ten cups line up inside a rainbow. Below, adults and children rejoice, with a house nearby — being with people who matter, at ease.",
+   "name": "Ten of Cups",
+   "reversed": {
+    "keywords": [
+     "A gap with the ideal",
+     "Miscommunication",
+     "A forced smile"
+    ],
+    "meaning": "Are you hiding your true feelings to look close? Even if you are not all the same, you can look for a way for everyone to feel at ease.",
+    "themes": {
+     "blind": "Are you straining to appear close?",
+     "caution": "Do not blame by comparing with an ideal family or group.",
+     "diff": "Which option lets you talk even about different feelings?",
+     "letgo": "You do not have to be together always, or smiling always.",
+     "want": "What kind of time do you need for yourself?"
+    }
+   },
+   "story": "A card about sharing peace of mind and joy with the people close to you.",
+   "symbol": "Water / Cups (feelings, relationships) / Number 10 (completion, happiness)",
+   "upright": {
+    "keywords": [
+     "People close to you",
+     "Peace of mind",
+     "Celebrating together"
+    ],
+    "meaning": "Think about who you want to spend time with, and how. A small thank-you or conversation is also a step toward growing a relationship that feels safe.",
+    "themes": {
+     "blind": "Are you overlooking small joys with the people close to you?",
+     "caution": "Do not assume everyone wants the same happiness.",
+     "diff": "Which option lets you continue at ease with people who matter?",
+     "letgo": "You do not have to make a big success the condition for happiness.",
+     "want": "With whom, and what kind of days, do you want to spend your time?"
+    }
+   }
+  },
+  "cu11": {
+   "arcana": "Cups",
+   "background": "A fish peeks out of the cup a young person holds, and the young person looks at the fish — meeting an unexpected feeling or idea with surprise.",
+   "name": "Page of Cups",
+   "reversed": {
+    "keywords": [
+     "Swept by mood",
+     "Expecting too much",
+     "Hiding feelings"
+    ],
+    "meaning": "Are you deciding promises based only on the mood of the moment? Give it a little time and check whether you feel the same.",
+    "themes": {
+     "blind": "Are you being swept along by the mood of the moment?",
+     "caution": "If your words and feelings change, tell the other person too.",
+     "diff": "Which option lets you reconsider even if your feelings change?",
+     "letgo": "It is fine not to feel the way you expected.",
+     "want": "What would you still treasure after some time has passed?"
+    }
+   },
+   "story": "A card about noticing small shifts in feeling, and small inspirations.",
+   "symbol": "Water / Cups (feelings, relationships) / Court card: Page (sensitivity, news)",
+   "upright": {
+    "keywords": [
+     "Honest feelings",
+     "Inspiration",
+     "Welcome news"
+    ],
+    "meaning": "Put what suddenly caught your attention into words or a picture. Even if you cannot explain it well, it can be a chance to know your own feelings.",
+    "themes": {
+     "blind": "Are you missing a feeling that suddenly surfaced?",
+     "caution": "Do not make a big promise on inspiration alone.",
+     "diff": "Which option lets you test a small feeling or idea?",
+     "letgo": "Even if you cannot explain it well, writing it down is fine.",
+     "want": "What moved your heart?"
+    }
+   }
+  },
+  "cu12": {
+   "arcana": "Cups",
+   "background": "A knight on a white horse holds out a cup as if offering it. The horse advances calmly — inviting or proposing while thinking of the other person.",
+   "name": "Knight of Cups",
+   "reversed": {
+    "keywords": [
+     "Words only",
+     "Swept by atmosphere",
+     "A gap with expectations"
+    ],
+    "meaning": "Are you reassured by lovely words alone? Check whether the actual actions and promises match, and how you yourself feel.",
+    "themes": {
+     "blind": "Do the beautiful words and the actual actions match?",
+     "caution": "Do not decide a promise based on atmosphere alone.",
+     "diff": "Which option can you trust in actions, not just words?",
+     "letgo": "You do not have to accept just to avoid disappointing the other person.",
+     "want": "Do you truly want to accept that invitation?"
+    }
+   },
+   "story": "A card about delivering feelings that matter through words and actions.",
+   "symbol": "Water / Cups (feelings, relationships) / Court card: Knight (proposals, romance)",
+   "upright": {
+    "keywords": [
+     "Sharing feelings",
+     "An invitation",
+     "Consideration"
+    ],
+    "meaning": "If you have feelings to share, think of words that do not strain the other person. You can also answer an invitation after checking your own feelings.",
+    "themes": {
+     "blind": "Have you put what you want to tell the other person into words?",
+     "caution": "Even when sharing feelings, respect the other person's answer.",
+     "diff": "Which option allows a proposal that strains neither of you?",
+     "letgo": "You do not have to hide everything out of embarrassment.",
+     "want": "What kind of invitation would make you happy?"
+    }
+   }
+  },
+  "cu13": {
+   "arcana": "Cups",
+   "background": "By the sea, the queen gazes at a lidded cup. What is inside cannot be seen from outside — a reminder that a person's heart cannot be fully known just by looking.",
+   "name": "Queen of Cups",
+   "reversed": {
+    "keywords": [
+     "Too considerate",
+     "Putting yourself last",
+     "A tired heart"
+    ],
+    "meaning": "Do you feel you must somehow fix the other person's mood yourself? While treasuring them, it is fine to take time to rest yourself, too.",
+    "themes": {
+     "blind": "Are you putting your own tiredness last?",
+     "caution": "Do not make the other person's mood your responsibility.",
+     "diff": "Which option lets you rest yourself while treasuring others?",
+     "letgo": "You do not have to whittle yourself down to be kind.",
+     "want": "What do you want someone to do for you right now?"
+    }
+   },
+   "story": "A card about listening to another's feelings while treasuring your own.",
+   "symbol": "Water / Cups (feelings, relationships) / Court card: Queen (empathy, intuition)",
+   "upright": {
+    "keywords": [
+     "Being there",
+     "Kindness",
+     "Listening to feelings"
+    ],
+    "meaning": "Rather than answering right away, try listening to the other person. Trying to understand their feelings can itself lead to peace of mind.",
+    "themes": {
+     "blind": "Might listening be needed more than answering?",
+     "caution": "Do not assume you fully understand the other person's feelings.",
+     "diff": "Which option lets you listen to each other's feelings calmly?",
+     "letgo": "You do not have to solve it for them right away.",
+     "want": "What kind of connection do you want to treasure?"
+    }
+   }
+  },
+  "cu14": {
+   "arcana": "Cups",
+   "background": "The king sits holding a cup above a wavy sea. Though the surroundings sway, the king's figure is calm — the power to choose your actions while feeling your emotions.",
+   "name": "King of Cups",
+   "story": "A card about facing people calmly even when your feelings sway.",
+   "symbol": "Water / Cups (feelings, relationships) / Court card: King (maturity, embrace)",
+   "upright": {
+    "keywords": [
+     "Calm",
+     "Consideration",
+     "Settling your feelings"
+    ],
+    "meaning": "Even with anger or anxiety, you do not have to reply right away. After settling a little, choose words that are good for both you and the other person.",
+    "themes": {
+     "blind": "Are you making time to settle yourself?",
+     "caution": "Separate feeling an emotion from acting on it as-is.",
+     "diff": "Which option lets you face things with consideration and calm?",
+     "letgo": "You do not have to think having emotions makes you weak.",
+     "want": "How would you like to speak, both to yourself and to the other person?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "Bottling up feelings",
+     "Watching faces",
+     "Moving people with emotion"
+    ],
+    "meaning": "Are you hiding your feelings for too long, or using them to move others? Try sharing your own feelings in words that do not blame.",
+    "themes": {
+     "blind": "Are you hiding your true feelings behind a pretense of being fine?",
+     "caution": "Do not try to move the other person with a bad mood.",
+     "want": "What do you truly want to say?",
+     "letgo": "You do not have to swallow everything — putting it into words is fine.",
+     "diff": "Which option lets you share feelings without blame?"
+    }
+   }
+  },
+  "sw01": {
+   "arcana": "Swords",
+   "background": "A hand from a cloud raises a straight sword high, with a crown at its tip. It shows sorting out a confusing matter and finding what matters.",
+   "name": "Ace of Swords",
+   "reversed": {
+    "keywords": [
+     "Thoughts will not settle",
+     "Saying too much",
+     "Missing information"
+    ],
+    "meaning": "Are you trying to reach an answer inside your head alone? Check the information, and arrange your words before you speak to the other person.",
+    "themes": {
+     "blind": "Can you separate what you know from what you are guessing?",
+     "caution": "Do not state a conclusion before checking.",
+     "diff": "Which option lets you confirm information and think again?",
+     "letgo": "You do not have to produce the right answer right now.",
+     "want": "If you thought calmly, what would you want to say?"
+    }
+   },
+   "story": "A card about organizing your thoughts and making what matters clear.",
+   "symbol": "Air / Swords (thought, judgment) / Number 1 (beginnings)",
+   "upright": {
+    "keywords": [
+     "Thoughts come together",
+     "Making things clear",
+     "Deciding"
+    ],
+    "meaning": "Write down the facts you know and find the single most important point. If you can explain your reason briefly, choosing for yourself becomes easier.",
+    "themes": {
+     "blind": "Is there information you have not organized yet?",
+     "caution": "Even if you believe you are right, do not turn it into harsh words.",
+     "diff": "Which option lets you organize the facts and explain your reason?",
+     "letgo": "You do not have to take on everything while it stays vague.",
+     "want": "What do you most want to make clear?"
+    }
+   }
+  },
+  "sw02": {
+   "arcana": "Swords",
+   "background": "A person with covered eyes crosses two swords before their chest, with the sea behind. They keep their balance, while there is something they are choosing not to look at.",
+   "name": "Two of Swords",
+   "reversed": {
+    "keywords": [
+     "Indecision moves",
+     "Too much information",
+     "Facing it"
+    ],
+    "meaning": "Have you gathered so much information that deciding became harder? Narrow it to the conditions you need, and check the things you were avoiding, too.",
+    "themes": {
+     "blind": "With too much information, are you more lost instead?",
+     "caution": "Before deciding in a rush, narrow down the conditions that matter.",
+     "diff": "Which option makes it easier to narrow down by your own conditions?",
+     "letgo": "It is fine to reduce information you gathered for thinking.",
+     "want": "Is the reason for your hesitation a feeling, or a lack of information?"
+    }
+   },
+   "story": "A card about the feeling of being torn between two and not yet able to decide.",
+   "symbol": "Air / Swords (thought, judgment) / Number 2 (balance, holding off)",
+   "upright": {
+    "keywords": [
+     "Cannot decide",
+     "Hesitation",
+     "Waiting for an answer"
+    ],
+    "meaning": "If you cannot decide now, think about what you would need to know to choose. Lining up both sides' information, including the points you would rather not see, can help.",
+    "themes": {
+     "blind": "Is there something you are avoiding because you do not want to see it?",
+     "caution": "If you wait, think about what you will check before deciding.",
+     "diff": "Which option lets you gather the information you need and compare?",
+     "letgo": "You do not have to keep searching for an answer that satisfies everyone.",
+     "want": "If you owed no one any consideration, which way would you go?"
+    }
+   }
+  },
+  "sw03": {
+   "arcana": "Swords",
+   "background": "Under rain clouds, three swords overlap a heart — an image that draws sadness plainly. It is not a prediction that you will be hurt, but a hint to receive the pain you already feel with care.",
+   "name": "Three of Swords",
+   "reversed": {
+    "keywords": [
+     "Pain easing",
+     "Talking about feelings",
+     "Lingering sadness"
+    ],
+    "meaning": "Separate the parts that have eased a little from the parts that still hurt. Without forcing yourself to recover quickly, you can also ask someone you can talk to, to listen.",
+    "themes": {
+     "blind": "Which parts have eased a little, and which still hurt?",
+     "caution": "Do not rush yourself to feel better quickly.",
+     "diff": "Which option lets you sort your feelings without strain?",
+     "letgo": "You do not have to forgive, or forget, right away.",
+     "want": "Is there someone you can safely talk to about your feelings?"
+    }
+   },
+   "story": "A card about not pretending a hurt feeling never happened.",
+   "symbol": "Air / Swords (thought, judgment) / Number 3 (sadness, pain)",
+   "upright": {
+    "keywords": [
+     "Sadness",
+     "Disappointment",
+     "A hurting heart"
+    ],
+    "meaning": "You do not have to hide that something hurt behind a pretense of being fine. Put what was hard into words, and make time to rest.",
+    "themes": {
+     "blind": "Can you acknowledge that you were hurt?",
+     "caution": "When things are hard, you do not have to rush to decide an answer.",
+     "diff": "Which option lets you treat your own feelings with care?",
+     "letgo": "You do not have to keep pretending to be fine.",
+     "want": "How would you like to be treated right now?"
+    }
+   }
+  },
+  "sw04": {
+   "arcana": "Swords",
+   "background": "Inside a quiet building, the figure of a knight lies with hands joined. Swords rest nearby — time away from conflict and busyness, to rest.",
+   "name": "Four of Swords",
+   "reversed": {
+    "keywords": [
+     "Cannot rest",
+     "Beginning to move",
+     "Noticing tiredness"
+    ],
+    "meaning": "Check your own state: is your rest insufficient, or are you ready to start moving? If you start, beginning with fewer plans is fine.",
+    "themes": {
+     "blind": "Have you checked whether you truly rested?",
+     "caution": "If you start moving, begin with fewer plans.",
+     "diff": "Which option lets you restart at a pace that fits your state?",
+     "letgo": "You do not have to immediately handle the same amount as before your rest.",
+     "want": "Right now, do you want to rest, or to move a little?"
+    }
+   },
+   "story": "A card about pausing the constant motion and settling your heart and mind.",
+   "symbol": "Air / Swords (thought, judgment) / Number 4 (rest, stability)",
+   "upright": {
+    "keywords": [
+     "Resting",
+     "Settling",
+     "Organizing your thoughts"
+    ],
+    "meaning": "Before rushing an answer, rest a little. Taking time away from your worries can change how things look afterward.",
+    "themes": {
+     "blind": "Are you tired from thinking too much?",
+     "caution": "Do not fill even your rest time with plans.",
+     "diff": "Which option gives you time to rest your mind and heart?",
+     "letgo": "You do not have to think of resting as slacking.",
+     "want": "What would you like to step away from, to rest?"
+    }
+   }
+  },
+  "sw05": {
+   "arcana": "Swords",
+   "background": "Behind a person holding swords, two people walk away. Swords also lie on the ground. Even when someone wins, it is a scene where not everyone is glad.",
+   "name": "Five of Swords",
+   "reversed": {
+    "keywords": [
+     "Ending the conflict",
+     "Stepping closer",
+     "The courage to withdraw"
+    ],
+    "meaning": "Look for a way other than continuing the fight. Talking it out, apologizing, or taking distance are also choices that protect you.",
+    "themes": {
+     "blind": "Is there a way to end the conflict you have not tried yet?",
+     "caution": "Even after apologizing, do not keep enduring beyond reason.",
+     "diff": "Which option lets you choose how it ends, calmly?",
+     "letgo": "You do not have to treat withdrawing as always losing.",
+     "want": "Do you want to talk it out, or take some distance?"
+    }
+   },
+   "story": "A card about asking what you lose when you cling to winning.",
+   "symbol": "Air / Swords (thought, judgment) / Number 5 (conflict, cost)",
+   "upright": {
+    "keywords": [
+     "Conflict",
+     "Winning and losing",
+     "What is lost"
+    ],
+    "meaning": "Has defeating the other person in words become the real goal? Consider whether the relationships and peace of mind that matter will still remain after you win.",
+    "themes": {
+     "blind": "What might you lose in order to win?",
+     "caution": "Do not use cruel words to win an argument.",
+     "diff": "Which option protects the relationships and peace of mind that matter?",
+     "letgo": "You do not have to join every fight.",
+     "want": "After winning, what do you want to still have left?"
+    }
+   }
+  },
+  "sw06": {
+   "arcana": "Swords",
+   "background": "An adult and a child ride in a boat, carried by a boatman. Six swords stand in the boat. Even with worries remaining, it is the figure of moving toward calmer ground.",
+   "name": "Six of Swords",
+   "reversed": {
+    "keywords": [
+     "Cannot leave",
+     "The past on your mind",
+     "Cannot move"
+    ],
+    "meaning": "Is the reason you cannot move preparation, or feeling? Separate them one by one, and look for the parts where someone can help.",
+    "themes": {
+     "blind": "Concretely, what is the reason you cannot move?",
+     "caution": "Separate your worries one by one, and look for what others can help with.",
+     "diff": "Which option lets you advance the preparation little by little?",
+     "letgo": "You can rely on others without first settling everything about the past.",
+     "want": "What peace of mind do you want on the other side of the change?"
+    }
+   },
+   "story": "A card about moving away, little by little, from a difficult place.",
+   "symbol": "Air / Swords (thought, judgment) / Number 6 (transition, recovery)",
+   "upright": {
+    "keywords": [
+     "Changing place",
+     "Borrowing help",
+     "Toward calmer ground"
+    ],
+    "meaning": "Look for a place or a method where you can feel safer than now. Even before everything is solved, you can have someone help you.",
+    "themes": {
+     "blind": "Have you been able to look for a place safer than where you are?",
+     "caution": "If you change places, think about the preparation and support you need.",
+     "diff": "Which option lets you borrow help and move toward calmer ground?",
+     "letgo": "You do not have to keep striving in a difficult place.",
+     "want": "What kind of days might feel a little easier?"
+    }
+   }
+  },
+  "sw07": {
+   "arcana": "Swords",
+   "background": "A person carries five swords away from a row of tents. Two swords remain behind. It holds both the resourcefulness of advancing by another route than head-on, and the risk of moving in secret.",
+   "name": "Seven of Swords",
+   "story": "A card about ingenuity in method, and about the problem of keeping secrets.",
+   "symbol": "Air / Swords (thought, judgment) / Number 7 (strategy, ingenuity)",
+   "upright": {
+    "keywords": [
+     "Ingenuity",
+     "Advancing alone",
+     "Secrets"
+    ],
+    "meaning": "If the usual method is difficult, think of another way. But you need to check that it does not involve lying or breaking an important promise.",
+    "themes": {
+     "blind": "Could you use a method different from the usual one?",
+     "caution": "Separate being resourceful from telling lies.",
+     "diff": "Which option lets you be resourceful while keeping your promises?",
+     "letgo": "You do not have to choose only the head-on method.",
+     "want": "Why do you want to advance alone?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "Confessing",
+     "Noticing a lie",
+     "Starting over"
+    ],
+    "meaning": "Is there something you are hiding, or something important you have not shared? Think about the range you can speak of, and look for a way to protect trust.",
+    "themes": {
+     "blind": "Is there something important you have not shared?",
+     "caution": "Before piling on more cover-ups, think about how to talk about it.",
+     "want": "What would feel a little lighter if you shared it honestly?",
+     "letgo": "You do not have to keep hiding a failure forever.",
+     "diff": "Which option lets you advance without adding more secrets?"
+    }
+   }
+  },
+  "sw08": {
+   "arcana": "Swords",
+   "background": "A person with covered eyes is surrounded by eight swords. Between the swords, there are gaps, too. When you feel unable to move, it is an image suggesting there may be a path you have not noticed yet.",
+   "name": "Eight of Swords",
+   "reversed": {
+    "keywords": [
+     "Noticing the assumption",
+     "Borrowing help",
+     "One step forward"
+    ],
+    "meaning": "Check one reason you believed you could not do it. A small change of method, or someone's help, may reveal a part that can move.",
+    "themes": {
+     "blind": "Have your available methods grown compared to before?",
+     "caution": "Do not change everything at once — choose a small step.",
+     "diff": "Which option widens what you can do, little by little?",
+     "letgo": "It is fine to try again something you could not do before.",
+     "want": "What kind of help would let you move?"
+    }
+   },
+   "story": "A card about re-examining your reasons for thinking you cannot.",
+   "symbol": "Air / Swords (thought, judgment) / Number 8 (bondage, restriction)",
+   "upright": {
+    "keywords": [
+     "Cannot move",
+     "Assumptions",
+     "Cannot choose"
+    ],
+    "meaning": "You do not have to blame the difficulty on yourself alone. Separate what truly cannot be done from what you have not tried yet, and think about how to borrow help.",
+    "themes": {
+     "blind": "What truly cannot be done, and what have you not tried yet?",
+     "caution": "Do not blame the difficulty entirely on yourself.",
+     "diff": "Which option lets you use help or another method?",
+     "letgo": "You do not have to decide that something is impossible for you.",
+     "want": "If one restriction disappeared, what would you want to do?"
+    }
+   }
+  },
+  "sw09": {
+   "arcana": "Swords",
+   "background": "On a bed, a person covers their face with both hands. Nine swords line the wall. It shows the weight of a heart whose worries swell at night.",
+   "name": "Nine of Swords",
+   "reversed": {
+    "keywords": [
+     "Talking about anxiety",
+     "Feelings lightening",
+     "Accepting help"
+    ],
+    "meaning": "Put your feelings into words and share them with someone. Even if nothing is solved right away, you can start by finding a way not to carry it alone.",
+    "themes": {
+     "blind": "Is there a worry you can now put into words?",
+     "caution": "Even if things ease a little, do not take on everything by force.",
+     "diff": "Which option lets you share your feelings with the people around you?",
+     "letgo": "You do not have to hide hard feelings — relying on others is fine.",
+     "want": "Who would you like to listen, and to what?"
+    }
+   },
+   "story": "A card about worry and self-blame growing large.",
+   "symbol": "Air / Swords (thought, judgment) / Number 9 (anxiety, anguish)",
+   "upright": {
+    "keywords": [
+     "Worry",
+     "Overthinking",
+     "Blaming yourself"
+    ],
+    "meaning": "Write down, separately, what you are worried about and what actually happened. Rather than thinking alone forever, having someone listen matters too.",
+    "themes": {
+     "blind": "Can you separate worry from what actually happened?",
+     "caution": "Do not keep thinking alone — ask someone to listen.",
+     "diff": "Which option comes with a person or place you can talk about anxiety with?",
+     "letgo": "You do not have to blame yourself for everything that goes wrong.",
+     "want": "What would help you feel at ease right now?"
+    }
+   }
+  },
+  "sw10": {
+   "arcana": "Swords",
+   "background": "Ten swords are drawn in the back of a fallen person, and morning light shows in the distance. It is a strong image, but not a prediction of misfortune — a card for ending things and thinking about what lies beyond.",
+   "name": "Ten of Swords",
+   "reversed": {
+    "keywords": [
+     "Rebuilding little by little",
+     "Resting",
+     "Caught by the past"
+    ],
+    "meaning": "Even if things ease a little, you do not have to immediately handle the same amount as before. Look back on the hard experience, and choose a way that strains you less.",
+    "themes": {
+     "blind": "Is there strength that has been returning, little by little?",
+     "caution": "Do not repeat the same strain as before.",
+     "diff": "Which option lets you rebuild from a smaller burden?",
+     "letgo": "You do not have to let a hard experience decide your future.",
+     "want": "Next time, how would you like to approach it?"
+    }
+   },
+   "story": "A card about not forcing yourself onward, and considering an ending and rest.",
+   "symbol": "Air / Swords (thought, judgment) / Number 10 (an ending, the bottom)",
+   "upright": {
+    "keywords": [
+     "Your limit",
+     "An ending",
+     "Ending and resting"
+    ],
+    "meaning": "If continuing the current way is painful, it is all right to consider ending it. First reduce the burden, and think about what comes next once you settle.",
+    "themes": {
+     "blind": "Have you noticed that the strain has been continuing?",
+     "caution": "Rather than striving even more, consider reducing the burden.",
+     "diff": "Which option lets you draw a line and let yourself rest?",
+     "letgo": "You do not have to treat quitting as all failure.",
+     "want": "If you ended it for now, what would you rest from first?"
+    }
+   }
+  },
+  "sw11": {
+   "arcana": "Swords",
+   "background": "A young person holding a sword stands on a windy hill. Birds and clouds fill the sky — noticing new information and watching carefully.",
+   "name": "Page of Swords",
+   "reversed": {
+    "keywords": [
+     "Gossip",
+     "Assuming you know",
+     "Saying too much"
+    ],
+    "meaning": "Are you spreading what you heard without checking it? Leave what you do not know as unknown, and share only after confirming.",
+    "themes": {
+     "blind": "Is there something you assume you know but have not checked?",
+     "caution": "Do not spread someone's failure as gossip.",
+     "diff": "Which option lets you check before acting?",
+     "letgo": "You do not have to appear to know everything.",
+     "want": "What do you want to use what you learned for?"
+    }
+   },
+   "story": "A card about looking closely, asking questions, and checking.",
+   "symbol": "Air / Swords (thought, judgment) / Court card: Page (curiosity, observation)",
+   "upright": {
+    "keywords": [
+     "Looking into it",
+     "Noticing",
+     "Asking questions"
+    ],
+    "meaning": "For anything that catches your attention, check the source or ask questions. Thinking about how you can actually use what you learn can help.",
+    "themes": {
+     "blind": "Are you checking the information that caught your attention?",
+     "caution": "Do not spread what you learned right away — look at the source.",
+     "diff": "Which option makes looking into things or asking people easier?",
+     "letgo": "It is fine to ask questions about what you do not know.",
+     "want": "What would you like to newly learn about?"
+    }
+   }
+  },
+  "sw12": {
+   "arcana": "Swords",
+   "background": "A knight raises a sword and charges on horseback. The trees around bend in the wind. It shows the speed of turning a clear idea into action, and a warning against rushing too much.",
+   "name": "Knight of Swords",
+   "reversed": {
+    "keywords": [
+     "Jumping to conclusions",
+     "Harsh words",
+     "Not seeing around you"
+    ],
+    "meaning": "Are you rushing to a conclusion and cutting people off mid-sentence? Check the rest of the story and everyone's readiness before you advance.",
+    "themes": {
+     "blind": "In your rush to conclude, is there a story you are skipping?",
+     "caution": "Value the necessary checks over speed.",
+     "diff": "Which option lets you advance together with everyone's readiness?",
+     "letgo": "It is fine to revise an answer you once gave.",
+     "want": "After finishing in a hurry, what do you want to treasure?"
+    }
+   },
+   "story": "A card about acting quickly once your thinking is decided.",
+   "symbol": "Air / Swords (thought, judgment) / Court card: Knight (swift attack, logic)",
+   "upright": {
+    "keywords": [
+     "Moving quickly",
+     "Decisiveness",
+     "Advancing straight"
+    ],
+    "meaning": "Once you know what to do, make the first action clear. Even when you hurry, not skipping the necessary checks or the other person's reply matters.",
+    "themes": {
+     "blind": "Is the action you can take right now clear?",
+     "caution": "Even in a hurry, listen to the other person to the end.",
+     "diff": "Which option lets you check the purpose and move right away?",
+     "letgo": "Rather than hesitating forever, testing small is fine.",
+     "want": "What do you want to move forward quickly?"
+    }
+   }
+  },
+  "sw13": {
+   "arcana": "Swords",
+   "background": "The queen holds her sword upright and extends her other hand forward. Clouds and a bird fill the sky. She can also be seen as listening while holding her own view.",
+   "name": "Queen of Swords",
+   "reversed": {
+    "keywords": [
+     "Too strict",
+     "Closing your heart",
+     "Jumping to conclusions"
+    ],
+    "meaning": "Even when you are saying the right thing, might your wording be hurting the other person? Be conscious of looking at both your own view and the other person's circumstances.",
+    "themes": {
+     "blind": "Are you jumping to conclusions before knowing the other person?",
+     "caution": "Before your words turn strict, take a little time.",
+     "diff": "Which option lets you adjust your wording and distance?",
+     "letgo": "You do not have to push everyone away to avoid being hurt.",
+     "want": "What do you truly want the other person to understand?"
+    }
+   },
+   "story": "A card about using experience to think clearly and speak plainly.",
+   "symbol": "Air / Swords (thought, judgment) / Court card: Queen (clarity, independence)",
+   "upright": {
+    "keywords": [
+     "Speaking plainly",
+     "Calm",
+     "Seeing things clearly"
+    ],
+    "meaning": "While treasuring your feelings, check the facts too. It is fine to say plainly what you dislike, and to decide the distance you need.",
+    "themes": {
+     "blind": "Can you think about feelings and facts separately?",
+     "caution": "Separate speaking plainly from hurting someone.",
+     "diff": "Which option lets you see the facts while also sharing your view?",
+     "letgo": "It is fine to decline plainly what you dislike.",
+     "want": "How far can you be involved and still feel safe?"
+    }
+   }
+  },
+  "sw14": {
+   "arcana": "Swords",
+   "background": "The king sits facing forward, his sword upright. The sky spreads behind him — applying the same standard to everyone, without being swept by feeling alone.",
+   "name": "King of Swords",
+   "story": "A card about judging fairly using facts and rules.",
+   "symbol": "Air / Swords (thought, judgment) / Court card: King (reason, fairness)",
+   "upright": {
+    "keywords": [
+     "Fair judgment",
+     "Rules",
+     "Showing your reasons"
+    ],
+    "meaning": "Think first about the standard you will decide by. Explaining your reason and hearing the other person too makes a convincing answer easier to find.",
+    "themes": {
+     "blind": "Have you aligned the standards for your judgment?",
+     "caution": "Do not change the rules depending on the person.",
+     "diff": "Which option lets you choose while showing reasons and standards?",
+     "letgo": "You do not have to decide by likes and dislikes alone.",
+     "want": "What kind of reason could both you and the other person listen to?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "Imposing rightness",
+     "A cold attitude",
+     "Making people obey"
+    ],
+    "meaning": "Just because you are right, are you forcing the other person to obey? Review whether the rule is protecting people, and whether your wording is reasonable.",
+    "themes": {
+     "blind": "Are you suppressing the other person in the name of being right?",
+     "caution": "Even when using a rule, listen to the other person’s circumstances.",
+     "want": "Do you want to win, or do you want to be fair?",
+     "letgo": "You do not have to decide everything by your own judgment.",
+     "diff": "Which option lets you listen to different opinions and review?"
+    }
+   }
+  },
+  "pe01": {
+   "arcana": "Pentacles",
+   "background": "A hand from a cloud holds a large coin. Below are a flower-filled garden and a path. The coin stands not only for money, but for tangible support like time and tools.",
+   "name": "Ace of Pentacles",
+   "reversed": {
+    "keywords": [
+     "Missing a chance",
+     "Underprepared",
+     "Your money outlook"
+    ],
+    "meaning": "Even for a promising offer, check the money and time it requires. Thinking about whether you can continue after starting matters too.",
+    "themes": {
+     "blind": "Have you checked the conditions of that promising offer?",
+     "caution": "Do not promise beyond the money and time you can use.",
+     "diff": "Which option can you continue with reasonable preparation?",
+     "letgo": "Missing one chance does not mean everything is over.",
+     "want": "What do you actually want to start?"
+    }
+   },
+   "story": "A card about a small opportunity that helps your life or learning.",
+   "symbol": "Earth / Pentacles (work, money, reality) / Number 1 (beginnings)",
+   "upright": {
+    "keywords": [
+     "A new opportunity",
+     "Preparing to start",
+     "Something useful"
+    ],
+    "meaning": "Check whether there is an offer you could start, or a tool you can use. Thinking through the time and cost required makes it easier to turn into a real step.",
+    "themes": {
+     "blind": "Is there a tool you can use, or a new opportunity?",
+     "caution": "Before starting, check the cost and time required.",
+     "diff": "Which option can you prepare and start, as you are now?",
+     "letgo": "You do not have to wait for a big opportunity to arrive.",
+     "want": "What would you like to shape, little by little?"
+    }
+   }
+  },
+  "pe02": {
+   "arcana": "Pentacles",
+   "background": "A person moves two coins connected in a loop. Behind them, the sea has large waves — adjusting how you use time and energy as situations change.",
+   "name": "Two of Pentacles",
+   "reversed": {
+    "keywords": [
+     "Carrying too much",
+     "Plans collapsing",
+     "Half-finished"
+    ],
+    "meaning": "Are you tired from trying to do everything at once? Choose what is most necessary now, and decide what to move later.",
+    "themes": {
+     "blind": "Is there something suffering because you keep postponing it?",
+     "caution": "Before adding new plans, reduce the plans you have.",
+     "diff": "Which option makes it easier to narrow down what you do?",
+     "letgo": "You do not have to continue everything.",
+     "want": "Which one do you want to treasure most right now?"
+    }
+   },
+   "story": "A card about balancing several things without strain.",
+   "symbol": "Earth / Pentacles (work, money, reality) / Number 2 (balance, doing both)",
+   "upright": {
+    "keywords": [
+     "Doing both",
+     "Managing",
+     "Adjusting"
+    ],
+    "meaning": "Line up your plans and think about how much time to give each. Even if you cannot do the same amount every day, there are ways to continue while adjusting.",
+    "themes": {
+     "blind": "Are you leaving room in your plans and energy?",
+     "caution": "Do not try to do everything on the same day.",
+     "diff": "Which option lets you do both while adjusting the plan?",
+     "letgo": "It is fine not to do the same amount every day.",
+     "want": "Which thing would you like to spend a little more time on?"
+    }
+   }
+  },
+  "pe03": {
+   "arcana": "Pentacles",
+   "background": "Inside a building, a person working and people looking at plans are talking. People with different roles are making the same thing — cooperation, and learning a craft.",
+   "name": "Three of Pentacles",
+   "reversed": {
+    "keywords": [
+     "Vague roles",
+     "Talking past each other",
+     "Too little cooperation"
+    ],
+    "meaning": "Has who-does-what been communicated? Before blaming the other person's ability, confirm the goal and the roles together.",
+    "themes": {
+     "blind": "Have roles or deadlines become vague?",
+     "caution": "Do not put the reason things go wrong only on other people.",
+     "diff": "Which option lets you talk and reset the roles?",
+     "letgo": "You do not have to assume things have been understood.",
+     "want": "What kind of help would make it easier to work on?"
+    }
+   },
+   "story": "A card about using each person's strengths and making something together.",
+   "symbol": "Earth / Pentacles (work, money, reality) / Number 3 (collaboration, giving shape)",
+   "upright": {
+    "keywords": [
+     "Cooperation",
+     "Strengths",
+     "Dividing roles"
+    ],
+    "meaning": "Instead of doing everything alone, share your strengths with each other. Showing work in progress and asking along the way makes misalignment easier to notice.",
+    "themes": {
+     "blind": "Do you know the strengths of the people around you?",
+     "caution": "Even midway, check that you are looking at the same goal.",
+     "diff": "Which option lets you cooperate with people of different strengths?",
+     "letgo": "You do not have to complete everything alone.",
+     "want": "Which of your abilities would you like to use?"
+    }
+   }
+  },
+  "pe04": {
+   "arcana": "Pentacles",
+   "background": "A person holds coins firmly at their chest and feet. A town lies behind them. While protecting what matters, they can also look unable to move for fear of losing it.",
+   "name": "Four of Pentacles",
+   "reversed": {
+    "keywords": [
+     "Loosening your grip",
+     "Overspending",
+     "Anxiety about losing"
+    ],
+    "meaning": "Check whether you are protecting too much, or using too much. You can look for a middle way — neither holding everything nor using it all up.",
+    "themes": {
+     "blind": "Have you checked whether you protect too much, or use too much?",
+     "caution": "While anxious, do not spend a large amount all at once.",
+     "diff": "Which option makes it easier to decide what to use and what to keep?",
+     "letgo": "Using a little, or entrusting a little, does not change how precious it is.",
+     "want": "If you could let go of something, what would you reduce a little?"
+    }
+   },
+   "story": "A card about protecting the security you have, and about feelings that cannot let go.",
+   "symbol": "Earth / Pentacles (work, money, reality) / Number 4 (holding, stability)",
+   "upright": {
+    "keywords": [
+     "Protecting",
+     "Security",
+     "Cannot let go"
+    ],
+    "meaning": "Check what you want to protect, like money or time. When the reason to protect is clear, it becomes easier to decide the range you may use.",
+    "themes": {
+     "blind": "What is the thing you want to protect needed for?",
+     "caution": "Separate treasuring something from changing nothing.",
+     "diff": "Which option protects the security you need, without strain?",
+     "letgo": "You do not have to hold everything yourself.",
+     "want": "How much would you need to keep to feel safe?"
+    }
+   }
+  },
+  "pe05": {
+   "arcana": "Pentacles",
+   "background": "Two people walk through snow, and light glows in the window of a nearby building. Even in cold and loneliness, help may be close. Having troubles is not necessarily the person's own fault.",
+   "name": "Five of Pentacles",
+   "reversed": {
+    "keywords": [
+     "Accepting help",
+     "Easing a little",
+     "Rebuilding"
+    ],
+    "meaning": "Check the help you can use and the people you can talk to. Even if some room returns, do not suddenly increase the strain — it is fine to keep the support you need.",
+    "themes": {
+     "blind": "Has anything eased a little, or is there help you can use?",
+     "caution": "Even if room returns, do not suddenly increase your burden.",
+     "diff": "Which option lets you rebuild while continuing to talk to someone?",
+     "letgo": "Just because you could not rely on others before, you do not have to give up now.",
+     "want": "What support would you like to keep from here on?"
+    }
+   },
+   "story": "A card about anxiety over what is lacking, and thinking about help you can rely on.",
+   "symbol": "Earth / Pentacles (work, money, reality) / Number 5 (hardship, isolation)",
+   "upright": {
+    "keywords": [
+     "Feeling vulnerable",
+     "No room to spare",
+     "Needing help"
+    ],
+    "meaning": "If you have no room in money, energy, or heart, you do not have to carry it alone. Write down what is troubling you, and look for a person or place you can talk to.",
+    "themes": {
+     "blind": "Have you been able to look for a person or place to talk to?",
+     "caution": "Do not keep enduring a hard thing alone.",
+     "diff": "Which option makes the support you need easier to receive?",
+     "letgo": "You do not have to feel ashamed of receiving help.",
+     "want": "What do you most want help with right now?"
+    }
+   }
+  },
+  "pe06": {
+   "arcana": "Pentacles",
+   "background": "A person holding scales hands coins to someone nearby. Both the giving side and the receiving side are drawn — a picture for asking whether you are helping each other without strain.",
+   "name": "Six of Pentacles",
+   "reversed": {
+    "keywords": [
+     "Imbalanced give and take",
+     "Strings attached",
+     "Forced kindness"
+    ],
+    "meaning": "Has kindness come with conditions, or become hard to decline? Talk together about the range of what you ask and what you accept.",
+    "themes": {
+     "blind": "Have requests become one-sided?",
+     "caution": "Do not be kind in order to demand something in return.",
+     "diff": "Which option lets you talk plainly about conditions and burdens?",
+     "letgo": "Just because you received something, you do not have to answer everything.",
+     "want": "If you could decline, what would you treasure?"
+    }
+   },
+   "story": "A card about helping people, and about being helped.",
+   "symbol": "Earth / Pentacles (work, money, reality) / Number 6 (sharing, balance)",
+   "upright": {
+    "keywords": [
+     "Helping each other",
+     "Receiving",
+     "Fairness"
+    ],
+    "meaning": "Help within the range you can, and accept help when you need it. Checking that the burden is not leaning to one side only matters too.",
+    "themes": {
+     "blind": "Are you declining help you are allowed to accept?",
+     "caution": "Even when being kind, keep within what you can do.",
+     "diff": "Which option lets you give and receive without strain?",
+     "letgo": "You do not always have to be the one who helps.",
+     "want": "What kind of mutual help would feel comfortable?"
+    }
+   }
+  },
+  "pe07": {
+   "arcana": "Pentacles",
+   "background": "A person leaning on a work tool looks at a plant bearing coins. Rather than harvesting right away, they are checking how it grows — waiting, and reviewing.",
+   "name": "Seven of Pentacles",
+   "story": "A card about looking at what you have continued and thinking about the next approach.",
+   "symbol": "Earth / Pentacles (work, money, reality) / Number 7 (waiting, discerning)",
+   "upright": {
+    "keywords": [
+     "Checking midway",
+     "Waiting",
+     "Thinking how to continue"
+    ],
+    "meaning": "Look at what has improved compared to before, and what has not changed. It is a hint for thinking about whether to simply wait, or change the method.",
+    "themes": {
+     "blind": "Compared to when you started, what has changed?",
+     "caution": "Check how long results take to appear, too.",
+     "diff": "Which option lets you watch the growth and change the method?",
+     "letgo": "It is fine to stop once and check.",
+     "want": "Continuing, what would you like to grow?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "Rushing results",
+     "No sense of progress",
+     "Impatience"
+    ],
+    "meaning": "Are you about to quit in a hurry, only from anxiety that no results are appearing? Look at the time you have used and the changes so far, and think about the conditions for continuing.",
+    "themes": {
+     "blind": "Rushing for results, are you overlooking changes along the way?",
+     "caution": "Do not decide whether to continue based only on the time spent so far.",
+     "want": "Do you want to keep going with the same approach from here?",
+     "letgo": "You do not have to call slow results meaningless.",
+     "diff": "Which option lets you set concrete conditions for continuing?"
+    }
+   }
+  },
+  "pe08": {
+   "arcana": "Pentacles",
+   "background": "A craftsperson carves a pattern into coins, one by one. Finished coins line up around them. Though plain, it shows improving while moving your hands.",
+   "name": "Eight of Pentacles",
+   "reversed": {
+    "keywords": [
+     "Getting sloppy",
+     "Demanding perfection",
+     "The same thing over and over"
+    ],
+    "meaning": "Are you just running up the count, or worrying too much about small failures? Check your purpose, and adjust the amount or method of practice.",
+    "themes": {
+     "blind": "Can you remember what you are continuing this for?",
+     "caution": "Do not keep fixing small mistakes until you can never finish.",
+     "diff": "Which option lets you adjust the purpose or amount of practice?",
+     "letgo": "You do not have to believe you cannot show anyone until you are perfect.",
+     "want": "What ability do you most want to gain right now?"
+    }
+   },
+   "story": "A card about stacking small practice and growing what you can do.",
+   "symbol": "Earth / Pentacles (work, money, reality) / Number 8 (training, skill)",
+   "upright": {
+    "keywords": [
+     "Practice",
+     "Focus",
+     "Improving little by little"
+    ],
+    "meaning": "Even if you cannot do everything at once, practice one thing at a time. Noticing what changed compared to before also shows you what to fix next.",
+    "themes": {
+     "blind": "What can you do now that you could not before?",
+     "caution": "Think not only about practice volume, but about rest and method too.",
+     "diff": "Which option lets you stack practice little by little?",
+     "letgo": "It is fine not to be good at it from the start.",
+     "want": "What would you like to become good at?"
+    }
+   }
+  },
+  "pe09": {
+   "arcana": "Pentacles",
+   "background": "A woman stands in a fruitful garden, with a bird perched on her hand. A snail is at her feet — enjoying, at her own pace, what she gained over time.",
+   "name": "Nine of Pentacles",
+   "reversed": {
+    "keywords": [
+     "Caring about appearances",
+     "Feeling unfulfilled",
+     "Relying too much"
+    ],
+    "meaning": "Are you spending too much time or money to look good? Check what is honestly comfortable in your life as it is now.",
+    "themes": {
+     "blind": "Are you overspending money or time to look good?",
+     "caution": "Separate relying on people from leaving everything to them.",
+     "diff": "Which option gives you room that fits you?",
+     "letgo": "You do not have to aim for a life others call impressive.",
+     "want": "What is comfortable even if no one sees it?"
+    }
+   },
+   "story": "A card about acknowledging what you have built up and savoring a sense of room.",
+   "symbol": "Earth / Pentacles (work, money, reality) / Number 9 (independence, abundance)",
+   "upright": {
+    "keywords": [
+     "Your own strength",
+     "Room to spare",
+     "Enjoying results"
+    ],
+    "meaning": "Take proper time to savor what you worked to gain. Rather than comparing with others, you can treasure what lets you spend your days calmly.",
+    "themes": {
+     "blind": "Do you acknowledge what you built up with your own strength?",
+     "caution": "Do not add more strain in order to protect your results.",
+     "diff": "Which option lets you enjoy results at your own pace?",
+     "letgo": "It is fine to savor what you worked to gain.",
+     "want": "What kind of time would you like to enjoy for yourself?"
+    }
+   }
+  },
+  "pe10": {
+   "arcana": "Pentacles",
+   "background": "Near a gate, adults, children, an elder, and a dog are gathered. Ten coins are around them — people of different ages carrying life forward together.",
+   "name": "Ten of Pentacles",
+   "reversed": {
+    "keywords": [
+     "Anxiety about daily life",
+     "A gap with people close to you",
+     "Old rules"
+    ],
+    "meaning": "Are your hopes out of sync with the thinking of family or companions? Before continuing the old way as-is, talk about the circumstances as they are now.",
+    "themes": {
+     "blind": "Do the old rules match the circumstances now?",
+     "caution": "Even with family or companions, do not assume the same hopes.",
+     "diff": "Which option lets you discuss future roles and burdens?",
+     "letgo": "You do not have to match every expectation of the people close to you.",
+     "want": "What way of living do you need, as you are now?"
+    }
+   },
+   "story": "A card about security that lasts, and supporting each other with the people close to you.",
+   "symbol": "Earth / Pentacles (work, money, reality) / Number 10 (inheritance, completion)",
+   "upright": {
+    "keywords": [
+     "Lasting security",
+     "Family and companions",
+     "Passing things on"
+    ],
+    "meaning": "Think not only about today, but about whether it can continue into the future. Talking with the people close to you about how to share time and roles can help too.",
+    "themes": {
+     "blind": "What people or arrangements support your current security?",
+     "caution": "Beyond your own good, think about the effect on the people close to you.",
+     "diff": "Which option has support that can last a long time?",
+     "letgo": "You do not have to choose only new things.",
+     "want": "What do you want to keep treasuring into the future?"
+    }
+   }
+  },
+  "pe11": {
+   "arcana": "Pentacles",
+   "background": "A young person gazes at a coin held in both hands. Fields and farmland spread around them — taking an interest in one thing and learning it thoroughly.",
+   "name": "Page of Pentacles",
+   "reversed": {
+    "keywords": [
+     "Plans only",
+     "Too little practice",
+     "Putting it off"
+    ],
+    "meaning": "Are you stopped at only looking things up and making plans? Decide on one practice you can do today, and work on it even for a short time.",
+    "themes": {
+     "blind": "Are your hands stopped at just looking things up?",
+     "caution": "Before making the plan more detailed, try a short practice.",
+     "diff": "Which option turns learning into action more easily?",
+     "letgo": "Even with a little lack of preparation, testing small is fine.",
+     "want": "If you tried just one thing today, what would it be?"
+    }
+   },
+   "story": "A card about learning from the basics and giving shape little by little.",
+   "symbol": "Earth / Pentacles (work, money, reality) / Court card: Page (learning, steadiness)",
+   "upright": {
+    "keywords": [
+     "Learning the basics",
+     "Care",
+     "A small step"
+    ],
+    "meaning": "For something you want to newly learn, try starting from the easy parts. Even a short time of actually moving your hands becomes learning.",
+    "themes": {
+     "blind": "Are you checking the basic way of doing it?",
+     "caution": "Once you have a plan, test it small and for real.",
+     "diff": "Which option lets you learn from the basics without strain?",
+     "letgo": "You do not have to compare your learning speed with others.",
+     "want": "What ability would you like to build up thoroughly?"
+    }
+   }
+  },
+  "pe12": {
+   "arcana": "Pentacles",
+   "background": "A knight holding a coin rides a horse that stands still. A plowed field lies ahead — valuing preparation and daily accumulation over speed.",
+   "name": "Knight of Pentacles",
+   "reversed": {
+    "keywords": [
+     "Too cautious",
+     "The same way",
+     "Cannot move"
+    ],
+    "meaning": "In avoiding failure, are you stopping even necessary change? Change your usual method a little, and think about what you could test.",
+    "themes": {
+     "blind": "Has caution become your reason not to move?",
+     "caution": "Do not refuse even necessary changes entirely.",
+     "diff": "Which option lets you test a small change?",
+     "letgo": "You do not have to keep protecting the same method forever.",
+     "want": "Which part of your usual method would you change a little?"
+    }
+   },
+   "story": "A card about not rushing, and reliably continuing what you promised.",
+   "symbol": "Earth / Pentacles (work, money, reality) / Court card: Knight (responsibility, patience)",
+   "upright": {
+    "keywords": [
+     "Steadily",
+     "A sense of responsibility",
+     "Advancing reliably"
+    ],
+    "meaning": "Even without big progress, keep doing what you can. Keeping a schedule that does not strain you leads to peace of mind for you and those around you.",
+    "themes": {
+     "blind": "Have you forgotten the plain things you keep continuing?",
+     "caution": "Do not promise an unreasonable amount — make a schedule you can keep.",
+     "diff": "Which option advances reliably, little by little?",
+     "letgo": "You do not have to blame yourself by comparing with faster people.",
+     "want": "At what pace could you continue for a long time?"
+    }
+   }
+  },
+  "pe13": {
+   "arcana": "Pentacles",
+   "background": "Surrounded by flowers and fruit, the queen gazes at the coin on her lap. A small rabbit is at her feet — tending the things nearby and growing a place where you can spend time at ease.",
+   "name": "Queen of Pentacles",
+   "reversed": {
+    "keywords": [
+     "Caring too much",
+     "Putting yourself last",
+     "No room to spare"
+    ],
+    "meaning": "Are you cutting into your own rest by striving too much for others? Think about what you can reduce today, and what you can leave to someone.",
+    "themes": {
+     "blind": "Are you pretending not to see your own tiredness?",
+     "caution": "Do not take on everything before you are even asked.",
+     "diff": "Which option leaves room for both you and the people around you?",
+     "letgo": "You do not have to decide that it must be you who does it.",
+     "want": "What would you like to rest from today?"
+    }
+   },
+   "story": "A card about treasuring everyday life — meals, rest, and the like.",
+   "symbol": "Earth / Pentacles (work, money, reality) / Court card: Queen (abundance, practicality)",
+   "upright": {
+    "keywords": [
+     "Tending your life",
+     "Attentiveness",
+     "Peace of mind"
+    ],
+    "meaning": "Tidy the things close at hand — meals, rest, the places you use. Small care can grow peace of mind for you and those around you.",
+    "themes": {
+     "blind": "Might tending meals and rest be what matters right now?",
+     "caution": "Even when helping people, keep your own rest.",
+     "diff": "Which option lets you tend daily life without strain?",
+     "letgo": "Choosing nearby care over big results is fine.",
+     "want": "What kind of days would let you spend time at ease?"
+    }
+   }
+  },
+  "pe14": {
+   "arcana": "Pentacles",
+   "background": "The king sits holding a coin, wearing clothes with a grape pattern. A castle stands behind him — a life arranged over a long time, and a way of working that earns trust.",
+   "name": "King of Pentacles",
+   "story": "A card about using the experience and tools you have built up for everyone's peace of mind.",
+   "symbol": "Earth / Pentacles (work, money, reality) / Court card: King (wealth, trust)",
+   "upright": {
+    "keywords": [
+     "Stability",
+     "Trust",
+     "Continuing for a long time"
+    ],
+    "meaning": "Think about how to put what you have learned so far to use. It is a hint to choose a way that continues without strain, and to share peace of mind with those around you.",
+    "themes": {
+     "blind": "Are you making use of your experience and the things you can use?",
+     "caution": "Even when stable, check the changes around you.",
+     "diff": "Which option builds trust over a long time?",
+     "letgo": "You do not have to produce new results all the time.",
+     "want": "With whom, and what peace of mind, do you want to share?"
+    }
+   },
+   "reversed": {
+    "keywords": [
+     "Fixation on money",
+     "Stubbornness",
+     "Seeing only results"
+    ],
+    "meaning": "Protecting money and results, are you forgetting people’s feelings? Check ease of continuing and consideration for others, together.",
+    "themes": {
+     "blind": "Are you judging goodness by money and results alone?",
+     "caution": "In your fixation on protecting, do not forget people’s feelings.",
+     "want": "What would you treasure even without showing results?",
+     "letgo": "You do not have to think of changing your way as weakness.",
+     "diff": "Which option treasures both ease of continuing and consideration?"
+    }
+   }
+  }
+ }
+}

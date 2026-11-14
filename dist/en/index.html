@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="DECIDE. doesn't predict your future with AI. It helps you organize what's on your mind, decide for yourself, and look back on the outcome a few days later." />
+  <link rel="canonical" href="https://decisionprocess.net/en/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="DECIDE." />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:title" content="DECIDE. — Decisions you can truly stand by." />
+  <meta property="og:description" content="A decision-support app that uses tarot as a tool for thinking — not for predicting the future. Organize what's on your mind, decide for yourself, and look back a few days later." />
+  <meta property="og:url" content="https://decisionprocess.net/en/" />
+  <meta property="og:image" content="https://decisionprocess.net/og-image-v3.png" />
+  <title>DECIDE. — Decisions you can truly stand by.</title>
+  <meta name="theme-color" content="#f4efe3" />
+  <style>
+    :root { --ink: #111; --soft: #f4efe3; --muted: #5a554c; --line: rgba(17,17,17,.2); --black: #0b0b0b; --accent: #f1d527; }
+    body { margin: 0; background: var(--soft); color: var(--ink); font-family: "Hiragino Mincho ProN", "Yu Mincho", YuMincho, Georgia, "Times New Roman", serif; line-height: 1.9; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+    main { max-width: 720px; margin: 0 auto; padding: 18px 16px 64px; }
+    .brand { margin: 0 0 18px; padding-bottom: 10px; border-bottom: 2px solid var(--ink); }
+    .brand a { font: 700 1.6rem/1 Didot, "Bodoni 72", "Times New Roman", serif; letter-spacing: .02em; text-decoration: none; color: inherit; }
+    .brand span { color: var(--accent); -webkit-text-stroke: .5px var(--ink); }
+    .kicker { display: inline-block; margin: 0 0 8px; padding: 2px 8px; background: var(--black); color: var(--accent); font: 700 .7rem/1.4 Didot, "Bodoni 72", serif; letter-spacing: .18em; }
+    h1 { font-size: 1.7rem; line-height: 1.35; margin: 0 0 12px; text-wrap: balance; }
+    h2 { font-size: 1.15rem; margin: 34px 0 6px; }
+    p, li { font-size: .95rem; }
+    .lead { font-size: 1.02rem; }
+    .meta { color: var(--muted); font-size: .85rem; }
+    a { color: inherit; text-underline-offset: 3px; }
+    ol, ul { padding-left: 1.3em; }
+    li { margin: 4px 0; }
+    .cta { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 22px; padding: 13px 16px; border: 1.5px solid var(--black); background: var(--black); color: var(--accent); font-weight: 700; text-decoration: none; box-shadow: 4px 4px 0 var(--accent); }
+    .cta::after { content: "→"; flex: none; font-family: Arial, sans-serif; }
+    .legal { margin-top: 36px; }
+    .legal a, .nowrap { white-space: nowrap; }
+  </style>
+</head>
+<body>
+<main>
+  <p class="brand"><a href="../" aria-label="DECIDE. app">DECIDE<span>.</span></a></p>
+  <p class="kicker">TAROT FOR DECISIONS</p>
+  <h1>Decisions you can truly stand by.</h1>
+  <p class="lead">DECIDE. doesn’t predict your future with AI. It helps you organize what’s on your mind, decide for yourself, and look back on the outcome a few days later.</p>
+
+  <p>DECIDE. is a decision-support web app. It uses tarot cards not as fortune-telling, but as material for thinking. From small everyday choices — buy or not, go or not — to bigger ones like changing jobs or moving house, it gives you a viewpoint you hadn’t considered, so your own answer can surface.</p>
+
+  <h2>How it works</h2>
+  <ol>
+    <li><b>Put it into words.</b> Name the one thing you’re torn about.</li>
+    <li><b>Draw a card.</b> Read the viewpoint it offers — one card, or two to compare options A and B.</li>
+    <li><b>Decide, and record it.</b> The choice is always yours. Keep what you decided, and why.</li>
+    <li><b>Look back.</b> A few days later (three by default), DECIDE. quietly asks how it went.</li>
+  </ol>
+
+  <h2>How it’s different</h2>
+  <ul>
+    <li><b>You decide.</b> Many AI tarot apps hand you an interpretation as the answer. DECIDE. presents the card as material for thinking — the decision stays with you.</li>
+    <li><b>It doesn’t end at the reading.</b> Your decision and your reasons are recorded, and you revisit the outcome a few days later.</li>
+    <li><b>Real choices, not fortunes.</b> Buying, going, reaching out, changing jobs — the everyday decisions that actually fill a life.</li>
+  </ul>
+
+  <h2>Price</h2>
+  <p>Free to start: 5 card draws and 5 decision records. If you continue, <b>UNLIMITED</b> is a one-time purchase of <b>¥980 (tax included)</b> — no monthly fee, no credits, no extra charges. It removes the limits and enables cloud sync.</p>
+
+  <p><a class="cta" href="../?lang=en" id="open-app">Open DECIDE. in English</a></p>
+  <p class="meta">No download needed — it runs in your browser. You don’t need to believe in fortune-telling to use it.</p>
+
+  <p class="meta legal"><a href="../">日本語版 / Japanese version</a> ／ <a href="../about">About</a> ／ <a href="../privacy">Privacy</a> ／ <a href="../terms">Terms</a></p>
+</main>
+<script>
+  // Make sure the app opens in English even if the ?lang= parameter is lost.
+  document.getElementById('open-app').addEventListener('click', function () {
+    try { localStorage.setItem('decide.lang.v1', 'en'); } catch (e) {}
+  });
+</script>
+</body>
+</html>

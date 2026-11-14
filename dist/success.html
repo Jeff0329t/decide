@@ -72,5 +72,52 @@ gtag('config', 'G-VJF3V0Z7DN');
 <script src="./auth.js"></script>
 <script src="./success.js"></script>
 <script src="./rentracks-cv.js"></script>
+<script>
+  // English purchasers (language saved by the app) see this page in English.
+  (function () {
+    var lang = null;
+    try { lang = localStorage.getItem('decide.lang.v1'); } catch (e) {}
+    if (!lang) lang = String(navigator.language || 'ja').toLowerCase().indexOf('en') === 0 ? 'en' : 'ja';
+    if (lang !== 'en') return;
+    var dict = {
+      'ご購入ありがとうございます — DECIDE.': 'Thank you for your purchase — DECIDE.',
+      'DECIDE. アプリへ': 'DECIDE. app',
+      'ご購入ありがとうございます': 'Thank you for your purchase',
+      'DECIDE. UNLIMITED EDITION（買い切り ¥980）': 'DECIDE. UNLIMITED EDITION (one-time ¥980)',
+      '購入を反映しています…（最大30秒ほどかかります）': 'Applying your purchase… (this can take up to about 30 seconds)',
+      'このページを閉じても購入は完了しています。': 'Your purchase is complete even if you close this page.',
+      'UNLIMITED EDITIONが有効になりました。ドローも決定ログの保存も無制限で使えます。': 'UNLIMITED EDITION is now active. Draws and decision logs are unlimited.',
+      'DECIDE. に戻る': 'Back to DECIDE.',
+      '反映に時間がかかっています。決済は完了しています。': 'It’s taking a while to apply. Your payment is complete.',
+      '数分後に再読み込み、またはアプリを再起動すると反映されます（設定画面を開いたときにも再確認されます）。': 'Reload in a few minutes, or restart the app, and it will be applied. (It is also re-checked when you open Settings.)',
+      'もう一度確認する': 'Check again',
+      'ログイン状態を確認できませんでした。購入したときと同じGoogleアカウントでアプリにログインすると、UNLIMITED EDITIONが反映されます。': 'We couldn’t confirm your sign-in state. Sign in to the app with the same Google account you purchased with, and UNLIMITED EDITION will be applied.',
+      '購入状態を確認できませんでした。オンラインでアプリを開き直すと反映されます。': 'We couldn’t confirm your purchase state. Reopen the app while online and it will be applied.',
+      '特定商取引法に基づく表記': 'Legal disclosure',
+      '利用規約': 'Terms of Use',
+      'プライバシーポリシー': 'Privacy Policy'
+    };
+    document.documentElement.lang = 'en';
+    if (dict[document.title]) document.title = dict[document.title];
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    var nodes = [];
+    var n;
+    while ((n = walker.nextNode())) nodes.push(n);
+    nodes.forEach(function (node) {
+      var t = node.nodeValue.trim();
+      if (dict[t]) node.nodeValue = node.nodeValue.replace(t, dict[t]);
+    });
+    document.querySelectorAll('[aria-label]').forEach(function (el) {
+      var v = el.getAttribute('aria-label');
+      if (dict[v]) el.setAttribute('aria-label', dict[v]);
+    });
+    // The contact sentence is split around a nowrap span; handle it directly.
+    document.querySelectorAll('p').forEach(function (p) {
+      if (p.textContent.indexOf('数分たっても反映されない場合は') === 0) {
+        p.innerHTML = 'If it still isn’t applied after a few minutes, please contact us: decisionprocess.decide@gmail.com';
+      }
+    });
+  })();
+</script>
 </body>
 </html>

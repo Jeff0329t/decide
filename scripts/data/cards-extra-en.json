@@ -1,0 +1,704 @@
+{
+ "ar00": {
+  "check": "Is the reason you stop at the cliff's edge the danger itself, or anxiety about having no experience yet? How far could you go and still turn back with a smile if you failed? If you packed one small bag, what do you truly want to carry this time?",
+  "decision": {
+   "text": "When stepping onto an unfamiliar path — a new job, a move — read this card as deciding first how much you could lose and still recover, then testing small, rather than waiting until preparation is perfect. Reversed, use it to check whether the departure is driven by momentum, and whether you have a place to return to when trouble comes.",
+   "worry": "tenshoku"
+  },
+  "hint": "When The Fool appears, it is a sign to question the very assumption that you should move only once you are fully prepared. In areas without experience — a new job, a move, new learning — gathering information alone will not dissolve anxiety. Break it into a form you can test small, and write down the first step you can take within a week. At the same time, the figure walking a cliff edge is also defenselessness turned outward. Deciding in advance how much you could lose and still recover keeps freedom from turning into recklessness.",
+  "scene": "When you are hesitating — 'I want to try, but it feels too early for me' — this card says you may use curiosity, not age or title, as your standard. But if it is reversed, check once whether you are renaming a wish to escape as adventure. In either orientation, the deciding point is whether you can state your reason for departing in a single line."
+ },
+ "ar01": {
+  "check": "Are the tools to make this choice real already laid out on your table? Is what is missing the materials, or the resolve to start using them? Can you explain the plan in your own words in one minute? Is there even one move you can make today to begin?",
+  "decision": {
+   "text": "When starting a side job or new work, read this card as looking for a step you can begin today by combining the skills, tools, and people you already have, before buying what is missing. Reversed, use it to check whether presentation and explanation are running ahead while your hands stay still.",
+   "worry": "fukugyo"
+  },
+  "hint": "The Magician depicts a state where the tools you need are already laid out on the table. When you are torn about a decision, rather than counting what is missing, turn your eyes to how you can combine the skills, connections, and time you already have. The four tools on the table are said to represent will, feeling, thought, and reality. Checking whether you lean too far toward just one of them is also useful. Reversed, it can indicate a plan running ahead in words only, while the hands are not moving.",
+  "scene": "This card often appears when you want to start something with your own power — a project, a side job. If you are torn, set a deadline and make a prototype first. Having something you can show others multiplies your material for judging at once. Reversed, rebuild trust by keeping one promise reliably, rather than polishing your explanation."
+ },
+ "ar02": {
+  "check": "Before you can put it into words, has your heart already settled the answer somewhere inside? Should you wait for information that has not surfaced yet, or are you at the stage of quietly discerning? If you shut out others' opinions once, which way does the remaining feeling point?",
+  "decision": {
+   "text": "In a situation like marriage, which a table of conditions cannot settle, read this card as treating the feeling that remains after you have heard everyone out as material, even if you cannot give a reason for it. Reversed, check whether that feeling comes from assumption or a lack of information, keeping it separate from the facts.",
+   "worry": "kekkon"
+  },
+  "hint": "The High Priestess teaches the value of time spent quietly observing, rather than rushing to an answer. Her figure, seated between two pillars, symbolizes an attitude that surveys both sides without forcing things into black or white. If your decision has time, deliberately hold the conclusion for a few days, and note down the unease or relief that surfaces meanwhile. Inside sensations that resist words, there can be material for judgment that data alone cannot show.",
+  "scene": "When you have listened to so many opinions that your own thinking is lost, this card urges you to shut out the outside voices for a while. Reversed, what you thought was intuition may actually have been assumption or anxiety. Noting feelings and facts separately shows you which deserves more weight."
+ },
+ "ar03": {
+  "check": "Does this choice point toward richly nurturing your own life and the lives around you? Are you confusing comfort with laziness? Do you have the room, right now, to wait without rushing for the time a harvest needs?",
+  "decision": {
+   "text": "For a choice that grows over time, like keeping a pet, read this card by what will bear fruit in your life six months or a year from now, rather than by immediate cuteness or gain and loss. Reversed, do not assume you will shoulder all the care yourself — decide first your time to rest and who could take over.",
+   "worry": "pet"
+  },
+  "hint": "The Empress is a card of abundance: what was nurtured over time comes to harvest. In a decision, she gives you the viewpoint of asking not about short-term gain, but 'what will this choice grow in six months, in a year?' Surrounded by wheat fields and a flowing river, her figure also shows the importance of body and mind being fulfilled. More than results gained by piling on strain, a choice where you and the people close to you can be at ease tends to bear fruit in the long run.",
+  "scene": "This card often appears when two things both matter and neither can be chosen — work and family, challenge and stability. Upright, it is a sign you may prioritize an environment where you can relax and show your strength. Reversed, it may be time to review whether, out of care for someone, you are doing too much for them — or leaning entirely on someone else."
+ },
+ "ar04": {
+  "check": "Have you clearly set your own standards and rules for judging? Whose order are you trying to protect? Do you have the resolve to take responsibility, or are you clinging to a stability that is only form? Who is the final decision-maker?",
+  "decision": {
+   "text": "When deciding on preparation for the worst, like taking out insurance, read this card as putting into words first who carries what, and how far, then comparing by that standard. Reversed, check whether the rules you set have become so rigid that they leave no room to hear the circumstances of the people involved.",
+   "worry": "hoken"
+  },
+  "hint": "The Emperor represents the power to put things in order through structure and responsibility rather than emotion. If your indecision is dragging on, narrow your criteria to about three, write them on paper, and give each a weight. His figure on the stone throne also symbolizes the resolve to protect what you once decided. But reversed, that strength may have turned into stubbornness or control. Check whether your own rules are shutting out the voices around you.",
+  "scene": "This is a reliable card when order is needed — deciding a team's direction, or putting household finances and daily life back in shape. If no one else will decide and nothing can move forward, consider standing on the side that takes responsibility. Reversed, building a procedure everyone can accept gets you there faster than proving yourself right."
+ },
+ "ar05": {
+  "check": "Does the common sense or advice you are relying on apply to your current situation? Have you consulted a trusted predecessor or expert? Can you distinguish between following a rule and giving up thinking for yourself?",
+  "decision": {
+   "text": "In a situation with an established form for learning, like earning a qualification, read this card as starting with experienced people's procedures and places to consult, before taking a roundabout route of your own invention. Reversed, ask again whether that form fits your current purpose, or has become a rule for the rule's sake.",
+   "worry": "shikaku"
+  },
+  "hint": "The Hierophant shows the significance of learning from the wisdom of those who came before and from trusted advisors. If you are carrying your indecision alone, hearing from someone who has walked the same road may reveal the axis of your judgment. Tradition and established forms hold the results of many people's trial and error. But reversed, you may be following rules that remain only in form. A custom whose reason you cannot explain is a fair target for review.",
+  "scene": "This card often appears when you are torn about entering an existing framework — earning a qualification, going to school, joining an organization. Upright, being conscious of the order 'learn the form, then break it' speeds growth. Reversed, check whether you are leaving the path out of mere defiance, and whether you have an alternative of your own."
+ },
+ "ar06": {
+  "check": "Between the two options, which can you say a heartfelt 'yes' to? With the calculation of gain and loss removed, what feeling remains? Could you speak of that choice, before someone dear to you, in your own words? Can you also take responsibility for what follows the choice?",
+  "decision": {
+   "text": "In a situation where two people align their values, like holding a wedding, read this card as choosing the form by what the two of you want to treasure, not by appearances or market price. Reversed, check whether you are being pulled by immediate splendor into deciding in a way that drifts from what truly matters to you.",
+   "worry": "kekkonshiki"
+  },
+  "hint": "The Lovers is a card of values — not only romance, but 'what do you treasure when you choose?' The two figures blessed by an angel show the strength of a choice made when heart and head point the same way. When torn, write down which of your values each option aligns with. The less a comparison of conditions can settle it, the more one non-negotiable point, once clear, brings the answer closer.",
+  "scene": "When both paths are attractive and neither can be chosen, this card quietly conveys that choosing is also letting go. Reversed, you may be losing sight of your original wish, swept by immediate temptation or the expectations around you. Imagining yourself after the choice, and picking the one that makes you feel proud, is one guide."
+ },
+ "ar07": {
+  "check": "Is the direction you want to head settled into one? Like the two sphinxes, black and white, are you holding both of your conflicting feelings on the reins? Are you trying to advance on momentum alone? When you arrive at the goal, what do you want to have gained?",
+  "decision": {
+   "text": "In a situation where the wish to decide quickly rises, like buying a car, read this card as settling on one set of conditions to aim for and advancing, while re-checking your direction — budget and use — along the way. Reversed, stop once and check whether, in your haste, you are overlooking the people around you or your own limits.",
+   "worry": "kuruma"
+  },
+  "hint": "The Chariot is a card of propulsion: opposite forces bundled by will, moving forward. The two sphinxes, black and white, face different directions, yet the charioteer advances the car without reins. Rather than forcibly erasing the several feelings inside your indecision, what is asked is the posture of gathering them onto a single axis — your purpose. Upright, once you decide, set a deadline and move without wavering. Momentum will be on your side.",
+  "scene": "This is a reassuring card in competition or under a deadline, when you feel 'if I do not move now, I will be too late.' But reversed, you may be pressing the accelerator out of impatience without checking the direction. State the goal in words once, confirm that your current actions connect to the road toward it, and then advance."
+ },
+ "ar08": {
+  "check": "Are you trying to push through by force? Are you treating the wild feelings — in the other person, and in yourself — as something to soothe? Do you have a calm strength that lets you continue without rushing? Might waiting be, right now, the choice that takes the most courage?",
+  "decision": {
+   "text": "In a situation that cannot be continued by force, like caregiving, read this card as neither crushing your feelings nor letting them explode, but receiving them while steering, little by little. Reversed, build in rest and help, so that a lack of confidence or too much strain does not erode your strength to continue.",
+   "worry": "kaigo"
+  },
+  "hint": "The Strength card depicts a woman taming a lion not by force but with gentleness. In a decision, it means the strength to direct your feelings and impulses without crushing them — receiving them as they are. The more anger or impatience drives you, the more the patience to sleep on a judgment overnight shapes the result. Facing things that do not yield results right away — a long-term effort, repairing a relationship — is also the courage this card shows.",
+  "scene": "This card often appears when a strong feeling is rushing your judgment — wanting to talk back, wanting to quit right now. Upright, naming the feeling without denying it can restore your calm. Reversed, you may have lost confidence and be on the verge of giving up even what you could do. Recall one experience you have overcome in the past."
+ },
+ "ar09": {
+  "check": "Have you secured time to think quietly alone, for this decision? Even if the lantern lights only your feet, is that not enough for the next step? Away from the voices around you, in what words does your true feeling speak?",
+  "decision": {
+   "text": "In a situation where the voices around you are many and your own answer is out of sight, like accepting a transfer, read this card as writing things out alone and re-lining up your own conditions, rather than adding more information. Reversed, check whether your thinking time has stretched on until you are carrying everything with no one to consult.",
+   "worry": "tenkin"
+  },
+  "hint": "The Hermit is a figure climbing a mountain alone, lighting only his feet with a small lantern. If too many opinions and too much information have you lost, take some distance and make time to ask your inner self. The lantern lights not the distance but only the next step. Not forcing the whole answer at once, but accumulating only what you can know today, leads in the end to a deeper sense of conviction.",
+  "scene": "When everyone around you looks like they are moving ahead and you grow impatient, this card says you do not have to match others' pace. Reversed, watch that your brooding has not pushed people away into isolation. An answer reached in reflection can be checked for self-centeredness by telling it to one person you trust."
+ },
+ "ar10": {
+  "check": "Is this an upward season for the flow, or a downward one? Have you separated what you cannot change yourself from what you can? What can you prepare so you can move at once when a chance comes? Is there room in you to trust in timing?",
+  "decision": {
+   "text": "In a situation that cannot be decided by your convenience alone, like moving house, read this card as preparing your readiness to move first, so you can notice the signs that the flow is changing. Reversed, it may simply be that the timing does not fit — do not rush the conclusion, and spend the time on preparation.",
+   "worry": "hikkoshi"
+  },
+  "hint": "The Wheel of Fortune represents flows and timings beyond your own control. What matters in a decision is not resisting the flow, but noticing the signs of change and being ready to ride it. Look back: has there been an unexpected invitation or meeting lately? Upright, the timing may be on your side. A matter you are torn about may open up more easily if you move on it now.",
+  "scene": "This card often appears when you are unsure about timing — 'I cannot tell if now is the time.' Reversed, it indicates the season is off, or outside factors keep things from going as you wish. At such times, rather than forcing your way, it is wiser to get prepared and wait for the next turn. Remember that the wheel always keeps turning."
+ },
+ "ar11": {
+  "check": "Is this choice fair both to you and to the other person? With feelings removed and only facts placed on the scales, which way do they tip? Can you take responsibility for the result yourself? Is it a judgment whose reason you could explain afterward?",
+  "decision": {
+   "text": "In a situation where feeling and principle are both involved, like declining a request, read this card as lining up the other person's circumstances and your own by the same standard, and deciding with a reason you could explain to both. Reversed, check whether you are selectively seeing only the facts that suit you.",
+   "worry": "kotowaru"
+  },
+  "hint": "Justice depicts judging fairly, based on facts, with scales and sword in hand. When feelings sway you and you cannot decide, line up each option's merits and demerits, and its effects on the people involved, by the same standard. The sword means the sharpness of decision; the scales, balance. This card also represents cause and effect. Accepting that the present is the result of past choices makes the next judgment a more honest one.",
+  "scene": "This card suits situations where you must keep things principled — contracts, negotiations, where responsibility lies. Upright, looking for a line that not only you but everyone involved can accept yields results that last. Reversed, inspect whether bias or concealment has crept into your judgment, and borrow a third party's eyes if needed."
+ },
+ "ar12": {
+  "check": "Are you using the time you cannot move as a period for changing your view, rather than waste? Seen from upside down, how does the problem look? Is there something you could gain by letting something go? Is there truly a reason to hurry?",
+  "decision": {
+   "text": "In a situation where circumstances keep you from moving right away, like starting to learn again, read this card as not dismissing waiting as mere postponement, but reviewing the situation from the other side and deciding first how long you will wait. Reversed, check whether endurance has become a virtue in itself, and you are letting go even of methods you could change.",
+   "worry": "manabi"
+  },
+  "hint": "The Hanged Man is a curious card: hanging upside down, yet wearing a calm expression. In a decision, it indicates a season to change your viewpoint and review the situation rather than move. When you feel stuck, look at the same problem from the other person's standpoint, or through the eyes of yourself five years from now. Time when you cannot advance is not waste — it can be a preparation period for noticing options you could not see.",
+  "scene": "This card often appears when effort does not move the situation and you are torn between waiting and moving. Upright, accepting things without impatience improves what unfolds later. But reversed, you may simply be continuing a meaningless endurance. Make the reason and the deadline for waiting clear, and decide that once past it, you will review your approach."
+ },
+ "ar13": {
+  "check": "Is there something that should end, which you still hold onto with regret? Can you accept something ending as preparation for the next beginning? If you kept refusing change, what would you look like in a year? In what order will you let things go?",
+  "decision": {
+   "text": "In a situation of ending something, like leaving a job, read this card as turning your eyes first to the time and energy an ending creates, rather than to your reasons for continuing. Reversed, do not try to end everything at once — start with a small ending.",
+   "worry": "taishoku"
+  },
+  "hint": "Death is often thought an ominous card, but its essence is 'endings and rebirth.' On the banner of the skeleton on the white horse, white roses are drawn, showing that beyond an ending lies a new beginning. In a decision, it gives you the courage to draw a line under a matter you are torn between continuing and ending. Thinking about what you would use the time and room an ending creates for makes the judgment easier.",
+  "scene": "This card often appears when you are torn about letting go of work, a relationship, or a habit you have continued for a long time. Upright, it is time to thank what has finished its role and draw the line. Reversed, you may be piling up postponements out of fear of change. Be aware that not deciding an ending is itself a choice."
+ },
+ "ar14": {
+  "check": "Between the two extremes, is there no just-right mixture? Do you know your own pace — neither rushing too much nor stopping too much? Have you considered a third way that mixes the two options? What can you do to calm your impatience?",
+  "decision": {
+   "text": "In a situation where you are torn over the balance of striving and resting, like taking time off work, read this card as not leaning entirely to one side, but mixing little by little to find a measure you can continue without strain. Reversed, start by reducing rather than adding, wherever your use of time and energy leans too far.",
+   "worry": "yasumu"
+  },
+  "hint": "Temperance depicts an angel pouring water back and forth between two cups. It is a hint to search for a way that blends the good of both, rather than choosing one of two opposing options. For example, have you considered a compromise like continuing your current job while learning a new field little by little? Rather than rushing an extreme decision, advancing while adjusting the proportions can be easier to continue without strain.",
+  "scene": "This card often appears when the balance of work and rest, or ideals and reality, is lost and you are tired. Upright, repeated small adjustments bring you closer to a good state. Reversed, it is a sign that something has become excessive, or that mismatched actions continue. Start by reviewing how you use the hours of your day."
+ },
+ "ar15": {
+  "check": "Is there something you do not truly want, yet cannot stop? If you noticed the chain is loose, could you not remove it yourself? Are immediate pleasure or anxiety binding your judgment? Does that choice widen your freedom, or narrow it?",
+  "decision": {
+   "text": "In a situation where your hand stops even though you want to cancel, read this card as looking at whether your own attachment and habits, rather than outside circumstances, are the chain. The chain is surprisingly loose, and you may be able to remove it yourself. Reversed, do not carry the concrete steps for taking distance alone — use it as material for borrowing someone's help.",
+   "worry": "kaiyaku"
+  },
+  "hint": "The Devil depicts two people chained — yet the chains are loose, in a state where they could remove them themselves. What blocks your decision may not be outside circumstances, but your own attachments and habits. Look honestly at whether something you cannot quit, or cannot let go of, is clouding your judgment. Upright, it is important to separate the pleasure and relief in front of you from the future you truly want.",
+  "scene": "This card often appears when you are torn about a habit you want to quit but cannot, or an environment that feels bad yet you cannot leave. Reversed, it instead shows a good opportunity to become aware of the chain and cut it. If letting go all at once is hard, start with a small way of taking distance — reducing the time or frequency involved."
+ },
+ "ar16": {
+  "check": "Are you straining to prop up something that is starting to collapse? Can you receive an unexpected event as a chance to review your foundations? After it breaks, what do you want to build again? Are you avoiding looking directly at the truth?",
+  "decision": {
+   "text": "In a situation where the premises so far have collapsed, like parting from someone, read this card as setting aside the assumptions from when things went well, and checking again from the foundations. Reversed, check whether you are rushing only the conclusion while pretending not to see a problem you have noticed.",
+   "worry": "wakare"
+  },
+  "hint": "The Tower is a card of shock, depicting a building struck by lightning and crumbling. In a decision, it indicates an event or realization that overturns your premises from the root. If a plan you built up is shaking, it may be a sign that there was strain in its foundations. Rather than restoring what collapsed to how it was, the viewpoint of discerning what was truly needed and rebuilding from a firmer base is more useful.",
+  "scene": "This card often appears when you face an unexpected trouble or a change of direction and are torn about how to respond. Upright, do not rush a big decision now — first grasp the situation and secure safety. Reversed, you may be postponing an unavoidable change. Small corrections made early leave shallower wounds."
+ },
+ "ar17": {
+  "check": "Even after difficulty, which direction can you still feel hope in? Is the balance between filling yourself and sharing with others in place? Can you translate a distant goal into a small action you can take today?",
+  "decision": {
+   "text": "In a situation of choosing a step toward a distant goal, like going on to further study, read this card as not demanding a big result right away, but confirming one by one a small step you can take today and a support that lets you feel safe. Reversed, count again what you managed today, so that tiredness at the gap between ideal and reality does not make you let go of hope itself.",
+   "worry": "shingaku"
+  },
+  "hint": "The Star is a card of hope and healing, depicting a woman pouring water under the night sky. Appearing after the shock of The Tower, it represents a positive feeling that quietly returns after difficulty. In a decision, it teaches that picturing a distant ideal becomes a guide that lights your step now. Without demanding results right away, advance while confirming that you are heading in the direction you truly want.",
+  "scene": "This card often appears when, after a hurtful experience, you are torn about challenging yourself once more. Upright, it is a time when you may allow yourself to hold hope. Reversed, your ideal may be so high that you deny who you are now. Divide the road to the ideal into small goals, and confirm each achievement one by one."
+ },
+ "ar18": {
+  "check": "Is your anxiety casting a shadow larger than reality? Are you using unclear information as material for judgment without checking it? Do you have the room to wait until the night brightens before deciding? How do you tell intuition from assumption?",
+  "decision": {
+   "text": "In a situation where anxiety swells because you cannot read the other side's reaction, like telling your company about a side job, read this card as lining up, separately, the worries that have not happened yet and the facts you have confirmed. Reversed, use the facts that have gradually come into view as your material, ahead of your wish for relief.",
+   "worry": "fukugyo-kaisha"
+  },
+  "hint": "The Moon depicts a winding road continuing under dim moonlight. In a decision, it indicates a state where the whole picture is not yet visible and anxiety inflates imagination. At such times, write out, separately, the facts you know and your guesses and assumptions. Rather than making a big decision in fear of the unseen, confirming what can be confirmed, one by one, reliably shrinks the indecision.",
+  "scene": "This card often appears when you cannot read the other person's true feelings, or the outlook is opaque and you cannot decide. Upright, it is safer not to conclude right now, and to wait until the information is in. Reversed is a sign that the fog is lifting and the truth is beginning to show. When hidden circumstances come to light, judge again based on them."
+ },
+ "ar19": {
+  "check": "Could you talk about this choice openly, without hiding anything? Which one makes you feel, simply and like a child, 'this is fun'? Beyond the bright side, have you looked at the parts where the sunlight is too strong? Who do you want to share the joy with?",
+  "decision": {
+   "text": "When torn about whether to go to an invitation or a plan, read this card by the standard of whether you can honestly enjoy it and come back energized, rather than obligation or appearances. Reversed, check whether you are tiring yourself over something that should be fun, or overlooking your own state by expecting too much.",
+   "worry": "iku"
+  },
+  "hint": "The Sun is a card of joy and success, depicting a child on a white horse under the light. In a decision, it indicates a bright outlook for the option you are torn about. Its message is that you may be honest with your feelings and choose the one that feels fun. The sunlight also represents a state without secrets. Consulting openly with those around you and advancing with their cooperation tends to lead to greater results.",
+  "scene": "This card often appears when you have a feeling things will go well, yet cannot be sure you should proceed. Upright, it is time to move forward with confidence. Reversed, the flow is basically good, but care is needed against overconfidence and oversights. Precisely when things go smoothly, do not forget to check the details and to thank the people around you."
+ },
+ "ar20": {
+  "check": "From your past experience, what learning can you apply this time? If you answered an inner calling, which would you choose? Have you forgiven your past self and are you ready to advance to a new stage? Looking back on this decision later, could you be proud of it?",
+  "decision": {
+   "text": "In a situation of starting over based on past experience, like getting back together, read this card as material for choosing one thing you can change next, rather than as material for blaming yourself over regret. Reversed, set a deadline for looking back, so that dragging a past failure does not leave you unable to decide.",
+   "worry": "fukuen"
+  },
+  "hint": "Judgement depicts people awakening in answer to an angel's trumpet. In a decision, it means a call to look back on past experience and use it as nourishment to advance to a new stage. Is there something you once gave up, or something that has long weighed on your heart? Now may be the timing to challenge it again. Rather than blaming your past self, what matters is the posture of deciding while putting what you learned to use.",
+  "scene": "This card often appears when you are torn about returning to something you once left — going back to work, getting back together, a fresh challenge. Upright, it is a time when you may answer a heartfelt calling. Reversed, you may be avoiding a decision, caught in regret. Even though the past cannot change, remember that the next choice can."
+ },
+ "ar21": {
+  "check": "With this choice, does one cycle complete, or does it end up thrown away midway? Do you properly acknowledge what you have accomplished? What learning do you want to carry into the next journey? Do you need a ritual of closure?",
+  "decision": {
+   "text": "In a situation of finishing one stage and advancing to the next, like studying abroad, read this card as confirming what you have accomplished so far, then using your strength on the preparation you need next. Reversed, decide how far is enough to call it finished, so that aiming for a perfect result does not keep postponing the closure.",
+   "worry": "ryugaku"
+  },
+  "hint": "The World is a card of completion and integration, depicting the end point of the Major Arcana's journey. The figure dancing inside a laurel wreath represents a state where all your experience so far has come together as one. In a decision, it indicates that something you have worked on for a long time has reached a close, and you are ready to advance to the next stage. Acknowledge your achievement honestly, and think about how to put what you gained there to use on the next journey.",
+  "scene": "This card often appears at completions and milestones — finishing a project, graduating — when you are thinking about the next direction. Upright, you may step into a new world with confidence. Reversed, it indicates a state of stopping one step short. Write down the tasks that remain, and prioritize seeing them through to the end."
+ },
+ "wa01": {
+  "check": "Does the warmth in your chest remain at the same temperature after a night's sleep? Can you decide your first move today? Is that passion your own, or were you pulled along by the excitement around you? Is there a small way to test it?",
+  "decision": {
+   "text": "In a situation where passion has only just sprouted, like independence or starting a business, read this card by the body's response of 'I want to do this' rather than the completeness of the plan, and turn it into a first step you can take today. Reversed, the fire of motivation may not be connected to a reason yet — do not force a start, and explore what moves your heart.",
+   "worry": "dokuritsu"
+  },
+  "hint": "The Ace of Wands is a single wand offered from within the clouds. Rather than something you found yourself, it represents passion handed to you unexpectedly. In a decision, check not the completeness of the plan, but whether the warmth of 'I want to do this' is truly in you now. That heat cools easily with time. Within 48 hours, take one small step that is hard to undo — telling someone, making a reservation — and the sprouted wand will begin to grow branches in earnest.",
+  "scene": "When you are torn about starting a new project, side job, or hobby, this card pushes your back: 'your reasons to start are already enough.' Reversed, separate whether your motivation has fallen, or whether it was never your own wish to begin with. If the heat does not return, searching for another seed may be faster than forcing it to reignite."
+ },
+ "wa02": {
+  "check": "Is there a way to test the outside world while keeping your current base? On the map, can you point to one direction you want to go? Have you set your own deadline for deciding? Has the time spent just gazing grown long?",
+  "decision": {
+   "text": "In a situation of looking at the next place from the base of your current security, like accepting a job offer, read this card as deciding first which direction you want to advance, then comparing what you need, rather than comparing candidates forever. Reversed, separate the reason for your hesitation: insufficient planning, or fear of moving.",
+   "worry": "naitei"
+  },
+  "hint": "The figure in the Two of Wands stands on a castle wall, globe in hand, gazing into the distance — safely placed, yet considering whether to go out into the world. In a decision, rather than comparing options endlessly, draw one map: 'which direction could I advance and feel satisfied?' The other wand, fixed to the wall, symbolizes a base you do not have to let go of now. Not betting everything, but testing the next step with one hand left on your base, makes deciding easier.",
+  "scene": "This card often appears for the indecision of having no complaint about where you are, yet being drawn to the outside — changing jobs, moving your base. Reversed, your vision may only be expanding while no deadline is set. Just placing 'by when will I decide' first turns an outlook into a plan."
+ },
+ "wa03": {
+  "check": "Can you calmly wait for the results of what you have already sent out? Can you distinguish the preparation to make while waiting from extra moves born of impatience? Working backward from the view one year from now, what should you do now?",
+  "decision": {
+   "text": "In a situation after arrangements have been made, like a trip, read this card as advancing the next preparation you need while waiting for results, and if the schedule slips, reviewing your expectations instead. Reversed, separate whether the reason things advance less than expected will dissolve with waiting, or calls for a change of method.",
+   "worry": "ryokou"
+  },
+  "hint": "The Three of Wands is a scene of watching, from a cliff, the ships you have already sent out. The seeds are sown, and you are at the stage of watching how results return. In a decision, rather than adding new moves, what is asked is the eye that confirms where the plan you set in motion is going. As the gaze points across the sea, imagine not only short-term success, but the spread six months and a year from now. The next move to make becomes visible when you work backward from that distant scenery.",
+  "scene": "After sending an application or proposal, when you want to reach for another option while waiting for a reply, this card shows that waiting is also part of the action. Reversed, review just one point where your outlook was too optimistic, and prepare to load the next ship. Not changing course out of impatience is what matters."
+ },
+ "wa04": {
+  "check": "Have you been able to celebrate what you have achieved so far, together with someone? Where is the place where you can settle? Before advancing to the next thing, have you confirmed your current base? What words would you like to say to yourself at this milestone?",
+  "decision": {
+   "text": "In a situation of gathering with companions, like a drinking party, read this card as time to rejoice together in the milestone so far, before rushing to the next thing. Reversed, check first the reason you cannot spend the time calmly — vagueness in schedules or promises, for example.",
+   "worry": "nomikai"
+  },
+  "hint": "The Four of Wands is a scene of people celebrating before a gate decorated with garlands. It represents a milestone where what you built up has taken shape, and you may settle down for the moment. In a decision, before rushing the next challenge, confirming the base you gained becomes material for judgment. Writing down who you want to share the joy with, and where your place of ease is, clarifies what to prioritize. Skipping the time to celebrate tends to make the next step feel heavy, like an obligation.",
+  "scene": "For the indecision of 'should I settle here?' — marriage, housing, a team's structure — this card gives a positive push. Reversed, it is a sign that a reason remains why you cannot yet feel like celebrating. Clear the underprepared items one by one, and the gate opens again."
+ },
+ "wa05": {
+  "check": "Can you state the point of collision in a single sentence? Have the people involved shared who makes the final decision? Is the collision for winning and losing, or for making the plan better? Is there an opinion you are unable to say?",
+  "decision": {
+   "text": "In a situation where opinions collide, read this card as treating friction not as a sign of failure, but as material for hearing out what exactly differs. Rather than winning and losing, think about whether an idea both sides can use remains. Reversed, check whether something unsaid remains because you avoided the conflict.",
+   "worry": "ningen"
+  },
+  "hint": "In the Five of Wands, young people clash wands, but no one is hurt. It is a card depicting the collision of opinions itself, more than winning or losing. In a decision, do not receive the existence of friction as a sign of failure. Because different ideas collide, the plan's weak points surface. But when everyone talks at once, nothing is decided. Narrow the issue to one point, and decide in advance who makes the final call, and the clash turns into a force for moving forward.",
+  "scene": "When opinions split at work or in the family and you are torn about which side to take, this card urges you to organize the structure of the opposition. Reversed, the fight may be settling — check whether unsaid discontent still smolders. Silently going along and agreeing with conviction are different things."
+ },
+ "wa06": {
+  "check": "What do the scenes where you did well in the past have in common? Can you use that strength in this choice too? Are you choosing for a result you can be proud of, rather than for applause? Have you kept your humility?",
+  "decision": {
+   "text": "When challenging yourself with a higher-level job or role, as in job hunting, read this card as being allowed to use your record so far as your basis. Thanking the people who helped also leads to the next cooperation. Reversed, check your growth with your own eyes, so you do not measure the meaning of the challenge only by whether others recognize it.",
+   "worry": "shukatsu"
+  },
+  "hint": "The Six of Wands is a rider wearing a laurel crown, returning in triumph through the crowd. It shows a state where effort is recognized by those around and you can advance with confidence. In a decision, it becomes the message that you may use your record so far as your basis. When torn, recall three past scenes where you did well. What they share is the strength you can rely on in this choice too. On the other hand, check just once that your choice has not become one made to receive applause.",
+  "scene": "This is a reassuring card when you receive an offer for a promotion or a leader's role and are torn about whether you are up to it. Reversed, inspect whether dissatisfaction at not being evaluated, or arrogance, is clouding your judgment. Resetting your standard to whether the result is one you yourself can be proud of, rather than others' praise, keeps you steady."
+ },
+ "wa07": {
+  "check": "Can you state, clearly and in words, the one point you will not yield? Is it a position worth protecting, or are you just being stubborn? Are you exhausting yourself trying to protect every direction? If you were to retreat, how far could you accept?",
+  "decision": {
+   "text": "In a situation with opposing voices and anxiety around you, like changing jobs, the point of reading is whether you can put what you want to protect into words. When what matters is clear, you can also choose how to convey it. Reversed, use whether you are tired from catching everything alone — and ways of consulting or taking distance — as material too.",
+   "worry": "tenshoku"
+  },
+  "hint": "The figure in the Seven of Wands stands on a cliff, catching with a single wand the wands pressing from below. Wearing different shoes on each foot shows the flurry of a battle that began before preparations were complete. In a decision, the key is discerning whether your position is worth protecting. If the one point you will not yield is clear, your high ground gives you the advantage. But trying to defend every direction exhausts you. Narrow what you protect to one thing, and keep the judgment to yield the rest.",
+  "scene": "This card often appears when you are torn about advancing a plan with many opposing opinions, or holding to your own policy. Reversed, check whether you are worn out from bracing too hard. Retreating is not losing — it can be a strategic judgment to choose your ground again."
+ },
+ "wa08": {
+  "check": "Might the timing to ride the flow be exactly now? Can you name three conditions to confirm at minimum before moving? Is there a message you are holding back? Within the momentum, what is easy to overlook?",
+  "decision": {
+   "text": "In a situation where a sudden message or a reply is demanded, like being contacted, read this card by whether it is a timing to ride the flow, rather than by careful deliberation. But do not skip the one confirmation of reading the content before answering. Reversed, before pressing, organize the dates and content and check the gap of delays and miscommunication.",
+   "worry": "renraku"
+  },
+  "hint": "The Eight of Wands has no person drawn — only wands flying in the same direction. It represents a flow where things advance all at once, beyond anyone's intentions. In a decision, timing — riding the flow — carries more value than time spent deliberating carefully. If there is a message you have been holding a reply to, or one you almost sent, now may be the time to send it. But the more momentum a period has, the easier oversights happen. Decide just three conditions to hold at minimum, then move, and you can feel safe.",
+  "scene": "When a conversation suddenly starts coming together and you grow anxious about whether to proceed as-is, this card tells you the flow is on your side. Reversed, it is a season where messages easily cross or are delayed. Rather than chasing in impatience, prioritize organizing the routes of information into one."
+ },
+ "wa09": {
+  "check": "Can you count what you need to see through before a line can be drawn? Does the wariness from past wounds apply this time too? Are you refusing people who would extend help? Might you be in a state that needs rest?",
+  "decision": {
+   "text": "In a situation of continuing a relationship you have been carefully maintaining, read this card by confirming what you have kept so far, and whether you can continue with rest and help built in. Reversed, check whether wariness that you might be hurt again is pushing away even help.",
+   "worry": "ningen"
+  },
+  "hint": "The man in the Nine of Wands, bandage around his head, leans on his wand and still watches his surroundings. The goal is near, but past wounds make his judgment careful. In a decision, respect the wariness you learned from past failures, while calmly discerning whether it applies this time too. If a final push is what the situation needs, counting concretely what remains to be seen through before a line can be drawn makes the rest of the road visible.",
+  "scene": "When you are torn about whether to quit or continue a long-kept challenge, this card indicates you may be at the point of 'just a little more.' Reversed, review whether your guard has become so hard that you refuse new help. When you are tired, taking rest before deciding is also a respectable choice."
+ },
+ "wa10": {
+  "check": "Of the responsibilities you carry, which must be yours? Is there a load you could hand to someone? Before accepting something new, what should you put down? Is your inability to decline kindness, or anxiety?",
+  "decision": {
+   "text": "In a situation of letting go of over-carried work or roles, read this card by what you should put down so you can walk to your destination, rather than by whether to accept something new. Separate who you can ask from what can wait. Reversed, the moment you notice your limit is the time to reduce — deciding who to ask for what makes letting go easier.",
+   "worry": "kotowaru"
+  },
+  "hint": "The man in the Ten of Wands walks on, his view blocked by the bundle of wands he carries. The destination village is visible in the distance, yet the sheer amount of load slows his steps. In a decision, what is asked is not what new thing to take on, but what to put down. Write out the responsibilities you carry, and separate what must be yours from what can be handed to someone. Carrying everything alone is not necessarily sincerity. Sharing the load gets you to the destination faster and more surely.",
+  "scene": "This card often appears when you cannot decline requests and are torn about a new one. Reversed, it is a sign that the resolve to finally put the load down is forming. Do not be ashamed to acknowledge your limit — decide concretely who you will hand what to, and the resolve moves into action."
+ },
+ "wa11": {
+  "check": "Is there a way to test the feeling of 'this interests me'? Is there a small chance to touch it — a briefing, a trial? Would that interest stay unfaded after three tries? Who could you ask to move one step forward?",
+  "decision": {
+   "text": "In a situation of trying a new learning or hobby, read this card by using the sprout of 'this interests me' as material even if you cannot picture the finished form, deciding first how far you will test it, and starting small. Reversed, narrow to one thing first, so you do not start on impulse and quickly turn fickle.",
+   "worry": "manabi"
+  },
+  "hint": "The Page of Wands gazes at the young leaves sprouting at the tip of the wand. It is not yet in shape, but it represents news that moves the heart, and the sprout of interest. In a decision, it teaches that even if you cannot draw the finished form, the feeling of 'this interests me' may serve as material for judging. Add options for touching it on a trial basis — going to a briefing, trying an experience, hearing from someone who knows it well. Picking up small curiosities without ignoring them leads to the next big choice.",
+  "scene": "This card stays close when you are interested in a new field but unsure whether you are serious. Reversed, watch the tendency for interest to drift and not last. Before starting, decide a small promise like 'I will try it at least three times,' and whims become easier to tell from true interest."
+ },
+ "wa12": {
+  "check": "Can you name the single most important goal in this choice? Is the itinerary of the first week drawn concretely? Are you about to advance, on momentum, into a procedure that cannot be undone? Would your feelings change after a night's sleep?",
+  "decision": {
+   "text": "In a situation where overthinking keeps you from moving, like independence, read this card as a detonator that turns momentum into a step. But keep a brake on overspending time and money, and on skipping consultation. Reversed, insert just one check — the schedules around you and the necessary confirmations — before charging ahead.",
+   "worry": "dokuritsu"
+  },
+  "hint": "The Knight of Wands wears a cloak patterned with flames and gallops across the desert on a rearing horse. It is a card symbolizing the power to leap straight toward a goal. In a decision, it becomes a detonator for when you cannot move from overthinking. Decide just one most important goal for this choice, and resolve to arrange the other details as you run. But a charge on momentum alone runs out of breath. Drawing just the first week's itinerary concretely in advance is the wise move.",
+  "scene": "When you are torn about stepping into a bold challenge, this card stands on the side of action. Reversed, take a breath and check whether short temper or impatience is rushing your judgment. Before advancing, on the momentum of deciding, into procedures that are hard to undo — contracts, resignations — even a single night's pause changes how things look."
+ },
+ "wa13": {
+  "check": "Having made that choice, can you see yourself smiling naturally? Which way lets your true self live, rather than the expectations around you? Are you overlooking an unease that is hard to put into words? Is a feeling of comparing yourself with someone mixed in?",
+  "decision": {
+   "text": "When torn, in a situation involving people, between matching those around you and showing who you are, read this card by the standard of whether you can be natural. The more you acknowledge your own good points, the more you can see others' too. Reversed, turn your eyes to what you can enjoy rather than be praised for, so you do not make yourself small by comparing.",
+   "worry": "ningen"
+  },
+  "hint": "The Queen of Wands sits on her throne holding a sunflower, with a black cat at her feet. She holds both bright charm and a sharp intuition kept within. In a decision, use as your standard whether you can be natural, and whether you can bring out your power to draw people in. More than a choice matched to the expectations around you, the path where your true self lives lasts longer. As the black cat suggests, listening to unease that is hard to put into words also matters.",
+  "scene": "This is a reassuring card when you are torn about a role in front of people, or starting something under your own name. Reversed, check whether feelings of comparison or jealousy are distorting your choice. Return to the viewpoint of choosing a place where you can shine, rather than to beat someone, and the indecision loosens."
+ },
+ "wa14": {
+  "check": "Can you draw, as a single picture, how you want to be in three years? Which choice brings you closer to that picture? Have you thought about how your decision affects the people around you? Are you ready to entrust the parts that can be entrusted?",
+  "decision": {
+   "text": "In a situation of bringing people together, like independence or starting a business, read this card as deciding from the outlook of how you want to be in three years, rather than immediate gain and loss. Sharing even your 'why' makes it easier for those around you to advance. Reversed, check in words that reach the other person whether you are imposing your thinking and rushing people along.",
+   "worry": "dokuritsu"
+  },
+  "hint": "The King of Wands holds a sprouting wand and sits on his throne, gazing into the distance. He is a leader who decides things from a large vision, not from immediate gain and loss. In a decision, draw first the picture of how you want to be in three years, and judge by whether the choice brings you closer to it. Because you have the power to draw others in, being conscious that your decisions affect others matters too. Once you show the direction, the breadth to leave the details to people you trust is also asked of you.",
+  "scene": "When you stand in the position of deciding a large policy on behalf of a team or family, this card says you may raise your flag without hesitation. Reversed, inspect whether you are charging ahead by sole decision and missing the voices around you. Listening carefully to even one opposing opinion raises the quality of the decision remarkably."
+ },
+ "cu01": {
+  "check": "When you imagine that choice, does your heart grow warm, or heavy? Can you share the joy you received with someone? Is the heart's voice being drowned out by the score on a table of conditions? Is the person you are now ready to be fulfilled?",
+  "decision": {
+   "text": "In a situation where feelings are newly born, like a confession, read this card by the movement of the heart itself — 'I like them' — rather than by a score of conditions. You can choose a step that shares it in a way that does not strain you. Reversed, first quietly check your own senses, so that hiding your feelings does not leave yourself behind.",
+   "worry": "kokuhaku"
+  },
+  "hint": "The Ace of Cups is a scene of water overflowing from a cup offered from the clouds. It represents a feeling of the heart being fulfilled ahead of logic, and the beginning of caring for something. In a decision, rather than the score on a table of conditions, check whether imagining yourself having chosen it warms your heart. The overflowing water circulates by being shared, not only received. Whether that choice enriches not only you, but your relationships with the people close to you, is also important material for judgment.",
+  "scene": "When choosing relationships or a new place to belong, your head may be torn while your heart already knows the answer. This card says you may trust that voice. Reversed, your heart may be closed, in a state where nothing you choose would fulfill you. Before deciding, first secure time to care for yourself."
+ },
+ "cu02": {
+  "check": "Are you and the other person facing each other as equals? Can you be natural in front of them? Have you searched for a form you can both accept? Is it a relationship where you can share even one hard-to-say thing? Is the balance of burdens in place?",
+  "decision": {
+   "text": "In a situation two people decide together, like marriage, read this card by whether the form is one both can accept without either enduring, rather than by your own gain and loss alone. After sharing your feelings, hearing the other person's feelings is part of the material. Reversed, check whether you are skipping the conversation on the assumption that they must understand.",
+   "worry": "kekkon"
+  },
+  "hint": "The Two of Cups is a scene of two people facing each other and exchanging cups. It represents a relationship of mutual respect as equals, where neither stands above the other. In a decision, the key is searching for a form that both the other person and you can accept, rather than your own gain and loss alone. If you are torn about a partnership, joint work, or choosing a partner, check whether you can be natural when listening to them. The ease of exchanging words is the best foundation of a long relationship.",
+  "scene": "When you are torn about teaming up with someone, or advancing a relationship a step, this card shows you may proceed on the premise of trust. Reversed, inspect whether the balance of feelings and burdens has collapsed. Sharing just one hard-to-say thing can clarify where the relationship is heading."
+ },
+ "cu03": {
+  "check": "With that choice, who will you spend time with? Are the companions you want to share joy with there? Swept by fun, are you postponing something important? Inside the circle, can you keep your own axis of judgment?",
+  "decision": {
+   "text": "In a situation of sharing joy, like drinks with friends, read this card as talking to a trusted companion before deciding all alone. An idea you would never have thought of alone may appear. Reversed, value time to rest alone too, so the mood of the room does not tire you out.",
+   "worry": "nomikai"
+  },
+  "hint": "In the Three of Cups, three women raise their cups high to celebrate the harvest. It is a situation where sharing joy with companions holds more value than achieving alone. In a decision, think about who that choice will have you spend time with. Even under the same conditions, an environment with companions you click with often lets you show more of your strength. When torn, talking to a trusted friend can let your true feelings surface inside the conversation.",
+  "scene": "This card often appears when you are torn about joining a community, or starting something together with companions. Reversed, check whether fun is sweeping you into postponing important things, or whether gossip is swaying you. Even inside the circle, do not let go of your own axis of judgment."
+ },
+ "cu04": {
+  "check": "Is feeling that nothing appeals to you the fault of the options, or of your own tiredness? Are you overlooking an opportunity being offered right in front of you? If you rested or changed your environment, might things look different?",
+  "decision": {
+   "text": "In a situation where every option looks faded, like being unable to feel like starting a side job, read this card first by whether your senses are dulled by tiredness or weariness, rather than by a problem with your power to choose. Reversed, check whether there is a sign that your feelings are beginning to move toward an invitation you used to pass by, or a small pleasure.",
+   "worry": "fukugyo"
+  },
+  "hint": "The young person in the Four of Cups sits with crossed arms, noticing neither the cups before them nor the new cup offered from the clouds. It is not that they are unfulfilled — boredom and weariness have dulled their senses. In a decision, when you feel 'nothing appeals to me,' suspect whether the cause lies not in the options but in your own condition. Changing your environment a little, resting, or talking with someone can restore your sensitivity, and an overlooked opportunity may suddenly shine.",
+  "scene": "When you are torn about declining an invitation or proposal, this card asks: 'do you truly have no interest, or are you just tired?' Reversed, there is a sign of escaping stagnation. Looking once more at an offer you once declined may reveal a form you can accept now."
+ },
+ "cu05": {
+  "check": "Can you write down not what you lost, but what still remains in your hands? Are you taking enough time to feel your sadness? What are the two cups still standing, for you now? When might you be ready to cross the bridge?",
+  "decision": {
+   "text": "In a situation of facing something you might lose, like lending money, read this card by lining up not only the size of what was lost, but what support and relationships remain. Reversed, even if your feelings are sunken, start rebuilding from the parts where you can rely on people.",
+   "worry": "kasu"
+  },
+  "hint": "The figure in the Five of Cups gazes down at three spilled cups. But behind them, two cups still stand. In a decision, check whether the size of what you lost is stealing your eyes from the options that remain. There is no need to forcibly erase sadness or regret. But once your feelings settle, looking back and writing down what is still in your hands makes the road ahead appear like a bridge.",
+  "scene": "This card stays close after a failure or a parting, when you are torn about challenging yourself once more. Reversed, there is a sign of recovery, a stage where you can turn your eyes to what remains. Do not rush a big decision — start by regaining small daily routines, and the power to judge returns too."
+ },
+ "cu06": {
+  "check": "If you were your childhood self, which would you choose? Can you apply the values you treasured long ago to this choice? Are you about to choose on nostalgia alone? What from the past will you bring out, and what will you leave behind?",
+  "decision": {
+   "text": "In a situation where feelings for the other person come first, like choosing a present, read this card by what once delighted them and by your shared memories, rather than by price or market rate. Reversed, check whether leaning too much on 'the past was better' makes you overlook the other person's tastes as they are now.",
+   "worry": "present"
+  },
+  "hint": "The Six of Cups is a scene full of nostalgia: a child offering a cup filled with flowers. It represents pure goodwill without calculation, and a return to one's origin. In a decision, recall what you loved as a child, and the values your past self treasured. The answer to your indecision may, unexpectedly, sleep in the past. A reunion with an old acquaintance may also bring a new opportunity. But choosing on nostalgia alone can leave you with something that no longer fits who you are now.",
+  "scene": "This card often appears when you are torn about returning to a former workplace or hometown, or teaming up with an old friend. Reversed, inspect whether attachment to the past is binding your judgment now. Asking not 'those days were good,' but 'what from those days can I apply now?' turns it into a forward-looking choice."
+ },
+ "cu07": {
+  "check": "For each option, can you write what you would concretely do next week? Behind the attractive-looking ones, are there hidden conditions? Can you distinguish dreams from plans? If you chose just one for this season, which would it be?",
+  "decision": {
+   "text": "In a situation where candidates have multiplied too much, like a big purchase, read this card by separating the impression that something looks fun from the time and effort it actually requires. Cutting dreams apart from plans reveals the real candidates. Reversed, stop trying to choose everything, and narrow to the one you can try now.",
+   "worry": "okane"
+  },
+  "hint": "In the Seven of Cups, various treasures and monsters float inside seven cups above the clouds. It is a state where the sheer number of options steals your eyes, and which is real becomes hard to tell. In a decision, start by cutting dreams apart from plans. For each option, keep only those where you can write 'next week, I will concretely do this' — and the candidates above the clouds narrow on their own. The more attractive something looks, the more you need the calm to check for hidden conditions behind it.",
+  "scene": "When you have too many things you want to do and cannot decide, this card reflects exactly that state. Reversed, the power to narrow down realistically is returning. Accept the pain of not being able to choose everything, decide on just one for this season, and the remaining dreams will not disappear — they will wait their turn."
+ },
+ "cu08": {
+  "check": "Can you state your reason for wanting to leave in a single phrase? Is what you seek truly in the next place? Are you resolved to set down what you have built up? Is there still something left to learn here?",
+  "decision": {
+   "text": "In a situation of leaving circumstances that look blessed from the outside, like resigning, read this card by putting into words not that you failed, but what you are unfulfilled by. Reversed, write your reasons to stay and your reasons to leave separately, and check the true shape of why you cannot move.",
+   "worry": "taishoku"
+  },
+  "hint": "The figure in the Eight of Cups leaves neatly stacked cups behind and walks out into the moonlit mountains. Not because they failed, but in search of something unfulfilled, they leave of their own accord. In a decision, even in circumstances that look blessed from outside, it teaches that if your heart has left, you may advance to what is next. But before leaving, check whether you can say in one phrase what you are seeking. Leaving with a vague purpose tends to carry the same emptiness into the next place.",
+  "scene": "When you are torn about letting go of a stable job or relationship, this card shows that the season of 'graduation' has come. Reversed, discern whether you are staying out of inertia, or whether there is still something to learn. Returning is not necessarily retreating — it can be a choice to clear up what was left undone."
+ },
+ "cu09": {
+  "check": "Can you define, in advance, what 'satisfaction' means for you? Have you noticed the parts where you are already fulfilled? Is your reason for aiming higher from your true heart? Who do you want to share the joy with?",
+  "decision": {
+   "text": "In a situation of deciding the form of a wedding, read this card by the standard of what the two of you can be satisfied with, rather than the impressiveness others wish for. Leave room to savor the good things you already have, too. Reversed, think again about what you truly wanted, and why having what you supposedly wanted does not fulfill your heart.",
+   "worry": "kekkonshiki"
+  },
+  "hint": "The man in the Nine of Cups sits contentedly with crossed arms, the lined-up cups at his back. It is a card representing a state where a wish has come true and both heart and life are fulfilled. In a decision, try defining in advance what would let you say 'I am satisfied.' Once the standard is clear, the option that meets it is surprisingly easy to find. Noticing the parts where you are already fulfilled may also surface the option of not forcing yourself to aim higher.",
+  "scene": "This card often appears after you achieve a goal, when you are torn between aiming higher still and enjoying where you are. Reversed, check whether you feel emptiness despite supposedly being fulfilled. Rather than increasing the amount, thinking about who to share it with changes the quality of satisfaction."
+ },
+ "cu10": {
+  "check": "How does that choice change your life with the people close to you? Have you pictured the faces of family and companions, one by one? Can you put your ideal life into words? Have you asked what the person most important to you wants most right now?",
+  "decision": {
+   "text": "In a situation concerning your whole life with the people close to you, like buying a house, read this card not by personal conditions alone, but by what kind of time the life will let you spend with the people who matter. Reversed, explore a way for everyone to feel at ease, so true feelings are not hidden behind an appearance of closeness.",
+   "worry": "ie"
+  },
+  "hint": "The Ten of Cups is a scene of a family spreading their arms under a rainbow while children dance. Beyond personal success, it represents harmony and happiness built with the people who matter. In a decision, picture how that choice changes your life with the people close to you. Floating the faces of family, partner, and companions one by one, and thinking about the effect on each, lets your priorities appear naturally. Putting your ideal life into words also helps reduce indecision.",
+  "scene": "This card stays close to indecision concerning your whole life — the balance of work and family, choosing where to live. Reversed, review whether you are tired from the gap between ideal and reality. Rather than demanding a perfect picture, asking what your family wants most right now is the shortcut."
+ },
+ "cu11": {
+  "check": "Have you left a note of a feeling you are drawn to but cannot explain? After rereading it in a few days, does the same feeling continue? Are the swings of your mood shaking your judgment? Are you allowing yourself a playful heart?",
+  "decision": {
+   "text": "In a situation of turning a suddenly-sprung feeling into action, like contacting someone, read this card by using that sensation — even if you cannot explain it well — as a chance to know your own feelings. Reversed, check whether you are deciding even promises on the mood of the moment, and whether you would feel the same after a pause.",
+   "worry": "renraku"
+  },
+  "hint": "The Page of Cups meets the eyes of a fish that has peeked out of the cup. It is a card representing an unexpected inspiration, and the small surprise brought by an honest sensitivity. In a decision, do not treat lightly the sensation of 'somehow, I am drawn to this,' which logic cannot explain. Intuition can be born from the accumulation of your experience so far. Noting that sensation down and rereading it after a few days to check whether the same feeling continues lets you tell an impulse from your true heart.",
+  "scene": "This card often appears for indecision where sensitivity is tested — creative work, a new hobby, approaching someone you are drawn to. Reversed, watch that the swings of your mood are not shaking your judgment. Thinking it over once more when your feelings are calm, and seeing whether the same answer appears, is a way to check."
+ },
+ "cu12": {
+  "check": "Is that choice honest to your own feelings? Do the other person's words and actions match? Have you compared the beautiful ideal against even one real condition? If you were to share your feelings, in what words would you deliver them?",
+  "decision": {
+   "text": "In a situation of receiving an invitation or an offer in love, read this card by whether the choice is honest to your own feelings, rather than by gain and loss. Look also at whether the words were delivered slowly and sincerely. Reversed, do not be reassured by lovely words alone — check that they match actual actions and promises.",
+   "worry": "renai"
+  },
+  "hint": "The Knight of Cups rides a white horse, holding a cup in offering and advancing slowly. He is a knight who treasures romance, delivering a sincere proposal without rushing. In a decision, the key is checking not gain and loss, but 'is this a choice honest to my own feelings?' When you receive a proposal or invitation, also look at whether the other person's words match their actions. Letting beautiful words move your heart while confirming a single piece of backing makes your judgment far more certain.",
+  "scene": "This card pushes your back when you are torn about accepting a heartfelt proposal, or sharing your own feelings. Reversed, inspect whether you are being swept by surface charm or idealization. Writing down just one realistic condition and comparing it lets you treasure both romance and reality."
+ },
+ "cu13": {
+  "check": "With no one's expectations in the picture, what do you truly want? Prioritizing others' feelings, are you postponing your own true heart? Can you distinguish between caring and carrying? Do you have a place to think quietly?",
+  "decision": {
+   "text": "In a situation where the other person's feelings sway, like caregiving, read this card as first taking the time to listen and try to understand their feelings, rather than producing an answer right away. Reversed, protect your own time to rest, so you do not carry too much in trying to fix the other person's mood.",
+   "worry": "kaigo"
+  },
+  "hint": "The Queen of Cups sits on a throne by the sea, gazing at a lidded cup. She is a person who deeply draws out others' feelings while also listening carefully to her own inner voice. In a decision, the power to stay close to the emotions around you is a strength — but check that prioritizing others' feelings has not made you lose sight of your own true heart. In a quiet place, with no one's expectations in the picture, ask 'what do I truly want?' and the answer surfaces.",
+  "scene": "This card often appears when you stand in a position of supporting someone and postpone your own choices. Reversed, watch that you are not being swept into the other person's emotions until the boundary blurs. Distinguishing between caring and carrying lets you decide while keeping your kindness."
+ },
+ "cu14": {
+  "check": "Can you name and acknowledge the emotion you are feeling right now? Even while holding the emotion, can you line up your material for judgment calmly? Do you have the room to receive the feelings of those around you? Are you bottling up your true heart too much?",
+  "decision": {
+   "text": "In a situation where emotions run high, like apologizing, read this card as not replying in the grip of anger or anxiety, but settling a little first and choosing words that are good for both you and the other person. Reversed, explore a way to share without bottling your feelings up forever, in words that do not blame.",
+   "worry": "ayamaru"
+  },
+  "hint": "The King of Cups holds a cup calmly on a throne floating on a rough sea. It is a card representing a maturity that does not deny the waves of emotion, and judges without wavering on top of them. In a decision, it teaches that even while feeling anxiety or impatience, you can hold them and still choose calmly. Rather than trying to erase the emotion, acknowledge 'I am feeling anxious right now,' then line up your material for judgment again. The capacity to receive the feelings of the people around you also comes alive in this choice.",
+  "scene": "This is a reassuring card in situations with an emotional person or circumstance, where an adult judgment is asked of you. Reversed, review whether bottling up your true heart is turning your decision cold. Sharing your emotions in words is also part of a mature choice."
+ },
+ "pe01": {
+  "check": "Is that opportunity something you can concretely touch with your hands? Is there a prospect of growing it over time? Can you narrow the seeds you can receive now to one? How does it connect to the foundations of your life, like income or skills?",
+  "decision": {
+   "text": "In a situation facing an opportunity in visible form, like receiving a job offer, read this card by whether it is a chance you can concretely touch, together with the time and cost it needs. Reversed, even for a story that sounds good, verify first the prospect of being able to continue after you start.",
+   "worry": "naitei"
+  },
+  "hint": "The Ace of Pentacles is a scene of a hand extending from the clouds offering a large coin, with a garden spread below. It represents the seed of an opportunity that bears fruit in visible form. In a decision, use whether it is a chance you can concretely touch as your material. Choices rooted in real life — income, skills, a home — grow the more time you give them. Like the mountains visible beyond the garden arch, check whether there is a prospect of growing it for a long time, rather than immediate results.",
+  "scene": "When you are torn about accepting a new job offer, an investment, or a learning opportunity, this card supports a solid beginning. Reversed, watch for anxiety about missing the opportunity, or a tendency to overspend. Narrowing the seeds you can receive now to one, and planting it surely, leads to fruit."
+ },
+ "pe02": {
+  "check": "Without choosing just one, is there a way to do both? In your current juggling, is there room to add something new? If you add something, what will you remove? Have you written out your weekly schedule to check?",
+  "decision": {
+   "text": "In a situation where the fixed costs of life change, like owning a home versus renting, read this card not by which single answer is correct, but by whether you can keep going while adjusting to changes in income and plans. Reversed, check that you are not exhausted from trying to spin everything at once, and narrow to what you need most right now.",
+   "worry": "mochiie"
+  },
+  "hint": "The man in the Two of Pentacles juggles two coins lightly, joined in an infinity loop. Behind him, the sea rises and falls in great waves. It is a card representing the power to keep balance flexibly, juggling amid change. In a decision, explore whether there is a way to do both, without choosing just one. But add a third and a fourth, and the loop collapses. Calmly discern what to add to your current juggling, and what to remove.",
+  "scene": "This card often appears when you are torn about advancing two things at once — work and study, a main job and a side job. Reversed, it is a sign of carrying too much, with priorities in confusion. Write out your weekly schedule, check where the blank space is, and then judge whether to take on something new."
+ },
+ "pe03": {
+  "check": "Without carrying it alone, whose help would make it better? Can you distinguish your strengths from the parts you want supplemented? Have you spread the blueprint out and talked it over with the people involved? Are you showing your work in visible form?",
+  "decision": {
+   "text": "In a situation of building one thing with the help of experts, like buying a house, read this card by not carrying it alone, but dividing what each is good at, and consulting along the way to notice drift. Reversed, check that who does what is being communicated, and before blaming the other person's ability, verify the goals and roles together.",
+   "worry": "ie"
+  },
+  "hint": "The Three of Pentacles is a scene of a stonemason consulting with clients around a blueprint inside a cathedral. It represents the process of people with expertise cooperating to surely build one thing. In a decision, think about whose help to borrow so it becomes better, rather than carrying it alone. Using your own strengths while finding someone to supplement what you lack is the key to success. If you want to be evaluated, showing your work in visible form also matters.",
+  "scene": "This card often appears when you are torn about role division in a team, or whether to ask an expert or do it yourself. Reversed, review whether a lack of coordination or corner-cutting is lowering your evaluation. Simply spreading the blueprint out once and talking it over with the people involved can correct the drift."
+ },
+ "pe04": {
+  "check": "What are you protecting it for? Is fear of losing your current stability pushing a new choice farther away than necessary? Can you narrow what you must protect to one thing? If you loosened a little, is there an opportunity you could grasp?",
+  "decision": {
+   "text": "In a situation torn between continuing and letting go, like cancelling a contract, read this card by clarifying what you want to protect and why. If you can say the reason, you can also decide the range you may use and the range you may let go. Reversed, check whether you lean toward protecting too much or using too much, and search for a method in between.",
+   "worry": "kaiyaku"
+  },
+  "hint": "The man in the Four of Pentacles holds coins above his head, before his chest, and under his feet. It is a card with two faces: the strength to protect built wealth and stability, and an attachment that cannot let go. In a decision, discern the difference between protecting and being bound. Is fear of losing your current stability pushing a new choice farther away than necessary? Narrow what you must protect to one thing, consider that the rest may be loosened a little, and both hands come free to grasp the next opportunity.",
+  "scene": "When you are torn about using your savings or letting go of your current position, this card affirms caution while warning against attachment. Reversed, it is either the time to let go, or a tilt toward waste. Putting into words what you are protecting it for reveals when you should use it."
+ },
+ "pe05": {
+  "check": "Have you written down the support and systems you can use, and the people you can rely on? Are you carrying it alone, trying to solve it by yourself? Are you overlooking a light right beside you? Before a big decision, can you rebuild the foundations of your life first?",
+  "decision": {
+   "text": "In a situation where cost and loneliness become walls, like studying abroad, read this card by whether you can notice the help right beside you — scholarships, places to consult, people who support you — rather than carrying it alone. Reversed, verify the help you can use, and even if a little room returns, do not let go of needed support suddenly.",
+   "worry": "ryugaku"
+  },
+  "hint": "In the Five of Pentacles, two people walk through the snow, passing by without noticing the lit window of a church. It represents a state where, inside hardship and isolation, the help right beside you has become invisible. In a decision, do not try to solve it alone — write down the support and systems you can use, and the people you can rely on. Asking for help is not weakness; it is a realistic judgment for changing the situation. Turning your eyes to the light in the window is the first step.",
+  "scene": "This card stays close when money, health, or work anxiety leaves you unable to see ahead and torn about how to move. Reversed, circumstances are beginning to improve and you are at the stage of receiving aid. Rather than rushing a big decision, prioritize rebuilding the foundations of your life first."
+ },
+ "pe06": {
+  "check": "Is that choice fair to the people involved? Are you on the giving side or the receiving side? Is it a balance you can continue without strain? Have you put the conditions into words and agreed on them? Are you expecting too much in return?",
+  "decision": {
+   "text": "In a situation of lending money, read this card by the balance of lending and borrowing — helping within the range you can, and being helped when you need it. Whether the burden leans on only one side is also material. Reversed, check whether kindness comes with conditions that make it hard to decline, and talk the range over.",
+   "worry": "kasu"
+  },
+  "hint": "In the Six of Pentacles, a merchant holding scales gives coins to a kneeling person. It is a card representing giving and receiving, the balance of lending and borrowing. In a decision, consider whether that choice is fair to the people involved. Whether you stand on the giving side or the receiving side, the positions can swap someday. As the scales show, finding a balance you can continue without strain is the key to a lasting relationship.",
+  "scene": "When you are torn about offering aid or accepting help, this card shows you may share honestly. Reversed, check that you are not expecting too much in return, or enduring an unfair relationship. Putting conditions into words and agreeing on them prevents later resentment."
+ },
+ "pe07": {
+  "check": "How far has it grown so far — can you estimate concretely? How much longer until the harvest? Can you judge whether to continue or quit by the degree of growth, not by emotion? Have you decided a deadline and a standard?",
+  "decision": {
+   "text": "In a situation of checking the mid-course of something you have put work into, like investing, read this card by lining up the points that improved and the points that did not change, and whether to simply wait or change the method. Reversed, check that you are not trying to quit in a hurry from anxiety alone, and decide the conditions for continuing first.",
+   "worry": "toshi"
+  },
+  "hint": "The farmer in the Seven of Pentacles leans on a hoe, gazing at the bush of coins beginning to bear fruit. It represents a midpoint: assessing the results of what you have worked on, and thinking of the next move. In a decision, try judging whether to continue or quit not by emotion, but by the degree of growth so far. Estimating concretely how far it has grown and how much longer until the harvest calms the impatience. Waiting is also part of the work of growing.",
+  "scene": "This card often appears when results of your effort do not come easily and you are torn about changing direction. Reversed, watch that a sense of futility or impatience is not hurrying your judgment. Deciding a deadline and a standard, and promising to continue until then, makes both the decision to quit and the decision to continue convincing ones."
+ },
+ "pe08": {
+  "check": "Does that choice surely raise your skill? Is it a path where accumulation, not a shortcut, is rewarded? Can you concentrate on the single coin in front of you? Are you stalled by demanding perfection?",
+  "decision": {
+   "text": "In a situation that cannot be mastered at once, like studying for a qualification, read this card by accumulation rather than shortcuts. Finding the points that changed compared to before tells you what to fix next. Reversed, check that you are not just going through the motions, and adjust the amount or method after verifying your purpose.",
+   "worry": "shikaku"
+  },
+  "hint": "The craftsman in the Eight of Pentacles stamps an emblem into each coin, one by one, and lines up the finished pieces. It represents the process by which steady training and concentration surely build skill. In a decision, it supports choosing the path where accumulation is rewarded over shortcuts. Use whether that choice surely raises your skill as your material. The town visible in the distance is a symbol of the evaluation and opportunities that lie beyond honing your craft. Concentrate on the single coin in front of you.",
+  "scene": "When you are torn about choosing the path of studying for a qualification or deepening your expertise, this card shows the value of continuing effort. Reversed, inspect whether you are repeating the same work out of inertia, or stalled by perfectionism. The courage to advance to the next at eighty percent completion is also an important craftsman's skill."
+ },
+ "pe09": {
+  "check": "Is it a path you chose by your own power, without depending on anyone? Can you trust the accumulation you have built so far? Are you choosing for show or for others' evaluation? Who do you want to share the wealth you gain with?",
+  "decision": {
+   "text": "In a situation of adding provisions to a life you built by your own power, like insurance, read this card by whether you can protect a state where you yourself can spend time calmly, rather than wealth compared against others. Reversed, check whether you are spending too much money or time to look good, and verify what is truly comfortable in your current life.",
+   "worry": "hoken"
+  },
+  "hint": "The woman in the Nine of Pentacles stands in a garden of ripening grapes, a falcon on her hand. It is a card representing wealth and independence built by her own effort, and a refined life. In a decision, verify that it is a path you chose by your own power, without depending on anyone. The snail at her feet is a symbol of a walk that has advanced steadily, however slowly. It teaches that you may trust the accumulation you have built so far, and choose to receive the wealth that suits you.",
+  "scene": "This is a reassuring card for indecision about independence — living alone, going independent, a reward for yourself. Reversed, check that you are not choosing for show or others' evaluation, or feeling loneliness inside wealth. Thinking about who you want to share the joy with gives the choice depth."
+ },
+ "pe10": {
+  "check": "Is it a choice that leaves something behind in ten or twenty years? Within your ties to family and organizations, what effect does it have? Have you set a place to hear the opinions of everyone involved? Are you being pulled by immediate gain?",
+  "decision": {
+   "text": "In a situation deciding the foundation of a life that does not end in one generation, like owning a home versus renting, read this card not by immediate gain and loss, but by stability you can continue into the future, and the division of roles with the people close to you. Reversed, before continuing the old way as it is, talk the current circumstances over with your family.",
+   "worry": "mochiie"
+  },
+  "hint": "The Ten of Pentacles depicts an old man, a couple, children, and a dog gathered under a castle gate — wealth spanning generations. It represents long-term stability and inheritance that does not end in one generation. In a decision, think from the perspective of what you can leave behind in ten or twenty years, rather than immediate gain. Looking over what effect your choice has within your ties to family, organization, and community reveals what you should prioritize.",
+  "scene": "This card often appears when you are torn over a long-term judgment — inheriting a family business, buying a home, handling assets. Reversed, watch for differences of opinion within the family and problems around inheritance. Setting a place for everyone involved to talk once is the shortcut to stability."
+ },
+ "pe11": {
+  "check": "Can you start from the basics without rushing big results? Is there an environment where you can learn, and people who will teach you? Without ending at plans alone, can you decide the smallest action you can do today? Are you unafraid of being a beginner?",
+  "decision": {
+   "text": "In a situation of starting new learning, like advancing to further education, read this card by the stance of not rushing big results, but actually putting your hands to work from the easy parts. Putting your hands to work, even for a short time, is the material. Reversed, check that you are not stopped at researching and planning alone, and decide one practice you can do today.",
+   "worry": "shingaku"
+  },
+  "hint": "The Page of Pentacles stands in a field of spreading farmland, gazing intently at a coin held in both hands. It represents a stance of learning each thing carefully and taking a steady step. In a decision, it supports the choice of solidifying the basics first, without rushing big results. Use whether there is an environment where you can learn and people who will teach you as your material. Accumulating small experiences of success eventually leads to great fruit.",
+  "scene": "This card pushes your back when you are torn about challenging a new field or starting to relearn. Reversed, watch that you are not ending at postponement or plans alone. Deciding the smallest action you can do today — ordering one textbook, for example — gets you moving."
+ },
+ "pe12": {
+  "check": "Is it a situation where you can prioritize certainty over speed? Have you divided the plan into fine steps? Even if those around you rush, can you keep your own pace? Has caution turned into stubbornness? Can you add one small improvement?",
+  "decision": {
+   "text": "In a situation that advances surely despite no flashiness, like investing, read this card by whether you can keep a strain-free schedule, rather than by speed. A sense of responsibility and tenacity are the foundation of results. Reversed, check that you are not stopping even necessary change to avoid failure, and try changing your usual method slightly.",
+   "worry": "toshi"
+  },
+  "hint": "The Knight of Pentacles rides a black horse before a plowed field, standing quietly. He is a knight without flashiness, who advances things surely with responsibility and patience. In a decision, it teaches that the choice prioritizing certainty over speed is rewarded. The method of dividing the plan into fine steps and completing them one by one suits him. Even if those around you rush, keeping your own pace can ultimately be the path that goes farthest.",
+  "scene": "This card often appears when you are torn between continuing steady work and choosing a more stimulating path. Reversed, inspect whether caution has turned into stagnation or stubbornness. Even continuing the same method, adding one small improvement turns boredom into growth."
+ },
+ "pe13": {
+  "check": "Does that choice concretely improve daily life? Are the ground-level things — meals, sleep, household finances — stable? Before supporting others, are you fulfilling yourself? Can you write time for yourself into your schedule?",
+  "decision": {
+   "text": "In a situation of putting the life with people close to you in order, read this card as small care — meals, rest, the places you use — increasing peace of mind for both you and those around you. Before a big decision, you can start by putting the ground-level life in order. Reversed, check that you are not cutting your own rest by trying too hard for others, and search for what can be reduced and what can be entrusted.",
+   "worry": "ningen"
+  },
+  "hint": "The Queen of Pentacles sits in a garden surrounded by flowers and fruit, holding a coin on her lap. It represents practical wealth, and the practical kindness that nurtures daily life and people. In a decision, consider whether that choice concretely improves the daily life of you and the people close to you. More than ideals, the stability of the ground level — daily meals, sleep, household finances — matters. To support people, do not forget to fulfill yourself first.",
+  "scene": "This card stays close when you are torn over the balance of family care, your own work, and life. Reversed, check that you are not putting yourself last by caring too much, or relying too much on things. Writing time for yourself into your schedule is also a choice that preserves the power to nurture."
+ },
+ "pe14": {
+  "check": "Can you use the track record and resources you have built with confidence? Where you invest money and time, where is the fruit greatest? Are you also watching the feelings of people that do not show in numbers? Are you refusing change?",
+  "decision": {
+   "text": "In a situation deciding how to put what you have built to use, like a big purchase, read this card by a method you can continue for a long time without strain, and a form that shares peace of mind with those around you too. Reversed, check that you are not forgetting people's feelings in only protecting money and results, together with how easy it is to continue.",
+   "worry": "okane"
+  },
+  "hint": "The King of Pentacles wears a robe patterned with grapes and sits on a throne holding a coin and a scepter. He represents wealth built over years of effort, and the trust placed in him by those around him. In a decision, it teaches that you may use the track record and resources you have accumulated with confidence. Judge calmly, from experience, where investing money and time bears the greatest fruit. Using built wealth for people is also proof of a king's capacity.",
+  "scene": "When you are torn over expanding a business, a big purchase, or an investment judgment, this card supports solid success. Reversed, review whether you are valuing only material worth, or refusing change. Watching the feelings of people that do not show in numbers gives your judgment depth."
+ },
+ "sw01": {
+  "check": "Can you write what you are torn about in a single sentence? Have you sorted fact from assumption? What information is still missing for the decision? Will the words you use to deliver the conclusion hurt anyone unnecessarily? Might you be able to see it clearly right now?",
+  "decision": {
+   "text": "In a situation where conditions are tangled and judgment dulls, like cancelling a contract, read this card by writing down the facts you know and narrowing to the single point that matters most. Whether you can explain your reasons briefly is the yardstick. Reversed, do not try to answer it all inside your head — verify where your information comes from, and settle your words.",
+   "worry": "kaiyaku"
+  },
+  "hint": "The Ace of Swords is a scene of a hand extending from the clouds, holding high a sword crowned with a wreath. It represents the clarity that cuts through a tangled situation in one stroke. In a decision, begin by putting the cause of your indecision into words. When you can write 'what I am torn about' in a single sentence, half the answer is already there. Separate fact from assumption, and clarify what information the decision needs. But a sharp sword can wound people too — choose the words that deliver your conclusion with care.",
+  "scene": "When you want to reach a conclusion on a problem you have worried over for a long time, this card says you may be able to see it clearly now. Reversed, check whether too much information is confusing you, or whether you are trying to push through with strong words. Simply writing your thoughts out on paper can clear the fog."
+ },
+ "sw02": {
+  "check": "Has not deciding itself become a choice? What information are you avoiding? Is your reason for being unable to decide a lack of information, or fear of being hurt? Can you narrow what you will verify before the deadline to one thing?",
+  "decision": {
+   "text": "In a situation balanced with no decisive edge either way, like going or not going, read this card by accepting that holding off is itself a choice, and thinking about what you would need to know in order to choose. Reversed, check whether gathering too much information is making it harder to decide, and narrow down the conditions you truly need.",
+   "worry": "iku"
+  },
+  "hint": "The woman in the Two of Swords is blindfolded, two swords crossed before her chest. She is a figure protecting her peace of mind by choosing neither and keeping the balance. In a decision, it matters to notice that holding off has itself become a choice. Removing the blindfold — verifying the information you have been avoiding — often lets the scale tip on its own. Try to tell whether your reason for being unable to decide is a lack of information, or fear of being hurt.",
+  "scene": "When time passes with neither of two options chosen, this card reflects that deadlock. Reversed, it is either finally the time to step into a decision, or confusion from too much information. Set a deadline, narrow what you will verify by then to just one thing, and you can start to move."
+ },
+ "sw03": {
+  "check": "In the middle of pain, are you rushing a big decision? Can you put into words what hurt you? Have you had someone you trust listen to you? Can you think about this choice separately from the pain of the past?",
+  "decision": {
+   "text": "In a situation where heartbreak lingers, like getting back together, read this card by not hiding the pain but admitting it first, and putting big decisions off until after. Put what was hard into words, and take time to rest. Reversed, separate what has eased from what still hurts, and let having someone listen be part of your material.",
+   "worry": "fukuen"
+  },
+  "hint": "The Three of Swords draws, without hiding it, a heart pierced by swords under rain clouds. It is a card showing that admitting pain is the entrance to healing. In a decision, take care not to decide big things immediately after being hurt. Inside pain, what you lost looms large and your options narrow. First put into words what hurt you, and have someone you trust listen. The decision can wait until the rain eases a little.",
+  "scene": "This card often appears after heartbreak, betrayal, or a disappointing result, when you are torn about what to do. Reversed, the pain is beginning to ease — but check that an old wound is not shadowing your judgment. Thinking about this choice separately from past pain lets you face it calmly."
+ },
+ "sw04": {
+  "check": "Are you trying to judge with an exhausted mind? Is there room to extend the deadline and rest? Are you getting enough sleep and food? If you looked at the same problem after resting, how would you see it? Can you set the timing of your restart yourself?",
+  "decision": {
+   "text": "In a situation of rushing an answer with a tired mind, like whether to take time off work, read this card as the judgment 'not deciding now' itself sometimes being the best one. Taking time away from the worrying can change how things look later. Reversed, check from your own condition whether you are short on rest, or ready to move.",
+   "worry": "yasumu"
+  },
+  "hint": "The Four of Swords is the statue of a knight lying in the quiet of a church. It represents not someone who quit the fight, but someone resting in preparation for what is next. In a decision, it teaches that sometimes 'not deciding now' is the best judgment. Judgment made in a state of exhaustion inevitably narrows your field of view. If the deadline allows, step away from the problem for a few days and put sleep and meals in order. Looking at the same problem after resting, the answer often looks surprisingly simple.",
+  "scene": "This card often appears when decision after decision is demanded amid busyness and your head will not turn. Reversed, it is either restless impatience at being unable to rest, or the timing to restart. Tell whether your body wants to move or your impatience is hurrying you, then move."
+ },
+ "sw05": {
+  "check": "Is winning this argument your true purpose? Is what you gain by winning worth the relationship you lose? Have you decided in advance how far you can concede? Might a single word — apologizing, admitting — change the situation?",
+  "decision": {
+   "text": "In a situation where winning the argument easily becomes the purpose, like lending and borrowing money, read this card by whether an important relationship and peace of mind remain after you win. Reversed, put methods other than continuing the fight — talking it out, apologizing, keeping distance — into your options too.",
+   "worry": "kasu"
+  },
+  "hint": "In the Five of Swords, the victor gathers up swords while the two defeated turn their backs and leave. It depicts a barren victory — you supposedly won, yet lost something. In a decision, question whether winning the argument or negotiation is truly your purpose. Is what you gain by defeating someone in words worth the loss of the relationship? If your purpose lies elsewhere, choosing to withdraw without clinging to victory is also wise. Deciding in advance how far you can concede helps you avoid a war of attrition.",
+  "scene": "When you are torn about pushing your claim through inside a conflict, this card urges you to estimate the cost. Reversed, the time to accept reconciliation or defeat has come, though a bad aftertaste may remain. A single small word — apologizing, admitting — can be the chance to rebuild the relationship."
+ },
+ "sw06": {
+  "check": "By leaving your current place, what becomes easier? Can you start moving without waiting for perfect preparation? Even carrying past indecision with you, is there a way forward? Is there a trusted person who will row the boat for you?",
+  "decision": {
+   "text": "In a situation of relocating and starting over, like a job transfer, read this card by not trying to solve everything at once, but moving toward the calmer side while borrowing someone's help too. Reversed, separate whether what stops you is preparation or feelings, and search for the parts where you can be helped.",
+   "worry": "tenkin"
+  },
+  "hint": "In the Six of Swords, a ferryman quietly rows a boat, carrying people from rough water toward a calm shore. It represents a transition period of escaping difficulty and gradually improving circumstances. In a decision, it teaches that rather than solving the problem all at once, there is meaning in first leaving your current place. The swords still standing in the boat also mean you can advance without discarding all your past indecision. Borrowing the help of someone you trust matters too.",
+  "scene": "When you are torn about changing your environment, this card supports a calm departure. Reversed, your departure may be delayed, or you may be dragging the past along. Rather than waiting for perfect preparation, consider moving with just the minimum needed to board the boat."
+ },
+ "sw07": {
+  "check": "Is that way of doing it something you could stand behind even if it came out later? Is the detour a wise strategy, or an escape from facing it? Is there someone it would be better to tell first, rather than proceeding silently? Are you carrying too much alone?",
+  "decision": {
+   "text": "In a situation with circumstances hard to say head-on, like whether to tell your company about a side job, read this card by the need for detour-like ingenuity alongside checking that it does not become a lie or a broken promise. Reversed, check whether there is something important you are hiding, and search for a way to protect trust by deciding the range you can talk about.",
+   "worry": "fukugyo-kaisha"
+  },
+  "hint": "The man in the Seven of Swords is about to slip away from camp carrying swords. It is an ambiguous card, readable as ingenuity and quick thinking, or as sneaking and deceiving. In a decision, discern whether choosing a detour instead of going head-on is truly a wise strategy, or simply avoiding facing it. Whether you could stand behind the method even if it came out later is the yardstick that separates good ingenuity from a guilty means.",
+  "scene": "This card often appears when you are torn between proceeding silently and confiding in the people involved. Reversed, what you hid may come to light, or the time to speak honestly has come. Telling them yourself first tends to damage trust less than them finding out."
+ },
+ "sw08": {
+  "check": "Can you write down, one by one, your reasons for feeling 'it is hopeless anyway'? Among them, is there an assumption you have never verified? If you explained the situation to someone, might they point out an escape route? What is the first small step?",
+  "decision": {
+   "text": "In a situation where you cannot take a step forward in love, read this card by separating what truly cannot be done from what you simply have not tried yet. The ropes are loose and there is an exit, yet you may be convinced you cannot move. Reversed, verify just one of the reasons you thought you could not, and start from a small change.",
+   "worry": "renai"
+  },
+  "hint": "The woman in the Eight of Swords is blindfolded and surrounded by swords, but the ropes are loose and the swords only stand lined up like a fence. It represents a state where an exit exists, yet you believe you cannot move. In a decision, try writing down, one by one, your reasons for feeling 'it is hopeless anyway.' Among them there will be assumptions you have never verified. Simply explaining the situation to someone can have them point out an escape route you could not see yourself.",
+  "scene": "This card often appears when you feel blocked on all sides and unable to move. Reversed, you are removing the blindfold yourself and your power to escape is returning. Trying a small first step — one email, one phone call — can move the situation faster than you expected."
+ },
+ "sw09": {
+  "check": "Is that conclusion one you reached inside the anxiety of the night? Can you write the worst case and what is likely to actually happen, separately? Reading it back the next morning, is it the same answer? Is there a person or a professional who will listen?",
+  "decision": {
+   "text": "In a situation of trying to decide something big on a night when you cannot sleep for overthinking, read this card by writing down separately what you are worried about and what has actually happened, and not carrying it alone. Like the swords hanging on the wall, anxiety may be swelling larger than reality. Reversed, start by putting your feelings into words and sharing them with someone.",
+   "worry": "nemurenai"
+  },
+  "hint": "The Nine of Swords depicts a person sitting up in bed at night, covering their face. The swords only hang on the wall; they do not pierce the body. It is a state where anxiety and self-blame have swollen larger than reality. In a decision, it is important not to act immediately on a conclusion thought up in the middle of the night. Write the anxious thoughts on paper and reread them in the bright hours of the next morning. Writing the worst case and what is likely to actually happen, separately, shrinks the outline of the fear.",
+  "scene": "When you are worrying so much you cannot sleep, this card reflects that hardship. Reversed, the anxiety is beginning to ease, or you are at the stage where talking to someone helps. Not carrying it alone, and talking to someone you trust or a professional, is also a fine decision."
+ },
+ "sw10": {
+  "check": "Can you allow yourself to admit you have already done enough? If you accepted the ending, what could you begin? Are you lingering in a tragic story? What is one small act of recovery you can do today?",
+  "decision": {
+   "text": "In a situation that has reached a point where it cannot get worse, like breaking up, read this card by putting rest after ending ahead of the pain of continuing the current way. Dawn light is on the horizon, and you can rebuild from here. Reversed, even if things ease a little, do not try to carry the same amount as before right away.",
+   "worry": "wakare"
+  },
+  "hint": "The Ten of Swords is a striking image of a fallen figure pierced by ten swords, but dawn light is breaking on the horizon. It represents having hit a bottom beyond which things cannot get worse, a state where the only way is up. In a decision, it teaches that admitting an ending is the condition for a new beginning. If there is something you are torn about continuing, it may be the time to admit you have already done enough. The decision to end something is also a choice to begin the next day.",
+  "scene": "This card often appears when setbacks pile up and you want to throw everything away. Reversed, recovery has begun — but check that you are not lingering in a tragic story. Rather than blaming the past, choose one small act of recovery you can do today."
+ },
+ "sw11": {
+  "check": "Before reaching a conclusion, have you carefully gone through the stage of research? Do you have material for judgment — stories from experienced people, numbers? Have you verified the source and standpoint of your information? Can you set a deadline for research and commit to judging with what you have then?",
+  "decision": {
+   "text": "In a situation still at the research stage, like getting a qualification, read this card by not rushing the conclusion, but verifying sources and gathering information while asking questions. Thinking about how you can actually use what you learn moves you forward. Reversed, check that you are not spreading what you heard without verifying it, and leave what you do not know as unknown.",
+   "worry": "shikaku"
+  },
+  "hint": "The Page of Swords stands on a windy hill, sword ready, carefully watching the surroundings. He is a young person gathering new information with curiosity and observation. In a decision, it teaches the importance of carefully going through the stage of research before rushing to a conclusion. Increase your material for judgment — listen to people who have actually experienced it, verify numbers, make a comparison table. But do not swallow the gathered information whole; keep an eye on who is saying it and from what standpoint.",
+  "scene": "This is a reassuring card when you are pressed to judge in an unfamiliar field and do not know where to start. Reversed, watch that you are not all criticism with no action, or prying too much. Set a deadline for research, and commit to judging with the material gathered by then."
+ },
+ "sw12": {
+  "check": "Can you carry out a conclusion you have thought through, without hesitation? Have you decided a point to turn back to if it does not go well? Are you leaving the people around you behind? Is this truly a situation where speed decides the outcome?",
+  "decision": {
+   "text": "In a situation where you already have a conclusion you have thought through, like changing jobs, read this card as support for the speed of carrying it out without hesitation. Making your first action clear is the material. Reversed, check that you are not cutting people off mid-sentence in your haste, and leave just one beat to confirm the readiness of those around you.",
+   "worry": "tenshoku"
+  },
+  "hint": "The Knight of Swords charges at full speed through a storm, sword raised. He is a symbol of the decisiveness that cuts through indecision and pushes forward with logic at once. In a decision, if you have a conclusion you have thought through, he pushes your back to move to action without hesitation. In situations where speed decides the outcome, this momentum is a great weapon. But a horse at full speed cannot stop suddenly. Before advancing, deciding just one point to turn back to if things go wrong gives you peace of mind.",
+  "scene": "This card gives you strength when the decision is made but you cannot move, worrying about the reactions around you. Reversed, inspect whether you are forcing your way through and leaving people behind. Rather than asserting you are right, matching the speed at which the other person can be convinced, even slightly, gets you there faster in the end."
+ },
+ "sw13": {
+  "check": "Can you judge from facts, without being swept by feeling? Can you say the hard thing clearly, for the other person's sake? Within your firmness, are you leaving room for dialogue? Can you add a word for the other person to your correct argument?",
+  "decision": {
+   "text": "In a situation of conveying something while seeing both feeling and fact, like declining, read this card as being allowed to value your feelings yet say that what you dislike is what you dislike, and decide the distance you need. Reversed, even if you are conveying the right thing, check that your way of saying it is not too harsh, and look at the other person's circumstances too.",
+   "worry": "kotowaru"
+  },
+  "hint": "The Queen of Swords sits with her sword upright and her other hand extended forward. She is a person with clarity backed by experience, and the honesty to say things frankly. In a decision, a stance of judging from facts without being swept by feeling is called for. There are situations where saying even the hard thing clearly serves the other person better. The extended hand shows that room for dialogue remains within the firmness. Balance calmness with care.",
+  "scene": "This is a reliable card when you are torn about drawing a line in a relationship, or replying to a request that is hard to decline. Reversed, check that your words have not become so sharp that you are isolated. Precisely when delivering a correct argument, adding a word for the other person's standpoint keeps clarity from turning cold."
+ },
+ "sw14": {
+  "check": "Have you decided your criteria for judgment before looking at the options? Can you put your reasons into words that anyone could accept, rather than likes and dislikes? Have you taken in an expert's opinion? Are you keeping a stance that accepts counterarguments?",
+  "decision": {
+   "text": "In a situation where family opinions are divided, like a caregiving policy, read this card by deciding first by what criteria you will decide, explaining your reasons, and listening to the other side too. Reversed, review whether you are forcing your correctness on others to make them obey, and whether that way of deciding protects people.",
+   "worry": "kaigo"
+  },
+  "hint": "The King of Swords sits on his throne, sword held straight up, gazing forward. He is a symbol of intellect and authority that judges things by fair criteria, unswayed by emotion. In a decision, the method of deciding your criteria first and evaluating options against them works well. Try putting your reasons into words that anyone could accept, rather than likes and dislikes. Taking in an expert's opinion is also a good choice. If you can explain the reasons for what you decided, the indecision dissolves.",
+  "scene": "This is a reassuring card for situations demanding fairness and logic, like contracts and big judgments. Reversed, review whether you are deciding unilaterally, shielded by your position or knowledge. Rather than forcing correctness, sharing the grounds of your judgment and accepting counterarguments leads to trust."
+ }
+}
