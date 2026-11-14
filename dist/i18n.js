@@ -87,7 +87,7 @@
   const dataDict = new Map();   // card / learn / article content
   const nameMap = new Map();    // card name JA -> EN
   const meaningMap = new Map(); // card meaning JA -> EN
-  const GENRE_EN = { '仕事': 'Work', 'お金': 'Money', '人間関係・恋愛': 'Relationships & love', 'その他': 'Other' };
+  const GENRE_EN = { '仕事': 'Work', 'お金': 'Money', '人間関係・恋愛': 'Relationships & love', 'その他': 'Other', '暮らし・住まい': 'Life & home', '健康': 'Health' };
   const JA_RE = /[぀-ヿ一-鿿]/;
 
   const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -116,8 +116,23 @@
     [/^(\S+) · (正位置|逆位置)$/, (m) => `${m[1]} · ${orient(m[2])}`],
     [/^番号 (\S+) ・ (.+)$/, (m) => `No. ${m[1]} · ${translateWord(m[2])}`],
     [/^(.+?) · (正位置|逆位置) — (.+)$/, (m) => `${nameMap.get(m[1]) || m[1]} · ${orient(m[2])} — ${meaningMap.get(m[3]) || m[3]}`],
-    [/^『(.+)』を選択としておすすめします$/, (m) => `‘${m[1]}’ is the suggested choice`],
-    [/^『(.+)』にする$/, (m) => `Going with ‘${m[1]}’`],
+    [/^『(.+)』を選択としておすすめします$/, (m) => `‘${translateWord(m[1])}’ is the suggested choice`],
+    [/^『(.+)』にする$/, (m) => `Going with ‘${translateWord(m[1])}’`],
+    [/^選択肢([AB])を選択としておすすめします$/, (m) => `Option ${m[1]} is the suggested choice`],
+    [/^今回は、保留をおすすめします。選ぶなら選択肢([AB])です。$/, (m) => `This time, holding off is recommended. If you do choose, go with Option ${m[1]}.`],
+    [/^選択肢Aは「(.+)」、選択肢Bは「(.+)」を示しています。$/, (m) => { const a = translateWord(m[1]); const b = translateWord(m[2]); return (JA_RE.test(a) || JA_RE.test(b)) ? null : `Option A points to “${a}”, and Option B points to “${b}”.`; }],
+    [/^選択肢([AB])（(.+)）$/, (m) => { const t = translateWord(m[2]); return JA_RE.test(t) ? null : `Option ${m[1]} (${t})`; }],
+    [/^選択肢([AB])：(.+)$/, (m) => { const t = translateWord(m[2]); return JA_RE.test(t) ? null : `Option ${m[1]}: ${t}`; }],
+    [/^「(.+)」の決断$/, (m) => { const t = GENRE_EN[m[1]] || translateWord(m[1]); return JA_RE.test(t) ? null : `“${t}” decisions`; }],
+    [/^(.+)：(.+)／(.+)$/, (m) => { const g = GENRE_EN[m[1]] || translateWord(m[1]); const a = translateWord(m[2]); const b = translateWord(m[3]); return (JA_RE.test(g) || JA_RE.test(a) || JA_RE.test(b)) ? null : `${g}: ${a} / ${b}`; }],
+    [/^選んだ日の夕方（19時ごろ）に、その日の分をまとめて、(\S+) へ、記録の題名を添えて送ります。題名は配信用に保存します。題名以外の記録は載せません。$/, (m) => `On the evening of your chosen day (around 7 PM), that day's records are sent together to ${m[1]}, with their titles included. Titles are saved for delivery. Nothing else from your records is included.`],
+    [/^ファイルは(\d+)MB以下にしてください。$/, (m) => `Please keep the file at ${m[1]} MB or smaller.`],
+    [/^もっと見る（あと(\d+)件）$/, (m) => `Show more (${m[1]} more)`],
+    [/^約(\d+)分で読めます$/, (m) => `About ${m[1]} min to read`],
+    [/^約(\d+)分$/, (m) => `About ${m[1]} min`],
+    [/^(\d+)件の記事$/, (m) => plural(m[1], 'article')],
+    [/^最終同期 (.+)$/, (m) => { const d = m[1].match(/^(\d{4})年(\d{1,2})月(\d{1,2})日 (\d{1,2}):(\d{2})$/); if (d) return `Last synced ${enDate(+d[1], +d[2], +d[3])}, ${enTime(d[4], d[5])}`; return JA_RE.test(m[1]) ? null : `Last synced ${m[1]}`; }],
+    [/^(.+) の同期に失敗しました。通信が戻ると自動でやり直します。(.*)$/, (m) => { const t = translateWord(m[1]); return JA_RE.test(t) ? null : `${t} sync failed. It will retry automatically when you're back online.${m[2] ? ` ${m[2]}` : ''}`; }],
     [/^(.+?)の詳しい意味を見る$/, (m) => (nameMap.has(m[1]) ? `See the meaning of ${nameMap.get(m[1])}` : null)],
     [/^伏せたカード (\d+)枚目$/, (m) => `Face-down card ${m[1]}`],
     [/^選択肢([AB])のおすすめ度、5段階中(\d)$/, (m) => `Option ${m[1]} recommendation: ${m[2]} out of 5`],
@@ -150,7 +165,7 @@
     const pairs = [];
     for (const [ja, en] of nameMap) if (ja.length >= 2) pairs.push([ja, en]);
     pairs.push(
-      ['人間関係・恋愛', 'Relationships & love'], ['仕事', 'Work'], ['お金', 'Money'], ['その他', 'Other'],
+      ['人間関係・恋愛', 'Relationships & love'], ['暮らし・住まい', 'Life & home'], ['仕事', 'Work'], ['お金', 'Money'], ['その他', 'Other'],
       ['大アルカナ', 'Major Arcana'], ['小アルカナ', 'Minor Arcana'],
       ['正位置', 'Upright'], ['逆位置', 'Reversed'],
       ['選択肢A', 'Option A'], ['選択肢B', 'Option B'],
@@ -207,6 +222,23 @@
     }
   }
 
+  // The two-card option fields are filled by the app itself when a suggestion
+  // pair is tapped; translate those app-provided values (exact dictionary /
+  // pattern matches only, and never while the user is editing the field).
+  // Free text the user typed that is not a known suggestion stays untouched.
+  function translateValue(el) {
+    if (!el || document.activeElement === el) return;
+    const v = el.value;
+    if (!v || !JA_RE.test(v)) return;
+    const out = translateString(v, el);
+    if (out != null && out !== v) el.value = out;
+  }
+  function translateOptionValues(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches('#option-1, #option-2')) translateValue(root);
+    root.querySelectorAll('#option-1, #option-2').forEach(translateValue);
+  }
+
   const SKIP = 'script, style, noscript, textarea, [data-i18n-skip], [data-detail-memo]';
   function translateRoot(root) {
     if (!root || root.nodeType !== 1) return;
@@ -217,6 +249,7 @@
       if (nameMap.has(full)) { root.textContent = nameMap.get(full); return; }
     }
     translateAttrs(root);
+    translateOptionValues(root);
     // Tile names first: their fragments must not be translated piecemeal.
     root.querySelectorAll('.learn-tile-name').forEach((el) => {
       const full = el.textContent.trim();
@@ -307,6 +340,7 @@
     requestAnimationFrame(() => {
       scheduled = false;
       injectLangSwitch();
+      translateOptionValues(document);
       const roots = [...pending];
       pending.clear();
       for (const r of roots) if (r.isConnected) translateRoot(r);

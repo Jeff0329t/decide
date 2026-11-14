@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { createRequire } from 'node:module';
 import test from 'node:test';
 import vm from 'node:vm';
 
@@ -100,6 +101,42 @@ test('English intro page exists at /en/ with the app entry point', () => {
   assert.match(html, /no monthly fee/i);
   assert.match(html, /\?lang=en/);
   assert.match(html, /decide\.lang\.v1/);
+});
+
+test('dictionary covers every suggestion pair, stats theme strings and all genres', () => {
+  const req = createRequire(import.meta.url);
+  const meta = req('../dist/decision-meta.js');
+  const context = { window: {} };
+  vm.runInNewContext(read('dist/i18n-dict.js'), context);
+  const dict = context.window.DECIDE_I18N_DICT;
+  // Every app-provided option pair must translate as a chip label (A／B)
+  // and as the individual values the app writes into the option fields.
+  for (const pairs of Object.values(meta.PAIRS)) {
+    for (const [a, b] of pairs) {
+      assert.ok(dict[a], `missing pair value: ${a}`);
+      assert.ok(dict[b], `missing pair value: ${b}`);
+      assert.ok(dict[`${a}／${b}`], `missing pair chip: ${a}／${b}`);
+    }
+  }
+  for (const key of ['テーマ別の決断', '一覧を閉じる', '決断を記録すると、よく考えるテーマが見えてきます。', '暮らし・住まい', '健康', '（未入力）', 'どちらも選択としておすすめです', '今回は、保留をおすすめします。', 'ログの同期', '設定を確認しています…']) {
+    assert.ok(dict[key], `missing dictionary entry: ${key}`);
+  }
+});
+
+test('i18n runtime: dynamic sentences, legacy genres, option value translation', () => {
+  const src = read('dist/i18n.js');
+  // Email reminder sentence carries the account address inline.
+  assert.match(src, /選んだ日の夕方（19時ごろ）に、その日の分をまとめて/);
+  // Legacy genre names stored in older logs still translate.
+  assert.match(src, /'暮らし・住まい': 'Life & home'/);
+  assert.match(src, /'健康': 'Health'/);
+  // App-filled option values are translated; user editing is left alone.
+  assert.match(src, /translateOptionValues/);
+  assert.match(src, /#option-1, #option-2/);
+  assert.match(src, /document\.activeElement === el/);
+  // Composed strings: auto titles, decision text, verdict lines.
+  assert.match(src, /選択肢\(\[AB\]\)（/);
+  assert.match(src, /「\(\.\+\)」の決断/);
 });
 
 test('service worker precaches the i18n files', () => {

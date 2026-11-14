@@ -767,3 +767,31 @@ Object.assign(window.DECIDE_I18N_DICT, {
   'Googleでログインすると、メールで受け取れます。': 'Sign in with Google to receive them by email.',
   '件': '',
 });
+
+Object.assign(window.DECIDE_I18N_DICT, {
+  // ---- leak fixes: stats themes / genres / option values / share sheet ----
+  'テーマ別の決断': 'Decisions by theme',
+  '一覧を閉じる': 'Close list',
+  '決断を記録すると、よく考えるテーマが見えてきます。': 'As you record decisions, the themes you think about most will show up here.',
+  '暮らし・住まい': 'Life & home',
+  '健康': 'Health',
+  '今': 'Now',
+  'あと': 'Later',
+  '（未入力）': '(not entered)',
+  'どちらも選択としておすすめです': 'Either option is recommended',
+  '今回は、保留をおすすめします。': 'This time, holding off is recommended.',
+  'Instagram投稿作成': 'Create an Instagram post',
+  '相談のひとこと': 'A few words about this decision',
+  '任意・共有されます': 'Optional · will be shared',
+  '共有先を選ぶ ↗': 'Choose where to share ↗',
+  '9:16の画像を確認して、共有先を選べます。': 'Preview the 9:16 image, then choose where to share it.',
+  '相談のひとことは共有されます。メモは含めません。': 'Your few words will be shared. Your memo is not included.',
+  '共有する相談画像のプレビュー': 'Preview of the image to share',
+  '例：今の仕事、どうしよう？': 'e.g. What should I do about my job?',
+  'ログの同期': 'Log sync',
+  '設定を確認しています…': 'Checking your settings…',
+  'アプリを閉じていても、決定ごとに選んだ日に届きます。サーバーに送るのは通知の予定日時だけで、決定の内容は送りません。': 'Even with the app closed, a reminder arrives on the day you chose for each decision. Only the scheduled date and time are sent to the server — never what you decided.',
+  'ふり返りの通知（アプリを閉じていても届く）': 'Review reminders (arrive even when the app is closed)',
+  'すべての端末でメールのリマインドを停止しました': 'Email reminders have been stopped on all devices.',
+  '停止できませんでした。通信を確認して、もう一度お試しください': 'Could not stop them. Check your connection and try again.',
+});
