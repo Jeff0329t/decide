@@ -144,6 +144,82 @@ async function main() {
   assert.deepEqual(probeLeft, [], `probes still Japanese: ${JSON.stringify(probeLeft)}`);
   console.log('ok - A composed-string probes');
 
+  // Referral count probes: the settings invite line splits its sentence
+  // around a <b> ("…あと <b>4人</b>"), so a whole string in a single text
+  // node (the probes above) cannot reproduce the runtime shape — the
+  // per-node translation never sees the full sentence. Build the markup
+  // with the app's own pure renderer and judge the result text node by
+  // text node, exactly as the runtime sees it. (The section itself only
+  // renders for signed-in users, which no audit context is; that is how
+  // this line escaped the audit until a user screenshot caught it.)
+  const refLeft = await page.evaluate(async () => {
+    const re = /[぀-ヿ一-鿿]/;
+    const host = document.createElement('div');
+    document.body.append(host);
+    const cases = [
+      [1, 'You can invite 4 more people with the bonus', '4 more people'],
+      [4, 'You can invite 1 more person with the bonus', '1 more person'],
+    ];
+    const els = cases.map(([count]) => {
+      const wrap = document.createElement('div');
+      wrap.innerHTML = window.DECIDE_REFERRAL._pure.countHtml(count);
+      host.append(wrap);
+      return wrap.querySelector('.referral-count');
+    });
+    await new Promise((r) => setTimeout(r, 900));
+    const out = [];
+    els.forEach((el, i) => {
+      if (!el) { out.push(`case ${i}: .referral-count missing`); return; }
+      const nodes = [];
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      let n;
+      while ((n = walker.nextNode())) nodes.push(n.nodeValue);
+      if (nodes.some((t) => re.test(t))) out.push(`case ${i}: Japanese text node(s): ${JSON.stringify(nodes)}`);
+      const joined = nodes.join('').replace(/\s+/g, ' ').trim();
+      if (joined !== cases[i][1]) out.push(`case ${i}: got "${joined}", want "${cases[i][1]}"`);
+      const b = el.querySelector('b');
+      if (!b || b.textContent !== cases[i][2]) out.push(`case ${i}: <b> should wrap "${cases[i][2]}"`);
+    });
+    if (window.DECIDE_REFERRAL._pure.countHtml(5) !== '') out.push('countHtml(5) should render nothing at the cap');
+    host.remove();
+    return out;
+  });
+  assert.deepEqual(refLeft, [], `referral count not translated: ${JSON.stringify(refLeft)}`);
+  console.log('ok - A referral count probes (split-node markup)');
+
+  // Regression probes for leftovers found in the same sweep: the plan
+  // label with the invitation-bonus suffix (its dedicated pattern must
+  // win over the generic Plan: pattern), the calendar day label, the
+  // history delete button's aria-label, and the one-card deck-count line.
+  const composedLeft = await page.evaluate(async () => {
+    const re = /[぀-ヿ一-鿿]/;
+    const host = document.createElement('div');
+    document.body.append(host);
+    const plan = document.createElement('p');
+    plan.textContent = 'プラン：UNLIMITED（招待特典・12/31まで）';
+    host.append(plan);
+    const day = document.createElement('span');
+    day.textContent = '11月18日の決定';
+    host.append(day);
+    const del = document.createElement('button');
+    del.setAttribute('aria-label', '「Audit decision」を削除');
+    del.textContent = '削除';
+    host.append(del);
+    const deck = document.createElement('div');
+    deck.innerHTML = '<div class="deck-count"><b>78枚</b><span>すべてのカードから選べます</span></div>';
+    host.append(deck);
+    await new Promise((r) => setTimeout(r, 900));
+    const out = [];
+    if (re.test(plan.textContent)) out.push(`plan label: ${plan.textContent}`);
+    if (re.test(day.textContent)) out.push(`calendar day label: ${day.textContent}`);
+    if (re.test(del.getAttribute('aria-label'))) out.push(`delete aria-label: ${del.getAttribute('aria-label')}`);
+    if (re.test(deck.textContent)) out.push(`deck count: ${deck.textContent}`);
+    host.remove();
+    return out;
+  });
+  assert.deepEqual(composedLeft, [], `composed regressions: ${JSON.stringify(composedLeft)}`);
+  console.log('ok - A composed-string regression probes');
+
   // Attribute probes: alt / aria-label strings the walk may not surface
   const attrLeft = await page.evaluate(async () => {
     const re = /[぀-ヿ一-鿿]/;

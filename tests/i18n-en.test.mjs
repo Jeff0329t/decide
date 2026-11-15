@@ -275,10 +275,28 @@ test('related-articles-en.json mirrors the Japanese structure with English text'
   });
 });
 
-test('service worker precaches the English article data at v279', () => {
+test('service worker precaches the English article data at v280', () => {
   const sw = read('dist/service-worker.js');
   assert.match(sw, /'\.\/assets\/related-articles-en\.json'/);
-  assert.match(sw, /decide-shell-editorial-v279/);
+  assert.match(sw, /decide-shell-editorial-v280/);
+});
+
+test('publish47: split-node referral count and composed-string fixes', () => {
+  const src = read('dist/i18n.js');
+  // referral.js renders "…あと <b>N人</b>": no single text node matches the
+  // whole-sentence pattern, so the runtime must translate .referral-count
+  // at the element level.
+  assert.match(src, /translateReferralCount/);
+  assert.match(src, /querySelectorAll\('\.referral-count'\)/);
+  // Dedicated patterns must exist for composed strings whose generic
+  // patterns under-translate (plan label) or that had no pattern at all.
+  assert.match(src, /\^プラン：UNLIMITED（招待特典・/);
+  assert.match(src, /\^\(\\d\{1,2\}\)月\(\\d\{1,2\}\)日の決定\$/);
+  assert.match(src, /\^「\(\.\+\)」を削除\$/);
+  const context = { window: {} };
+  vm.runInNewContext(read('dist/i18n-dict.js'), context);
+  const dict = context.window.DECIDE_I18N_DICT;
+  assert.equal(dict['すべてのカードから選べます'], 'You can choose from all the cards');
 });
 
 test('dictionary covers the full-audit leak fixes', () => {

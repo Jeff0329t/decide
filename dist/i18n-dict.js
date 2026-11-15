@@ -306,6 +306,7 @@ Object.assign(window.DECIDE_I18N_DICT, {
   // ---- draw / session ----
   '2つを思い浮かべたら、カードを開きます': 'When both are in mind, open the cards',
   'カードを開いて比べる': 'Open the cards to compare',
+  'すべてのカードから選べます': 'You can choose from all the cards',
   '長押しで開く': 'Press and hold to open',
   '選択肢Aのカード（伏せてある）': 'Option A card (face down)',
   '選択肢Bのカード（伏せてある）': 'Option B card (face down)',

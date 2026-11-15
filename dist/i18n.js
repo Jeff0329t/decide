@@ -110,6 +110,7 @@
     [/^(\d{1,2})月(\d{1,2})日、決定(\d+)件（評価待ち(\d+)件）$/, (m) => `${MON[+m[1] - 1]} ${+m[2]}, ${plural(m[3], 'decision')} (${m[4]} awaiting review)`],
     [/^(\d{1,2})月(\d{1,2})日、決定(\d+)件$/, (m) => `${MON[+m[1] - 1]} ${+m[2]}, ${plural(m[3], 'decision')}`],
     [/^(\d{1,2})月(\d{1,2})日（今日）$/, (m) => `${MON[+m[1] - 1]} ${+m[2]} (today)`],
+    [/^(\d{1,2})月(\d{1,2})日の決定$/, (m) => `Decisions on ${MON[+m[1] - 1]} ${+m[2]}`],
     [/^(\d{1,2})月(\d{1,2})日$/, (m) => `${MON[+m[1] - 1]} ${+m[2]}`],
     [/^(\d{1,2})月$/, (m) => MON[+m[1] - 1]],
     [/^更新 (\d{4})年(\d{1,2})月(\d{1,2})日$/, (m) => `Updated ${enDate(+m[1], +m[2], +m[3])}`],
@@ -126,6 +127,7 @@
     [/^選択肢([AB])（(.+)）$/, (m) => { const t = translateWord(m[2]); return JA_RE.test(t) ? null : `Option ${m[1]} (${t})`; }],
     [/^選択肢([AB])：(.+)$/, (m) => { const t = translateWord(m[2]); return JA_RE.test(t) ? null : `Option ${m[1]}: ${t}`; }],
     [/^「(.+)」の決断$/, (m) => { const t = GENRE_EN[m[1]] || translateWord(m[1]); return JA_RE.test(t) ? null : `“${t}” decisions`; }],
+    [/^「(.+)」を削除$/, (m) => `Delete “${m[1]}”`],
     [/^(.+)：(.+)／(.+)$/, (m) => { const g = GENRE_EN[m[1]] || translateWord(m[1]); const a = translateWord(m[2]); const b = translateWord(m[3]); return (JA_RE.test(g) || JA_RE.test(a) || JA_RE.test(b)) ? null : `${g}: ${a} / ${b}`; }],
     [/^選んだ日の夕方（19時ごろ）に、その日の分をまとめて、(\S+) へ、記録の題名を添えて送ります。題名は配信用に保存します。題名以外の記録は載せません。$/, (m) => `On the evening of your chosen day (around 7 PM), that day's records are sent together to ${m[1]}, with their titles included. Titles are saved for delivery. Nothing else from your records is included.`],
     [/^ファイルは(\d+)MB以下にしてください。$/, (m) => `Please keep the file at ${m[1]} MB or smaller.`],
@@ -153,6 +155,7 @@
     [/^無料で引けるのは累計(\d+)回までです。$/, (m) => `The free plan includes ${plural(m[1], 'draw')} in total.`],
     [/^履歴を(\d+)件追加(?:・(\d+)件更新)?しました$/, (m) => `Added ${plural(m[1], 'record')} to your history${m[2] ? ` and updated ${m[2]}` : ''}`],
     [/^(.+) でログイン中$/, (m) => `Signed in as ${m[1]}`],
+    [/^プラン：UNLIMITED（招待特典・(\d+)\/(\d+)まで）$/, (m) => `Plan: UNLIMITED (invitation bonus, until ${m[1]}/${m[2]})`],
     [/^プラン：(.+)$/, (m) => `Plan: ${translateWord(m[1])}`],
     [/^UNLIMITED（招待特典・(\d+)\/(\d+)まで）$/, (m) => `UNLIMITED (invitation bonus, until ${m[1]}/${m[2]})`],
     [/^状態：(.+)$/, (m) => `Status: ${translateWord(m[1])}`],
@@ -235,6 +238,23 @@
     if (next !== raw) node.nodeValue = next;
   }
 
+  // The referral count line wraps the number in a <b> ("…あと <b>4人</b>"),
+  // so no single text node ever matches the whole-sentence pattern and the
+  // per-node translation below can never fire. Translate it at the element
+  // level instead, keeping the <b> emphasis around the count phrase. The
+  // wording matches the whole-sentence pattern for the same line.
+  function translateReferralCount(el) {
+    const m = el.textContent.replace(/\s+/g, ' ').trim().match(/^特典つきで招待できるのはあと (\d+)人$/);
+    if (!m) return;
+    const phrase = plural(m[1], 'more person').replace('persons', 'people');
+    const b = el.querySelector('b');
+    if (!b) { el.textContent = `You can invite ${phrase} with the bonus`; return; }
+    for (const node of [...el.childNodes]) if (node.nodeType === 3) node.remove();
+    b.textContent = phrase;
+    el.insertBefore(document.createTextNode('You can invite '), b);
+    el.append(document.createTextNode(' with the bonus'));
+  }
+
   const ATTRS = ['placeholder', 'aria-label', 'title', 'alt'];
   function translateAttrs(el) {
     for (const a of ATTRS) {
@@ -307,6 +327,7 @@
       const full = root.textContent.trim();
       if (nameMap.has(full)) { root.textContent = nameMap.get(full); return; }
     }
+    if (root.classList && root.classList.contains('referral-count')) translateReferralCount(root);
     translateAttrs(root);
     rewriteLinks(root);
     translateOptionValues(root);
@@ -315,6 +336,8 @@
       const full = el.textContent.trim();
       if (nameMap.has(full)) el.textContent = nameMap.get(full);
     });
+    // Referral count: same reason — its sentence is split around a <b>.
+    root.querySelectorAll('.referral-count').forEach(translateReferralCount);
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
       acceptNode(node) {
         if (!node.nodeValue || !JA_RE.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
