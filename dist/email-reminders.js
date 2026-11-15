@@ -16,6 +16,10 @@
   const notify = text => { if(typeof toast === 'function') toast(text); };
   const escape = text => String(text || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const isOn = () => available() && loaded && enabled && owner === auth()?.getUser?.()?.id;
+  // メールの言語は端末のUI言語に合わせる。i18n未読込時は 'ja'（従来どおり）。
+  const currentLang = () => { try { return window.DECIDE_I18N?.isEn?.() ? 'en' : 'ja'; } catch { return 'ja'; } };
+  // 言語切替（再読込）後にも同期が走るよう、署名には言語も含める。
+  const signatureOf = (lang, list) => JSON.stringify({ lang, items: list });
   function items() {
     const logs = window.DECIDE_APP_BRIDGE?.getLogs?.() || [];
     // サーバーは7日より前の予定を送らず、1回に500件までしか受け付けない。
@@ -41,9 +45,9 @@
     return serialize(async () => {
       if(generation !== epoch || !isOn()) return false;
       try {
-        const next = items(), signature = JSON.stringify(next);
+        const next = items(), lang = currentLang(), signature = signatureOf(lang, next);
         if(signature === lastSent) return true;
-        const { error: failure } = await auth().client().rpc('set_email_reminders', { device, enabled: true, items: next });
+        const { error: failure } = await auth().client().rpc('set_email_reminders', { device, enabled: true, items: next, lang });
         if(failure) throw failure;
         if(generation !== epoch) return false;
         lastSent = signature; error = '';
@@ -87,10 +91,10 @@
       await serialize(async () => {
         if(generation !== epoch) return;
         const snapshot = next ? items() : [];
-        const { error: failure } = await auth().client().rpc('set_email_reminders', { device, enabled: next, items: snapshot });
+        const { error: failure } = await auth().client().rpc('set_email_reminders', { device, enabled: next, items: snapshot, lang: currentLang() });
         if(failure) throw failure;
         if(generation !== epoch) return;
-        enabled = next; error = ''; lastSent = JSON.stringify(snapshot);
+        enabled = next; error = ''; lastSent = signatureOf(currentLang(), snapshot);
         clearTimeout(retryTimer);
         notify(next ? 'メールでリマインドをONにしました' : 'メールでリマインドをOFFにしました');
       });
@@ -109,7 +113,7 @@
     busy = true; clearTimeout(timer); clearTimeout(retryTimer); refresh();
     try {
       await serialize(async () => {
-        const { error: failure } = await auth().client().rpc('set_email_reminders', { device, enabled: false, items: [] });
+        const { error: failure } = await auth().client().rpc('set_email_reminders', { device, enabled: false, items: [], lang: currentLang() });
         if(failure) throw failure;
       });
       enabled = false; lastSent = ''; return true;

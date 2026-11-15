@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto';
 
 const source = fs.readFileSync(new URL('../dist/email-reminders.js', import.meta.url), 'utf8');
 const flush = async () => { for(let i=0;i<15;i++) await Promise.resolve(); };
-async function load({ configured = true, on = false } = {}) {
+async function load({ configured = true, on = false, en = false } = {}) {
   let user = { id: 'alice', email: 'alice@example.test' }, change;
   const calls = [], timers = new Map(), storage = new Map(), messages = [];
   let fail = false, logs = [], timerId = 0;
@@ -19,6 +19,7 @@ async function load({ configured = true, on = false } = {}) {
   } };
   const window = {
     DECIDE_CONFIG: { EMAIL_REMINDERS_ENABLED: configured },
+    DECIDE_I18N: en ? { isEn: () => true } : undefined,
     DECIDE_AUTH: { getUser: () => user, client: () => client, ready: () => Promise.resolve(user), onChange: fn => { change = fn; } },
     DECIDE_APP_BRIDGE: { getLogs: () => logs }, addEventListener() {}
   };
@@ -28,7 +29,7 @@ async function load({ configured = true, on = false } = {}) {
     toast: msg => messages.push(msg)
   });
   await flush();
-  return { api: window.DECIDE_EMAIL_REMINDERS, calls, messages, timers,
+  return { api: window.DECIDE_EMAIL_REMINDERS, calls, messages, timers, window,
     setFail: v => { fail=v; }, setLogs: v => { logs=v; },
     changeUser: async v => { user=v; await change(v); await flush(); },
     runTimers: async () => { const work=[...timers.values()]; timers.clear(); for(const fn of work) fn(); await flush(); }
@@ -96,6 +97,23 @@ test('a large history registers the 500 nearest reminders instead of failing and
   assert.ok(!items.some(item=>item.id==='old' || item.id==='id500'));
 });
 
+test('sync carries the UI language: ja by default, en in English mode', async () => {
+  const ja=await load(); ja.setLogs([{id:'a',remindAt:'2099-11-01'}]); await ja.api.toggle();
+  assert.equal(ja.calls.at(-1).args.lang,'ja');
+  const en=await load({en:true}); en.setLogs([{id:'a',remindAt:'2099-11-01'}]); await en.api.toggle();
+  assert.equal(en.calls.at(-1).args.lang,'en');
+  assert.equal(en.calls.at(-1).args.enabled,true);
+});
+test('switching the UI language re-syncs even when the reminders themselves are unchanged', async () => {
+  const h=await load({en:true}); h.setLogs([{id:'a',remindAt:'2099-11-01'}]); await h.api.toggle();
+  const before=h.calls.filter(c=>c.name==='set_email_reminders').length;
+  await h.api.syncNow(); // nothing changed: skipped
+  assert.equal(h.calls.filter(c=>c.name==='set_email_reminders').length,before);
+  h.window.DECIDE_I18N={ isEn: () => false }; // user switched to Japanese and the app reloaded
+  await h.api.syncNow();
+  const last=h.calls.filter(c=>c.name==='set_email_reminders').at(-1);
+  assert.equal(last.args.lang,'ja'); assert.deepEqual(last.args.items.map(i=>i.id),['a']);
+});
 test('stop-all turns this device OFF and covers devices that are no longer at hand', async () => {
   const h=await load(); h.setLogs([{id:'a',remindAt:'2099-11-01'}]); await h.api.toggle(); assert.equal(h.api.isOn(),true);
   await h.api.stopAll();
