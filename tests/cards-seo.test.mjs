@@ -190,14 +190,19 @@ test('card and worry pages point og:image at a generated 1200x630 JPEG under 250
   }
 });
 
-test('sitemap lists extensionless URLs only and keeps the same 153 entries', () => {
+test('sitemap lists extensionless URLs only and keeps the same 153 Japanese entries plus the English section', () => {
   const sm = read('dist/sitemap.xml');
   const locs = [...sm.matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1]);
-  assert.equal(locs.length, 153);
+  const ja = locs.filter((u) => !u.includes('/en/'));
+  const en = locs.filter((u) => u.includes('/en/'));
+  assert.equal(ja.length, 153);
+  assert.equal(en.length, 150);
   assert.ok(locs.every((u) => !u.endsWith('.html')), 'no .html in sitemap');
   assert.ok(locs.includes('https://decisionprocess.net/cards/ar00'));
   assert.ok(locs.includes('https://decisionprocess.net/about'));
   assert.ok(locs.includes('https://decisionprocess.net/privacy'));
+  assert.ok(locs.includes('https://decisionprocess.net/en/cards/ar00'));
+  assert.ok(locs.includes('https://decisionprocess.net/en/about'));
 });
 
 test('404 page is standalone, noindex and uses root-absolute links', () => {
