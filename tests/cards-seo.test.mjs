@@ -214,6 +214,6 @@ test('404 page is standalone, noindex and uses root-absolute links', () => {
   assert.match(html, /href="\/cards\/worries"/);
   assert.doesNotMatch(html, /(?:href|src)="\.\.?\//, 'no relative URLs');
   assert.doesNotMatch(html, /rel="canonical"/);
-  assert.doesNotMatch(html, /<script/);
+  assert.doesNotMatch(html, /<script[^>]*\ssrc=/, 'no external scripts (inline EN script is allowed)');
   assert.doesNotMatch(read('dist/sitemap.xml'), /404/);
 });

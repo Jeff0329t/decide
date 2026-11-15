@@ -49,5 +49,41 @@
 </main>
 <script src="./config.js"></script>
 <script src="./unsubscribe.js"></script>
+<script>
+  // English users (language saved by the app) see this page in English.
+  (function () {
+    var lang = null;
+    try { lang = localStorage.getItem('decide.lang.v1'); } catch (e) {}
+    if (!lang) lang = String(navigator.language || 'ja').toLowerCase().indexOf('en') === 0 ? 'en' : 'ja';
+    if (lang !== 'en') return;
+    var dict = {
+      'リマインドメールの停止 — DECIDE.': 'Stop reminder emails — DECIDE.',
+      'リマインドメールの停止': 'Stop reminder emails',
+      'DECIDE.の「メールでリマインド」を、このアカウントのすべての端末で停止します。': 'This stops DECIDE. email reminders for this account, on every device.',
+      'メールを停止する': 'Stop the emails',
+      '停止しています…': 'Stopping…',
+      'リマインドメールを停止しました。これから届く予定のメールは送られません。': 'Reminder emails have been stopped. No scheduled emails will be sent from now on.',
+      'また受け取りたくなったら、アプリの設定で「メールでリマインド」をONにしてください。': 'If you would like them again, turn on “Email reminders” in the app’s Settings.',
+      'DECIDE. を開く': 'Open DECIDE.',
+      'このリンクは使えません。メールに書かれたリンクを、途中で切れないように開き直してください。': 'This link can’t be used. Open the link in the email again, making sure the whole link is intact.',
+      'アプリにログインできる場合は、設定の「メールでリマインド」からも停止できます。': 'If you can sign in to the app, you can also stop them under “Email reminders” in Settings.',
+      '通信できなかったため、停止できませんでした。オンラインでもう一度お試しください。': 'We couldn’t connect, so the emails were not stopped. Please try again while online.',
+      'もう一度試す': 'Try again',
+      'ご不明な点は': 'Questions? Contact',
+      'へ ／': '/',
+      'プライバシーポリシー': 'Privacy Policy'
+    };
+    document.documentElement.lang = 'en';
+    if (dict[document.title]) document.title = dict[document.title];
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    var nodes = [];
+    var n;
+    while ((n = walker.nextNode())) nodes.push(n);
+    nodes.forEach(function (node) {
+      var t = node.nodeValue.trim();
+      if (dict[t]) node.nodeValue = node.nodeValue.replace(t, dict[t]);
+    });
+  })();
+</script>
 </body>
 </html>

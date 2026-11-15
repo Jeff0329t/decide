@@ -98,6 +98,8 @@
   const orient = (s) => (s === '正位置' ? 'Upright' : 'Reversed');
   const translateWord = (s) => staticDict.get(s) || dataDict.get(s) || s;
 
+  const answerLabel = (s) => { const mm = String(s).match(/^選択肢([AB])$/); return mm ? `Option ${mm[1]}` : s; };
+
   const patterns = [
     [/^(\d{4})年(\d{1,2})月(\d{1,2})日 (\d{1,2}):(\d{2}) の記録として保存$/, (m) => `Saved as a record from ${enDate(+m[1], +m[2], +m[3])}, ${enTime(m[4], m[5])}`],
     [/^(.+) の記録として保存$/, (m) => (JA_RE.test(m[1]) ? null : `Saved as a record from ${m[1]}`)],
@@ -158,6 +160,26 @@
     [/^特典つきで招待できるのはあと (\d+)人$/, (m) => `You can invite ${plural(m[1], 'more person').replace('persons', 'people')} with the bonus`],
     [/^関連レッスン：(.+)$/, (m) => `Related lesson: ${translateWord(m[1])}`],
     [/^(.+)を使います$/, (m) => (staticDict.has(m[1]) ? `${staticDict.get(m[1])} is now in use` : null)],
+    [/^最終書き出し：(\d{1,2})\/(\d{1,2}) (\d{1,2}):(\d{2})$/, (m) => `Last exported: ${MON[+m[1] - 1]} ${+m[2]}, ${enTime(m[3], m[4])}`],
+    [/^引いたカード：(.+?)(?:／「(.+)」)?$/, (m) => { const n = nameMap.get(m[1]); if (!n) return null; const k = m[2] ? dataDict.get(m[2]) : null; if (m[2] && !k) return null; return `Card drawn: ${n}${k ? ` / “${k}”` : ''}`; }],
+    [/^選択肢([AB])：(.+?) · 選択肢([AB])を選んだとき$/, (m) => `Option ${m[1]}: ${m[2]} · When you chose Option ${m[3]}`],
+    [/^選択肢([AB]) · 選択肢([AB])を選んだとき$/, (m) => `Option ${m[1]} · When you chose Option ${m[2]}`],
+    [/^カード1枚と、このときの決定「(.+)」を共有します。$/, (m) => `You will share one card and this decision: “${m[1]}”.`],
+    [/^選んだ答え：(.+?)　（カードの視点では、今回は保留をおすすめします）$/, (m) => `Your answer: ${answerLabel(m[1])} (From the cards’ viewpoint, holding off is recommended this time.)`],
+    [/^選んだ答え：(.+?)　（カードの視点でもおすすめでした）$/, (m) => `Your answer: ${answerLabel(m[1])} (The cards pointed the same way.)`],
+    [/^選んだ答え：(.+?)　（カードの視点では、([AB])が進めやすそうでした。決めたのは本人です）$/, (m) => `Your answer: ${answerLabel(m[1])} (From the cards’ viewpoint, Option ${m[2]} looked easier to go with. The choice was their own.)`],
+    [/^選んだ答え：(.+)$/, (m) => `Your answer: ${answerLabel(m[1])}`],
+    [/^私は([AB])を選んだ。あなたは？$/, (m) => `I chose Option ${m[1]}. What about you?`],
+    [/^私は([AB])を選んだ$/, (m) => `I chose Option ${m[1]}`],
+    [/^共有する選択肢([AB])$/, (m) => `Choice ${m[1]} to share`],
+    [/^このときの決定：(.+)$/, (m) => `The decision at the time: ${answerLabel(m[1])}`],
+    [/^無料プランはドロー(\d+)回・ログ保存(\d+)件までです。$/, (m) => `The free plan includes up to ${m[1]} draws and ${m[2]} saved logs.`],
+    [/^(.+) は、この端末で前に同期していたアカウントとは別のアカウントです。$/, (m) => (JA_RE.test(m[1]) ? null : `${m[1]} is a different account from the one previously synced on this device.`)],
+    [/^(.+) ごろにまたお聞きします$/, (m) => (JA_RE.test(m[1]) ? null : `We will ask again around ${m[1]}`)],
+    [/^このリンクから始めた人がログインすると、招待した人・された人どちらにもUNLIMITEDを3日間プレゼントします（招待した人への特典は(\d+)人まで）。$/, (m) => `When someone who started from this link signs in, both the inviter and the invited person receive UNLIMITED for 3 days (the inviter’s bonus applies to up to ${m[1]} people).`],
+    [/^(.+)を選びました$/, (m) => (nameMap.has(m[1]) ? `You selected ${nameMap.get(m[1])}` : null)],
+    [/^(.+)を開きました$/, (m) => (nameMap.has(m[1]) ? `You opened ${nameMap.get(m[1])}` : null)],
+    [/^選択肢 ?([12])$/, (m) => `Option ${'AB'[+m[1] - 1]}`],
   ];
 
   // Fallback: substitute known names/terms inside a longer string.
@@ -213,7 +235,7 @@
     if (next !== raw) node.nodeValue = next;
   }
 
-  const ATTRS = ['placeholder', 'aria-label', 'title'];
+  const ATTRS = ['placeholder', 'aria-label', 'title', 'alt'];
   function translateAttrs(el) {
     for (const a of ATTRS) {
       const v = el.getAttribute && el.getAttribute(a);
@@ -305,7 +327,7 @@
     let n;
     while ((n = walker.nextNode())) nodes.push(n);
     nodes.forEach(translateTextNode);
-    if (root.querySelectorAll) root.querySelectorAll('[placeholder],[aria-label],[title]').forEach(translateAttrs);
+    if (root.querySelectorAll) root.querySelectorAll('[placeholder],[aria-label],[title],[alt]').forEach(translateAttrs);
   }
 
   // ---------- data-driven maps ----------
