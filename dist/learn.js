@@ -311,7 +311,7 @@
   function fetchArticles() {
     if(articles || articlePending)return;
     articleError=false;
-    articlePending=fetch('./assets/related-articles.json').then(response=>{
+    articlePending=(window.DECIDE_I18N && window.DECIDE_I18N.isEn()?fetch('./assets/related-articles-en.json'):fetch('./assets/related-articles.json')).then(response=>{
       if(!response.ok)throw Error('articles');return response.json();
     }).then(value=>{
       const types=new Set(['p','h2','h3','li','blockquote']);

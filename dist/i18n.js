@@ -131,6 +131,7 @@
     [/^約(\d+)分で読めます$/, (m) => `About ${m[1]} min to read`],
     [/^約(\d+)分$/, (m) => `About ${m[1]} min`],
     [/^(\d+)件の記事$/, (m) => plural(m[1], 'article')],
+    [/^(\d+)件の記事（「(.+)」で検索）$/, (m) => `${plural(m[1], 'article')} (searching for “${m[2]}”)`],
     [/^最終同期 (.+)$/, (m) => { const d = m[1].match(/^(\d{4})年(\d{1,2})月(\d{1,2})日 (\d{1,2}):(\d{2})$/); if (d) return `Last synced ${enDate(+d[1], +d[2], +d[3])}, ${enTime(d[4], d[5])}`; return JA_RE.test(m[1]) ? null : `Last synced ${m[1]}`; }],
     [/^(.+) の同期に失敗しました。通信が戻ると自動でやり直します。(.*)$/, (m) => { const t = translateWord(m[1]); return JA_RE.test(t) ? null : `${t} sync failed. It will retry automatically when you're back online.${m[2] ? ` ${m[2]}` : ''}`; }],
     [/^(.+?)の詳しい意味を見る$/, (m) => (nameMap.has(m[1]) ? `See the meaning of ${nameMap.get(m[1])}` : null)],

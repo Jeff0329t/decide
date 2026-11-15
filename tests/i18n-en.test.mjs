@@ -222,3 +222,61 @@ test('English intro page footer links to the English About page', () => {
   assert.match(html, /href="\.\.\/privacy">Privacy<\/a>/);
   assert.match(html, /href="\.\.\/terms">Terms<\/a>/);
 });
+
+test('dictionary covers the related-articles tab and reader strings', () => {
+  const context = { window: {} };
+  vm.runInNewContext(read('dist/i18n-dict.js'), context);
+  const dict = context.window.DECIDE_I18N_DICT;
+  for (const key of [
+    '気になる話から読んでみましょう。',
+    '気になる言葉で記事を探す',
+    '関連記事を検索',
+    '記事のテーマ',
+    '← 記事の一覧へ',
+    '記事の一覧へ戻る',
+    'つづけて読む',
+    '記事を読み込んでいます…',
+    '記事を読み込めませんでした。',
+    '見つかりませんでした。別の言葉で探してみてください。',
+  ]) {
+    assert.ok(dict[key], `missing dictionary entry: ${key}`);
+    assert.ok(!/[぀-ヿ一-鿿]/.test(dict[key]), `dictionary value is not English: ${key}`);
+  }
+});
+
+test('i18n runtime translates the article count while searching', () => {
+  const src = read('dist/i18n.js');
+  assert.match(src, /件の記事（「\(\.\+\)」で検索）/);
+});
+
+test('learn.js loads the English article data only in English mode', () => {
+  const src = read('dist/learn.js');
+  assert.match(src, /DECIDE_I18N\.isEn\(\)\?fetch\('\.\/assets\/related-articles-en\.json'\):fetch\('\.\/assets\/related-articles\.json'\)/);
+});
+
+test('related-articles-en.json mirrors the Japanese structure with English text', () => {
+  const ja = readJson('dist/assets/related-articles.json');
+  const en = readJson('dist/assets/related-articles-en.json');
+  const titles = readJson('dist/assets/article-titles-en.json');
+  const JA_RE = /[぀-ヿ一-鿿]/;
+  assert.equal(en.version, ja.version);
+  assert.deepEqual(en.categories.map((c) => c.id), ja.categories.map((c) => c.id));
+  for (const c of en.categories) assert.ok(c.label && !JA_RE.test(c.label), `category label not English: ${c.id}`);
+  assert.equal(en.articles.length, ja.articles.length);
+  en.articles.forEach((a, i) => {
+    const j = ja.articles[i];
+    assert.equal(a.id, j.id);
+    assert.equal(a.category, j.category);
+    assert.equal(a.minutes, j.minutes);
+    assert.equal(a.title, titles[a.id], `title must reuse article-titles-en.json: ${a.id}`);
+    assert.deepEqual(a.blocks.map((b) => b.type), j.blocks.map((b) => b.type), `block type order: ${a.id}`);
+    assert.ok(a.summary && !JA_RE.test(a.summary), `summary not English: ${a.id}`);
+    for (const b of a.blocks) assert.ok(b.text && !JA_RE.test(b.text), `block not English: ${a.id}`);
+  });
+});
+
+test('service worker precaches the English article data at v278', () => {
+  const sw = read('dist/service-worker.js');
+  assert.match(sw, /'\.\/assets\/related-articles-en\.json'/);
+  assert.match(sw, /decide-shell-editorial-v278/);
+});

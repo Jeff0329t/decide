@@ -1,4 +1,4 @@
-const SHELL_CACHE = 'decide-shell-editorial-v277';
+const SHELL_CACHE = 'decide-shell-editorial-v278';
 const IMAGE_CACHE = 'decide-card-images-p14-v1';
 const IMAGE_LIMIT = 100;
 const CARD_SHELL_FILES = [
@@ -13,7 +13,7 @@ const SHELL_FILES = [
   './manifest.webmanifest', './icon-192.png?v=2', './icon-512.png?v=2',
   './icon-512-maskable.png?v=2', './apple-touch-icon.png?v=2',
   './assets/editorial/learn-celestial-v1.webp', './assets/editorial/learn-elements-v1.webp',
-  './assets/cards.json', './assets/cards-en.json', './assets/learn.json', './assets/learn-en.json', './assets/related-articles.json', './assets/article-titles-en.json', './assets/card-back-lines.jpg',
+  './assets/cards.json', './assets/cards-en.json', './assets/learn.json', './assets/learn-en.json', './assets/related-articles.json', './assets/related-articles-en.json', './assets/article-titles-en.json', './assets/card-back-lines.jpg',
   './assets/card-backs/ivory-orbit.webp',
   './assets/card-backs/rose-moon.webp',
   './assets/card-backs/moonlit-navy.webp',
