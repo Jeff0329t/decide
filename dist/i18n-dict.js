@@ -594,6 +594,26 @@ Object.assign(window.DECIDE_I18N_DICT, {
   'ブラウザのメニューから「ホーム画面に追加」を選んでください': 'Choose “Add to Home Screen” from your browser menu',
   'ホーム画面に追加しました': 'Added to the Home Screen',
 
+  // ---- A2HS help sheet ----
+  'iPhoneでは、Safariから追加できます。': 'On iPhone, you can add it from Safari.',
+  '共有ボタン（□に↑）を押す': 'Tap the Share button (□ with ↑)',
+  '「ホーム画面に追加」を選ぶ': 'Choose “Add to Home Screen”',
+  '「追加」を押す': 'Tap “Add”',
+  'わかった': 'Got it',
+  'Chromeのメニュー（⋮）から追加できます。': 'You can add it from the Chrome menu (⋮).',
+  'ブラウザのメニュー（⋮）を開く': 'Open the browser menu (⋮)',
+  '「ホーム画面に追加」または「アプリをインストール」を選ぶ': 'Choose “Add to Home Screen” or “Install app”',
+  '確認画面で追加する': 'Confirm to add it',
+  'このアプリのメニューから「ブラウザで開く」を選び、SafariやChromeで追加してください。': 'Choose “Open in browser” from this app’s menu, then add it in Safari or Chrome.',
+  '追加手順を閉じる': 'Close the add instructions',
+
+  // ---- A2HS banner on the log detail screen ----
+  '案内を閉じる': 'Close this notice',
+  'ホーム画面に追加すると、アプリのようにすぐ開けて、記録も消えにくくなります。': 'Add it to your Home Screen to open it instantly, like an app — and your records are less likely to disappear.',
+  'この画面では、ホーム画面に追加できません。メニューから『ブラウザで開く』（Safariで開く）を選んでから、追加してください。': 'You can’t add it to the Home Screen from this screen. Choose “Open in browser” (Open in Safari) from the menu first, then add it.',
+  '記録を消さないために、ホーム画面に追加しておきませんか？　Safariでは、しばらく開かないと記録が消えることがあります。': 'Why not add DECIDE. to your Home Screen so your records don’t disappear? In Safari, records may be erased if you don’t open the app for a while.',
+  '追加のしかた': 'How to add it',
+
   // ---- account / auth / sync / referral ----
   'アカウント': 'Account',
   'プラン：': 'Plan: ',

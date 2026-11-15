@@ -48,6 +48,35 @@ test('dictionary covers the service-worker update bar', () => {
   assert.equal(dict['閉じる'], 'Close');
 });
 
+test('dictionary covers the A2HS help sheet and the detail-screen install banner', () => {
+  const context = { window: {} };
+  vm.runInNewContext(read('dist/i18n-dict.js'), context);
+  const dict = context.window.DECIDE_I18N_DICT;
+  for (const key of [
+    // help sheet: iOS steps, Chrome steps, in-app-browser note, close aria-label
+    'iPhoneでは、Safariから追加できます。',
+    '共有ボタン（□に↑）を押す',
+    '「ホーム画面に追加」を選ぶ',
+    '「追加」を押す',
+    'わかった',
+    'Chromeのメニュー（⋮）から追加できます。',
+    'ブラウザのメニュー（⋮）を開く',
+    '「ホーム画面に追加」または「アプリをインストール」を選ぶ',
+    '確認画面で追加する',
+    'このアプリのメニューから「ブラウザで開く」を選び、SafariやChromeで追加してください。',
+    '追加手順を閉じる',
+    // detail-screen banner: all three variants, how-to button, close aria-label
+    '案内を閉じる',
+    'ホーム画面に追加すると、アプリのようにすぐ開けて、記録も消えにくくなります。',
+    'この画面では、ホーム画面に追加できません。メニューから『ブラウザで開く』（Safariで開く）を選んでから、追加してください。',
+    '記録を消さないために、ホーム画面に追加しておきませんか？　Safariでは、しばらく開かないと記録が消えることがあります。',
+    '追加のしかた',
+  ]) {
+    assert.ok(dict[key], `missing dictionary entry: ${key}`);
+  }
+  assert.equal(dict['わかった'], 'Got it');
+});
+
 test('cards-en.json: all 78 cards, standard English names, full fields', () => {
   const ja = readJson('dist/assets/cards.json');
   const en = readJson('dist/assets/cards-en.json');
