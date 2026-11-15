@@ -194,3 +194,31 @@ test('app.js formatDate follows the selected language', () => {
   const src = read('dist/app.js');
   assert.match(src, /DECIDE_I18N\?\.locale\?\.\(\)/);
 });
+
+test('i18n runtime: English mode rewrites content-page links to /en/', () => {
+  const src = read('dist/i18n.js');
+  // The rewrite lives in the English branch only: Japanese mode returns
+  // before it is defined, so Japanese links are never touched.
+  const jaReturn = src.indexOf("if (lang !== 'en')");
+  assert.ok(jaReturn > -1 && src.indexOf('function rewriteHref') > jaReturn, 'rewrite is English-only');
+  assert.match(src, /function rewriteHref/);
+  assert.match(src, /function rewriteLinks/);
+  assert.match(src, /api\.rewriteHref = rewriteHref/);
+  // Only the content sections are rewritten; legal pages are excluded.
+  assert.match(src, /\(\?:cards\|articles\)\(\?:\\\/\|\$\)/);
+  assert.match(src, /about\\\//);
+  // Rewriting runs with the translation pass and the observer also watches
+  // href, so links rendered or re-targeted later are rewritten too.
+  assert.match(src, /rewriteLinks\(root\)/);
+  assert.match(src, /rewriteLinks\(document\)/);
+  assert.match(src, /attributeFilter: \[\.\.\.ATTRS, 'href'\]/);
+});
+
+test('English intro page footer links to the English About page', () => {
+  const html = read('dist/en/index.html');
+  assert.match(html, /href="\.\/about">About<\/a>/);
+  assert.ok(!html.includes('href="../about"'), 'About must not point at the Japanese page');
+  // Privacy / Terms have no English version: those links stay as they are.
+  assert.match(html, /href="\.\.\/privacy">Privacy<\/a>/);
+  assert.match(html, /href="\.\.\/terms">Terms<\/a>/);
+});

@@ -239,6 +239,42 @@
     root.querySelectorAll('#option-1, #option-2').forEach(translateValue);
   }
 
+  // ---------- content-page links ----------
+  // In English mode, links the app renders to the Japanese content pages
+  // (card / worry indexes and individual pages, articles, About) are pointed
+  // at the English versions under /en/. Only same-site relative ("./…",
+  // bare) and root-absolute ("/…") hrefs are rewritten, and any query or
+  // fragment is kept. Legal pages (privacy / terms / tokushoho) have no
+  // English version and stay as they are, as do external links and links
+  // that already point at /en/ (so rewriting is idempotent).
+  function rewriteHref(raw) {
+    if (typeof raw !== 'string' || !raw) return null;
+    if (/^[a-z][a-z0-9+.-]*:/i.test(raw) || raw.startsWith('//') || raw.startsWith('#')) return null;
+    const cut = raw.search(/[?#]/);
+    const path = cut === -1 ? raw : raw.slice(0, cut);
+    const suffix = cut === -1 ? '' : raw.slice(cut);
+    let prefix = '';
+    let rest = path;
+    if (rest.startsWith('./')) { prefix = './'; rest = rest.slice(2); }
+    else if (rest.startsWith('/')) { prefix = '/'; rest = rest.slice(1); }
+    else if (rest.startsWith('../') || rest === '..') return null;
+    if (!rest || rest === 'en' || rest.startsWith('en/')) return null;
+    if (!/^(?:cards|articles)(?:\/|$)/.test(rest) && !/^about\/?$/.test(rest)) return null;
+    return `${prefix}en/${rest}${suffix}`;
+  }
+  function rewriteLink(a) {
+    if (!a || !a.getAttribute) return;
+    const raw = a.getAttribute('href');
+    const out = rewriteHref(raw);
+    if (out != null && out !== raw) a.setAttribute('href', out);
+  }
+  function rewriteLinks(root) {
+    if (!root || !root.querySelectorAll) return;
+    if (root.matches && root.matches('a[href]')) rewriteLink(root);
+    root.querySelectorAll('a[href]').forEach(rewriteLink);
+  }
+  api.rewriteHref = rewriteHref;
+
   const SKIP = 'script, style, noscript, textarea, [data-i18n-skip], [data-detail-memo]';
   function translateRoot(root) {
     if (!root || root.nodeType !== 1) return;
@@ -249,6 +285,7 @@
       if (nameMap.has(full)) { root.textContent = nameMap.get(full); return; }
     }
     translateAttrs(root);
+    rewriteLinks(root);
     translateOptionValues(root);
     // Tile names first: their fragments must not be translated piecemeal.
     root.querySelectorAll('.learn-tile-name').forEach((el) => {
@@ -341,6 +378,7 @@
       scheduled = false;
       injectLangSwitch();
       translateOptionValues(document);
+      rewriteLinks(document);
       const roots = [...pending];
       pending.clear();
       for (const r of roots) if (r.isConnected) translateRoot(r);
@@ -368,7 +406,7 @@
   injectLangSwitch();
   observer.observe(document.body, {
     childList: true, subtree: true, characterData: true,
-    attributes: true, attributeFilter: ATTRS,
+    attributes: true, attributeFilter: [...ATTRS, 'href'],
   });
   loadData();
   api.ready = () => dataReady;

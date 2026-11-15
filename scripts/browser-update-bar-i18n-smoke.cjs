@@ -61,12 +61,17 @@ async function showBarAndRead(page, swFile, fromVersion, toVersion) {
   const server = await serve(tmp);
   const base = `http://127.0.0.1:${server.address().port}/`;
   const browser = await chromium.launch({ headless: true, channel: 'chrome' }).catch(() => chromium.launch({ headless: true }));
+  // Derive the current shell version from the served file instead of
+  // hardcoding one, so this smoke survives SHELL_CACHE version bumps.
+  const vMatch = fs.readFileSync(swFile, 'utf8').match(/decide-shell-editorial-(v\d+)/);
+  assert.ok(vMatch, 'SHELL_CACHE version found in served service-worker.js');
+  const v0 = vMatch[1];
   try {
     // English visitor: the update bar must be fully English.
     const ctxEn = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce', locale: 'en-US' });
     const pageEn = await ctxEn.newPage();
     await pageEn.goto(base);
-    const en = await showBarAndRead(pageEn, swFile, 'v274', 'v274u');
+    const en = await showBarAndRead(pageEn, swFile, v0, `${v0}u`);
     assert.ok(en.text.includes('A new version is available'), `EN bar text: ${en.text}`);
     assert.equal(en.updateLabel, 'Update');
     assert.equal(en.closeLabel, 'Close');
@@ -77,7 +82,7 @@ async function showBarAndRead(page, swFile, fromVersion, toVersion) {
     const ctxJa = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce', locale: 'ja-JP' });
     const pageJa = await ctxJa.newPage();
     await pageJa.goto(base);
-    const ja = await showBarAndRead(pageJa, swFile, 'v274u', 'v274v');
+    const ja = await showBarAndRead(pageJa, swFile, `${v0}u`, `${v0}v`);
     assert.ok(ja.text.includes('新しいバージョンがあります。'), `JA bar text: ${ja.text}`);
     assert.equal(ja.updateLabel, '更新する');
     assert.equal(ja.closeLabel, '閉じる');
