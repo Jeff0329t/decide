@@ -100,6 +100,55 @@ async function onCheckoutCompleted(session: Stripe.Checkout.Session) {
     currency: session.currency,
   }, { onConflict: 'checkout_session_id', ignoreDuplicates: true });
   if (purchaseError) throw purchaseError;
+
+  await recordPartnerConversion(session, userId);
+}
+
+// Store referral: record the conversion for the shop that sent this buyer.
+// The partner is resolved from the session metadata first (create-checkout copies it from
+// the server-side attribution); if the session predates the attribution, fall back to the
+// attribution record, but only when it was bound no later than this purchase was recorded —
+// a shop must not earn from a purchase that happened before the visit it claims.
+// One conversion per user: DECIDE. is a one-time purchase, so a second paid purchase is a
+// mistake to refund (see the double-purchase alert above), never a second conversion.
+async function recordPartnerConversion(session: Stripe.Checkout.Session, userId: string) {
+  let partnerCode = session.metadata?.partner_code ?? null;
+  if (!partnerCode) {
+    const { data: purchase, error: purchaseError } = await admin.from('purchases')
+      .select('created_at').eq('checkout_session_id', session.id).maybeSingle();
+    if (purchaseError) throw purchaseError;
+    if (!purchase) return;
+    const { data: attribution, error: attributionError } = await admin.from('partner_attributions')
+      .select('partner_code, bound_at').eq('user_id', userId).maybeSingle();
+    if (attributionError) throw attributionError;
+    if (attribution && new Date(attribution.bound_at) <= new Date(purchase.created_at)) {
+      partnerCode = attribution.partner_code;
+    }
+  }
+  if (!partnerCode) return;
+
+  const { data: channel, error: channelError } = await admin.from('partner_channels')
+    .select('code, reward_jpy, active').eq('code', partnerCode).maybeSingle();
+  if (channelError) throw channelError;
+  if (!channel?.active) return;
+
+  const { count, error: countError } = await admin.from('partner_conversions')
+    .select('checkout_session_id', { count: 'exact', head: true })
+    .eq('user_id', userId).eq('status', 'confirmed');
+  if (countError) throw countError;
+  if (count) return;
+
+  // ignoreDuplicates on the session id: a redelivered event can never count twice.
+  // reward_jpy snapshots the channel's current rate, so later rate changes stay historical.
+  const { error: conversionError } = await admin.from('partner_conversions').upsert({
+    checkout_session_id: session.id,
+    partner_code: channel.code,
+    user_id: userId,
+    amount: session.amount_total ?? 0,
+    reward_jpy: channel.reward_jpy,
+    status: 'confirmed',
+  }, { onConflict: 'checkout_session_id', ignoreDuplicates: true });
+  if (conversionError) throw conversionError;
 }
 
 async function onChargeRefunded(charge: Stripe.Charge) {
@@ -107,12 +156,22 @@ async function onChargeRefunded(charge: Stripe.Charge) {
   const paymentIntent = typeof charge.payment_intent === 'string' ? charge.payment_intent : charge.payment_intent?.id ?? null;
 
   let userId: string | undefined;
+  let refundedSessionId: string | undefined;
   if (paymentIntent) {
     const { data, error } = await admin.from('purchases')
       .update({ status: 'refunded', refunded_at: new Date().toISOString() })
-      .eq('payment_intent', paymentIntent).select('user_id');
+      .eq('payment_intent', paymentIntent).select('user_id, checkout_session_id');
     if (error) throw error;
     userId = data?.[0]?.user_id;
+    refundedSessionId = data?.[0]?.checkout_session_id;
+  }
+  // Store referral: a fully refunded purchase earns nothing, so its conversion follows it.
+  // (Done even when another paid purchase keeps PRO: this purchase's reward is still undone.)
+  if (refundedSessionId) {
+    const { error: conversionError } = await admin.from('partner_conversions')
+      .update({ status: 'refunded', refunded_at: new Date().toISOString() })
+      .eq('checkout_session_id', refundedSessionId).eq('status', 'confirmed');
+    if (conversionError) throw conversionError;
   }
   // Purchases made before the purchases table existed have no row: fall back to Stripe.
   userId ??= await findUserId(charge.metadata?.user_id, paymentIntent);
@@ -147,6 +206,20 @@ async function onDispute(dispute: Stripe.Dispute, type: string) {
     updated_at: new Date().toISOString(),
   }, { ignoreDuplicates: type === 'charge.dispute.created' }); // a late "created" must not overwrite a "closed" result
   if (error) throw error;
+
+  // Store referral: only mark the conversion as disputed. Whether the reward is clawed
+  // back is an operator decision, same as revoking PRO (see docs/setup-stripe.md).
+  if (type === 'charge.dispute.created' && paymentIntent) {
+    const { data: purchase, error: purchaseError } = await admin.from('purchases')
+      .select('checkout_session_id').eq('payment_intent', paymentIntent).maybeSingle();
+    if (purchaseError) throw purchaseError;
+    if (purchase) {
+      const { error: conversionError } = await admin.from('partner_conversions')
+        .update({ status: 'disputed' })
+        .eq('checkout_session_id', purchase.checkout_session_id).eq('status', 'confirmed');
+      if (conversionError) throw conversionError;
+    }
+  }
 
   const label = type === 'charge.dispute.created' ? 'チャージバック発生' : `チャージバック終了（${dispute.status}）`;
   const text = `[DECIDE] ${label}: ${dispute.id} / ${dispute.amount} ${dispute.currency.toUpperCase()} / reason=${dispute.reason} / user=${userId ?? '不明'}`;

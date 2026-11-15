@@ -46,10 +46,32 @@ Deno.serve(async (req) => {
   if (profileError) return json({ error: 'profile lookup failed' }, 500);
   if (profile?.plan_type === 'lifetime') return json({ error: 'already pro' }, 409);
 
+  // Store referral: if this user was attributed to a partner shop (partner_attributions,
+  // recorded at login by dist/partner.js), carry the code on the session so stripe-webhook
+  // can record the conversion. Read from the server record — never from the request body —
+  // so it works across devices and cannot be spoofed by the client. Best effort on purpose:
+  // a partner lookup problem must never block a purchase, so failures only drop the code.
+  let partnerCode: string | null = null;
+  try {
+    const { data: attribution, error: attributionError } = await admin.from('partner_attributions')
+      .select('partner_code').eq('user_id', user.id).maybeSingle();
+    if (attributionError) throw attributionError;
+    if (attribution?.partner_code) {
+      const { data: channel, error: channelError } = await admin.from('partner_channels')
+        .select('code').eq('code', attribution.partner_code).eq('active', true).maybeSingle();
+      if (channelError) throw channelError;
+      partnerCode = channel?.code ?? null;
+    }
+  } catch (partnerError) {
+    console.warn('partner attribution lookup failed', (partnerError as Error).message);
+    partnerCode = null;
+  }
+
   // Return to the origin the purchase started from (localhost in dev), otherwise SITE_URL.
   const origin = req.headers.get('Origin')?.replace(/\/$/, '') ?? '';
   const base = ALLOWED_ORIGINS.has(origin) ? origin : SITE_URL;
-  const metadata = { user_id: user.id, product: PRODUCT_KEY };
+  const metadata: { user_id: string; product: string; partner_code?: string } = { user_id: user.id, product: PRODUCT_KEY };
+  if (partnerCode) metadata.partner_code = partnerCode;
 
   // Everything Stripe sees is in this object; it must stay free of per-request values (timestamps, random ids)
   // so that a retry with the same idempotency key sends an identical body.

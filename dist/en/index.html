@@ -69,6 +69,27 @@
   <p class="meta legal"><a href="../">日本語版 / Japanese version</a> ／ <a href="./about">About</a> ／ <a href="../privacy">Privacy</a> ／ <a href="../terms">Terms</a></p>
 </main>
 <script>
+  // Remember which shop sent this visitor (?via=code), so a purchase made after
+  // login can be credited to that shop. Mirrors the capture half of ../partner.js
+  // (same storage key and shape, same 30-day window, first touch wins); keep in sync.
+  (function () {
+    try {
+      var url = new URL(location.href);
+      if (!url.searchParams.has('via')) return;
+      var code = (url.searchParams.get('via') || '').trim().toLowerCase();
+      url.searchParams.delete('via');
+      history.replaceState(history.state, '', url.pathname + url.search + url.hash);
+      if (!/^[a-z0-9-]{3,32}$/.test(code)) return;
+      var keep = false;
+      try {
+        var prev = JSON.parse(localStorage.getItem('decide.partner.v1') || 'null');
+        keep = !!(prev && prev.code && Date.now() - Date.parse(prev.captured_at) <= 30 * 24 * 60 * 60 * 1000);
+      } catch (e) {}
+      if (!keep) localStorage.setItem('decide.partner.v1', JSON.stringify({ code: code, captured_at: new Date().toISOString() }));
+    } catch (e) {}
+  })();
+</script>
+<script>
   // Make sure the app opens in English even if the ?lang= parameter is lost.
   document.getElementById('open-app').addEventListener('click', function () {
     try { localStorage.setItem('decide.lang.v1', 'en'); } catch (e) {}
