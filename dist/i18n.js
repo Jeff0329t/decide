@@ -255,6 +255,27 @@
     el.append(document.createTextNode(' with the bonus'));
   }
 
+  // The paywall assurance line wraps the second 「ログイン」 in a nowrap
+  // span so the word never splits across lines on narrow screens, so no
+  // single text node ever matches the dictionary keys for its sentences.
+  // Translate it at the element level instead, rebuilding the same <br>
+  // structure from the two dictionary entries.
+  const PAYWALL_JA1 = '買い切り980円のみです。月額料金・追加課金はなく、広告も表示されません。購入はGoogleアカウントに記録されます。';
+  const PAYWALL_JA2 = '購入にはGoogleでのログインが必要です（ログイン後に購入へ進みます）。';
+  function translatePaywallAssure(el) {
+    const text = el.textContent.replace(/\s+/g, ' ').trim();
+    const hasSecond = text === PAYWALL_JA1 + PAYWALL_JA2;
+    if (text !== PAYWALL_JA1 && !hasSecond) return;
+    const en1 = staticDict.get(PAYWALL_JA1);
+    const en2 = hasSecond ? staticDict.get(PAYWALL_JA2) : null;
+    if (!en1 || (hasSecond && !en2)) return;
+    el.textContent = en1;
+    if (hasSecond) {
+      el.append(document.createElement('br'));
+      el.append(document.createTextNode(en2));
+    }
+  }
+
   const ATTRS = ['placeholder', 'aria-label', 'title', 'alt'];
   function translateAttrs(el) {
     for (const a of ATTRS) {
@@ -328,6 +349,7 @@
       if (nameMap.has(full)) { root.textContent = nameMap.get(full); return; }
     }
     if (root.classList && root.classList.contains('referral-count')) translateReferralCount(root);
+    if (root.classList && root.classList.contains('paywall-assure')) translatePaywallAssure(root);
     translateAttrs(root);
     rewriteLinks(root);
     translateOptionValues(root);
@@ -338,6 +360,8 @@
     });
     // Referral count: same reason — its sentence is split around a <b>.
     root.querySelectorAll('.referral-count').forEach(translateReferralCount);
+    // Paywall assurance: same reason — its sentence is split around a span.
+    root.querySelectorAll('.paywall-assure').forEach(translatePaywallAssure);
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
       acceptNode(node) {
         if (!node.nodeValue || !JA_RE.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;

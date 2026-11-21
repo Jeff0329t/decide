@@ -218,7 +218,7 @@
         </ul>
         <p class="paywall-pitch">迷いはこれからも何度も来ます。そのたびに開いて、決めて、残す。本1冊分の値段で、その繰り返しはずっと続きます。</p>
         <p class="paywall-price"><span class="paywall-amount">¥980</span><span class="paywall-note">税込・買い切り</span></p>
-        <p class="paywall-assure">買い切り980円のみです。月額料金・追加課金はなく、広告も表示されません。購入はGoogleアカウントに記録されます。${user ? '' : '<br>購入にはGoogleでのログインが必要です（ログイン後に購入へ進みます）。'}</p>`;
+        <p class="paywall-assure">買い切り980円のみです。月額料金・追加課金はなく、広告も表示されません。購入はGoogleアカウントに記録されます。${user ? '' : '<br>購入にはGoogleでのログインが必要です（<span style="white-space:nowrap">ログイン</span>後に購入へ進みます）。'}</p>`;
     const primary = user
       ? `<button class="button" type="button" data-ent-action="checkout">¥980で手に入れる</button>`
       : `<div class="google-signin" data-google-button hidden></div>
