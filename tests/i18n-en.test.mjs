@@ -275,10 +275,10 @@ test('related-articles-en.json mirrors the Japanese structure with English text'
   });
 });
 
-test('service worker precaches the English article data at v281', () => {
+test('service worker precaches the English article data at v282', () => {
   const sw = read('dist/service-worker.js');
   assert.match(sw, /'\.\/assets\/related-articles-en\.json'/);
-  assert.match(sw, /decide-shell-editorial-v281/);
+  assert.match(sw, /decide-shell-editorial-v282/);
 });
 
 test('publish47: split-node referral count and composed-string fixes', () => {
